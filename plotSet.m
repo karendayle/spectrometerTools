@@ -4,7 +4,7 @@
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
-dir_to_search = 'C:\Users\dayle.kotturi\Documents\Data\Polystyrene 0.328 power 5 sec integration YES signal';
+dir_to_search = 'C:\Users\dayle.kotturi\Documents\Data\SORS1';
 txtpattern = fullfile(dir_to_search, '*.txt');
 dinfo = dir(txtpattern);
 for K = 1 : length(dinfo)
