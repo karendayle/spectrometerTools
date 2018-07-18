@@ -7,6 +7,7 @@
 dir_to_search = 'C:\Users\dayle.kotturi\Documents\Data\MPy 0.500 power 5 sec integraton MAYBE signal - make a movie';
 txtpattern = fullfile(dir_to_search, '*.txt');
 dinfo = dir(txtpattern);
+figure % without this, no plots are drawn
 for K = 1 : length(dinfo)
   thisfilename = fullfile(dir_to_search, dinfo(K).name); % just the name
   thisdata = load(thisfilename); %load just this file
@@ -14,10 +15,11 @@ for K = 1 : length(dinfo)
   
   % do something with the data
   plot(thisdata(:,1), thisdata(:,2))
+  xlabel('Wavenumber (cm^-1)'); % x-axis label
+  ylabel('Arbitrary Units (A.U.)'); % y-axis label
   pause(1);
 end
-xlabel('Wavenumber (cm^-1)'); % x-axis label
-ylabel('Arbitrary Units (A.U.)'); % y-axis label
+
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
 % Q: how to build up to a given number of spectra, say 10, and then drop

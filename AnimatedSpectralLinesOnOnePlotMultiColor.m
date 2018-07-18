@@ -22,6 +22,8 @@ dir_to_search = 'C:\Users\dayle.kotturi\Documents\Data\SORS1';
 txtpattern = fullfile(dir_to_search, 'spectrum-*.txt');
 dinfo = dir(txtpattern);
 
+figure % nothing gets drawn without this
+
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 for K = 1 : length(dinfo)
   thisfilename = fullfile(dir_to_search, dinfo(K).name); % just the name
@@ -43,7 +45,7 @@ for K = 1 : length(dinfo)
     drawnow
   end
 end
-title('Polystyrene: Cote 780 nm vs Wasatch 785 nm');
+title('Your title here');
 xlabel('Wavenumber (cm^-1)'); % x-axis label
 ylabel('Arbitrary Units (A.U.)'); % y-axis label
 
