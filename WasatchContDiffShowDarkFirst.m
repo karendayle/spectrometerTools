@@ -29,9 +29,12 @@ xMin = 0;
 xMax = 1800;
 yMin = 0;
 yMax = 12000;
-darkStem = '../Data/dark-%s.txt';
-rawStem = '../Data/rawSpectrum-%s.txt';
-dataStem = '../Data/spectrum-%s.txt';
+% Relative to where Matlab files are. If using the ones in git checkout,
+% \\bme-fs-student2.engr.tamu.edu\graduate\dayle.kotturi\Documents\GitHub\spectrometerTools
+% use:
+darkStem = '../../Data/dark-%s.txt';
+rawStem = '../../Data/rawSpectrum-%s.txt';
+dataStem = '../../Data/spectrum-%s.txt';
 
 % load the DLL
 %32 bit dll = NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
