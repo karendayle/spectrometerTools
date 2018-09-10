@@ -92,7 +92,7 @@ if (refWaveNumber ~= 0)
             closestRef = i;
             fprintf("reference is at %d\n", closestRef);
         end
-        fprintf("%d %g %g \n", i, wavenumbers(i), spectrumData(i)); 
+        %fprintf("%d %g %g \n", i, wavenumbers(i), spectrumData(i)); 
         % use notepad++ to see this is 1 value per line for 1024 lines
     end 
 end
@@ -114,11 +114,11 @@ if ((myAns1 == 1) || (myAns1 == 4))
         
         % check. for debugging. 1024 values are there. Just not vis in
         % workspace ?!
-        for i=1:numPoints
-            fprintf('darkData(%d)=%d\n', i, darkData(i));
-        end
+        %for i=1:numPoints
+        %    fprintf('darkData(%d)=%d\n', i, darkData(i));
+        %end
         
-        darkFilename = writeSpectrumToFile(pixels, x, darkData, darkStem);
+        darkFilename = writeSpectrumToFile(pixels, x, darkData, darkStem, 0);
     end
 else 
     if (myAns1 == 0)
@@ -165,7 +165,7 @@ if (myAns1 ~= 4)
     while 1
         fprintf("\n2. Taking spectrum...");
         rawData = takeSpectrum(numPoints, spectrometer, integrationTimeMS);
-        rawFilename = writeSpectrumToFile(pixels, x, rawData, rawStem);
+        rawFilename = writeSpectrumToFile(pixels, x, rawData, rawStem, 0);
         %pause(59.9); %regular continuous mode for 100 ms integration
         pause(10); % for 15 second acquisition interval with 5 second integration
         
@@ -177,10 +177,10 @@ if (myAns1 ~= 4)
         % handle division by zero outside of writeSpectrum
         if (closestRef ~= 0) 
             spectrumFilename = writeSpectrumToFile(pixels, x, ...
-                (spectrumData/spectrumData(closestRef)), dataStem);
+                spectrumData, dataStem, closestRef);
         else
             spectrumFilename = writeSpectrumToFile(pixels, x, ...
-                spectrumData, dataStem);
+                spectrumData, dataStem, 0);
         end
         if (firstTime == false)
             for i = 1:pixels
@@ -192,7 +192,8 @@ if (myAns1 ~= 4)
         
         % plot this iteration
         plotStatus = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
-            wavelengths, x, darkData, rawData, spectrumData, difference, spectrumFilename, closestRef);
+            wavelengths, x, darkData, rawData, spectrumData, ...
+            difference, spectrumFilename, closestRef);
         
         % prepare for next iteration
         for i = 1:pixels
@@ -222,14 +223,17 @@ function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
     a = spectrum;
 end
 
-function b = writeSpectrumToFile(pixels, x, myData, stem)
-
+function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber)
     % myData could be different things: dark, raw, spectrum, scaled
     % spectrum. 
     
     % TO DO: The missing piece is that if it is the scaled spectrum,
     % the intensity and wavenumber of the value that was used to scale it,
     % is not recorded
+    if (refWaveNumber ~= 0)
+        myData = myData/myData(refWaveNumber);
+    end
+    
     % TO DO: store laser power
 
     size(x) % This is reported as 1x1024
