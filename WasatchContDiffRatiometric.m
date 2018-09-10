@@ -25,19 +25,21 @@
 true = 1;
 false = 0;
 numPoints = 1024;
+% to avoid array changing size every time it's assigned in the loop
 %darkData = zeros(1, numPoints, 'double');
 spectrumData = zeros(1, numPoints, 'double');
-%lastSpectrumData = zeros(1, numPoints, 'double');
+lastSpectrumData = zeros(1, numPoints, 'double');
 %rawData = zeros(1, numPoints, 'double');
-%x = zeros(1, numPoints, 'double');
+difference = zeros(1, numPoints, 'double');
+x = zeros(1, numPoints, 'double'); 
 integrationTimeMS = 5000;
 xMin = 0;
 xMax = 1800;
 yMin = 0;
 yMax = 12000;
-darkStem = '../Data/dark-%s.txt';
-rawStem = '../Data/rawSpectrum-%s.txt';
-dataStem = '../Data/spectrum-%s.txt';
+darkStem = '../../Data/dark-%s.txt';
+rawStem = '../../Data/rawSpectrum-%s.txt';
+dataStem = '../../Data/spectrum-%s.txt';
 
 % load the DLL
 %32 bit dll = NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
@@ -57,13 +59,13 @@ end
 spectrometer = driver.getSpectrometer(0);
 
 % access some key properties
-pixels = spectrometer.pixels
+pixels = spectrometer.pixels;
 modelName = char(spectrometer.model);
 serialNum = char(spectrometer.serialNumber);
 wavelengths = spectrometer.wavelengths;
 laserWavelengthNM = 785.0;
-wavenumbers = WasatchNET.Util.wavelengthsToWavenumbers(laserWavelengthNM,... 
-    wavelengths);
+wavenumbers = WasatchNET.Util.wavelengthsToWavenumbers(... 
+    laserWavelengthNM, wavelengths);
 
 % this should not be necessary but it helps to make wavenumber into 1x1024
 % array instead of 1x1.
@@ -78,15 +80,22 @@ fprintf('Found %s %s with %d pixels (%.2f, %.2fnm)\n', ...
 
 % next: make this optional so you can see the peak unaltered and THEN enter
 % the index
-prompt = '\nEnter wavenumber (cm^-1) to use for reference intensity> ';
+prompt = '\nEnter wavenumber (cm^-1) to use for reference intensity (0 to skip)> ';
 refWaveNumber = input(prompt);
-for i = 1:(pixels-1)
-    if ((wavenumbers(i) <= refWaveNumber) && (wavenumbers(i+1) > refWaveNumber))
-        % store i as the place 
-        fprintf("reference is at %d\n", i);
-    end
-    fprintf("%d %g %g \n", i, wavenumbers(i), spectrumData(i)); % use notepad++ to see this is 1 value per line for 1024 lines
-end 
+closestRef = 0; % set default value to begin
+if (refWaveNumber ~= 0) 
+    for i = 1:(pixels-1)
+        % There is likely no exact match. Just find the value closest to
+        % requested
+        if ((wavenumbers(i) <= refWaveNumber) && (wavenumbers(i+1) > refWaveNumber))
+            % store i as the place 
+            closestRef = i;
+            fprintf("reference is at %d\n", closestRef);
+        end
+        fprintf("%d %g %g \n", i, wavenumbers(i), spectrumData(i)); 
+        % use notepad++ to see this is 1 value per line for 1024 lines
+    end 
+end
 
 %size(wavenumbers); % This is misleading b/c it is 1x1
 firstTime = true;
@@ -120,8 +129,7 @@ else
             errmsg = '';
             while fileID < 0 
                 disp(errmsg);
-                filename = input ...
-                    ('3. Open file in C:\\Users\dayle.kotturi\\Documents\\Data\\Official Dark: ', ...
+                filename = input ('3. Open file in C:\\Users\dayle.kotturi\\Documents\\Data\\Official Dark: ', ...
                     's');
                 [fileID,errmsg] = fopen(fullfile ...
                     ('C:\Users\dayle.kotturi\Documents\Data\Official Dark', ...
@@ -166,9 +174,14 @@ if (myAns1 ~= 4)
         for i = 1:pixels
             spectrumData(i) = rawData(i) - darkData(i);
         end
-        spectrumFilename = writeSpectrumToFile(pixels, x, (spectrumData/spectrumData(refWaveNumber)),
-            dataStem);
-        
+        % handle division by zero outside of writeSpectrum
+        if (closestRef ~= 0) 
+            spectrumFilename = writeSpectrumToFile(pixels, x, ...
+                (spectrumData/spectrumData(closestRef)), dataStem);
+        else
+            spectrumFilename = writeSpectrumToFile(pixels, x, ...
+                spectrumData, dataStem);
+        end
         if (firstTime == false)
             for i = 1:pixels
                 difference(i) = spectrumData(i) - lastSpectrumData(i);
@@ -179,7 +192,7 @@ if (myAns1 ~= 4)
         
         % plot this iteration
         plotStatus = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
-            wavelengths, x, darkData, rawData, spectrumData, difference, spectrumFilename);
+            wavelengths, x, darkData, rawData, spectrumData, difference, spectrumFilename, closestRef);
         
         % prepare for next iteration
         for i = 1:pixels
@@ -210,18 +223,29 @@ function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
 end
 
 function b = writeSpectrumToFile(pixels, x, myData, stem)
+
+    % myData could be different things: dark, raw, spectrum, scaled
+    % spectrum. 
+    
+    % TO DO: The missing piece is that if it is the scaled spectrum,
+    % the intensity and wavenumber of the value that was used to scale it,
+    % is not recorded
+    % TO DO: store laser power
+
     size(x) % This is reported as 1x1024
     size(myData) % This is reported as 1x1
     
     % create a data file from the current date and time
     filename = sprintf(stem, datestr(now,'yyyy-mm-dd-HH-MM-SS'));
     [fileID,errmsg] = fopen(filename,'w');
-    fprintf('%s opened for write\n', filename);
+    fprintf('%s opened for write with status: %s\n', filename, errmsg);
        
     % write the spectrum to file before it is overwritten
     for i = 1:pixels
-        fprintf(fileID, "%g %g \n", x(i), myData(i)); % use notepad++ to see this is 1 value per line for 1024 lines
-        %fprintf(fileID, "%g %g\n", wavenumbers(i), spectrum(i)); % use notepad++ to see that this is all 1024 values on one line!
+        fprintf(fileID, '%g %g \n', x(i), myData(i)); 
+        % use notepad++ to see this is 1 value per line for 1024 lines
+        %fprintf(fileID, "%g %g\n", wavenumbers(i), spectrum(i)); 
+        % use notepad++ to see that this is all 1024 values on one line!
     end   
     
     % cleanup
@@ -230,7 +254,8 @@ function b = writeSpectrumToFile(pixels, x, myData, stem)
 end
 
 function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
-    wavelengths, wavenumbers, dark, rawSpectrum, spectrum, difference, specFilename)
+    wavelengths, wavenumbers, dark, rawSpectrum, spectrum, difference, ...
+    specFilename, closestRef)
 % local function to graph the spectrum
     title(specFilename); % put filename of spectrum on the plot for traceability
     figure
@@ -265,14 +290,28 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     %xlim([xMin xMax]);
     %ylim([yMin yMax]);
     
-    if (firstTime == false)
+    %if (firstTime == false)
     % if not firstTime, do the plot the difference
+    %    subplot(2,2,4)
+    %    %plot(wavelengths, difference, 'red');
+    %    plot(wavenumbers, difference, 'red');
+    %    title('Difference to previous');
+    %    xlabel('Wavenumber (cm^-1)'); % x-axis label
+    %    ylabel('Arbitrary Units (A.U.)'); % y-axis label
+    %    %xlim([xMin xMax]);
+    %    %ylim([yMin yMax]);
+    %end
+    
+    if (closestRef ~= 0)
+    % if not firstTime, plot the difference
         subplot(2,2,4)
-        %plot(wavelengths, difference, 'red');
-        plot(wavenumbers, difference, 'red');
-        title('Difference to previous');
+        %plot(wavelengths, spectrum/spectrum(closestRef), 'red');
+        plot(wavenumbers, spectrum/spectrum(closestRef), 'red');
+        myTitle = sprintf('Ratiometric: as fraction of %g at %4.0f', ...
+            spectrum(closestRef), wavenumbers(closestRef));
+        title(myTitle);
         xlabel('Wavenumber (cm^-1)'); % x-axis label
-        ylabel('Arbitrary Units (A.U.)'); % y-axis label
+        ylabel('Arbitrary Units (A.U.)/Arbitrary Units (A.U.)'); % y-axis label
         %xlim([xMin xMax]);
         %ylim([yMin yMax]);
     end
