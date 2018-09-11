@@ -233,8 +233,6 @@ function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber)
     if (refWaveNumber ~= 0)
         myData = myData/myData(refWaveNumber);
     end
-    
-    % TO DO: store laser power
 
     size(x) % This is reported as 1x1024
     size(myData) % This is reported as 1x1
@@ -243,7 +241,9 @@ function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber)
     filename = sprintf(stem, datestr(now,'yyyy-mm-dd-HH-MM-SS'));
     [fileID,errmsg] = fopen(filename,'w');
     fprintf('%s opened for write with status: %s\n', filename, errmsg);
-       
+      
+    % write the number of pixels first (to help the read routine)
+    
     % write the spectrum to file before it is overwritten
     for i = 1:pixels
         fprintf(fileID, '%g %g \n', x(i), myData(i)); 
@@ -251,6 +251,10 @@ function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber)
         %fprintf(fileID, "%g %g\n", wavenumbers(i), spectrum(i)); 
         % use notepad++ to see that this is all 1024 values on one line!
     end   
+    
+    % append additional fields (so it can change over time 
+    % without changing where data is in the file)
+    % laser power as fraction of full power
     
     % cleanup
     fclose(fileID);
