@@ -5,28 +5,35 @@
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
 figure % without this, no plots are drawn
-for K = 1 : length(dinfo)
+for K = 1 : 3
   if (K == 1)
-      dir_to_search = 'H:\Documents\Data\pH4 dried';
+      dir_to_search = 'H:\Documents\Data\pH4 dried 2';
       txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
-      dinfo = dir(txtpattern);
-      thisfilename = fullfile(dir_to_search, dinfo(K).name); % just the name
-      thisdata1 = load(thisfilename); %load just this file
-      fprintf( 'File #%d, "%s", maximum value was: %g\n', K, thisfilename, max(thisdata(:)) );
+      dinfo = dir(txtpattern); % TO FIX: this returns a list of files
+                               % and I am handling them as if there is only
+                               % 1
+      for (I = 1 : length(dinfo))
+          thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+          thisdata1 = load(thisfilename); %load just this file
+          fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
+              thisfilename, max(thisdata1(:)) );
+      end
   else if (K == 2) 
-      dir_to_search = 'H:\Documents\Data\pH7 dried';
+      dir_to_search = 'H:\Documents\Data\pH7 dried 2';
       txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
       dinfo = dir(txtpattern);
-      thisfilename = fullfile(dir_to_search, dinfo(K).name); % just the name
+      thisfilename = fullfile(dir_to_search, dinfo.name); % just the name
       thisdata2 = load(thisfilename); %load just this file
-      fprintf( 'File #%d, "%s", maximum value was: %g\n', K, thisfilename, max(thisdata(:)) );
+      fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
+          thisfilename, max(thisdata2(:)) );
   else if (K == 3) 
-      dir_to_search = 'H:\Documents\Data\pH10 dried';
+      dir_to_search = 'H:\Documents\Data\pH10 dried 2';
       txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
-      dinfo = dir(txtpattern);
-      thisfilename = fullfile(dir_to_search, dinfo(K).name); % just the name
+      dinfo= dir(txtpattern);
+      thisfilename = fullfile(dir_to_search, dinfo.name); % just the name
       thisdata3 = load(thisfilename); %load just this file
-      fprintf( 'File #%d, "%s", maximum value was: %g\n', K, thisfilename, max(thisdata(:)) );
+      fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
+          thisfilename, max(thisdata3(:)) );
       end
   end
   end
