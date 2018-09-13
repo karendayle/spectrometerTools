@@ -1,9 +1,16 @@
 % Plot files in different directories
-
 % Dayle Kotturi June 2018
-maxIntensity = 0;
+
+% Change next 4 lines to what you want to plot
+% These are used to find the spectra that get plotted.
+% Multiple spectra in each subdir, but the latest one is used for plot
 dirStem = "H:\Documents\Data\";
 subDirStem1 = "pH4 dried 2";
+subDirStem2 = "pH7 dried 2";
+subDirStem3 = "pH10 dried 2";
+
+maxIntensity = 0; % set initial value
+
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
 figure % without this, no plots are drawn
@@ -29,7 +36,6 @@ for K = 1 : 3
       end
   else
       if (K == 2)
-          subDirStem2 = "pH7 dried 2";
           str_dir_to_search = dirStem + subDirStem2;
           dir_to_search = char(str_dir_to_search);
           txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
@@ -45,7 +51,6 @@ for K = 1 : 3
           end
       else
           if (K == 3)
-              subDirStem3 = "pH10 dried 2";
               str_dir_to_search = dirStem + subDirStem3;
               dir_to_search = char(str_dir_to_search);
               txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
