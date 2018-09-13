@@ -22,9 +22,8 @@ for K = 1 : 3
       %dir_to_search = convertContainedStringsToChars(str_dir_to_search);
       dir_to_search = char(str_dir_to_search);
       txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
-      dinfo = dir(txtpattern); % TO FIX: this returns a list of files
-                               % and I am handling them as if there is only
-                               % 1
+      dinfo = dir(txtpattern); % TO FIX: this returns a list of files and
+                               % I am handling them as if there is only 1
       for (I = 1 : length(dinfo))
           thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
           thisdata1 = load(thisfilename); %load just this file
