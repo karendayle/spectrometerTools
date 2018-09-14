@@ -11,6 +11,9 @@ dirStem = "H:\Documents\Data\";
 subDirStem1 = "pH4";
 subDirStem2 = "pH7";
 subDirStem3 = "pH10";
+%refWaveNumber = 1074.26; % at index 407 - read from file, same for all 3
+refIndex = 407; % index where the reference peak is 
+                %(ring breathing near 1078 cm^-1
 
 maxIntensity = 0; % set initial value
 
@@ -72,6 +75,9 @@ for K = 1 : 3
     end
 end
 
+% Since ratiometric, use 1.0 for maxIntensity
+maxIntensity = 1.0;
+
 % YHY peaks
 A0 = [1013 1013]; % x vector
 B0 = [0 maxIntensity];   % y vector
@@ -90,15 +96,20 @@ B6 = [0 maxIntensity];   % y vector
 A7 = [1702 1702]; % x vector, pH sensitive
 B7 = [0 maxIntensity];   % y vector
 
-plot(thisdata1(:,1), thisdata1(:,2), 'blue', ...
-    thisdata2(:,1), thisdata2(:,2), 'red', ...
-    thisdata3(:,1), thisdata3(:,2), 'magenta', ...
+%Ratiometric
+denominator1 = thisdata1(refIndex,2);
+denominator2 = thisdata2(refIndex,2);
+denominator3 = thisdata3(refIndex,2);
+plot(thisdata1(:,1), thisdata1(:,2)/denominator1, 'blue', ...
+    thisdata2(:,1), thisdata2(:,2)/denominator2, 'red', ...
+    thisdata3(:,1), thisdata3(:,2)/denominator3, 'magenta', ...
     A0, B0, 'black', A1, B1, 'black', A2, B2, 'green', ...
     A3, B3, 'black', A4, B4, 'green', A5, B5, 'black', A6, B6, 'black', ...
     A7, B7, 'green');
-title(subDirStem1 + ', ' + subDirStem2 + ' and ' + subDirStem3);
+title('Ratiometric ' + subDirStem1 + ', ' + subDirStem2 + ' and ' + ...
+    subDirStem3);
 xlabel('Wavenumber (cm^-1)'); % x-axis label
-ylabel('Arbitrary Units (A.U.)'); % y-axis label
+ylabel('Arbitrary Units (A.U.)/Intensity of ring-breathing at 1074 cm^-1'); % y-axis label
 legend('pH4', 'pH7', 'pH10', '1013', '1078', '1143', '1182', '1430', ...
     '1481', '1587', '1702');
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
