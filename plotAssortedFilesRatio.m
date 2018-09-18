@@ -4,7 +4,8 @@
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
-dirStem = "H:\Documents\Data\seriesDilution";
+% IMPORTANT: dirStem needs trailing backslash
+dirStem = "H:\Documents\Data\seriesDilution\";
 %subDirStem1 = "pH4 dried 2";
 %subDirStem2 = "pH7 dried 2";
 %subDirStem3 = "pH10 dried 2";
@@ -12,18 +13,19 @@ dirStem = "H:\Documents\Data\seriesDilution";
 %subDirStem2 = "pH7-2500";
 %subDirStem3 = "pH10-2500";
 subDirStem1 = "MES pH7 solution B";
-subDirStem2 = "MES pH7 solution c";
+subDirStem2 = "MES pH7 solution C";
 subDirStem3 = "MES pH7 solution D";
 %refWaveNumber = 1074.26; % at index 407 - read from file, same for all 3
 refIndex = 407; % index where the reference peak is 
                 %(ring breathing near 1078 cm^-1
 
-maxIntensity = 0; % set initial value
+
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
 figure % without this, no plots are drawn
 for K = 1 : 3
+    maxIntensity = 0; % set initial value
     if (K == 1)
       str_dir_to_search = dirStem + subDirStem1; % args need to be strings
       % UGH, this function only in 2018b. 
@@ -113,7 +115,7 @@ title('Ratiometric ' + subDirStem1 + ', ' + subDirStem2 + ' and ' + ...
     subDirStem3);
 xlabel('Wavenumber (cm^-1)'); % x-axis label
 ylabel('Arbitrary Units (A.U.)/Intensity of ring-breathing at 1074 cm^-1'); % y-axis label
-legend('pH4', 'pH7', 'pH10', '1013', '1078', '1143', '1182', '1430', ...
+legend(subDirStem1, subDirStem2, subDirStem3, '1013', '1078', '1143', '1182', '1430', ...
     '1481', '1587', '1702');
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 

@@ -1,3 +1,4 @@
+% Dayle Kotturi September 2018
 % import data from spectrum*.txt into VarName1 and VarName2 as 
 % IMPORTED DATA -> OutputType ->column vectors
 Yout = msbackadj(VarName1, VarName2);
