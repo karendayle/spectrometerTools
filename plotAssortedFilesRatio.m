@@ -4,13 +4,16 @@
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
-dirStem = "H:\Documents\Data\";
+dirStem = "H:\Documents\Data\seriesDilution";
 %subDirStem1 = "pH4 dried 2";
 %subDirStem2 = "pH7 dried 2";
 %subDirStem3 = "pH10 dried 2";
-subDirStem1 = "pH4";
-subDirStem2 = "pH7";
-subDirStem3 = "pH10";
+%subDirStem1 = "pH4-2500";
+%subDirStem2 = "pH7-2500";
+%subDirStem3 = "pH10-2500";
+subDirStem1 = "MES pH7 solution B";
+subDirStem2 = "MES pH7 solution c";
+subDirStem3 = "MES pH7 solution D";
 %refWaveNumber = 1074.26; % at index 407 - read from file, same for all 3
 refIndex = 407; % index where the reference peak is 
                 %(ring breathing near 1078 cm^-1
@@ -98,8 +101,8 @@ B7 = [0 maxIntensity];   % y vector
 
 %Ratiometric
 denominator1 = thisdata1(refIndex,2);
-denominator2 = thisdata2(refIndex,2);
-denominator3 = thisdata3(refIndex,2);
+denominator2 = thisdata2(refIndex,2); % make these thisdata1 for 1 ref
+denominator3 = thisdata3(refIndex,2); % make this thisdata1 for 1 ref
 plot(thisdata1(:,1), thisdata1(:,2)/denominator1, 'blue', ...
     thisdata2(:,1), thisdata2(:,2)/denominator2, 'red', ...
     thisdata3(:,1), thisdata3(:,2)/denominator3, 'magenta', ...

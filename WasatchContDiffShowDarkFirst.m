@@ -54,7 +54,7 @@ end
 spectrometer = driver.getSpectrometer(0);
 
 % access some key properties
-pixels = spectrometer.pixels
+pixels = spectrometer.pixels;
 modelName = char(spectrometer.model);
 serialNum = char(spectrometer.serialNumber);
 wavelengths = spectrometer.wavelengths;
