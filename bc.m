@@ -21,19 +21,25 @@ prog.temp_tic=prog.temp_tic';
 
 figure
 
-axe_superimpose=axes('position',[0.1 0.55 0.7 0.35]);  
+%axe_superimpose=axes('position',[0.1 0.55 0.7 0.35]);  
 %plot(axe_superimpose,tics(1,:));
-plot(axe_superimpose,tics);
-title ('Original spectrum');
-hold(axe_superimpose,'on');
-plot(axe_superimpose,prog.temp_tic,'r');
-hold(axe_superimpose,'off');
-
-axe_bc=axes('position',[0.1 0.1 0.7 0.35]);
-%plot(axe_bc,tics(1,:)-prog.temp_tic);
-plot(axe_bc,tics(:)-prog.temp_tic(:)); % kdk: this works but why do I need
-                                       % the ':'?
+plot(tics,'red');
 title ('Baseline Correction with asysm');
+hold('on');
+%plot(axe_superimpose,prog.temp_tic,'magenta');
+plot(prog.temp_tic,'magenta');
+%hold(axe_superimpose,'off');
+
+%axe_bc=axes('position',[0.1 0.1 0.7 0.35]);
+%plot(axe_bc,tics(1,:)-prog.temp_tic);
+%plot(axe_bc,tics(:)-prog.temp_tic(:)); % kdk: this works but why do I need
+                                       % the ':'?
+%plot(axe_superimpose,tics(:)-prog.temp_tic(:));
+plot(tics(:)-prog.temp_tic(:));  
+title ('Baseline Correction with asysm');
+legend('original spectrum','detected trend','baseline corrected','Location','northoutside');
+hold('off'); %new
+
 % debug by uncommenting 
 %tics
 %prog.temp_tic
