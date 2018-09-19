@@ -24,6 +24,7 @@ figure
 axe_superimpose=axes('position',[0.1 0.55 0.7 0.35]);  
 %plot(axe_superimpose,tics(1,:));
 plot(axe_superimpose,tics);
+title ('Original spectrum');
 hold(axe_superimpose,'on');
 plot(axe_superimpose,prog.temp_tic,'r');
 hold(axe_superimpose,'off');
@@ -32,6 +33,7 @@ axe_bc=axes('position',[0.1 0.1 0.7 0.35]);
 %plot(axe_bc,tics(1,:)-prog.temp_tic);
 plot(axe_bc,tics(:)-prog.temp_tic(:)); % kdk: this works but why do I need
                                        % the ':'?
+title ('Baseline Correction with asysm');
 % debug by uncommenting 
 %tics
 %prog.temp_tic
@@ -39,15 +41,22 @@ plot(axe_bc,tics(:)-prog.temp_tic(:)); % kdk: this works but why do I need
 % Compare to method of msbackadj:
 figure
 [m,n] = size(tics);
-VarName1 = linspace(0,1,m);
+VarName1 = linspace(0,m,m); % make an array with m values from 0 to m
 size(VarName1)
 size(tics)
 Yout = msbackadj(VarName1', tics);
-plot(VarName1,tics,'red', VarName1,Yout,'blue');
+plot(VarName1,tics,'red', VarName1,Yout,'black');
 ylabel('Arbitrary Units (A.U.)'); % y-axis label
 xlabel('index'); % x-axis label
 title ('Baseline Correction with msbackadj');
-legend('original','baseline corrected','Location','northoutside');
+legend('original spectrum','baseline corrected','Location','northoutside');
+
+% Calculate the difference
+error = (tics(:)-prog.temp_tic(:)) - Yout;
+figure
+plot(VarName1,tics(:)-prog.temp_tic(:), 'blue', VarName1,Yout,'black', VarName1,error,'green');
+title ('Difference in baseline correction methods');
+legend('asysm','msbackadj','asysm-msbackadj','Location','northoutside');
 
 % Next: return result: tics(:)-prog.temp_tic(:) as an array to calling
 % program
