@@ -3,7 +3,7 @@
 % row, with the intensities in the columns
 function bc(tics)
 
-lambda=1e8; % smoothing parameter
+lambda=1e6; % smoothing parameter
 p=0.001; % asymmetry parameter
 d=2;
 prog.chroms=tics;
@@ -35,9 +35,11 @@ plot(prog.temp_tic,'magenta');
 %plot(axe_bc,tics(:)-prog.temp_tic(:)); % kdk: this works but why do I need
                                        % the ':'?
 %plot(axe_superimpose,tics(:)-prog.temp_tic(:));
-plot(tics(:)-prog.temp_tic(:));  
+plot(tics(:)-prog.temp_tic(:),'blue');  
 title ('Baseline Correction with asysm');
 legend('original spectrum','detected trend','baseline corrected','Location','northoutside');
+xlabel('index'); % x-axis label
+ylabel('Arbitrary Units (A.U.)/Intensity of ring-breathing at 1074 cm^-1'); % y-axis label
 hold('off'); %new
 
 % debug by uncommenting 
@@ -52,8 +54,8 @@ size(VarName1)
 size(tics)
 Yout = msbackadj(VarName1', tics);
 plot(VarName1,tics,'red', VarName1,Yout,'black');
-ylabel('Arbitrary Units (A.U.)'); % y-axis label
 xlabel('index'); % x-axis label
+ylabel('Arbitrary Units (A.U.)/Intensity of ring-breathing at 1074 cm^-1'); % y-axis label
 title ('Baseline Correction with msbackadj');
 legend('original spectrum','baseline corrected','Location','northoutside');
 
@@ -63,6 +65,7 @@ figure
 plot(VarName1,tics(:)-prog.temp_tic(:), 'blue', VarName1,Yout,'black', VarName1,error,'green');
 title ('Difference in baseline correction methods');
 legend('asysm','msbackadj','asysm-msbackadj','Location','northoutside');
-
+xlabel('index'); % x-axis label
+ylabel('Arbitrary Units (A.U.)/Intensity of ring-breathing at 1074 cm^-1'); % y-axis label
 % Next: return result: tics(:)-prog.temp_tic(:) as an array to calling
 % program
