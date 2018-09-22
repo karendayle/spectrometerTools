@@ -42,10 +42,15 @@ darkStem = '../../Data/dark-%s.txt';
 rawStem = '../../Data/rawSpectrum-%s.txt';
 dataStem = '../../Data/spectrum-%s.txt';
 avgStem = '../../Data/avg-%s.txt';
-numIter = 5; % number of spectra to average
+numIter = 5; % number of spectra to average 
+numPointsEachSide = 0; % number of points used on either side of
+% reference wavenumber to integrate for the denominator of normalized
+% spectrum
+laserPowerFraction = 0.333;
 
 % load the DLL
-%32 bit dll = NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
+% 32 bit dll: NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
+% 64 bit dll: 
 dll = NET.addAssembly('C:\Program Files\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
 
 % get a handle to the Driver Singleton
@@ -178,14 +183,8 @@ if (myAns1 ~= 4)
             spectrumData(i) = rawData(i) - darkData(i);
             avg(i) = avg(i) + spectrumData(i);
         end
-        % handle division by zero outside of writeSpectrum
-        %if (closestRef ~= 0) 
-            spectrumFilename = writeSpectrumToFile(pixels, x, ...
-                spectrumData, dataStem, closestRef);
-        %else I DONT THINK I NEED THIS. CLOSESTREF IS ZERO BY DEFAULT
-        %    spectrumFilename = writeSpectrumToFile(pixels, x, ...
-        %        spectrumData, dataStem, 0);
-        %end
+        spectrumFilename = writeSpectrumToFile(pixels, x, ...
+            spectrumData, dataStem, closestRef, numPointsEachSide);
         if (firstTime == false)
             for i = 1:pixels
                 difference(i) = spectrumData(i) - lastSpectrumData(i);
@@ -215,8 +214,7 @@ if (myAns1 ~= 4)
         avg(i) = avg(i)/numIter;
     end
     
-    avgFilename = writeSpectrumToFile(pixels, x, ...
-    avg, avgStem, 0);
+    avgFilename = writeSpectrumToFile(pixels, x, avg, avgStem, 0);
 
     % Plot the average spectra of numIter acquisitions
     plotStatus = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
@@ -240,16 +238,10 @@ function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
     a = spectrum;
 end
 
-function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber)
+function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber,...
+    numPointsEachSide)
     % myData could be different things: dark, raw, spectrum, scaled
     % spectrum. 
-    
-    % TO DO: The missing piece is that if it is the scaled spectrum,
-    % the intensity and wavenumber of the value that was used to scale it,
-    % is not recorded
-    if (refWaveNumber ~= 0)
-        myData = myData/myData(refWaveNumber);
-    end
 
     size(x) % This is reported as 1x1024
     size(myData) % This is reported as 1x1
@@ -271,7 +263,10 @@ function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber)
     
     % append additional fields (so it can change over time 
     % without changing where data is in the file)
-    % laser power as fraction of full power
+    fprintf(fileID, '%g refWaveNumber\n', refWaveNumber);
+    fprintf(fileID, '%g numPointsEachSide\n', numPointsEachSide);
+    fprintf(fileID, '%g laser power as fraction of full power\n', ...
+        laserPowerFraction);
     
     % cleanup
     fclose(fileID);
@@ -341,4 +336,31 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
         %ylim([yMin yMax]);
     end
     c=1;
+end
+
+function d = getDenominator()
+    % use the closestRef as the x-value of the center point of the peak
+    % sum the points from x=(closestRef - numPointsIntegrated) to 
+    % x=(closestRef + numPointsIntegrated) and then divide by number of
+    % points to average and scale it.
+    
+    % check that numPointsIntegrated is in range
+    lowEnd = app.closestRef - numPointsEachSide;
+    if (lowEnd < 1) 
+        fprintf('low end of number of points integrated is out of range');
+    end
+    highEnd = app.closestRef + numPointsEachSide;
+    if (highend > numPoints)
+        fprintf('high end of number of points integrated is out of range');
+    end
+    
+    sum = 0;
+    startIndex = closestRef - numPointsEachSide;
+    numPointsToIntegrate = 1 + (2 * numPointsEachSide);
+    for i = 1:numPointsToIntegrate
+        sum = sum + spectrum(startIndex);
+        startIndex = startIndex + 1;
+    end
+    denominator = sum/numPointsToIntegrate;
+    d = denominator;
 end
