@@ -158,7 +158,7 @@ end
 
 if (myAns1 ~= 4)
     % done with dark, ready for sample
-    prompt = '\nEnter 1 when sample in place> ';
+    prompt = '\nEnter 1 when laser is on> ';
     myAns2 = input(prompt);
     if (myAns2 == 1)
         fprintf('Continuing on... Dark will be subtracted from each spectrum');
@@ -179,13 +179,13 @@ if (myAns1 ~= 4)
             avg(i) = avg(i) + spectrumData(i);
         end
         % handle division by zero outside of writeSpectrum
-        if (closestRef ~= 0) 
+        %if (closestRef ~= 0) 
             spectrumFilename = writeSpectrumToFile(pixels, x, ...
                 spectrumData, dataStem, closestRef);
         %else I DONT THINK I NEED THIS. CLOSESTREF IS ZERO BY DEFAULT
         %    spectrumFilename = writeSpectrumToFile(pixels, x, ...
         %        spectrumData, dataStem, 0);
-        end
+        %end
         if (firstTime == false)
             for i = 1:pixels
                 difference(i) = spectrumData(i) - lastSpectrumData(i);
@@ -216,7 +216,7 @@ if (myAns1 ~= 4)
     end
     
     avgFilename = writeSpectrumToFile(pixels, x, ...
-    avg, svgStem, 0);
+    avg, avgStem, 0);
 
     % Plot the average spectra of numIter acquisitions
     plotStatus = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
