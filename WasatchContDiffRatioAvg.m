@@ -47,6 +47,9 @@ numPointsEachSide = 0; % number of points used on either side of
 % reference wavenumber to integrate for the denominator of normalized
 % spectrum
 laserPowerFraction = 0.333;
+denominator = 0;
+closestRef = 0;
+refWaveNumber = 0;
 
 % load the DLL
 % 32 bit dll: NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
@@ -103,6 +106,8 @@ if (refWaveNumber ~= 0)
         %fprintf("%d %g %g \n", i, wavenumbers(i), spectrumData(i)); 
         % use notepad++ to see this is 1 value per line for 1024 lines
     end 
+    prompt = '\nEnter number of points on each side of reference to integrate> ';
+    numPointsEachSide = input(prompt);
 end
 
 %size(wavenumbers); % This is misleading b/c it is 1x1
@@ -114,7 +119,7 @@ prompt = '\nEnter 0 to proceed without dark, 1 to take dark now, 2 to read dark 
 myAns1 = input(prompt);
 
 if ((myAns1 == 1) || (myAns1 == 4))
-    prompt = '\nEnter 1 when ready> ';
+    prompt = '\nEnter 1 when ready to take dark> ';
     myAns2 = input(prompt);
     if (myAns2 == 1)
         fprintf("1. Taking dark...");
@@ -126,7 +131,10 @@ if ((myAns1 == 1) || (myAns1 == 4))
         %    fprintf('darkData(%d)=%d\n', i, darkData(i));
         %end
         
-        darkFilename = writeSpectrumToFile(pixels, x, darkData, darkStem, 0);
+        % Note that where dark is subtracted, it isn't being
+        % subtracted from the normalized signal, only the raw signal
+        darkFilename = writeSpectrumToFile(pixels, x, darkData, darkStem,...
+            0, 0, 0, 0, 0);
     end
 else 
     if (myAns1 == 0)
@@ -173,7 +181,9 @@ if (myAns1 ~= 4)
     for j = 1:numIter
         fprintf("\n2. Taking spectrum...");
         rawData = takeSpectrum(numPoints, spectrometer, integrationTimeMS);
-        rawFilename = writeSpectrumToFile(pixels, x, rawData, rawStem, 0);
+        rawFilename = writeSpectrumToFile(pixels, x, rawData, rawStem, ...
+            refWaveNumber, closestRef, numPointsEachSide, denominator, ...
+            laserPowerFraction);
         %pause(59.9); %regular continuous mode for 100 ms integration
         pause(10); % for 15 second acquisition interval with 5 second integration
         
@@ -183,8 +193,17 @@ if (myAns1 ~= 4)
             spectrumData(i) = rawData(i) - darkData(i);
             avg(i) = avg(i) + spectrumData(i);
         end
+        
+        % new: call getDenominator here
+        denominator = getDenominator(closestRef, numPointsEachSide, ...
+            numPoints, spectrumData);
+        
+        % IMPORTANT: write the unnormalized data and the denom to file,
+        % not the normalized data. Okay, it doesn't have to be this way,
+        % just a decision.
         spectrumFilename = writeSpectrumToFile(pixels, x, ...
-            spectrumData, dataStem, closestRef, numPointsEachSide);
+            spectrumData, dataStem,  refWaveNumber, closestRef, ...
+            numPointsEachSide, denominator, laserPowerFraction);
         if (firstTime == false)
             for i = 1:pixels
                 difference(i) = spectrumData(i) - lastSpectrumData(i);
@@ -196,7 +215,7 @@ if (myAns1 ~= 4)
         % plot this iteration
         plotStatus = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
             wavelengths, x, darkData, rawData, spectrumData, ...
-            difference, spectrumFilename, closestRef);
+            difference, spectrumFilename, denominator);
         
         % prepare for next iteration
         for i = 1:pixels
@@ -214,12 +233,14 @@ if (myAns1 ~= 4)
         avg(i) = avg(i)/numIter;
     end
     
-    avgFilename = writeSpectrumToFile(pixels, x, avg, avgStem, 0);
+    avgFilename = writeSpectrumToFile(pixels, x, avg, avgStem, ...
+        refWaveNumber, closestRef, numPointsEachSide, denominator, ...
+        laserPowerFraction);
 
     % Plot the average spectra of numIter acquisitions
     plotStatus = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
         wavelengths, x, darkData, rawData, avg, ...
-        difference, avgFilename, closestRef);
+        difference, avgFilename, denominator);
 end
 
 function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
@@ -239,7 +260,7 @@ function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
 end
 
 function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber,...
-    numPointsEachSide)
+    closestRef, numPointsEachSide, denominator, laserPowerFraction)
     % myData could be different things: dark, raw, spectrum, scaled
     % spectrum. 
 
@@ -264,7 +285,9 @@ function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber,...
     % append additional fields (so it can change over time 
     % without changing where data is in the file)
     fprintf(fileID, '%g refWaveNumber\n', refWaveNumber);
+    fprintf(fileID, '%g closestRef\n', closestRef);
     fprintf(fileID, '%g numPointsEachSide\n', numPointsEachSide);
+    fprintf(fileID, '%g denominator\n', denominator);
     fprintf(fileID, '%g laser power as fraction of full power\n', ...
         laserPowerFraction);
     
@@ -275,7 +298,7 @@ end
 
 function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     wavelengths, wavenumbers, dark, rawSpectrum, spectrum, difference, ...
-    specFilename, closestRef)
+    specFilename, denominator)
 % local function to graph the spectrum
     title(specFilename); % put filename of spectrum on the plot for traceability
     figure
@@ -322,13 +345,13 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     %    %ylim([yMin yMax]);
     %end
     
-    if (closestRef ~= 0)
-    % if not firstTime, plot the difference
+    if (denominator ~= 0)
+    % Plot the normalized data
         subplot(2,2,4)
-        %plot(wavelengths, spectrum/spectrum(closestRef), 'red');
-        plot(wavenumbers, spectrum/spectrum(closestRef), 'red');
-        myTitle = sprintf('Ratiometric: as fraction of %g at %4.0f', ...
-            spectrum(closestRef), wavenumbers(closestRef));
+        %plot(wavelengths, spectrum/denominator, 'red');
+        plot(wavenumbers, spectrum/denominator, 'red');
+        myTitle = sprintf('Ratio: spectrum over %g', ...
+            denominator);
         title(myTitle);
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)/Arbitrary Units (A.U.)'); % y-axis label
@@ -338,29 +361,35 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     c=1;
 end
 
-function d = getDenominator()
+function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     % use the closestRef as the x-value of the center point of the peak
     % sum the points from x=(closestRef - numPointsIntegrated) to 
     % x=(closestRef + numPointsIntegrated) and then divide by number of
     % points to average and scale it.
     
+    fprintf('getDenominator\n');
+    
     % check that numPointsIntegrated is in range
-    lowEnd = app.closestRef - numPointsEachSide;
+    lowEnd = closestRef - numPointsEachSide;
     if (lowEnd < 1) 
         fprintf('low end of number of points integrated is out of range');
     end
-    highEnd = app.closestRef + numPointsEachSide;
-    if (highend > numPoints)
+    highEnd = closestRef + numPointsEachSide;
+    if (highEnd > numPoints)
         fprintf('high end of number of points integrated is out of range');
     end
     
     sum = 0;
+    fprintf('closestRef: %d, numPointsEachSide: %d\n', closestRef, ...
+        numPointsEachSide);
     startIndex = closestRef - numPointsEachSide;
     numPointsToIntegrate = 1 + (2 * numPointsEachSide);
-    for i = 1:numPointsToIntegrate
+    for i = 1 : numPointsToIntegrate
         sum = sum + spectrum(startIndex);
+        fprintf('index: %d, spectrum: %g\n', startIndex, spectrum(startIndex));
         startIndex = startIndex + 1;
     end
     denominator = sum/numPointsToIntegrate;
+    fprintf('denominator: %g\n', denominator);
     d = denominator;
 end
