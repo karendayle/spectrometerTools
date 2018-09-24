@@ -319,19 +319,12 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     wavelengths, wavenumbers, dark, rawSpectrum, spectrum, difference, ...
     specFilename, denominator)
 % local function to graph the spectrum
-    title(specFilename); % put filename of spectrum on the plot for traceability
     figure
     subplot(2,2,1)
-    %plot(wavelengths, spectrum, 'blue', wavelengths, difference, 'red');
-    %plot(wavenumbers, spectrum, 'blue', wavenumbers, difference, 'red');
     plot(wavenumbers, rawSpectrum, 'green');
     title('Raw');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('Arbitrary Units (A.U.)'); % y-axis label
-    %legend('blue = intensity','red = difference','Location','northoutside');
-    %legend('green = raw intensity','Location','northoutside');
-    %xlim([xMin xMax]);
-    %ylim([yMin yMax]);
+    ylabel('Arbitrary Units (A.U.)'); % y-axis label;
     
     subplot(2,2,2)
     %plot(wavelengths, dark, 'black');
@@ -339,9 +332,6 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     title('Dark');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('Arbitrary Units (A.U.)'); % y-axis label
-    %legend('black = intensity of dark','Location','northoutside');
-    %xlim([xMin xMax]);
-    %ylim([yMin yMax]);
     
     subplot(2,2,3)
     %plot(wavelengths, spectrum, 'blue');
@@ -349,43 +339,26 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     title('Raw - Dark');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('Arbitrary Units (A.U.)'); % y-axis label
-    %xlim([xMin xMax]);
-    %ylim([yMin yMax]);
     
     %if (firstTime == false)
     % if not firstTime, do the plot the difference
     %    subplot(2,2,4)
-    %    %plot(wavelengths, difference, 'red');
     %    plot(wavenumbers, difference, 'red');
     %    title('Difference to previous');
     %    xlabel('Wavenumber (cm^-1)'); % x-axis label
     %    ylabel('Arbitrary Units (A.U.)'); % y-axis label
-    %    %xlim([xMin xMax]);
-    %    %ylim([yMin yMax]);
     %end
     
     if (denominator(1) ~= 0)
     % Plot the normalized data
         subplot(2,2,4)
-        %plot(wavelengths, spectrum/denominator, 'red');
-        %plot(wavenumbers, spectrum/denominator(1), 'red', ...
-        %    wavenumbers, spectrum/denominator(2), 'blue', ...
-        %    wavenumbers, spectrum/denominator(3), 'black', ...
-        %    wavenumbers, spectrum/denominator(4), 'green', ...
-        %    wavenumbers, spectrum/denominator(5), 'magenta', ...
-        %    wavenumbers, spectrum/denominator(6), 'cyan');
-        %myTitle = sprintf('Ratiometric with denominator based on different #points');
-        %title(myTitle);
         plot(wavenumbers, spectrum/denominator(3), 'black');
         title('Ratiometric with denominator based on 5 points');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('(A.U.)/(A.U.)'); % y-axis label
-        %xlim([xMin xMax]);
-        %ylim([yMin yMax]);
-        %legend('1 point','3 points','5 points','7 points','9 points', ...
-        %    '11 points');
     end
     
+    % Additional plots, could be commented out
     figure
     myTitle = sprintf('Denominator = fn(different #points)');
     title(myTitle);
