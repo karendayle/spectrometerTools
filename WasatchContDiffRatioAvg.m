@@ -43,14 +43,14 @@ rawStem = '../../Data/rawSpectrum-%s.txt';
 dataStem = '../../Data/spectrum-%s.txt';
 avgStem = '../../Data/avg-%s.txt';
 numIter = 5; % number of spectra to average 
-numPointsEachSide = 0; % number of points used on either side of
+%numPointsEachSide = 0; % number of points used on either side of
 % reference wavenumber to integrate for the denominator of normalized
 % spectrum
 laserPowerFraction = 0.333;
-denominator = 0;
 closestRef = 0;
 refWaveNumber = 0;
-
+denominator = zeros(1, 6, 'double'); % calculate denominators based on an
+                                     % increasing number of points
 % load the DLL
 % 32 bit dll: NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
 % 64 bit dll: 
@@ -106,8 +106,8 @@ if (refWaveNumber ~= 0)
         %fprintf("%d %g %g \n", i, wavenumbers(i), spectrumData(i)); 
         % use notepad++ to see this is 1 value per line for 1024 lines
     end 
-    prompt = '\nEnter number of points on each side of reference to integrate> ';
-    numPointsEachSide = input(prompt);
+    %prompt = '\nEnter number of points on each side of reference to integrate> ';
+    %numPointsEachSide = input(prompt);
 end
 
 %size(wavenumbers); % This is misleading b/c it is 1x1
@@ -134,7 +134,7 @@ if ((myAns1 == 1) || (myAns1 == 4))
         % Note that where dark is subtracted, it isn't being
         % subtracted from the normalized signal, only the raw signal
         darkFilename = writeSpectrumToFile(pixels, x, darkData, darkStem,...
-            0, 0, 0, 0, 0);
+            0, 0, zeros(1, 6, 'double'), 0);
     end
 else 
     if (myAns1 == 0)
@@ -182,7 +182,7 @@ if (myAns1 ~= 4)
         fprintf("\n2. Taking spectrum...");
         rawData = takeSpectrum(numPoints, spectrometer, integrationTimeMS);
         rawFilename = writeSpectrumToFile(pixels, x, rawData, rawStem, ...
-            refWaveNumber, closestRef, numPointsEachSide, denominator, ...
+            refWaveNumber, closestRef, zeros(1,6,'double'), ...
             laserPowerFraction);
         %pause(59.9); %regular continuous mode for 100 ms integration
         pause(10); % for 15 second acquisition interval with 5 second integration
@@ -194,16 +194,23 @@ if (myAns1 ~= 4)
             avg(i) = avg(i) + spectrumData(i);
         end
         
-        % new: call getDenominator here
-        denominator = getDenominator(closestRef, numPointsEachSide, ...
-            numPoints, spectrumData);
+        % new: call getDenominator here.
+        % Calculate the denominator using a window of 0 - 5 points
+        % on either side of refWaveNumber. This maps to: 1 - 11 total
+        % intensities used to calculate the denominator.
+        for i = 1:6
+            numPointsEachSide = i - 1;
+            denominator(i) = getDenominator(closestRef, ...
+                numPointsEachSide, ...
+                numPoints, spectrumData);
+        end
         
         % IMPORTANT: write the unnormalized data and the denom to file,
         % not the normalized data. Okay, it doesn't have to be this way,
         % just a decision.
         spectrumFilename = writeSpectrumToFile(pixels, x, ...
             spectrumData, dataStem,  refWaveNumber, closestRef, ...
-            numPointsEachSide, denominator, laserPowerFraction);
+            denominator, laserPowerFraction);
         if (firstTime == false)
             for i = 1:pixels
                 difference(i) = spectrumData(i) - lastSpectrumData(i);
@@ -229,12 +236,21 @@ if (myAns1 ~= 4)
     end
     
     % Average the numIter acquisitions
-    for i=1:numIter
+    for i=1:pixels % BUG FIX: 9/24: this was numIter, and so explains
+                   % why the first 5 points were smaller magnitude
         avg(i) = avg(i)/numIter;
     end
     
+    % Calculate the denominator for the average
+    % NEW 9/24: instead of just writing the denom of the last spectrum
+    for i = 1:6
+        numPointsEachSide = i - 1;
+        denominator(i) = getDenominator(closestRef, ...
+            numPointsEachSide, numPoints, avg);
+    end
+    
     avgFilename = writeSpectrumToFile(pixels, x, avg, avgStem, ...
-        refWaveNumber, closestRef, numPointsEachSide, denominator, ...
+        refWaveNumber, closestRef, denominator, ...
         laserPowerFraction);
 
     % Plot the average spectra of numIter acquisitions
@@ -260,12 +276,13 @@ function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
 end
 
 function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber,...
-    closestRef, numPointsEachSide, denominator, laserPowerFraction)
+    closestRef, denominator, laserPowerFraction)
     % myData could be different things: dark, raw, spectrum, scaled
     % spectrum. 
 
-    size(x) % This is reported as 1x1024
-    size(myData) % This is reported as 1x1
+    %size(x) % This is reported as 1x1024
+    %size(myData) % This is reported as 1x1
+    %size(denominator)
     
     % create a data file from the current date and time
     filename = sprintf(stem, datestr(now,'yyyy-mm-dd-HH-MM-SS'));
@@ -286,8 +303,10 @@ function b = writeSpectrumToFile(pixels, x, myData, stem, refWaveNumber,...
     % without changing where data is in the file)
     fprintf(fileID, '%g refWaveNumber\n', refWaveNumber);
     fprintf(fileID, '%g closestRef\n', closestRef);
-    fprintf(fileID, '%g numPointsEachSide\n', numPointsEachSide);
-    fprintf(fileID, '%g denominator\n', denominator);
+    %fprintf(fileID, '%g numPointsEachSide\n', numPointsEachSide);
+    fprintf(fileID, '%g %g %g %g %g %g denominators\n', ...
+        denominator(1), denominator(2), denominator(3), ...
+        denominator(4), denominator(5), denominator(6));
     fprintf(fileID, '%g laser power as fraction of full power\n', ...
         laserPowerFraction);
     
@@ -345,19 +364,74 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     %    %ylim([yMin yMax]);
     %end
     
-    if (denominator ~= 0)
+    if (denominator(1) ~= 0)
     % Plot the normalized data
         subplot(2,2,4)
         %plot(wavelengths, spectrum/denominator, 'red');
-        plot(wavenumbers, spectrum/denominator, 'red');
-        myTitle = sprintf('Ratio: spectrum over %g', ...
-            denominator);
+        plot(wavenumbers, spectrum/denominator(1), 'red', ...
+            wavenumbers, spectrum/denominator(2), 'blue', ...
+            wavenumbers, spectrum/denominator(3), 'black', ...
+            wavenumbers, spectrum/denominator(4), 'green', ...
+            wavenumbers, spectrum/denominator(5), 'magenta', ...
+            wavenumbers, spectrum/denominator(6), 'cyan');
+        myTitle = sprintf('Ratiometric with denominator based on different #points');
         title(myTitle);
         xlabel('Wavenumber (cm^-1)'); % x-axis label
-        ylabel('Arbitrary Units (A.U.)/Arbitrary Units (A.U.)'); % y-axis label
+        ylabel('(A.U.)/(A.U.)'); % y-axis label
         %xlim([xMin xMax]);
         %ylim([yMin yMax]);
+        legend('1 point','3 points','5 points','7 points','9 points', ...
+            '11 points');
     end
+    
+    figure
+    myTitle = sprintf('Ratiometric with denominator based on different #points');
+    title(myTitle);
+    subplot(2,2,1)
+    plot(wavenumbers, spectrum/denominator(1), 'red');
+    xlabel('Wavenumber (cm^-1)'); % x-axis label
+    ylabel('(A.U.)/(A.U.)'); % y-axis label
+    myLegend = sprintf('denom %g from 1 point under curve', denominator(1));
+    legend(myLegend);
+    
+    subplot(2,2,2)
+    plot(wavenumbers, spectrum/denominator(2), 'blue');
+    xlabel('Wavenumber (cm^-1)'); % x-axis label
+    ylabel('(A.U.)/(A.U.)'); % y-axis label
+    myLegend = sprintf('denom %g from 3 points under curve', denominator(2));
+    legend(myLegend);
+    
+    subplot(2,2,3)
+    plot(wavenumbers, spectrum/denominator(3), 'black');
+    xlabel('Wavenumber (cm^-1)'); % x-axis label
+    ylabel('(A.U.)/(A.U.)'); % y-axis labellegend('denom from 5 points under curve');
+    myLegend = sprintf('denom %g from 5 points under curve', denominator(3));
+    legend(myLegend);
+        
+    subplot(2,2,4)
+    plot(wavenumbers, spectrum/denominator(4), 'green');
+    xlabel('Wavenumber (cm^-1)'); % x-axis label
+    ylabel('(A.U.)/(A.U.)'); % y-axis labellegend('denom from 7 points under curve');
+    myLegend = sprintf('denom %g from 7 points under curve', denominator(4));
+    legend(myLegend);
+    
+    
+    figure
+    title('Ratiometric with denominator based on different #points');
+    subplot(2,2,1)
+    plot(wavenumbers, spectrum/denominator(5), 'magenta');
+    xlabel('Wavenumber (cm^-1)'); % x-axis label
+    ylabel('(A.U.)/(A.U.)'); % y-axis label
+    myLegend = sprintf('denom %g from 9 points under curve', denominator(5));
+    legend(myLegend);
+    
+    subplot(2,2,2)
+    plot(wavenumbers, spectrum/denominator(6), 'cyan');
+    xlabel('Wavenumber (cm^-1)'); % x-axis label
+    ylabel('(A.U.)/(A.U.)'); % y-axis label
+    myLegend = sprintf('denom %g from 11 points under curve', denominator(6));
+    legend(myLegend);
+    
     c=1;
 end
 
@@ -367,7 +441,8 @@ function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     % x=(closestRef + numPointsIntegrated) and then divide by number of
     % points to average and scale it.
     
-    fprintf('getDenominator\n');
+    fprintf('getDenominator with numPointsEachSide = %d\n', ...
+        numPointsEachSide);
     
     % check that numPointsIntegrated is in range
     lowEnd = closestRef - numPointsEachSide;
