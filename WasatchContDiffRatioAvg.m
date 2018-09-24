@@ -368,24 +368,26 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     % Plot the normalized data
         subplot(2,2,4)
         %plot(wavelengths, spectrum/denominator, 'red');
-        plot(wavenumbers, spectrum/denominator(1), 'red', ...
-            wavenumbers, spectrum/denominator(2), 'blue', ...
-            wavenumbers, spectrum/denominator(3), 'black', ...
-            wavenumbers, spectrum/denominator(4), 'green', ...
-            wavenumbers, spectrum/denominator(5), 'magenta', ...
-            wavenumbers, spectrum/denominator(6), 'cyan');
-        myTitle = sprintf('Ratiometric with denominator based on different #points');
-        title(myTitle);
+        %plot(wavenumbers, spectrum/denominator(1), 'red', ...
+        %    wavenumbers, spectrum/denominator(2), 'blue', ...
+        %    wavenumbers, spectrum/denominator(3), 'black', ...
+        %    wavenumbers, spectrum/denominator(4), 'green', ...
+        %    wavenumbers, spectrum/denominator(5), 'magenta', ...
+        %    wavenumbers, spectrum/denominator(6), 'cyan');
+        %myTitle = sprintf('Ratiometric with denominator based on different #points');
+        %title(myTitle);
+        plot(wavenumbers, spectrum/denominator(3), 'black');
+        title('Ratiometric with denominator based on 5 points');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('(A.U.)/(A.U.)'); % y-axis label
         %xlim([xMin xMax]);
         %ylim([yMin yMax]);
-        legend('1 point','3 points','5 points','7 points','9 points', ...
-            '11 points');
+        %legend('1 point','3 points','5 points','7 points','9 points', ...
+        %    '11 points');
     end
     
     figure
-    myTitle = sprintf('Ratiometric with denominator based on different #points');
+    myTitle = sprintf('Denominator = fn(different #points)');
     title(myTitle);
     subplot(2,2,1)
     plot(wavenumbers, spectrum/denominator(1), 'red');
@@ -417,7 +419,7 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     
     
     figure
-    title('Ratiometric with denominator based on different #points');
+    title('Denominator = fn(different #points)');
     subplot(2,2,1)
     plot(wavenumbers, spectrum/denominator(5), 'magenta');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
