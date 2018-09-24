@@ -320,92 +320,92 @@ function c = plotSpectrum(firstTime, xMin, xMax, yMin, yMax, ...
     specFilename, denominator)
 % local function to graph the spectrum
     figure
-    subplot(2,2,1)
+    subplot(2,3,1)
     plot(wavenumbers, rawSpectrum, 'green');
     title('Raw');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('Arbitrary Units (A.U.)'); % y-axis label;
     
-    subplot(2,2,2)
+    subplot(2,3,2)
     %plot(wavelengths, dark, 'black');
     plot(wavenumbers, dark, 'black');
     title('Dark');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('Arbitrary Units (A.U.)'); % y-axis label
     
-    subplot(2,2,3)
+    subplot(2,3,3)
     %plot(wavelengths, spectrum, 'blue');
     plot(wavenumbers, spectrum, 'blue');
     title('Raw - Dark');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('Arbitrary Units (A.U.)'); % y-axis label
     
-    %if (firstTime == false)
-    % if not firstTime, do the plot the difference
-    %    subplot(2,2,4)
-    %    plot(wavenumbers, difference, 'red');
-    %    title('Difference to previous');
-    %    xlabel('Wavenumber (cm^-1)'); % x-axis label
-    %    ylabel('Arbitrary Units (A.U.)'); % y-axis label
-    %end
-    
-    if (denominator(1) ~= 0)
+    if (denominator(3) ~= 0)
     % Plot the normalized data
-        subplot(2,2,4)
+        subplot(2,3,4)
         plot(wavenumbers, spectrum/denominator(3), 'black');
-        title('Ratiometric with denominator based on 5 points');
+        title('Ratiometric with N=5');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('(A.U.)/(A.U.)'); % y-axis label
     end
     
+    if (firstTime == false)
+    % if not firstTime, do the plot the difference
+        subplot(2,3,5)
+        plot(wavenumbers, difference, 'red');
+        title('Difference to previous');
+        xlabel('Wavenumber (cm^-1)'); % x-axis label
+        ylabel('Arbitrary Units (A.U.)'); % y-axis label
+    end
+    
     % Additional plots, could be commented out
     figure
-    myTitle = sprintf('Denominator = fn(different #points)');
+    myTitle = sprintf('Denominator = fn(N points)');
     title(myTitle);
-    subplot(2,2,1)
+    subplot(2,3,1)
     plot(wavenumbers, spectrum/denominator(1), 'red');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom %g from 1 point under curve', denominator(1));
+    myLegend = sprintf('denom=%g(1)', denominator(1));
     legend(myLegend);
     
-    subplot(2,2,2)
+    subplot(2,3,2)
     plot(wavenumbers, spectrum/denominator(2), 'blue');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom %g from 3 points under curve', denominator(2));
+    myLegend = sprintf('denom=%g(3)', denominator(2));
     legend(myLegend);
     
-    subplot(2,2,3)
+    subplot(2,3,3)
     plot(wavenumbers, spectrum/denominator(3), 'black');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis labellegend('denom from 5 points under curve');
-    myLegend = sprintf('denom %g from 5 points under curve', denominator(3));
+    ylabel('(A.U.)/(A.U.)'); % y-axis label
+    myLegend = sprintf('denom=%g(5)', denominator(3));
     legend(myLegend);
         
-    subplot(2,2,4)
+    subplot(2,3,4)
     plot(wavenumbers, spectrum/denominator(4), 'green');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis labellegend('denom from 7 points under curve');
-    myLegend = sprintf('denom %g from 7 points under curve', denominator(4));
+    ylabel('(A.U.)/(A.U.)'); % y-axis label
+    myLegend = sprintf('denom=%g(7)', denominator(4));
     legend(myLegend);
     
-    
-    figure
-    title('Denominator = fn(different #points)');
-    subplot(2,2,1)
+    subplot(2,3,5)
     plot(wavenumbers, spectrum/denominator(5), 'magenta');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom %g from 9 points under curve', denominator(5));
+    myLegend = sprintf('denom=%g(9)', denominator(5));
     legend(myLegend);
     
-    subplot(2,2,2)
+    subplot(2,3,6)
     plot(wavenumbers, spectrum/denominator(6), 'cyan');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom %g from 11 points under curve', denominator(6));
+    myLegend = sprintf('denom=%g(11)', denominator(6));
     legend(myLegend);
+    
+    %IDEA: instead of all these, could have 1 plot of 
+    % denom vs N
     
     c=1;
 end
