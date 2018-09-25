@@ -223,7 +223,7 @@ if (myAns1 ~= 4)
             % plot this iteration
             plotStatus = plotSpectrum(firstTime, ...
                 x, darkData, rawData, spectrumData, ...
-                difference, denominator, 0);
+                difference, denominator, 0, j);
 
             % prepare for next iteration
             for i = 1:pixels
@@ -261,7 +261,7 @@ if (myAns1 ~= 4)
         % Plot the average spectra of numIter acquisitions
         plotStatus = plotSpectrum(firstTime, ...
             x, darkData, rawData, avg, ...
-            differenceBetweenAverages, denominator, 1);
+            differenceBetweenAverages, denominator, 1, 0);
         
         % clear flag for all iterations > 1
         if (firstAverage == true)
@@ -330,14 +330,16 @@ end
 
 function c = plotSpectrum(firstTime, ...
     wavenumbers, dark, rawSpectrum, spectrum, difference, ...
-    denominator, isAveragedSpectrum)
+    denominator, isAveragedSpectrum, acq)
 % local function to graph the spectrum
-    figure
     if isAveragedSpectrum
-        title('Averaged from 5 integrations');
+        figure('Name','Averaged from 5 integrations');
+    else
+        myTitle=sprintf('Acquisition %d', acq);
+        figure('Name',myTitle);
     end
     
-    subplot(2,3,1)
+    subplot(2,4,1)
     %plot(wavelengths, spectrum, 'blue');
     plot(wavenumbers, spectrum, 'blue');
     title('Raw - Dark');
@@ -346,16 +348,27 @@ function c = plotSpectrum(firstTime, ...
     
     if (denominator(3) ~= 0)
     % Plot the normalized data
-        subplot(2,3,2)
-        plot(wavenumbers, spectrum/denominator(3), 'magenta');
+        normalized = spectrum/denominator(3);
+        subplot(2,4,2)
+        plot(wavenumbers, normalized, 'magenta');
         title('Ratiometric with N=5');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('(A.U.)/(A.U.)'); % y-axis label
+    else
+        normalized = spectrum;
     end
+    
+    [e f] = correctBaseline(normalized');
+    subplot(2,4,3)
+    plot(wavenumbers, e, 'cyan', wavenumbers, f, 'magenta');
+    title('Baseline Corrected');
+    xlabel('Wavenumber (cm^-1)'); % x-axis label
+    ylabel('(A.U.)/(A.U.)'); % y-axis label;   
+    legend('removed trend', 'result');
     
     if (firstTime == false)
     % if not firstTime, do the plot the difference
-        subplot(2,3,3)
+        subplot(2,4,4)
         plot(wavenumbers, difference, 'red');
         title('Difference to previous');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
@@ -363,73 +376,73 @@ function c = plotSpectrum(firstTime, ...
     end
     
     if ~isAveragedSpectrum 
-        subplot(2,3,4)
+        subplot(2,4,5)
         plot(wavenumbers, rawSpectrum, 'green');
         title('Raw');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label;
 
-        subplot(2,3,5)
+        subplot(2,4,6)
         %plot(wavelengths, dark, 'black');
         plot(wavenumbers, dark, 'black');
         title('Dark');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
+        
+        % plot of denom vs N
+        subplot(2,4,7)
+        plot([1 3 5 7 9 11], denominator);
+        title('Denominator = fn(N points)');
+        xlabel('Number of points'); % x-axis label
+        ylabel('Denominator for ratio (A.U.)'); % y-axis label
     end
     
     % Additional plots, could be commented out
-    figure
-    myTitle = sprintf('Denominator = fn(N points)');
-    title(myTitle);
-    subplot(2,3,1)
-    plot(wavenumbers, spectrum/denominator(1), 'red');
-    xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom=%g(1)', denominator(1));
-    legend(myLegend);
-    
-    subplot(2,3,2)
-    plot(wavenumbers, spectrum/denominator(2), 'blue');
-    xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom=%g(3)', denominator(2));
-    legend(myLegend);
-    
-    subplot(2,3,3)
-    plot(wavenumbers, spectrum/denominator(3), 'magenta');
-    xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom=%g(5)', denominator(3));
-    legend(myLegend);
+%     figure
+%     myTitle = sprintf('Denominator = fn(N points)');
+%     title(myTitle);
+%     subplot(2,3,1)
+%     plot(wavenumbers, spectrum/denominator(1), 'red');
+%     xlabel('Wavenumber (cm^-1)'); % x-axis label
+%     ylabel('(A.U.)/(A.U.)'); % y-axis label
+%     myLegend = sprintf('denom=%g(1)', denominator(1));
+%     legend(myLegend);
+%     
+%     subplot(2,3,2)
+%     plot(wavenumbers, spectrum/denominator(2), 'blue');
+%     xlabel('Wavenumber (cm^-1)'); % x-axis label
+%     ylabel('(A.U.)/(A.U.)'); % y-axis label
+%     myLegend = sprintf('denom=%g(3)', denominator(2));
+%     legend(myLegend);
+%     
+%     subplot(2,3,3)
+%     plot(wavenumbers, spectrum/denominator(3), 'magenta');
+%     xlabel('Wavenumber (cm^-1)'); % x-axis label
+%     ylabel('(A.U.)/(A.U.)'); % y-axis label
+%     myLegend = sprintf('denom=%g(5)', denominator(3));
+%     legend(myLegend);
+%         
+%     subplot(2,3,4)
+%     plot(wavenumbers, spectrum/denominator(4), 'green');
+%     xlabel('Wavenumber (cm^-1)'); % x-axis label
+%     ylabel('(A.U.)/(A.U.)'); % y-axis label
+%     myLegend = sprintf('denom=%g(7)', denominator(4));
+%     legend(myLegend);
+%     
+%     subplot(2,3,5)
+%     plot(wavenumbers, spectrum/denominator(5), 'black');
+%     xlabel('Wavenumber (cm^-1)'); % x-axis label
+%     ylabel('(A.U.)/(A.U.)'); % y-axis label
+%     myLegend = sprintf('denom=%g(9)', denominator(5));
+%     legend(myLegend);
+%     
+%     subplot(2,3,6)
+%     plot(wavenumbers, spectrum/denominator(6), 'cyan');
+%     xlabel('Wavenumber (cm^-1)'); % x-axis label
+%     ylabel('(A.U.)/(A.U.)'); % y-axis label
+%     myLegend = sprintf('denom=%g(11)', denominator(6));
+%     legend(myLegend);
         
-    subplot(2,3,4)
-    plot(wavenumbers, spectrum/denominator(4), 'green');
-    xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom=%g(7)', denominator(4));
-    legend(myLegend);
-    
-    subplot(2,3,5)
-    plot(wavenumbers, spectrum/denominator(5), 'black');
-    xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom=%g(9)', denominator(5));
-    legend(myLegend);
-    
-    subplot(2,3,6)
-    plot(wavenumbers, spectrum/denominator(6), 'cyan');
-    xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis label
-    myLegend = sprintf('denom=%g(11)', denominator(6));
-    legend(myLegend);
-    
-    % plot of denom vs N
-    figure
-    myTitle = sprintf('Denominator = fn(N points)');
-    plot([1 3 5 7 9 11], denominator);
-    xlabel('Number of points'); % x-axis label
-    ylabel('Denominator for ratio (A.U.)'); % y-axis label
-    
     c=1;
 end
 
@@ -465,4 +478,27 @@ function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     denominator = sum/numPointsToIntegrate;
     fprintf('denominator: %g\n', denominator);
     d = denominator;
+end
+
+function [e f] = correctBaseline(tics)
+    lambda=1e6; % smoothing parameter
+    p=0.001; % asymmetry parameter
+    d=2;
+    %prog.chroms=tics;
+    %prog.point=1;
+
+    % asym: Baseline estimation with asymmetric least squares using weighted
+    % smoothing with a finite difference penalty.
+    %   signals: signal, each column represents one signal
+    %   lambda: smoothing parameter (generally 1e5 to 1e8)
+    %   p: asymmetry parameter (generally 0.001)
+    %   d: order of differences in penalty (generally 2)
+    %prog.temp_tic=asysm(tics(1,:)',lambda,p,d);
+    %prog.temp_tic=asysm(tics,lambda,p,d);
+    temp_tic=asysm(tics,lambda,p,d);
+    %prog.temp_tic=prog.temp_tic';
+    trend=temp_tic';
+    modified=tics(:)-temp_tic(:);
+    e = trend;
+    f = modified;
 end
