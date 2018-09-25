@@ -254,14 +254,19 @@ if (myAns1 ~= 4)
         
         if (firstAverage == false)
             for i = 1:pixels
-                differenceBetweenAverages(i) = avg(i) - lastSpectrumData(i);
+                differenceBetweenAverages(i) = avg(i) - lastAvgData(i);
             end
         end
         
         % Plot the average spectra of numIter acquisitions
-        plotStatus = plotSpectrum(firstTime, ...
+        plotStatus = plotSpectrum(firstAverage, ...
             x, darkData, rawData, avg, ...
             differenceBetweenAverages, denominator, 1, 0);
+        
+        % prepare for next iteration
+        for i = 1:pixels
+            lastAvgData(i) = avg(i);
+        end
         
         % clear flag for all iterations > 1
         if (firstAverage == true)
@@ -360,7 +365,7 @@ function c = plotSpectrum(firstTime, ...
     
     [e f] = correctBaseline(normalized');
     subplot(2,4,3)
-    plot(wavenumbers, e, 'cyan', wavenumbers, f, 'magenta');
+    plot(wavenumbers, e, 'cyan', wavenumbers, f, 'yellow');
     title('Baseline Corrected');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('(A.U.)/(A.U.)'); % y-axis label;   
