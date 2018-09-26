@@ -182,7 +182,7 @@ if (myAns1 ~= 4)
         fprintf('Continuing on... Dark will be subtracted from each spectrum');
     end
 
-    while (1)
+    %while (1)
         % main acquisition loop. Average the spectra of numIter acquisitions
         for j = 1:numIter
             fprintf("\n2. Taking spectrum %d of %d...", j, numIter);
@@ -273,8 +273,8 @@ if (myAns1 ~= 4)
             firstAverage = false;
         end
         
-        pause(waitBetweenAverages);
-    end % while forever
+        %pause(waitBetweenAverages);
+    %end % while forever
 end
 
 function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
@@ -347,7 +347,11 @@ function c = plotSpectrum(firstTime, ...
     subplot(2,4,1)
     %plot(wavelengths, spectrum, 'blue');
     plot(wavenumbers, spectrum, 'blue');
-    title('Raw - Dark');
+    if isAveragedSpectrum
+        title('Average of 5 acquisitions');
+    else
+        title('Raw - Dark');
+    end
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('Arbitrary Units (A.U.)'); % y-axis label
     
