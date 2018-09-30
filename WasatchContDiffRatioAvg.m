@@ -180,101 +180,109 @@ if (myAns1 ~= 4)
     myAns2 = input(prompt);
     if (myAns2 == 1)
         fprintf('Continuing on... Dark will be subtracted from each spectrum');
-    end
 
-    %while (1)
-        % main acquisition loop. Average the spectra of numIter acquisitions
-        for j = 1:numIter
-            fprintf("\n2. Taking spectrum %d of %d...", j, numIter);
-            rawData = takeSpectrum(numPoints, spectrometer, integrationTimeMS);
-            rawFilename = writeSpectrumToFile(pixels, x, rawData, rawStem, ...
-                refWaveNumber, closestRef, zeros(1,6,'double'), ...
-                laserPowerFraction);
-            pause(1); % for 6 second acquisition interval with 5 second integration
+        while (1)
+            % main acquisition loop. Average the spectra of numIter acquisitions
+            for j = 1:numIter
+                fprintf("\n2. Taking spectrum %d of %d...", j, numIter);
+                rawData = takeSpectrum(numPoints, spectrometer, integrationTimeMS);
+                rawFilename = writeSpectrumToFile(pixels, x, rawData, rawStem, ...
+                    refWaveNumber, closestRef, zeros(1,6,'double'), ...
+                    laserPowerFraction);
+                pause(1); % for 6 second acquisition interval with 5 second integration
 
-            fprintf("3. Subtracting dark (can be all zeros if no dark given)...");
-            % instead of taking a spectrum, we are calculating it from previous
-            for i = 1:pixels
-                spectrumData(i) = rawData(i) - darkData(i);
-                avg(i) = avg(i) + spectrumData(i);
-            end
-
-            % Calculate the denominator using a window of 0 - 5 points
-            % on either side of refWaveNumber. This maps to: 1 - 11 total
-            % intensities used to calculate the denominator.
-            for i = 1:6
-                numPointsEachSide = i - 1;
-                denominator(i) = getDenominator(closestRef, ...
-                    numPointsEachSide, ...
-                    numPoints, spectrumData);
-            end
-
-            % Write the spectrum data, the array of
-            % denominators et al to file.
-            spectrumFilename = writeSpectrumToFile(pixels, x, ...
-                spectrumData, dataStem,  refWaveNumber, closestRef, ...
-                denominator, laserPowerFraction);
-            if (firstTime == false)
+                fprintf("3. Subtracting dark (can be all zeros if no dark given)...");
+                % instead of taking a spectrum, we are calculating it from previous
                 for i = 1:pixels
-                    difference(i) = spectrumData(i) - lastSpectrumData(i);
+                    spectrumData(i) = rawData(i) - darkData(i);
+                    avg(i) = avg(i) + spectrumData(i);
+                end
+
+                % Calculate the denominator using a window of 0 - 5 points
+                % on either side of refWaveNumber. This maps to: 1 - 11 total
+                % intensities used to calculate the denominator.
+                if (refWaveNumber ~= 0) 
+                    for i = 1:6
+                        numPointsEachSide = i - 1;
+                        denominator(i) = getDenominator(closestRef, ...
+                            numPointsEachSide, ...
+                            numPoints, spectrumData);
+                    end
+                end
+
+                % Write the spectrum data, the array of
+                % denominators et al to file.
+                spectrumFilename = writeSpectrumToFile(pixels, x, ...
+                    spectrumData, dataStem,  refWaveNumber, closestRef, ...
+                    denominator, laserPowerFraction);
+                if (firstTime == false)
+                    for i = 1:pixels
+                        difference(i) = spectrumData(i) - lastSpectrumData(i);
+                    end
+                end
+
+                % plot this iteration
+                plotStatus = plotSpectrum(firstTime, ...
+                    x, darkData, rawData, spectrumData, ...
+                    difference, denominator, 0, j);
+
+                % prepare for next iteration
+                for i = 1:pixels
+                    lastSpectrumData(i) = spectrumData(i);
+                end
+
+                % clear flag for all iterations > 1
+                if (firstTime == true)
+                    firstTime = false;
                 end
             end
 
-            % plot this iteration
-            plotStatus = plotSpectrum(firstTime, ...
-                x, darkData, rawData, spectrumData, ...
-                difference, denominator, 0, j);
+            % Average the numIter acquisitions
+            for i=1:pixels 
+                avg(i) = avg(i)/numIter;
+            end
+
+            if (refWaveNumber ~= 0) 
+            % Calculate the denominator for the average
+                for i = 1:6
+                    numPointsEachSide = i - 1;
+                    denominator(i) = getDenominator(closestRef, ...
+                        numPointsEachSide, numPoints, avg);
+                end
+            else
+                for i = 1:6
+                    denominator(i) = 1.0;
+                end
+            end
+
+            avgFilename = writeSpectrumToFile(pixels, x, avg, avgStem, ...
+                refWaveNumber, closestRef, denominator, ...
+                laserPowerFraction);
+
+            if (firstAverage == false)
+                for i = 1:pixels
+                    differenceBetweenAverages(i) = avg(i) - lastAvgData(i);
+                end
+            end
+
+            % Plot the average spectra of numIter acquisitions
+            plotStatus = plotSpectrum(firstAverage, ...
+                x, darkData, rawData, avg, ...
+                differenceBetweenAverages, denominator, 1, 0);
 
             % prepare for next iteration
             for i = 1:pixels
-                lastSpectrumData(i) = spectrumData(i);
+                lastAvgData(i) = avg(i);
             end
 
             % clear flag for all iterations > 1
-            if (firstTime == true)
-                firstTime = false;
+            if (firstAverage == true)
+                firstAverage = false;
             end
-        end
 
-        % Average the numIter acquisitions
-        for i=1:pixels 
-            avg(i) = avg(i)/numIter;
-        end
-
-        % Calculate the denominator for the average
-        for i = 1:6
-            numPointsEachSide = i - 1;
-            denominator(i) = getDenominator(closestRef, ...
-                numPointsEachSide, numPoints, avg);
-        end
-
-        avgFilename = writeSpectrumToFile(pixels, x, avg, avgStem, ...
-            refWaveNumber, closestRef, denominator, ...
-            laserPowerFraction);
-        
-        if (firstAverage == false)
-            for i = 1:pixels
-                differenceBetweenAverages(i) = avg(i) - lastAvgData(i);
-            end
-        end
-        
-        % Plot the average spectra of numIter acquisitions
-        plotStatus = plotSpectrum(firstAverage, ...
-            x, darkData, rawData, avg, ...
-            differenceBetweenAverages, denominator, 1, 0);
-        
-        % prepare for next iteration
-        for i = 1:pixels
-            lastAvgData(i) = avg(i);
-        end
-        
-        % clear flag for all iterations > 1
-        if (firstAverage == true)
-            firstAverage = false;
-        end
-        
-        %pause(waitBetweenAverages);
-    %end % while forever
+            pause(waitBetweenAverages);
+        end % while forever
+    end
 end
 
 function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
