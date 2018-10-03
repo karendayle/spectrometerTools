@@ -1,6 +1,16 @@
 % Plot files in different directories
 % Dayle Kotturi June 2018
 
+% Colors:
+
+blue =    [0.0000, 0.4470, 0.7410];
+rust =    [0.8500, 0.3250, 0.0980];
+gold =    [0.9290, 0.6940, 0.1250];
+purple =  [0.4940, 0.1840, 0.5560];
+green =   [0.4660, 0.6740, 0.1880];
+ciel =    [0.3010, 0.7450, 0.9330];
+cherry =  [0.6350, 0.0780, 0.1840];
+ 
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
