@@ -22,6 +22,15 @@
 % Prompt user for the wavenumber of the intensity to use as the
 % denominator.
 
+% Colors:
+blue =    [0.0000, 0.4470, 0.7410];
+rust =    [0.8500, 0.3250, 0.0980];
+gold =    [0.9290, 0.6940, 0.1250];
+purple =  [0.4940, 0.1840, 0.5560];
+green =   [0.4660, 0.6740, 0.1880];
+ciel =    [0.3010, 0.7450, 0.9330];
+cherry =  [0.6350, 0.0780, 0.1840];
+ 
 true = 1;
 false = 0;
 numPoints = 1024; % fixed. Based on physical char of spectrometer grating
@@ -53,8 +62,8 @@ closestRef = 0;
 refWaveNumber = 0;
 denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                                      % increasing number of points
-waitBetweenAverages = 54; % Acquire one averaged sample per minute
-
+%waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
+waitBetweenAverages = 595; % Acquire one averaged sample per 10 minutes
 % load the DLL
 % 32 bit dll: NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
 % 64 bit dll: 
@@ -221,10 +230,10 @@ if (myAns1 ~= 4)
                     end
                 end
 
-                % plot this iteration
-                plotStatus = plotSpectrum(firstTime, ...
-                    x, darkData, rawData, spectrumData, ...
-                    difference, denominator, 0, j);
+                % plot this iteration: Too many plots. Just plot averages
+                %plotStatus = plotSpectrum(firstTime, ...
+                %    x, darkData, rawData, spectrumData, ...
+                %    difference, denominator, 0, j);
 
                 % prepare for next iteration
                 for i = 1:pixels
@@ -377,7 +386,7 @@ function c = plotSpectrum(firstTime, ...
     
     [e f] = correctBaseline(normalized');
     subplot(2,4,3)
-    plot(wavenumbers, e, 'cyan', wavenumbers, f, 'yellow');
+    plot(wavenumbers, e, 'cyan', wavenumbers, f, 'green');
     title('Baseline Corrected');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('(A.U.)/(A.U.)'); % y-axis label;   
