@@ -14,7 +14,7 @@ cherry =  [0.6350, 0.0780, 0.1840];
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
-dirStem = "H:\Documents\Data\flow through\";
+dirStem = "H:\Documents\Data\Embedded hydrogel study\flow through PNIPAM\";
 %subDirStem1 = "pH4 dried 2";
 %subDirStem2 = "pH7 dried 2";
 %subDirStem3 = "pH10 dried 2";
@@ -24,17 +24,21 @@ dirStem = "H:\Documents\Data\flow through\";
 %subDirStem1 = "MES pH7 solution B";
 %subDirStem2 = "MES pH7 solution C";
 %subDirStem3 = "MES pH7 solution D";
-subDirStem1 = "flow through cont pH4 2X";
-subDirStem2 = "flow through cont pH7 2X 2";
-subDirStem3 = "flow through cont pH8.5 2X";
+subDirStem1 = "1 pH4 cont 4 hrs 24 meas 10 min separ";
+subDirStem2 = "2 pH4 cont check signal 1 meas";
+subDirStem3 = "3 pH4 cont 4.5 hrs 27 meas 10 min separ";
 %refWaveNumber = 1074.26; % at index 407 - read from file, same for all 3
-refIndex = 407; % index where the reference peak is 
+refIndex = 0; % index where the reference peak is 
                 %(ring breathing near 1078 cm^-1
+                % TO DO: read from avg*.txt file
 numPoints = 1024;
 thisdata1 = zeros(2, numPoints, 'double');
 thisdata2 = zeros(2, numPoints, 'double');
 thisdata3 = zeros(2, numPoints, 'double');
 offset = 400;
+denominator1 = 1;
+denominator2 = 1;
+denominator3 = 1;
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
@@ -66,14 +70,32 @@ for K = 1 : 3
           if (max(thisdata1(2,:)) > maxIntensity)
               maxIntensity = max(thisdata1(2,:));
           end
-          %thisdata1 = thisdata1';
           fclose(fileID);
+          
           %Ratiometric
-          denominator1 = thisdata1(2,refIndex);
+          % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+          % on either side of refWaveNumber. This maps to: 1 - 11 total
+          % intensities used to calculate the denominator.
+          if (refIndex ~= 0) 
+              numPointsEachSide = 2;
+              denominator1 = getDenominator(refIndex, ...
+              numPointsEachSide, ...
+              numPoints, thisdata1(2,:));
+          end
+          fprintf('denominator = %g at index: %d\n', denominator1, refIndex);
+          
+          % NEW 10/4/18: Normalize what is plotted
+          normalized = thisdata1(2,:)/denominator1;
+          % Returns trend as 'e' and baseline corrected signal as 'f'
+          [e, f] = correctBaseline(normalized');
+          
           % change to plot starting at index 400
-          plot(thisdata1(1,offset:end), thisdata1(2,offset:end)/denominator1, 'blue');
+          % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
+          % plot just the corrected signal
+          plot(thisdata1(1,offset:end), f(offset:end), 'blue');
           %legend(subDirStem1);
           hold on
+          pause(1);
       end
     else
         if (K == 2)
@@ -90,16 +112,36 @@ for K = 1 : 3
                 [thisdata2] = fscanf(fileID, '%g %g', [2 numPoints]);
                 fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
                     thisfilename, max(thisdata2(2,:)) );
-                if (max(thisdata2(2,:)) > maxIntensity)
+                if (max(thisdata2(2,:)) > maxIntensity) % maybe not needed
                     maxIntensity = max(thisdata2(2,:));
                 end
                 %thisdata2 = thisdata2';
                 fclose(fileID);
+                
                 %Ratiometric
-                denominator2 = thisdata2(2,refIndex); 
-                plot(thisdata2(1,offset:end), thisdata2(2,offset:end)/denominator2, 'green');
-                %legend(subDirStem2);
+                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+                % on either side of refWaveNumber. This maps to: 1 - 11 total
+                % intensities used to calculate the denominator.
+                if (refIndex ~= 0) 
+                    numPointsEachSide = 2;
+                    denominator2 = getDenominator(refIndex, ...
+                    numPointsEachSide, ...
+                    numPoints, thisdata2(2,:));
+                end
+                fprintf('denominator = %g at index: %d\n', denominator2, refIndex);
+          
+                % NEW 10/4/18: normalize what is plotted
+                normalized = thisdata2(2,:)/denominator2;
+                % Returns trend as 'e' and baseline corrected signal as 'f'
+                [e, f] = correctBaseline(normalized');
+          
+                % change to plot starting at index 400
+                % plot the trend: plot(thisdata2(1,offset:end), e(offset:end), 'cyan', thisdata2(1,offset:end), f(offset:end), 'blue');
+                % plot just the corrected signal
+                plot(thisdata2(1,offset:end), f(offset:end), 'green');
+                %legend(subDirStem1);
                 hold on
+                pause(1);
             end
         else
             if (K == 3)
@@ -121,11 +163,31 @@ for K = 1 : 3
                     end
                     %thisdata3 = thisdata3';
                     fclose(fileID);
+                    
                     %Ratiometric
-                    denominator3 = thisdata3(2,refIndex); % make this thisdata1 for 1 ref
-                    plot(thisdata3(1,offset:end), thisdata3(2,offset:end)/denominator3, 'magenta');
-                    %legend(subDirStem3);
+                    % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+                    % on either side of refWaveNumber. This maps to: 1 - 11 total
+                    % intensities used to calculate the denominator.
+                    if (refIndex ~= 0) 
+                        numPointsEachSide = 2;
+                        denominator3 = getDenominator(refIndex, ...
+                        numPointsEachSide, ...
+                        numPoints, thisdata3(2,:));
+                    end
+                    fprintf('denominator = %g at index: %d\n', denominator3, refIndex);
+          
+                    % NEW 10/4/18: normalize what is plotted
+                    normalized = thisdata3(2,:)/denominator3;
+                    % Returns trend as 'e' and baseline corrected signal as 'f'
+                    [e, f] = correctBaseline(normalized');
+          
+                    % change to plot starting at index 400
+                    % plot the trend: plot(thisdata3(1,offset:end), e(offset:end), 'cyan', thisdata3(1,offset:end), f(offset:end), 'blue');
+                    % plot just the corrected signal
+                    plot(thisdata3(1,offset:end), f(offset:end), 'magenta');
+                    %legend(subDirStem1);
                     hold on
+                    pause(1);
                 end
             end
         end
@@ -136,27 +198,27 @@ end
 % Since ratiometric, use 1.0 for maxIntensity
 maxIntensity = 1.0;
 
-% YHY peaks
-A0 = [1013 1013]; % x vector
-B0 = [0 maxIntensity];   % y vector
-A1 = [1078 1078]; % x vector
-B1 = [0 maxIntensity];   % y vector
-A2 = [1143 1143]; % x vector, pH sensitive
-B2 = [0 maxIntensity];   % y vector
-A3 = [1182, 1182];% x vector
-B3 = [0 maxIntensity];   % y vector
-A4 = [1430 1430]; % x vector, pH sensitive
-B4 = [0 maxIntensity];   % y vector
-A5 = [1481 1481]; % x vector
-B5 = [0 maxIntensity];   % y vector
-A6 = [1587 1587]; % x vector
-B6 = [0 maxIntensity];   % y vector
-A7 = [1702 1702]; % x vector, pH sensitive
-B7 = [0 maxIntensity];   % y vector
-
-plot(A0, B0, 'black', A1, B1, 'black', A2, B2, 'red', ...
-    A3, B3, 'black', A4, B4, 'red', A5, B5, 'black', A6, B6, 'black', ...
-    A7, B7, 'red');
+%% YHY peaks
+% A0 = [1013 1013]; % x vector
+% B0 = [0 maxIntensity];   % y vector
+% A1 = [1078 1078]; % x vector
+% B1 = [0 maxIntensity];   % y vector
+% A2 = [1143 1143]; % x vector, pH sensitive
+% B2 = [0 maxIntensity];   % y vector
+% A3 = [1182, 1182];% x vector
+% B3 = [0 maxIntensity];   % y vector
+% A4 = [1430 1430]; % x vector, pH sensitive
+% B4 = [0 maxIntensity];   % y vector
+% A5 = [1481 1481]; % x vector
+% B5 = [0 maxIntensity];   % y vector
+% A6 = [1587 1587]; % x vector
+% B6 = [0 maxIntensity];   % y vector
+% A7 = [1702 1702]; % x vector, pH sensitive
+% B7 = [0 maxIntensity];   % y vector
+% 
+% plot(A0, B0, 'black', A1, B1, 'black', A2, B2, 'red', ...
+%     A3, B3, 'black', A4, B4, 'red', A5, B5, 'black', A6, B6, 'black', ...
+%     A7, B7, 'red');
 hold off
 title('Ratiometric ' + subDirStem1 + ', ' + subDirStem2 + ' and ' + ...
     subDirStem3);
@@ -169,3 +231,60 @@ ylabel('Arbitrary Units (A.U.)/Intensity of ring-breathing at 1078 cm^-1'); % y-
 % Q: how to build up to a given number of spectra, say 10, and then drop
 % the oldest, i.e. erase. Is this best done by re-drawing plots 2-9 and
 % then the new 10th one instead of "erasing" plot 1?
+
+function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
+    % use the closestRef as the x-value of the center point of the peak
+    % sum the points from x=(closestRef - numPointsIntegrated) to 
+    % x=(closestRef + numPointsIntegrated) and then divide by number of
+    % points to average and scale it.
+    
+    fprintf('getDenominator with numPointsEachSide = %d\n', ...
+        numPointsEachSide);
+    
+    % check that numPointsIntegrated is in range
+    lowEnd = closestRef - numPointsEachSide;
+    if (lowEnd < 1) 
+        fprintf('low end of number of points integrated is out of range');
+    end
+    highEnd = closestRef + numPointsEachSide;
+    if (highEnd > numPoints)
+        fprintf('high end of number of points integrated is out of range');
+    end
+    
+    sum = 0;
+    fprintf('closestRef: %d, numPointsEachSide: %d\n', closestRef, ...
+        numPointsEachSide);
+    startIndex = closestRef - numPointsEachSide;
+    numPointsToIntegrate = 1 + (2 * numPointsEachSide);
+    for i = 1 : numPointsToIntegrate
+        sum = sum + spectrum(startIndex);
+        fprintf('index: %d, spectrum: %g\n', startIndex, spectrum(startIndex));
+        startIndex = startIndex + 1;
+    end
+    denominator = sum/numPointsToIntegrate;
+    fprintf('denominator: %g\n', denominator);
+    d = denominator;
+end
+
+function [e f] = correctBaseline(tics)
+    lambda=1e6; % smoothing parameter
+    p=0.001; % asymmetry parameter
+    d=2;
+    %prog.chroms=tics;
+    %prog.point=1;
+
+    % asym: Baseline estimation with asymmetric least squares using weighted
+    % smoothing with a finite difference penalty.
+    %   signals: signal, each column represents one signal
+    %   lambda: smoothing parameter (generally 1e5 to 1e8)
+    %   p: asymmetry parameter (generally 0.001)
+    %   d: order of differences in penalty (generally 2)
+    %prog.temp_tic=asysm(tics(1,:)',lambda,p,d);
+    %prog.temp_tic=asysm(tics,lambda,p,d);
+    temp_tic=asysm(tics,lambda,p,d);
+    %prog.temp_tic=prog.temp_tic';
+    trend=temp_tic';
+    modified=tics(:)-temp_tic(:);
+    e = trend;
+    f = modified';
+end
