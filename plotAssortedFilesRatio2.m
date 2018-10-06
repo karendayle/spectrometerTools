@@ -16,13 +16,16 @@ red =     [1.0, 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 dirStem = "H:\Documents\Data\Embedded hydrogel study\flow through PNIPAM\";
-subDirStem1 = "1 pH4 cont 4 hrs 24 meas 10 min separ";
-subDirStem2 = "2 pH4 cont check signal 1 meas";
-subDirStem3 = "3 pH4 cont 4.5 hrs 27 meas 10 min separ";
-subDirStem4 = "1 pH7 cont 4 28 meas 10 min separ";
-subDirStem5 = "2 pH7 cont 2.4 hrs 15 meas 10 min separ";
+subDirStem1 = "pH4 1 cont 4 hrs 24 meas 10 min separ";
+subDirStem2 = "pH4 2 cont check signal 1 meas";
+subDirStem3 = "pH4 3 cont 4.5 hrs 27 meas 10 min separ";
+subDirStem4 = "pH7 1 cont 4 28 meas 10 min separ";
+subDirStem5 = "pH7 2 cont 2.4 hrs 15 meas 10 min separ";
+subDirStem6 = "pH8.5 1 cont 3.5 hrs 20 meas 10 min separ";
+subDirStem7 = "pH8.5 2 cont 2.25 hrs 14 meas 10 min separ";
+
 %refWaveNumber = 1074.26; % at index 407 - read from file, same for all 3
-refIndex = 409; % index where the reference peak is 
+refIndex = 405; % index where the reference peak is 
                 %(ring breathing near 1078 cm^-1
                 % TO DO: read from avg*.txt file
 numPoints = 1024;
@@ -31,6 +34,8 @@ thisdata2 = zeros(2, numPoints, 'double');
 thisdata3 = zeros(2, numPoints, 'double');
 thisdata4 = zeros(2, numPoints, 'double');
 thisdata5 = zeros(2, numPoints, 'double');
+thisdata6 = zeros(2, numPoints, 'double');
+thisdata7 = zeros(2, numPoints, 'double');
 
 offset = 300;
 denominator1 = 1; % default. Used if refIndex is 0
@@ -38,6 +43,8 @@ denominator2 = 1; % default. Used if refIndex is 0
 denominator3 = 1; % default. Used if refIndex is 0
 denominator4 = 1; % default. Used if refIndex is 0
 denominator5 = 1; % default. Used if refIndex is 0
+denominator6 = 1; % default. Used if refIndex is 0
+denominator7 = 1; % default. Used if refIndex is 0
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
@@ -50,7 +57,7 @@ xlim([xMin xMax]);
 % initialize color
 lineColor = red;
 
-for K = 1 : 5
+for K = 1 : 7
     maxIntensity = 0; % set initial value
     if (K == 1)
       str_dir_to_search = dirStem + subDirStem1; % args need to be strings
@@ -324,6 +331,119 @@ for K = 1 : 5
                             newColor = lineColor - [0.005*I, 0., 0.];
                             if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
                                 lineColor = newColor;
+                            end
+                        end
+                    else
+                        if (K == 6)
+                            lineColor = blue;
+                            str_dir_to_search = dirStem + subDirStem6;
+                            dir_to_search = char(str_dir_to_search);
+                            txtpattern = fullfile(dir_to_search, 'avg*.txt');
+                            dinfo= dir(txtpattern);
+                            for (I = 1 : length(dinfo))
+                                thisfilename = fullfile(dir_to_search, dinfo(I).name); 
+                                % 09/29/2018 "load" no longer works when add'l fields
+                                % appended at end. Need to only read 1024 lines
+                                %thisdata2 = load(thisfilename); %load just this file
+                                fileID = fopen(thisfilename,'r');
+                                [thisdata6] = fscanf(fileID, '%g %g', [2 numPoints]);
+                                fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
+                                    thisfilename, max(thisdata6(2,:)) );
+                                if (max(thisdata6(2,:)) > maxIntensity)
+                                    maxIntensity = max(thisdata6(2,:));
+                                end
+                                %thisdata6 = thisdata6';
+                                fclose(fileID);
+
+                                % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
+                                % REFERENCE INDEX
+
+                                % 1. Correct the baseline BEFORE calculating denominator + normalizing
+                                % Returns trend as 'e' and baseline corrected signal as 'f'
+                                [e, f] = correctBaseline(thisdata6(2,:)');    
+
+                                % 2. Ratiometric
+                                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+                                % on either side of refWaveNumber. This maps to: 1 - 11 total
+                                % intensities used to calculate the denominator.
+                                if (refIndex ~= 0) 
+                                    numPointsEachSide = 2;
+                                    denominator6 = getDenominator(refIndex, ...
+                                    numPointsEachSide, ...
+                                    numPoints, f(:));
+                                end
+                                fprintf('denominator = %g at index: %d\n', denominator6, refIndex);
+
+                                % 3. NEW 10/4/18: Normalize what is plotted
+                                normalized = f/denominator6;
+
+                                % change to plot starting at index 400
+                                % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
+                                % plot just the corrected signal
+                                plot(thisdata6(1,offset:end), normalized(offset:end), 'Color', lineColor);
+                                %legend(subDirStem1);
+                                hold on
+                                pause(1);
+                                newColor = lineColor - [0.005*I, 0., 0.];
+                                if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
+                                    lineColor = newColor;
+                                end
+                            end
+                        else
+                            if (K == 7)
+                                str_dir_to_search = dirStem + subDirStem7;
+                                dir_to_search = char(str_dir_to_search);
+                                txtpattern = fullfile(dir_to_search, 'avg*.txt');
+                                dinfo= dir(txtpattern);
+                                for (I = 1 : length(dinfo))
+                                    thisfilename = fullfile(dir_to_search, dinfo(I).name); 
+                                    % 09/29/2018 "load" no longer works when add'l fields
+                                    % appended at end. Need to only read 1024 lines
+                                    %thisdata2 = load(thisfilename); %load just this file
+                                    fileID = fopen(thisfilename,'r');
+                                    [thisdata7] = fscanf(fileID, '%g %g', [2 numPoints]);
+                                    fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
+                                        thisfilename, max(thisdata7(2,:)) );
+                                    if (max(thisdata7(2,:)) > maxIntensity)
+                                        maxIntensity = max(thisdata7(2,:));
+                                    end
+                                    %thisdata7 = thisdata7';
+                                    fclose(fileID);
+
+                                    % 10/7/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
+                                    % REFERENCE INDEX
+
+                                    % 1. Correct the baseline BEFORE calculating denominator + normalizing
+                                    % Returns trend as 'e' and baseline corrected signal as 'f'
+                                    [e, f] = correctBaseline(thisdata7(2,:)');    
+
+                                    % 2. Ratiometric
+                                    % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+                                    % on either side of refWaveNumber. This maps to: 1 - 11 total
+                                    % intensities used to calculate the denominator.
+                                    if (refIndex ~= 0) 
+                                        numPointsEachSide = 2;
+                                        denominator7 = getDenominator(refIndex, ...
+                                        numPointsEachSide, ...
+                                        numPoints, f(:));
+                                    end
+                                    fprintf('denominator = %g at index: %d\n', denominator7, refIndex);
+
+                                    % 3. NEW 10/4/18: Normalize what is plotted
+                                    normalized = f/denominator7;
+
+                                    % change to plot starting at index 400
+                                    % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
+                                    % plot just the corrected signal
+                                    plot(thisdata7(1,offset:end), normalized(offset:end), 'Color', lineColor);
+                                    %legend(subDirStem1);
+                                    hold on
+                                    pause(1);
+                                    newColor = lineColor - [0.005*I, 0., 0.];
+                                    if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
+                                        lineColor = newColor;
+                                    end
+                                end
                             end
                         end
                     end
