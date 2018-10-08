@@ -49,15 +49,18 @@ denominator7 = 1; % default. Used if refIndex is 0
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
 figure 
-xMin = 1063;
-xMax = 1800;
-xlim([xMin xMax]);
+xMin = 900;
+xMax = 2000;
+%xlim([xMin xMax]); % needs to go after plot cmd
 %ylim([yMin yMax]);
 
 % initialize color
 lineColor = red;
 
-for K = 6 : 7
+for K = 1:7
+%for K = 1:3 % pH4
+%for K = 4:5 % pH7
+%for K = 6:7 % pH8.5
     maxIntensity = 0; % set initial value
     if (K == 1)
       str_dir_to_search = dirStem + subDirStem1; % args need to be strings
@@ -86,7 +89,7 @@ for K = 6 : 7
           
           % 1. Correct the baseline BEFORE calculating denominator + normalizing
           % Returns trend as 'e' and baseline corrected signal as 'f'
-          [e, f] = correctBaseline(thisdata1(2,:)');    
+          [e f] = correctBaseline(thisdata1(2,:)');    
           
           % 2. Ratiometric
           % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
@@ -104,10 +107,11 @@ for K = 6 : 7
           normalized = f/denominator1;
           
           % change to plot starting at index 400
-          % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
+          %plot the trend: 
+          %plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), normalized(offset:end), 'blue');
           % plot just the corrected signal
           plot(thisdata1(1,offset:end), normalized(offset:end), 'Color', lineColor);
-          %legend(subDirStem1);
+          xlim([xMin xMax]);
           hold on
           pause(1);
           newColor = lineColor - [0.005*I, 0., 0.];
@@ -162,7 +166,7 @@ for K = 6 : 7
                 % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
                 % plot just the corrected signal
                 plot(thisdata2(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                %legend(subDirStem1);
+                xlim([xMin xMax]);
                 hold on
                 pause(1);
                 newColor = lineColor - [0.005*I, 0., 0.];
@@ -270,7 +274,7 @@ for K = 6 : 7
                         % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
                         % plot just the corrected signal
                         plot(thisdata4(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                        %legend(subDirStem1);
+                        xlim([xMin xMax]);
                         hold on
                         pause(1);
                         newColor = lineColor - [0.005*I, 0., 0.];
@@ -325,7 +329,7 @@ for K = 6 : 7
                             % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
                             % plot just the corrected signal
                             plot(thisdata5(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                            %legend(subDirStem1);
+                            xlim([xMin xMax]);
                             hold on
                             pause(1);
                             newColor = lineColor - [0.005*I, 0., 0.];
@@ -381,7 +385,7 @@ for K = 6 : 7
                                 % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
                                 % plot just the corrected signal
                                 plot(thisdata6(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                                %legend(subDirStem1);
+                                xlim([xMin xMax]);
                                 hold on
                                 pause(1);
                                 newColor = lineColor - [0.005*I, 0., 0.];
@@ -436,7 +440,7 @@ for K = 6 : 7
                                     % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
                                     % plot just the corrected signal
                                     plot(thisdata7(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                                    %legend(subDirStem1);
+                                    xlim([xMin xMax]);
                                     hold on
                                     pause(1);
                                     newColor = lineColor - [0.005*I, 0., 0.];
@@ -452,12 +456,21 @@ for K = 6 : 7
         end
     end
 end
-%text(2050, 0, 'pH 4');
-%text(2010, 0, '_____', 'Color', red);
-%text(2050, 0.1, 'pH 7');
-%text(2010, 0.1, '_____', 'Color', green);
-text(2050, 0.2, 'pH 8.5');
-text(2010, 0.2, '_____', 'Color', blue);
+y = 1.3;
+text(1710, y, 'Laser Power = 0.375 Max');
+y = y - 0.1;
+text(1710, y, '5 second integration time per acq');
+y = y - 0.1;
+text(1710, y, 'Each spectra average of 5 acqs');
+y = y - 0.1;
+text(1750, y, 'pH 4');
+text(1710, y, '_____', 'Color', red);
+y = y - 0.1;
+text(1750, y, 'pH 7');
+text(1710, y, '_____', 'Color', green);
+y = y - 0.1;
+text(1750, y, 'pH 8.5');
+text(1710, y, '_____', 'Color', blue);
 
 % Since ratiometric, use 1.0 for maxIntensity
 maxIntensity = 1.0;
