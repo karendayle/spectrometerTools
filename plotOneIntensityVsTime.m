@@ -47,13 +47,6 @@ thisdata6 = zeros(2, numPoints, 'double');
 thisdata7 = zeros(2, numPoints, 'double');
 
 offset = 300;
-denominator1 = 1; % default. Used if refIndex is 0
-denominator2 = 1; % default. Used if refIndex is 0
-denominator3 = 1; % default. Used if refIndex is 0
-denominator4 = 1; % default. Used if refIndex is 0
-denominator5 = 1; % default. Used if refIndex is 0
-denominator6 = 1; % default. Used if refIndex is 0
-denominator7 = 1; % default. Used if refIndex is 0
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
@@ -63,6 +56,9 @@ xMax = 2000;
 
 % initialize color
 lineColor = red;
+
+% subtract this offset 
+tRef = datenum('2018-09-01 00:00:00', 'yyyy-MM-dd HH:mm:ss');
 
 for K = 1:1
 %for K = 1:3 % pH4
@@ -83,7 +79,6 @@ for K = 1:1
             thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
             
             % NEW 10/8/2018: extract time from filename
-            fprintf('thisfilename is %s\n', thisfilename);
             S = string(thisfilename); 
             newStr1 = extractAfter(S,"avg-");
             dateWithHyphens = extractBefore(newStr1,".txt");
@@ -131,10 +126,10 @@ for K = 1:1
             %DateNumber = datenum(DateString,formatIn,PivotYear)
             % Hmmm, pivot year doesn't seem to reduce magnitude 
             %t = datenum(dateTime, 'yyyy-MM-dd HH:mm:ss', 2018)
-            tRef = datenum('2018-09-01 00:00:00', 'yyyy-MM-dd HH:mm:ss');
             t(I) = datenum(dateTime, 'yyyy-MM-dd HH:mm:ss');
-            t(I) = t(I) - tRef;
+            t(I) = t(I);
             
+            fprintf('CHECK file %s has time %g\n', thisfilename, t(I));
             fileID = fopen(thisfilename,'r');
             [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
       
