@@ -5,9 +5,13 @@
 
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430 cm^-1 (act. 1428.58 cm^-1)
+x1 = 614;
 % Use the index 794 to get the intensity at 1702 cm^-1 (act. 1701.95 cm^-1)
-% Use the index 409 to get the intensity at the reference, 1078 cm^-1.
-% These indices could be modified slightly and compared.
+x2 = 794;
+% Use the index 409 to get the intensity at the reference peak, 1078 cm^-1,
+% ring breathing
+xRef = 409;
+% These indices could be modified slightly and results compared.
 
 % Dayle Kotturi October 2018
 
@@ -33,10 +37,6 @@ subDirStem4 = "pH7 1 cont 4 28 meas 10 min separ";
 subDirStem5 = "pH7 2 cont 2.4 hrs 15 meas 10 min separ";
 subDirStem6 = "pH8.5 1 cont 3.5 hrs 20 meas 10 min separ";
 subDirStem7 = "pH8.5 2 cont 2.25 hrs 14 meas 10 min separ";
-
-refIndex = 409; % index where the reference peak is 
-                %(ring breathing near 1078 cm^-1
-                % TO DO: read from avg*.txt file
 numPoints = 1024;
 thisdata1 = zeros(2, numPoints, 'double');
 thisdata2 = zeros(2, numPoints, 'double');
@@ -60,8 +60,6 @@ denominator7 = 1; % default. Used if refIndex is 0
 figure 
 xMin = 900;
 xMax = 2000;
-%xlim([xMin xMax]); % needs to go after plot cmd
-%ylim([yMin yMax]);
 
 % initialize color
 lineColor = red;
@@ -72,15 +70,16 @@ for K = 1:1
 %for K = 6:7 % pH8.5
 
     if (K == 1)
-      str_dir_to_search = dirStem + subDirStem1; % args need to be strings
-      % This function only in 2018b:
-      %dir_to_search = convertContainedStringsToChars(str_dir_to_search);
-      %How do I get it to char array for fullfile?
-      dir_to_search = char(str_dir_to_search);
-      txtpattern = fullfile(dir_to_search, 'avg*.txt');
-      dinfo = dir(txtpattern); 
+        str_dir_to_search = dirStem + subDirStem1; % args need to be strings
+        % This function only in 2018b:
+        %dir_to_search = convertContainedStringsToChars(str_dir_to_search);
+        %How do I get it to char array for fullfile?
+        dir_to_search = char(str_dir_to_search);
+        txtpattern = fullfile(dir_to_search, 'avg*.txt');
+        dinfo = dir(txtpattern); 
       
-      for I = 1 : length(dinfo)
+        for I = 1 : length(dinfo)
+            fprintf('I is %d\n', I);
             thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
             
             % NEW 10/8/2018: extract time from filename
@@ -88,56 +87,67 @@ for K = 1:1
             S = string(thisfilename); 
             newStr1 = extractAfter(S,"avg-");
             dateWithHyphens = extractBefore(newStr1,".txt");
-            t1 = datetime(dateWithHyphens,'Format','yyyy-MM-dd-hh-mm-ss');
-            %ALMOST: Unable to parse '2018-10-02-16-51-40' as a date/time using the format 'yyyy-MM-dd-hh-mm-ss'. 
             
-%           % 09/29/2018 "load" no longer works when add'l fields
-%           % appended at end. Need to only read 1024 lines
-%           %thisdata2 = load(thisfilename); %load just this file
-%           fileID = fopen(thisfilename,'r');
-%           [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
-%           % max is FYI, not used. Could be compared to a threshold to
-%           % detect that signal is bad.
-%           fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
-%               thisfilename, max(thisdata1(2,:)) );
-%           fclose(fileID);
-%           
-%           
-%           % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-%           % REFERENCE INDEX
-%           
-%           % 1. Correct the baseline BEFORE calculating denominator + normalizing
-%           % Returns trend as 'e' and baseline corrected signal as 'f'
-%           [e f] = correctBaseline(thisdata1(2,:)');    
-%           
-%           % 2. Ratiometric
-%           % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-%           % on either side of refWaveNumber. This maps to: 1 - 11 total
-%           % intensities used to calculate the denominator.
-%           if (refIndex ~= 0) 
-%               numPointsEachSide = 2;
-%               denominator1 = getDenominator(refIndex, ...
-%               numPointsEachSide, ...
-%               numPoints, f(:));
-%           end
-%           fprintf('denominator = %g at index: %d\n', denominator1, refIndex);
-%           
-%           % 3. NEW 10/4/18: Normalize what is plotted
-%           normalized = f/denominator1;
-%           
-%           % change to plot starting at index 400
-%           %plot the trend: 
-%           %plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), normalized(offset:end), 'blue');
-%           % plot just the corrected signal
-%           plot(thisdata1(1,offset:end), normalized(offset:end), 'Color', lineColor);
-%           xlim([xMin xMax]);
-%           hold on
-%           pause(1);
-%           newColor = lineColor - [0.005*I, 0., 0.];
-%           if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
-%               lineColor = newColor;
-%           end
-       end
+            % No, it would be too easy if this worked
+            %t1 = datetime(dateWithHyphens,'Format','yyyy-MM-dd-hh-mm-ss');
+            %ALMOST: Unable to parse '2018-10-02-16-51-40' as a date/time using the format 'yyyy-MM-dd-hh-mm-ss'. 
+            % On to the tedium...
+            [myYear, remain] = strtok(dateWithHyphens, '-');
+            [myMonth, remain] = strtok(remain, '-');
+            [myDay, remain] = strtok(remain, '-');
+            [myHour, remain] = strtok(remain, '-');
+            [myMinute, remain] = strtok(remain, '-');
+            [mySecond, remain] = strtok(remain, '-');
+            
+            % These are strings, need to make them numbers,
+            % by, sigh, first making them char arrays
+            % which wasn't by the way necessary with 2018a.
+            % sigh again.
+            myY = str2num(char(myYear));
+            myMo = str2num(char(myMonth));
+            myD = str2num(char(myDay));
+            myH = str2num(char(myHour));
+            myMi = str2num(char(myMinute));
+            myS = str2num(char(mySecond));
+            
+            % Create the dateTime variable
+            dateTime = char(strcat(myYear, '-', myMonth, '-', myDay, ...
+                {' '}, myHour, ':', myMinute, ':', mySecond));
+            % WTF! I made it their fmt and error msg is:
+            % Could not recognize the date/time format of '2018-10-02 16:51:40.000'.
+            % Ah, you have to tell it which format (of their allowed
+            % options). Okay, this works for "datetime" fn, but I need 
+            % 'datenum' to get seconds since epoch and it is NOT happy
+            % Question: can matlab plot dates directly? Maybe I don't need
+            % the integer values.
+            %t1 = datenum(dateTime, 'Format', 'yyyy-MM-dd HH:mm:ss.SSS')
+            %t1.TimeZone = 'America/Chicago';
+            
+            % datenum works to give you number of days 1/1/1900 OR from
+            % 1/1/yourChoiceOfYear.
+            % So I can get the days since 1/1/2018 and then just get the
+            % fraction of the day as HH/24 + mm/(24*60) + ss.SSS/(24*3600)
+            
+            %DateNumber = datenum(DateString,formatIn,PivotYear)
+            % Hmmm, pivot year doesn't seem to reduce magnitude 
+            %t = datenum(dateTime, 'yyyy-MM-dd HH:mm:ss', 2018)
+            tRef = datenum('2018-09-01 00:00:00', 'yyyy-MM-dd HH:mm:ss');
+            t(I) = datenum(dateTime, 'yyyy-MM-dd HH:mm:ss');
+            t(I) = t(I) - tRef;
+            
+            fileID = fopen(thisfilename,'r');
+            [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
+      
+            denominator = thisdata1(2, xRef);
+            y1(I) = thisdata1(2, x1)/denominator;
+            y2(I) = thisdata1(2, x2)/denominator;
+            fclose(fileID);
+        end
+        % Now have points for the 1430 plot at x,y1 and for the 
+        % 1702 plot at x,y2
+        plot(t,y1,'-o');
+        hold on;
+        plot(t,y2,'-o');
     else
         if (K == 2)
             str_dir_to_search = dirStem + subDirStem2;
