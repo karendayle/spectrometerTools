@@ -58,7 +58,22 @@ xMax = 2000;
 lineColor = red;
 
 % subtract this offset 
-tRef = datenum('2018-09-01 00:00:00', 'yyyy-MM-dd HH:mm:ss');
+myRefDate = '2018-10-01'
+tRef = datenum(myRefDate, 'yyyy-MM-dd'); % why does 2018-09-01 give same value?
+fprintf('CHECK date %s has time %10.4f\n', myRefDate, tRef);
+myRefDate = '2018-09-01'
+tRef = datenum(myRefDate, 'yyyy-MM-dd'); % why does 2018-09-01 give same value?
+fprintf('CHECK date %s has time %10.4f\n', myRefDate, tRef);
+% try another way
+myDateNum = datenum(2018, 09, 01, 10, 0, 0);
+fprintf('CHECK date 2018-09-01 10:00:00 has time %10.4f\n', myDateNum);
+myDateNum = datenum(2018, 10, 01, 10, 0, 0);
+fprintf('CHECK date 2018-09-01 10:00:00 has time %10.4f\n', myDateNum);
+%this latter way looks better. the time is in days and the two calls are 30
+%days apart: CHECK date 2018-09-01 10:00:00 has time 737304.4167
+%            CHECK date 2018-10-01 10:00:00 has time 737334.4167
+% So work with this approach for tRef and also further below
+tRef = datenum(2018, 10, 01, 0, 0, 0);
 
 for K = 1:1
 %for K = 1:3 % pH4
@@ -73,27 +88,20 @@ for K = 1:1
         dir_to_search = char(str_dir_to_search);
         txtpattern = fullfile(dir_to_search, 'avg*.txt');
         dinfo = dir(txtpattern); 
-      
         for I = 1 : length(dinfo)
-            fprintf('I is %d\n', I);
-            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-            
+            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name            
             % NEW 10/8/2018: extract time from filename
             S = string(thisfilename); 
             newStr1 = extractAfter(S,"avg-");
             dateWithHyphens = extractBefore(newStr1,".txt");
-            
             % No, it would be too easy if this worked
             %t1 = datetime(dateWithHyphens,'Format','yyyy-MM-dd-hh-mm-ss');
-            %ALMOST: Unable to parse '2018-10-02-16-51-40' as a date/time using the format 'yyyy-MM-dd-hh-mm-ss'. 
-            % On to the tedium...
             [myYear, remain] = strtok(dateWithHyphens, '-');
             [myMonth, remain] = strtok(remain, '-');
             [myDay, remain] = strtok(remain, '-');
             [myHour, remain] = strtok(remain, '-');
             [myMinute, remain] = strtok(remain, '-');
             [mySecond, remain] = strtok(remain, '-');
-            
             % These are strings, need to make them numbers,
             % by, sigh, first making them char arrays
             % which wasn't by the way necessary with 2018a.
@@ -104,374 +112,100 @@ for K = 1:1
             myH = str2num(char(myHour));
             myMi = str2num(char(myMinute));
             myS = str2num(char(mySecond));
-            
-            % Create the dateTime variable
-            dateTime = char(strcat(myYear, '-', myMonth, '-', myDay, ...
-                {' '}, myHour, ':', myMinute, ':', mySecond));
-            % WTF! I made it their fmt and error msg is:
-            % Could not recognize the date/time format of '2018-10-02 16:51:40.000'.
-            % Ah, you have to tell it which format (of their allowed
-            % options). Okay, this works for "datetime" fn, but I need 
-            % 'datenum' to get seconds since epoch and it is NOT happy
-            % Question: can matlab plot dates directly? Maybe I don't need
-            % the integer values.
-            %t1 = datenum(dateTime, 'Format', 'yyyy-MM-dd HH:mm:ss.SSS')
-            %t1.TimeZone = 'America/Chicago';
-            
-            % datenum works to give you number of days 1/1/1900 OR from
-            % 1/1/yourChoiceOfYear.
-            % So I can get the days since 1/1/2018 and then just get the
-            % fraction of the day as HH/24 + mm/(24*60) + ss.SSS/(24*3600)
-            
-            %DateNumber = datenum(DateString,formatIn,PivotYear)
-            % Hmmm, pivot year doesn't seem to reduce magnitude 
-            %t = datenum(dateTime, 'yyyy-MM-dd HH:mm:ss', 2018)
-            t(I) = datenum(dateTime, 'yyyy-MM-dd HH:mm:ss');
-            t(I) = t(I);
-            
-            fprintf('CHECK file %s has time %g\n', thisfilename, t(I));
+            % Create the dateTime variable. Hours, minutes, seconds are
+            % ignored so add them in after as fraction of a day
+            % This method doesn't work. See above at tRef setting
+            %dateTime = char(strcat(myYear, '-', myMonth, '-', myDay));
+            % Use tRef just to deal with smaller numbers
+            %t1 = datenum(dateTime, 'yyyy-MM-dd') - tRef;
+            %t(I) = t1 + ((myH + myMi/60 + myS/3600))/24;
+            % NEW 10/10/2018
+            t(I) = datenum(myY, myMo, myD, myH, myMi, myS) - tRef;
+            fprintf...
+                ('CHECK %d file %2d-%2d-%2d-%2d-%2d-%2d has time %10.4f\n',...
+                I, myY, myMo, myD, myH, myMi, myS, t(I));
             fileID = fopen(thisfilename,'r');
             [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
-      
             denominator = thisdata1(2, xRef);
             y1(I) = thisdata1(2, x1)/denominator;
             y2(I) = thisdata1(2, x2)/denominator;
             fclose(fileID);
         end
-        % Now have points for the 1430 plot at x,y1 and for the 
-        % 1702 plot at x,y2
-        plot(t,y1,'-o');
+        % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
+        plot(t,y1,'-o', 'Color', red);
         hold on;
-        plot(t,y2,'-o');
+        plot(t,y2,'-o', 'Color', blue);
+        hold on;
     else
         if (K == 2)
-            str_dir_to_search = dirStem + subDirStem2;
+            str_dir_to_search = dirStem + subDirStem2; % args need to be strings
+            % This function only in 2018b:
+            %dir_to_search = convertContainedStringsToChars(str_dir_to_search);
+            %How do I get it to char array for fullfile?
             dir_to_search = char(str_dir_to_search);
             txtpattern = fullfile(dir_to_search, 'avg*.txt');
-            dinfo = dir(txtpattern);
+            dinfo = dir(txtpattern); 
             for I = 1 : length(dinfo)
-                thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-                % 09/29/2018 "load" no longer works when add'l fields
-                % appended at end. Need to only read 1024 lines
-                %thisdata2 = load(thisfilename); %load just this file
+                fprintf('I is %d\n', I);
+                thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name            
+                % NEW 10/8/2018: extract time from filename
+                S = string(thisfilename); 
+                newStr1 = extractAfter(S,"avg-");
+                dateWithHyphens = extractBefore(newStr1,".txt");
+                % No, it would be too easy if this worked
+                %t1 = datetime(dateWithHyphens,'Format','yyyy-MM-dd-hh-mm-ss');
+                %ALMOST: Unable to parse '2018-10-02-16-51-40' as a date/time using the format 'yyyy-MM-dd-hh-mm-ss'. 
+                % On to the tedium...
+                [myYear, remain] = strtok(dateWithHyphens, '-');
+                [myMonth, remain] = strtok(remain, '-');
+                [myDay, remain] = strtok(remain, '-');
+                [myHour, remain] = strtok(remain, '-');
+                [myMinute, remain] = strtok(remain, '-');
+                [mySecond, remain] = strtok(remain, '-');
+                % These are strings, need to make them numbers,
+                % by, sigh, first making them char arrays
+                % which wasn't by the way necessary with 2018a.
+                % sigh again.
+                myY = str2num(char(myYear));
+                myMo = str2num(char(myMonth));
+                myD = str2num(char(myDay));
+                myH = str2num(char(myHour));
+                myMi = str2num(char(myMinute));
+                myS = str2num(char(mySecond));
+                % Create the dateTime variable. Hours, minutes, seconds are
+                % ignored so add them in after as fraction of a day
+                dateTime = char(strcat(myYear, '-', myMonth, '-', myDay));
+                % Use tRef just to deal with smaller numbers
+                t1 = datenum(dateTime, 'yyyy-MM-dd') - tRef;
+                t(I) = t1 + ((myH + myMi/60 + myS/3600))/24;
+                fprintf('CHECK file %s has time %10.4f vs %10.4f\n', thisfilename, t(I), t1);
                 fileID = fopen(thisfilename,'r');
                 [thisdata2] = fscanf(fileID, '%g %g', [2 numPoints]);
-                fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
-                    thisfilename, max(thisdata2(2,:)) );
-                if (max(thisdata2(2,:)) > maxIntensity) % maybe not needed
-                    maxIntensity = max(thisdata2(2,:));
-                end
-                %thisdata2 = thisdata2';
+                denominator = thisdata2(2, xRef);
+                y1(I) = thisdata2(2, x1)/denominator;
+                y2(I) = thisdata2(2, x2)/denominator;
                 fclose(fileID);
-                
-                % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-                % REFERENCE INDEX
-
-                % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                % Returns trend as 'e' and baseline corrected signal as 'f'
-                [e, f] = correctBaseline(thisdata2(2,:)');    
-
-                % 2. Ratiometric
-                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                % on either side of refWaveNumber. This maps to: 1 - 11 total
-                % intensities used to calculate the denominator.
-                if (refIndex ~= 0) 
-                    numPointsEachSide = 2;
-                    denominator2 = getDenominator(refIndex, ...
-                    numPointsEachSide, ...
-                    numPoints, f(:));
-                end
-                fprintf('denominator = %g at index: %d\n', denominator2, refIndex);
-
-                % 3. NEW 10/4/18: Normalize what is plotted
-                normalized = f/denominator2;
-
-                % change to plot starting at index 400
-                % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
-                % plot just the corrected signal
-                plot(thisdata2(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                xlim([xMin xMax]);
-                hold on
-                pause(1);
-                newColor = lineColor - [0.005*I, 0., 0.];
-                if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
-                    lineColor = newColor;
-                end
             end
+            % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
+            plot(t,y1,'-o', 'Color', green);
+            hold on;
+            plot(t,y2,'-o', 'Color', rust);
+            hold on;
         else
             if (K == 3)
-                str_dir_to_search = dirStem + subDirStem3;
-                dir_to_search = char(str_dir_to_search);
-                txtpattern = fullfile(dir_to_search, 'avg*.txt');
-                dinfo= dir(txtpattern);
-                for (I = 1 : length(dinfo))
-                    thisfilename = fullfile(dir_to_search, dinfo(I).name); 
-                    % 09/29/2018 "load" no longer works when add'l fields
-                    % appended at end. Need to only read 1024 lines
-                    %thisdata2 = load(thisfilename); %load just this file
-                    fileID = fopen(thisfilename,'r');
-                    [thisdata3] = fscanf(fileID, '%g %g', [2 numPoints]);
-                    fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
-                        thisfilename, max(thisdata3(2,:)) );
-                    if (max(thisdata3(2,:)) > maxIntensity)
-                        maxIntensity = max(thisdata3(2,:));
-                    end
-                    %thisdata3 = thisdata3';
-                    fclose(fileID);
-                    
-                    % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-                    % REFERENCE INDEX
-
-                    % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                    % Returns trend as 'e' and baseline corrected signal as 'f'
-                    [e, f] = correctBaseline(thisdata3(2,:)');    
-
-                    % 2. Ratiometric
-                    % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                    % on either side of refWaveNumber. This maps to: 1 - 11 total
-                    % intensities used to calculate the denominator.
-                    if (refIndex ~= 0) 
-                        numPointsEachSide = 2;
-                        denominator3 = getDenominator(refIndex, ...
-                        numPointsEachSide, ...
-                        numPoints, f(:));
-                    end
-                    fprintf('denominator = %g at index: %d\n', denominator3, refIndex);
-
-                    % 3. NEW 10/4/18: Normalize what is plotted
-                    normalized = f/denominator3;
-
-                    % change to plot starting at index 400
-                    % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
-                    % plot just the corrected signal
-                    plot(thisdata3(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                    %legend(subDirStem1);
-                    hold on
-                    pause(1);
-                    newColor = lineColor - [0.005*I, 0., 0.];
-                    if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
-                        lineColor = newColor;
-                    end
-                end
+                
             else
                 if (K == 4)
-                    lineColor = green;
-                    str_dir_to_search = dirStem + subDirStem4;
-                    dir_to_search = char(str_dir_to_search);
-                    txtpattern = fullfile(dir_to_search, 'avg*.txt');
-                    dinfo= dir(txtpattern);
-                    for (I = 1 : length(dinfo))
-                        thisfilename = fullfile(dir_to_search, dinfo(I).name); 
-                        % 09/29/2018 "load" no longer works when add'l fields
-                        % appended at end. Need to only read 1024 lines
-                        %thisdata2 = load(thisfilename); %load just this file
-                        fileID = fopen(thisfilename,'r');
-                        [thisdata4] = fscanf(fileID, '%g %g', [2 numPoints]);
-                        fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
-                            thisfilename, max(thisdata4(2,:)) );
-                        %thisdata4 = thisdata4';
-                        fclose(fileID);
 
-                        % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-                        % REFERENCE INDEX
-
-                        % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                        % Returns trend as 'e' and baseline corrected signal as 'f'
-                        [e, f] = correctBaseline(thisdata4(2,:)');    
-
-                        % 2. Ratiometric
-                        % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                        % on either side of refWaveNumber. This maps to: 1 - 11 total
-                        % intensities used to calculate the denominator.
-                        if (refIndex ~= 0) 
-                            numPointsEachSide = 2;
-                            denominator4 = getDenominator(refIndex, ...
-                            numPointsEachSide, ...
-                            numPoints, f(:));
-                        end
-                        fprintf('denominator = %g at index: %d\n', denominator4, refIndex);
-
-                        % 3. NEW 10/4/18: Normalize what is plotted
-                        normalized = f/denominator4;
-
-                        % change to plot starting at index 400
-                        % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
-                        % plot just the corrected signal
-                        plot(thisdata4(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                        xlim([xMin xMax]);
-                        hold on
-                        pause(1);
-                        newColor = lineColor - [0.005*I, 0., 0.];
-                        if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
-                            lineColor = newColor;
-                        end
-                    end
                 else
                     if (K == 5)
-                        str_dir_to_search = dirStem + subDirStem5;
-                        dir_to_search = char(str_dir_to_search);
-                        txtpattern = fullfile(dir_to_search, 'avg*.txt');
-                        dinfo= dir(txtpattern);
-                        for (I = 1 : length(dinfo))
-                            thisfilename = fullfile(dir_to_search, dinfo(I).name); 
-                            % 09/29/2018 "load" no longer works when add'l fields
-                            % appended at end. Need to only read 1024 lines
-                            %thisdata2 = load(thisfilename); %load just this file
-                            fileID = fopen(thisfilename,'r');
-                            [thisdata5] = fscanf(fileID, '%g %g', [2 numPoints]);
-                            fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
-                                thisfilename, max(thisdata5(2,:)) );
-                            if (max(thisdata5(2,:)) > maxIntensity)
-                                maxIntensity = max(thisdata5(2,:));
-                            end
-                            %thisdata5 = thisdata5';
-                            fclose(fileID);
 
-                            % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-                            % REFERENCE INDEX
-
-                            % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                            % Returns trend as 'e' and baseline corrected signal as 'f'
-                            [e, f] = correctBaseline(thisdata5(2,:)');    
-
-                            % 2. Ratiometric
-                            % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                            % on either side of refWaveNumber. This maps to: 1 - 11 total
-                            % intensities used to calculate the denominator.
-                            if (refIndex ~= 0) 
-                                numPointsEachSide = 2;
-                                denominator5 = getDenominator(refIndex, ...
-                                numPointsEachSide, ...
-                                numPoints, f(:));
-                            end
-                            fprintf('denominator = %g at index: %d\n', denominator5, refIndex);
-
-                            % 3. NEW 10/4/18: Normalize what is plotted
-                            normalized = f/denominator5;
-
-                            % change to plot starting at index 400
-                            % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
-                            % plot just the corrected signal
-                            plot(thisdata5(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                            xlim([xMin xMax]);
-                            hold on
-                            pause(1);
-                            newColor = lineColor - [0.005*I, 0., 0.];
-                            if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
-                                lineColor = newColor;
-                            end
-                        end
                     else
                         if (K == 6)
-                            lineColor = blue;
-                            str_dir_to_search = dirStem + subDirStem6;
-                            dir_to_search = char(str_dir_to_search);
-                            txtpattern = fullfile(dir_to_search, 'avg*.txt');
-                            dinfo= dir(txtpattern);
-                            for (I = 1 : length(dinfo))
-                                thisfilename = fullfile(dir_to_search, dinfo(I).name); 
-                                % 09/29/2018 "load" no longer works when add'l fields
-                                % appended at end. Need to only read 1024 lines
-                                %thisdata2 = load(thisfilename); %load just this file
-                                fileID = fopen(thisfilename,'r');
-                                [thisdata6] = fscanf(fileID, '%g %g', [2 numPoints]);
-                                fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
-                                    thisfilename, max(thisdata6(2,:)) );
-                                if (max(thisdata6(2,:)) > maxIntensity)
-                                    maxIntensity = max(thisdata6(2,:));
-                                end
-                                %thisdata6 = thisdata6';
-                                fclose(fileID);
 
-                                % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-                                % REFERENCE INDEX
-
-                                % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                                % Returns trend as 'e' and baseline corrected signal as 'f'
-                                [e, f] = correctBaseline(thisdata6(2,:)');    
-
-                                % 2. Ratiometric
-                                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                                % on either side of refWaveNumber. This maps to: 1 - 11 total
-                                % intensities used to calculate the denominator.
-                                if (refIndex ~= 0) 
-                                    numPointsEachSide = 2;
-                                    denominator6 = getDenominator(refIndex, ...
-                                    numPointsEachSide, ...
-                                    numPoints, f(:));
-                                end
-                                fprintf('denominator = %g at index: %d\n', denominator6, refIndex);
-
-                                % 3. NEW 10/4/18: Normalize what is plotted
-                                normalized = f/denominator6;
-
-                                % change to plot starting at index 400
-                                % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
-                                % plot just the corrected signal
-                                plot(thisdata6(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                                xlim([xMin xMax]);
-                                hold on
-                                pause(1);
-                                newColor = lineColor - [0.005*I, 0., 0.];
-                                if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
-                                    lineColor = newColor;
-                                end
-                            end
                         else
                             if (K == 7)
-                                str_dir_to_search = dirStem + subDirStem7;
-                                dir_to_search = char(str_dir_to_search);
-                                txtpattern = fullfile(dir_to_search, 'avg*.txt');
-                                dinfo= dir(txtpattern);
-                                for (I = 1 : length(dinfo))
-                                    thisfilename = fullfile(dir_to_search, dinfo(I).name); 
-                                    % 09/29/2018 "load" no longer works when add'l fields
-                                    % appended at end. Need to only read 1024 lines
-                                    %thisdata2 = load(thisfilename); %load just this file
-                                    fileID = fopen(thisfilename,'r');
-                                    [thisdata7] = fscanf(fileID, '%g %g', [2 numPoints]);
-                                    fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
-                                        thisfilename, max(thisdata7(2,:)) );
-                                    if (max(thisdata7(2,:)) > maxIntensity)
-                                        maxIntensity = max(thisdata7(2,:));
-                                    end
-                                    %thisdata7 = thisdata7';
-                                    fclose(fileID);
 
-                                    % 10/7/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-                                    % REFERENCE INDEX
-
-                                    % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                                    % Returns trend as 'e' and baseline corrected signal as 'f'
-                                    [e, f] = correctBaseline(thisdata7(2,:)');    
-
-                                    % 2. Ratiometric
-                                    % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                                    % on either side of refWaveNumber. This maps to: 1 - 11 total
-                                    % intensities used to calculate the denominator.
-                                    if (refIndex ~= 0) 
-                                        numPointsEachSide = 2;
-                                        denominator7 = getDenominator(refIndex, ...
-                                        numPointsEachSide, ...
-                                        numPoints, f(:));
-                                    end
-                                    fprintf('denominator = %g at index: %d\n', denominator7, refIndex);
-
-                                    % 3. NEW 10/4/18: Normalize what is plotted
-                                    normalized = f/denominator7;
-
-                                    % change to plot starting at index 400
-                                    % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
-                                    % plot just the corrected signal
-                                    plot(thisdata7(1,offset:end), normalized(offset:end), 'Color', lineColor);
-                                    xlim([xMin xMax]);
-                                    hold on
-                                    pause(1);
-                                    newColor = lineColor - [0.005*I, 0., 0.];
-                                    if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
-                                        lineColor = newColor;
-                                    end
-                                end
                             end
                         end
                     end
@@ -521,16 +255,24 @@ maxIntensity = 1.0;
 %     A3, B3, 'black', A4, B4, 'red', A5, B5, 'black', A6, B6, 'black', ...
 %     A7, B7, 'red');
 hold off
-title('Ratiometric continuous real-time MBA AuNPs in MES 10 minutes apart');
-xlabel('Wavenumber (cm^-1)'); % x-axis label
+title('Normalized intensity at pH-sensitive peaks vs time');
+xlabel('Time in days from epoch'); % x-axis label
 ylabel('Arbitrary Units (A.U.)/Intensity of ring-breathing at 1078 cm^-1'); % y-axis label
-%legend(subDirStem1, subDirStem2, subDirStem3, '1013', '1078', '1143', '1182', '1430', ...
-%    '1481', '1587', '1702');
-% Plot each spectrum (intensity vs wavenumber in a new color overtop
-
-% Q: how to build up to a given number of spectra, say 10, and then drop
-% the oldest, i.e. erase. Is this best done by re-drawing plots 2-9 and
-% then the new 10th one instead of "erasing" plot 1?
+y = 1.3;
+%text(1710, y, 'Laser Power = 0.335 Max');
+%y = y - 0.1;
+%text(1710, y, '5 second integration time per acq');
+%y = y - 0.1;
+%text(1710, y, 'Each spectra average of 5 acqs');
+%y = y - 0.1;
+text(1750, y, 'pH 4');
+text(1710, y, '_____', 'Color', red);
+%y = y - 0.1;
+%text(1750, y, 'pH 7');
+%text(1710, y, '_____', 'Color', green);
+%y = y - 0.1;
+%text(1750, y, 'pH 8.5');
+%text(1710, y, '_____', 'Color', blue);
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     % use the closestRef as the x-value of the center point of the peak
@@ -587,4 +329,62 @@ function [e f] = correctBaseline(tics)
     modified=tics(:)-temp_tic(:);
     e = trend;
     f = modified';
+end
+
+function g = blah(subDirStem, thisData)
+        str_dir_to_search = dirStem + subDirStem; % args need to be strings
+        % This function only in 2018b:
+        %dir_to_search = convertContainedStringsToChars(str_dir_to_search);
+        %How do I get it to char array for fullfile?
+        dir_to_search = char(str_dir_to_search);
+        txtpattern = fullfile(dir_to_search, 'avg*.txt');
+        dinfo = dir(txtpattern); 
+        for I = 1 : length(dinfo)
+            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name            
+            % NEW 10/8/2018: extract time from filename
+            S = string(thisfilename); 
+            newStr1 = extractAfter(S,"avg-");
+            dateWithHyphens = extractBefore(newStr1,".txt");
+            % No, it would be too easy if this worked
+            %t1 = datetime(dateWithHyphens,'Format','yyyy-MM-dd-hh-mm-ss');
+            [myYear, remain] = strtok(dateWithHyphens, '-');
+            [myMonth, remain] = strtok(remain, '-');
+            [myDay, remain] = strtok(remain, '-');
+            [myHour, remain] = strtok(remain, '-');
+            [myMinute, remain] = strtok(remain, '-');
+            [mySecond, remain] = strtok(remain, '-');
+            % These are strings, need to make them numbers,
+            % by, sigh, first making them char arrays
+            % which wasn't by the way necessary with 2018a.
+            % sigh again.
+            myY = str2num(char(myYear));
+            myMo = str2num(char(myMonth));
+            myD = str2num(char(myDay));
+            myH = str2num(char(myHour));
+            myMi = str2num(char(myMinute));
+            myS = str2num(char(mySecond));
+            % Create the dateTime variable. Hours, minutes, seconds are
+            % ignored so add them in after as fraction of a day
+            % This method doesn't work. See above at tRef setting
+            %dateTime = char(strcat(myYear, '-', myMonth, '-', myDay));
+            % Use tRef just to deal with smaller numbers
+            %t1 = datenum(dateTime, 'yyyy-MM-dd') - tRef;
+            %t(I) = t1 + ((myH + myMi/60 + myS/3600))/24;
+            % NEW 10/10/2018
+            t(I) = datenum(myY, myMo, myD, myH, myMi, myS) - tRef;
+            fprintf...
+                ('CHECK %d file %2d-%2d-%2d-%2d-%2d-%2d has time %10.4f\n',...
+                I, myY, myMo, myD, myH, myMi, myS, t(I));
+            fileID = fopen(thisfilename,'r');
+            [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
+            denominator = thisdata(2, xRef);
+            y1(I) = thisdata(2, x1)/denominator;
+            y2(I) = thisdata(2, x2)/denominator;
+            fclose(fileID);
+        end
+        % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
+        plot(t,y1,'-o', 'Color', red);
+        hold on;
+        plot(t,y2,'-o', 'Color', blue);
+        hold on;
 end
