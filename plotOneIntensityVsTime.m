@@ -5,13 +5,13 @@
 % Dayle Kotturi October 2018
 
 % There are two plots to build (or two lines on one plot).
-% Use the index 614 to get the intensity at 1430 cm^-1 (act. 1428.58 cm^-1)
+% Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
 global x1;
 x1 = 614;
-% Use the index 794 to get the intensity at 1702 cm^-1 (act. 1701.95 cm^-1)
+% Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
 global x2;
 x2 = 794;
-% Use the index 409 to get the intensity at the reference peak, 1078 cm^-1,
+% Use the index 409 to get the intensity at the reference peak, 1078/cm,
 % ring breathing
 global xRef;
 xRef = 409;
@@ -67,6 +67,7 @@ thisData7 = zeros(2, numPoints, 'double');
 % Read in the name of the FOLDER.
 figure 
 
+% THIS IS THE WEIRD BEHAVIOR THAT TOOK TIME TO FIGURE OUT 9OCT+10OCT
 % subtract this offset 
 % myRefDate = '2018-10-01'
 % tRef = datenum(myRefDate, 'yyyy-MM-dd'); % why does 2018-09-01 give same value?
@@ -85,6 +86,11 @@ figure
 % So work with this approach for tRef and also further below
 global tRef;
 tRef = datenum(2018, 10, 01, 0, 0, 0);
+
+global myTitleFont;
+global myLabelFont;
+myTitleFont = 30;
+myLabelFont = 20;
 
 for K = 1:7
 %for K = 1:3 % pH4
@@ -115,27 +121,32 @@ for K = 1:7
             g = myPlot(subDirStem7, thisData7, pHcolor);
     end
 end    
-y = 1.025;
+y = 1.04;
 x = 5.;
-text(x+0.05, y, 'pH 4');
-text(x, y, '_____', 'Color', red);
-text(x+0.5, y, 'o', 'Color', black);
-text(x+0.6, y, '1430 cm^-1');
+text(x, y, 'Line color', 'Color', black, 'FontSize', myLabelFont);
+text(x+0.5, y, 'Plot symbol', 'Color', black, 'FontSize', myLabelFont);
 
 y = y - 0.025;
-text(x+0.05, y, 'pH 7');
-text(x, y, '_____', 'Color', green);
-text(x+0.5, y, '*', 'Color', black);
-text(x+0.6, y, '1702 cm^-1');
+text(x, y, 'pH 4', 'Color', red, 'FontSize', myLabelFont);
+text(x, y, '_____', 'Color', red, 'FontSize', myLabelFont);
+text(x+0.5, y, 'o = 1430/cm', 'Color', black, 'FontSize', myLabelFont);
 
 y = y - 0.025;
-text(x+0.05, y, 'pH 8.5');
-text(x, y, '_____', 'Color', blue);
+text(x, y, 'pH 7', 'Color', green, 'FontSize', myLabelFont);
+text(x, y, '_____', 'Color', green, 'FontSize', myLabelFont);
+text(x+0.5, y, '* = 1702/cm', 'Color', black, 'FontSize', myLabelFont);
+
+y = y - 0.025;
+text(x, y, 'pH 8.5', 'Color', blue,'FontSize', myLabelFont);
+text(x, y, '_____', 'Color', blue, 'FontSize', myLabelFont);
 
 hold off
-title('Normalized intensity at pH-sensitive peaks vs time');
-xlabel('Time in days from epoch'); % x-axis label
-ylabel('Arbitrary Units (A.U.)/Intensity of ring-breathing at 1078 cm^-1'); % y-axis label
+title('Normalized intensity at pH-sensitive peaks vs time in PNIPAM', ...
+    'FontSize', myTitleFont);
+myXlabel = sprintf('Time in days from %s', datestr(tRef));
+xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
+ylabel('Intensity (A.U.)/Intensity of ring-breathing at 1078/cm (A.U.)', ...
+    'FontSize', myLabelFont); % y-axis label
 
 function g = myPlot(subDirStem, thisData, myColor)
     global blue;
@@ -184,6 +195,7 @@ function g = myPlot(subDirStem, thisData, myColor)
         myH = str2num(char(myHour));
         myMi = str2num(char(myMinute));
         myS = str2num(char(mySecond));
+        % THIS IS THE WEIRD BEHAVIOR THAT TOOK TIME TO FIGURE OUT 9OCT+10OCT
         % Create the dateTime variable. Hours, minutes, seconds are
         % ignored so add them in after as fraction of a day
         % This method doesn't work. See above at tRef setting
@@ -206,7 +218,7 @@ function g = myPlot(subDirStem, thisData, myColor)
     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
     plot(t,y1,'-o', 'Color', myColor);
     hold on;
-    plot(t,y2,'-*', 'Color', myColor);
+    plot(t,y2,'-*', 'Color', myColor); % Could vary darkness to distinguish
     hold on;
     g = 1;
 end
