@@ -50,9 +50,11 @@ global dirStem;
 dirStem = "Z:\Documents\Data\"; % Analyzing using remote Matlab client
 subDirStem1 = "pH4 first overnight run";
 subDirStem2 = "2X v2 pH7 25 hours";
+subDirStem3 = "2X v2 pH8.5";
 
 thisData1 = zeros(2, numPoints, 'double');
 thisData2 = zeros(2, numPoints, 'double');
+thisData3 = zeros(2, numPoints, 'double');
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
@@ -67,16 +69,19 @@ global myLabelFont;
 myTitleFont = 30;
 myLabelFont = 20;
 
-for K = 1:2
+for K = 1:3
     switch K
         case 1
+            xRef = 409;
             pHcolor = red;
             g = myPlot(subDirStem1, thisData1, pHcolor);
         case 2
+            xRef = 416;
             pHcolor = green;
             g = myPlot(subDirStem2, thisData2, pHcolor);
         case 3
-            pHcolor = red;
+            xRef = 416;
+            pHcolor = blue;
             g = myPlot(subDirStem3, thisData3, pHcolor);               
         case 4
             pHcolor = red;
@@ -148,9 +153,6 @@ function g = myPlot(subDirStem, thisData, myColor)
     global tRef;
         
     str_dir_to_search = dirStem + subDirStem; % args need to be strings
-    % This function only in 2018b:
-    %dir_to_search = convertContainedStringsToChars(str_dir_to_search);
-    %How do I get it to char array for fullfile?
     dir_to_search = char(str_dir_to_search)
     txtpattern = fullfile(dir_to_search, 'avg*.txt');
     dinfo = dir(txtpattern); 
@@ -193,9 +195,18 @@ function g = myPlot(subDirStem, thisData, myColor)
             I, myY, myMo, myD, myH, myMi, myS, t(I));
         fileID = fopen(thisfilename,'r');
         [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-        denominator = thisdata(2, xRef);
-        y1(I) = thisdata(2, x1)/denominator;
-        y2(I) = thisdata(2, x2)/denominator;
+        % NEW 10/18 - base corr not done in 10/15/18 SR. This could explain
+        % the lack of steady state...
+        % 1. Correct the baseline BEFORE calculating denominator + normalizing
+        % Returns trend as 'e' and baseline corrected signal as 'f'
+        [e, f] = correctBaseline(thisdata(2,:)'); 
+        denominator = f(xRef);
+        y1(I) = f(x1)/denominator;
+        y2(I) = f(x2)/denominator;
+        %denominator = thisdata(2, xRef);
+        %y1(I) = thisdata(2, x1)/denominator;
+        %y2(I) = thisdata(2, x2)/denominator;
+        %y3(I) = denominator; % NEW Oct. 17th to look for jumps in ref
         fclose(fileID);
     end
     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
@@ -203,5 +214,27 @@ function g = myPlot(subDirStem, thisData, myColor)
     hold on;
     plot(t,y2,'-*', 'Color', myColor); % Could vary darkness to distinguish
     hold on;
+    %plot(t,y3,'-*', 'Color', rust);
     g = 1;
+end
+
+function [e f] = correctBaseline(tics)
+    lambda=1e4; % smoothing parameter
+    p=0.001; % asymmetry parameter
+    d=2;
+
+    % asym: Baseline estimation with asymmetric least squares using weighted
+    % smoothing with a finite difference penalty.
+    %   signals: signal, each column represents one signal
+    %   lambda: smoothing parameter (generally 1e5 to 1e8)
+    %   p: asymmetry parameter (generally 0.001)
+    %   d: order of differences in penalty (generally 2)
+    %prog.temp_tic=asysm(tics(1,:)',lambda,p,d);
+    %prog.temp_tic=asysm(tics,lambda,p,d);
+    temp_tic=asysm(tics,lambda,p,d);
+    %prog.temp_tic=prog.temp_tic';
+    trend=temp_tic';
+    modified=tics(:)-temp_tic(:);
+    e = trend;
+    f = modified';
 end
