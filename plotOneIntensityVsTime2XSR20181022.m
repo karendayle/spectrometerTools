@@ -69,18 +69,18 @@ global myLabelFont;
 myTitleFont = 30;
 myLabelFont = 20;
 
-for K = 1:3
+for K = 2:3
     switch K
         case 1
-            xRef = 409;
+            xRef = 409; % default
             pHcolor = red;
             g = myPlot(subDirStem1, thisData1, pHcolor);
         case 2
-            xRef = 416;
+            % xRef = 416; didn't change anything
             pHcolor = green;
             g = myPlot(subDirStem2, thisData2, pHcolor);
         case 3
-            xRef = 416;
+            %xRef = 416; didn't change anything
             pHcolor = blue;
             g = myPlot(subDirStem3, thisData3, pHcolor);               
         case 4
