@@ -56,7 +56,7 @@ global xMin;
 global xMax;
 global yMin;
 global yMax;
-xMin = 900;
+xMin = 950;
 xMax = 2000;
 yMin = 0;
 yMax = 15;
@@ -75,12 +75,14 @@ for K = 1:3
             g = myPlot(subDirStem3, thisData3, pHcolor);               
     end
 end
-y = 1.3;
-text(1710, y, 'Laser Power = 0.375 Max');
+
+% TO DO: figure out the coords for labels from the data
+y = 5.3;
+text(1790, y, 'Laser Power = 0.375 Max');
 y = y - 0.1;
-text(1710, y, '5 second integration time per acq');
+text(1790, y, '5 second integration time per acq');
 y = y - 0.1;
-text(1710, y, 'Each spectra average of 5 acqs');
+text(1790, y, 'Each spectra average of 5 acqs');
 y = y - 0.1;
 text(1750, y, 'pH 4');
 text(1710, y, '_____', 'Color', red);
@@ -91,18 +93,11 @@ y = y - 0.1;
 text(1750, y, 'pH 8.5');
 text(1710, y, '_____', 'Color', blue);
 
-% Since ratiometric, use 1.0 for maxIntensity
-maxIntensity = 1.0;
-
 hold off
 title('Ratiometric continuous real-time MBA AuNPs gel 2X in MES 10 minutes apart', 'FontSize', myFont);
 xlabel('Wavenumber (cm^-1)', 'FontSize', myFont); % x-axis label
 ylabel('Arbitrary Units (A.U.)/Ring-breathing at 1078 cm^-1', 'FontSize', myFont); % y-axis label
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
-
-% Q: how to build up to a given number of spectra, say 10, and then drop
-% the oldest, i.e. erase. Is this best done by re-drawing plots 2-9 and
-% then the new 10th one instead of "erasing" plot 1?
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     % use the closestRef as the x-value of the center point of the peak
