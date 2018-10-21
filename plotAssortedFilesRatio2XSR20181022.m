@@ -30,6 +30,8 @@ dirStem = "Z:\Documents\Data\"; % Analyzing using remote Matlab client
 subDirStem1 = "pH4 first overnight run";
 subDirStem2 = "2X v2 pH7 25 hours";
 subDirStem3 = "2X v2 pH8.5";
+subDirStem4 = "2X v2 back to pH7 from pH8.5";
+subDirStem5 = "2X v2 pH10";
 
 global numPoints;
 numPoints = 1024;
@@ -37,6 +39,8 @@ numPoints = 1024;
 thisData1 = zeros(2, numPoints, 'double');
 thisData2 = zeros(2, numPoints, 'double');
 thisData3 = zeros(2, numPoints, 'double');
+thisData4 = zeros(2, numPoints, 'double');
+thisData5 = zeros(2, numPoints, 'double');
 
 global xRef;
 xRef = 409; % index where the reference peak is 
@@ -49,9 +53,6 @@ global offset;
 offset = 300;
 denominator1 = 1; % default. Used if refIndex is 0
 
-% Read in a set of spectra from a time-series 
-% Read in the name of the FOLDER.
-figure 
 global xMin;
 global xMax;
 global yMin;
@@ -59,25 +60,41 @@ global yMax;
 xMin = 950;
 xMax = 2000;
 yMin = 0;
-yMax = 15;
+yMax = 10;
 myFont = 30;
 
-for K = 1:3
+global myDebug;
+myDebug = 0;
+
+figure 
+
+for K = 1:5
     switch K
         case 1
             pHcolor = red;
-            g = myPlot(subDirStem1, thisData1, pHcolor);
+            num1 = myPlot(subDirStem1, thisData1, pHcolor);
+            fprintf('Case 1: %d spectra plotted in red\n', num1);
         case 2
             pHcolor = green;
-            g = myPlot(subDirStem2, thisData2, pHcolor);
+            num2 = myPlot(subDirStem2, thisData2, pHcolor);
+            fprintf('Case 2: %d spectra plotted in green\n', num2);
         case 3
+            pHcolor = ciel;
+            num3 = myPlot(subDirStem3, thisData3, pHcolor);
+            fprintf('Case 3: %d spectra plotted in ciel\n', num3);
+        case 4
+            pHcolor = green;
+            num4 = myPlot(subDirStem4, thisData4, pHcolor);
+            fprintf('Case 4: %d spectra plotted in green\n', num4);            
+        case 5
             pHcolor = blue;
-            g = myPlot(subDirStem3, thisData3, pHcolor);               
+            num5 = myPlot(subDirStem5, thisData5, pHcolor);
+            fprintf('Case 5: %d spectra plotted in blue\n', num5);            
     end
 end
 
 % TO DO: figure out the coords for labels from the data
-y = 5.3;
+y = 9.3;
 text(1750, y, 'pH 4');
 text(1710, y, '_____', 'Color', red);
 text(1790, y, 'Laser Power = 0.375 Max');
@@ -87,8 +104,11 @@ text(1710, y, '_____', 'Color', green);
 text(1790, y, '5 second integration time per acq');
 y = y - 0.2;
 text(1750, y, 'pH 8.5');
-text(1710, y, '_____', 'Color', blue);
+text(1710, y, '_____', 'Color', ciel);
 text(1790, y, 'Each spectra average of 5 acqs');
+y = y - 0.2;
+text(1750, y, 'pH 10');
+text(1710, y, '_____', 'Color', blue);
 
 hold off
 title('Ratiometric continuous real-time MBA AuNPs gel 2X in MES 10 minutes apart', 'FontSize', myFont);
@@ -97,13 +117,16 @@ ylabel('Arbitrary Units (A.U.)/Ring-breathing at 1078 cm^-1', 'FontSize', myFont
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
+    global myDebug
     % use the closestRef as the x-value of the center point of the peak
     % sum the points from x=(closestRef - numPointsIntegrated) to 
     % x=(closestRef + numPointsIntegrated) and then divide by number of
     % points to average and scale it.
     
-    fprintf('getDenominator with numPointsEachSide = %d\n', ...
-        numPointsEachSide);
+    if myDebug 
+        fprintf('getDenominator with numPointsEachSide = %d\n', ...
+            numPointsEachSide);
+    end
     
     % check that numPointsIntegrated is in range
     lowEnd = closestRef - numPointsEachSide;
@@ -116,17 +139,23 @@ function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     end
     
     sum = 0;
-    fprintf('closestRef: %d, numPointsEachSide: %d\n', closestRef, ...
-        numPointsEachSide);
+    if myDebug 
+        fprintf('closestRef: %d, numPointsEachSide: %d\n', closestRef, ...
+            numPointsEachSide);
+    end
     startIndex = closestRef - numPointsEachSide;
     numPointsToIntegrate = 1 + (2 * numPointsEachSide);
     for i = 1 : numPointsToIntegrate
         sum = sum + spectrum(startIndex);
-        fprintf('index: %d, spectrum: %g\n', startIndex, spectrum(startIndex));
+        if myDebug
+            fprintf('index: %d, spectrum: %g\n', startIndex, spectrum(startIndex));
+        end
         startIndex = startIndex + 1;
     end
     denominator = sum/numPointsToIntegrate;
-    fprintf('denominator: %g\n', denominator);
+    if myDebug
+        fprintf('denominator: %g\n', denominator);
+    end
     d = denominator;
 end
 
@@ -167,18 +196,19 @@ function g = myPlot(subDirStem, thisData, myColor)
     global xMax;
     global yMin;
     global yMax;
+    global myDebug;
         
     str_dir_to_search = dirStem + subDirStem; % args need to be strings
     dir_to_search = char(str_dir_to_search);
     txtpattern = fullfile(dir_to_search, 'avg*.txt');
     dinfo = dir(txtpattern); 
+    
+    numberOfSpectra = length(dinfo);
       
-    for I = 1 : length(dinfo)
+    for I = 1 : numberOfSpectra
         thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
         fileID = fopen(thisfilename,'r');
         [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-        % max is FYI, not used. Could be compared to a threshold to
-        % detect that signal is bad.
         fclose(fileID);
           
         % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
@@ -194,11 +224,12 @@ function g = myPlot(subDirStem, thisData, myColor)
         % intensities used to calculate the denominator.
         if (xRef ~= 0) 
             numPointsEachSide = 2;
-            denominator1 = getDenominator(xRef, ...
-            numPointsEachSide, ...
-            numPoints, f(:));
+            denominator1 = getDenominator(xRef, numPointsEachSide, ...
+                numPoints, f(:));
         end
-        fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+        if myDebug
+            fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+        end
           
         % 3. NEW 10/4/18: Normalize what is plotted
         normalized = f/denominator1;
@@ -219,5 +250,5 @@ function g = myPlot(subDirStem, thisData, myColor)
             lineColor = newColor;
         end
     end
-    g = 1;
+    g = numberOfSpectra;
 end  
