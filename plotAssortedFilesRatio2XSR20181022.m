@@ -78,20 +78,17 @@ end
 
 % TO DO: figure out the coords for labels from the data
 y = 5.3;
-text(1790, y, 'Laser Power = 0.375 Max');
-y = y - 0.1;
-text(1790, y, '5 second integration time per acq');
-y = y - 0.1;
-text(1790, y, 'Each spectra average of 5 acqs');
-y = y - 0.1;
 text(1750, y, 'pH 4');
 text(1710, y, '_____', 'Color', red);
-y = y - 0.1;
+text(1790, y, 'Laser Power = 0.375 Max');
+y = y - 0.2;
 text(1750, y, 'pH 7');
 text(1710, y, '_____', 'Color', green);
-y = y - 0.1;
+text(1790, y, '5 second integration time per acq');
+y = y - 0.2;
 text(1750, y, 'pH 8.5');
 text(1710, y, '_____', 'Color', blue);
+text(1790, y, 'Each spectra average of 5 acqs');
 
 hold off
 title('Ratiometric continuous real-time MBA AuNPs gel 2X in MES 10 minutes apart', 'FontSize', myFont);
