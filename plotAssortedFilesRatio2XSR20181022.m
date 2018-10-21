@@ -251,4 +251,4 @@ function g = myPlot(subDirStem, thisData, myColor)
         end
     end
     g = numberOfSpectra;
-end  
+end
