@@ -507,7 +507,7 @@ function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
 end
 
 function [e f] = correctBaseline(tics)
-    lambda=1e6; % smoothing parameter
+    lambda=1e4; % smoothing parameter
     p=0.001; % asymmetry parameter
     d=2;
     %prog.chroms=tics;
