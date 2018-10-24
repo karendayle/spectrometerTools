@@ -107,22 +107,22 @@ for K = 1:6
             fprintf('Case 6: %d spectra plotted in blue\n', num5);
     end
 end    
-y = 0.21;
-x = 0.1;
+y = 0.17;
+x = 0.2;
 deltaY = 0.01;
-deltaX = 0.02;
+deltaX = 0.15;
 text(x, y, 'Line color', 'Color', black, 'FontSize', myLabelFont);
 text(x+deltaX, y, 'Plot symbol', 'Color', black, 'FontSize', myLabelFont);
 
 y = y - deltaY;
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myLabelFont);
 text(x, y, '_____', 'Color', red, 'FontSize', myLabelFont);
-text(x+deltaX, y, 'o = 1430/cm', 'Color', black, 'FontSize', myLabelFont);
+text(x+deltaX, y, 'o = 1430cm^-^1', 'Color', black, 'FontSize', myLabelFont);
 
 y = y - deltaY;
 text(x, y, 'pH 7', 'Color', green, 'FontSize', myLabelFont);
 text(x, y, '_____', 'Color', green, 'FontSize', myLabelFont);
-text(x+deltaX, y, '* = 1702/cm', 'Color', black, 'FontSize', myLabelFont);
+text(x+deltaX, y, '* = 1702cm^-^1', 'Color', black, 'FontSize', myLabelFont);
 
 y = y - deltaY;
 text(x, y, 'pH 8.5', 'Color', ciel,'FontSize', myLabelFont);
@@ -137,8 +137,9 @@ title('Normalized intensity at pH-sensitive peaks vs time in 2X gel', ...
     'FontSize', myTitleFont);
 myXlabel = sprintf('Time in days from %s', datestr(tRef));
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
-ylabel('Intensity (A.U.)/Intensity of ring-breathing at 1078/cm (A.U.)', ...
+ylabel('Intensity (A.U.)/Intensity of ring-breathing at 1078cm^-^1 (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
+set(gca,'FontSize',16,'FontWeight','bold','box','off')
     
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug;

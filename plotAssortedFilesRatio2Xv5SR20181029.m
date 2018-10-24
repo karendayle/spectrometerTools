@@ -125,6 +125,7 @@ hold off
 title('Ratiometric continuous real-time MBA AuNPs gel 2X in MES 10 minutes apart', 'FontSize', myFont);
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
 ylabel('Arbitrary Units (A.U.)/Ring-breathing at 1078 cm^-^1^-1', 'FontSize', myFont); % y-axis label
+set(gca,'FontSize',16,'FontWeight','bold','box','off')
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
