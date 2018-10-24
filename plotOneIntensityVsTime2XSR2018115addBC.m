@@ -47,13 +47,18 @@ numPoints = 1024;
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
 %dirStem = "H:\Documents\Data\Embedded hydrogel study\flow through 2X v2\";
-dirStem = "Z:\Documents\Data\"; % Analyzing using remote Matlab client
-subDirStem1 = "pH4 first overnight run";
-subDirStem2 = "2X v2 pH7 25 hours";
-subDirStem3 = "2X v2 pH8.5";
-subDirStem4 = "2X v2 back to pH7 from pH8.5";
-subDirStem5 = "2X v2 pH10";
-subDirStem6 = "2X v2 back to pH4 from pH10";
+dirStem = "Z:\Documents\Data\flow through 2X\"; % Analyzing using remote Matlab client
+subDirStem1 = "1 cont pH7 2X";
+subDirStem2 = "2 cont pH4 2X";
+subDirStem3 = "3 cont pH7 2X";
+subDirStem4 = "4 cont pH8.5 2X";
+subDirStem5 = "5 cont pH8.5 2X";
+subDirStem6 = "6 cont pH7 2X";
+subDirStem7 = "7 cont pH4 2X";
+subDirStem8 = "8 cont pH4 2X";
+subDirStem9 = "9 cont pH4 2X";
+subDirStem10 = "10 cont pH4 2X";
+subDirStem11 = "11 cont pH4 2X";
 
 thisData1 = zeros(2, numPoints, 'double');
 thisData2 = zeros(2, numPoints, 'double');
@@ -61,56 +66,81 @@ thisData3 = zeros(2, numPoints, 'double');
 thisData4 = zeros(2, numPoints, 'double');
 thisData5 = zeros(2, numPoints, 'double');
 thisData6 = zeros(2, numPoints, 'double');
+thisData7 = zeros(2, numPoints, 'double');
+thisData8 = zeros(2, numPoints, 'double');
+thisData9 = zeros(2, numPoints, 'double');
+thisData10 = zeros(2, numPoints, 'double');
+thisData11 = zeros(2, numPoints, 'double');
 
 global myDebug;
 myDebug = 0;
 
-figure 
-
 % subtract this offset 
 global tRef;
-tRef = datenum(2018, 10, 12, 17, 41, 0);
+tRef = datenum(2018, 9, 27, 0,0, 0);
+
+figure 
 
 global myTitleFont;
 global myLabelFont;
 myTitleFont = 30;
 myLabelFont = 20;
 
-for K = 1:6
+for K = 1:11
     switch K
         case 1
-            xRef = 409; % default
-            pHcolor = red;
+            %xRef = 409; % default
+            pHcolor = green;
             num1 = myPlot(subDirStem1, thisData1, pHcolor);
-            fprintf('Case 1: %d spectra plotted in red\n', num1);
+            fprintf('Case 1: %d spectra plotted in green\n', num1);
         case 2
-            xRef = 416;
-            pHcolor = green;
-            num2 = myPlot(subDirStem2, thisData2, pHcolor);
-            fprintf('Case 2: %d spectra plotted in green\n', num2);
-        case 3
-            xRef = 416;
-            pHcolor = ciel;
-            num3 = myPlot(subDirStem3, thisData3, pHcolor);
-            fprintf('Case 3: %d spectra plotted in red\n', num3);            
-        case 4
-            pHcolor = green;
-            num4 = myPlot(subDirStem4, thisData4, pHcolor);
-            fprintf('Case 4: %d spectra plotted in green\n', num4);
-        case 5
-            pHcolor = blue;
-            num5 = myPlot(subDirStem5, thisData5, pHcolor);
-            fprintf('Case 5: %d spectra plotted in blue\n', num5);
-        case 6
+            %xRef = 416;
             pHcolor = red;
+            num2 = myPlot(subDirStem2, thisData2, pHcolor);
+            fprintf('Case 2: %d spectra plotted in red\n', num2);
+        case 3
+            %xRef = 416;
+            pHcolor = green;
+            num3 = myPlot(subDirStem3, thisData3, pHcolor);
+            fprintf('Case 3: %d spectra plotted in green\n', num3);            
+        case 4
+            pHcolor = ciel;
+            num4 = myPlot(subDirStem4, thisData4, pHcolor);
+            fprintf('Case 4: %d spectra plotted in ciel\n', num4);
+        case 5
+            pHcolor = ciel;
+            num5 = myPlot(subDirStem5, thisData5, pHcolor);
+            fprintf('Case 5: %d spectra plotted in ciel\n', num5);
+        case 6
+            pHcolor = green;
             num6 = myPlot(subDirStem6, thisData6, pHcolor);
-            fprintf('Case 6: %d spectra plotted in red\n', num6);
+            fprintf('Case 6: %d spectra plotted in green\n', num6);
+        case 7
+            pHcolor = red;
+            num7 = myPlot(subDirStem7, thisData7, pHcolor);
+            fprintf('Case 7: %d spectra plotted in red\n', num7)
+        case 8
+            pHcolor = red;
+            num8 = myPlot(subDirStem8, thisData8, pHcolor);
+            fprintf('Case 8: %d spectra plotted in red\n', num8)
+        case 9
+            pHcolor = red;
+            num9 = myPlot(subDirStem9, thisData9, pHcolor);
+            fprintf('Case 9: %d spectra plotted in red\n', num9)
+        case 10
+            pHcolor = red;
+            num10 = myPlot(subDirStem10, thisData10, pHcolor);
+            fprintf('Case 10: %d spectra plotted in red\n', num10)
+        case 11
+            pHcolor = red;
+            num11 = myPlot(subDirStem11, thisData11, pHcolor);
+            fprintf('Case 11: %d spectra plotted in red\n', num11)
     end
 end    
-y = 0.42;
-x = 7;
-deltaY = 0.02;
-deltaX = 1;
+y = 0.95;
+x = 4.5;
+deltaY = 0.05;
+deltaX = 0.5;
 text(x, y, 'Line color', 'Color', black, 'FontSize', myLabelFont);
 text(x+deltaX, y, 'Plot symbol', 'Color', black, 'FontSize', myLabelFont);
 

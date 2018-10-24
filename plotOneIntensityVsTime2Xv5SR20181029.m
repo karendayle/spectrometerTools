@@ -47,13 +47,13 @@ numPoints = 1024;
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
 %dirStem = "H:\Documents\Data\Embedded hydrogel study\flow through 2X v2\";
-dirStem = "Z:\Documents\Data\"; % Analyzing using remote Matlab client
-subDirStem1 = "pH4 first overnight run";
-subDirStem2 = "2X v2 pH7 25 hours";
-subDirStem3 = "2X v2 pH8.5";
-subDirStem4 = "2X v2 back to pH7 from pH8.5";
-subDirStem5 = "2X v2 pH10";
-subDirStem6 = "2X v2 back to pH4 from pH10";
+dirStem = "Z:\Documents\Data\flow through 2X v5\"; % Analyzing using remote Matlab client
+subDirStem1 = "1 DI flush to begin";
+subDirStem2 = "2 pH 7";
+subDirStem3 = "3 DI flush";
+subDirStem4 = "4 pH 4";
+subDirStem5 = "5 DI flush";
+subDirStem6 = "6 pH 10";
 
 thisData1 = zeros(2, numPoints, 'double');
 thisData2 = zeros(2, numPoints, 'double');
@@ -69,7 +69,7 @@ figure
 
 % subtract this offset 
 global tRef;
-tRef = datenum(2018, 10, 12, 17, 41, 0);
+tRef = datenum(2018, 10, 22, 17, 39, 0);
 
 global myTitleFont;
 global myLabelFont;
@@ -79,50 +79,50 @@ myLabelFont = 20;
 for K = 1:6
     switch K
         case 1
-            xRef = 409; % default
-            pHcolor = red;
+            %xRef = 409; % default
+            pHcolor = purple;
             num1 = myPlot(subDirStem1, thisData1, pHcolor);
-            fprintf('Case 1: %d spectra plotted in red\n', num1);
+            fprintf('Case 1: %d spectra plotted in purple\n', num1);
         case 2
-            xRef = 416;
+            %xRef = 416;
             pHcolor = green;
             num2 = myPlot(subDirStem2, thisData2, pHcolor);
             fprintf('Case 2: %d spectra plotted in green\n', num2);
         case 3
-            xRef = 416;
-            pHcolor = ciel;
+            %xRef = 416;
+            pHcolor = purple;
             num3 = myPlot(subDirStem3, thisData3, pHcolor);
-            fprintf('Case 3: %d spectra plotted in red\n', num3);            
+            fprintf('Case 3: %d spectra plotted in purple\n', num3);            
         case 4
-            pHcolor = green;
-            num4 = myPlot(subDirStem4, thisData4, pHcolor);
-            fprintf('Case 4: %d spectra plotted in green\n', num4);
-        case 5
-            pHcolor = blue;
-            num5 = myPlot(subDirStem5, thisData5, pHcolor);
-            fprintf('Case 5: %d spectra plotted in blue\n', num5);
-        case 6
             pHcolor = red;
+            num4 = myPlot(subDirStem4, thisData4, pHcolor);
+            fprintf('Case 4: %d spectra plotted in red\n', num4);
+        case 5
+            pHcolor = purple;
+            num5 = myPlot(subDirStem5, thisData5, pHcolor);
+            fprintf('Case 5: %d spectra plotted in purple\n', num5);
+        case 6
+            pHcolor = blue;
             num6 = myPlot(subDirStem6, thisData6, pHcolor);
-            fprintf('Case 6: %d spectra plotted in red\n', num6);
+            fprintf('Case 6: %d spectra plotted in blue\n', num5);
     end
 end    
-y = 0.42;
-x = 7;
-deltaY = 0.02;
-deltaX = 1;
+y = 0.17;
+x = 0.2;
+deltaY = 0.01;
+deltaX = 0.15;
 text(x, y, 'Line color', 'Color', black, 'FontSize', myLabelFont);
 text(x+deltaX, y, 'Plot symbol', 'Color', black, 'FontSize', myLabelFont);
 
 y = y - deltaY;
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myLabelFont);
 text(x, y, '_____', 'Color', red, 'FontSize', myLabelFont);
-text(x+deltaX, y, 'o = 1430/cm', 'Color', black, 'FontSize', myLabelFont);
+text(x+deltaX, y, 'o = 1430cm^-^1', 'Color', black, 'FontSize', myLabelFont);
 
 y = y - deltaY;
 text(x, y, 'pH 7', 'Color', green, 'FontSize', myLabelFont);
 text(x, y, '_____', 'Color', green, 'FontSize', myLabelFont);
-text(x+deltaX, y, '* = 1702/cm', 'Color', black, 'FontSize', myLabelFont);
+text(x+deltaX, y, '* = 1702cm^-^1', 'Color', black, 'FontSize', myLabelFont);
 
 y = y - deltaY;
 text(x, y, 'pH 8.5', 'Color', ciel,'FontSize', myLabelFont);
@@ -137,8 +137,9 @@ title('Normalized intensity at pH-sensitive peaks vs time in 2X gel', ...
     'FontSize', myTitleFont);
 myXlabel = sprintf('Time in days from %s', datestr(tRef));
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
-ylabel('Intensity (A.U.)/Intensity of ring-breathing at 1078/cm (A.U.)', ...
+ylabel('Intensity (A.U.)/Intensity of ring-breathing at 1078cm^-^1 (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
+set(gca,'FontSize',16,'FontWeight','bold','box','off')
     
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug;
