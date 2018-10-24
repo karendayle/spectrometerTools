@@ -26,14 +26,12 @@ red =     [1.0, 0.0, 0.0];
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
 %dirStem = "H:\Documents\Data\Embedded hydrogel study\flow through 2X v2\";
-dirStem = "Z:\Documents\Data\"; % Analyzing using remote Matlab client
-subDirStem1 = "pH4 first overnight run";
-subDirStem2 = "2X v2 pH7 25 hours";
-subDirStem3 = "2X v2 pH8.5";
-subDirStem4 = "2X v2 back to pH7 from pH8.5";
-subDirStem5 = "2X v2 pH10";
-subDirStem6 = "2X v2 back to pH4 from pH10";
-subDirStem7 = "2X v2 DI Flush between pH4 and pH7 lights are on";
+dirStem = "Z:\Documents\Data\flow through 2X v5\"; % Analyzing using remote Matlab client
+subDirStem1 = "1 DI flush to begin";
+subDirStem2 = "2 pH 7";
+subDirStem3 = "3 DI flush";
+%subDirStem4 = "4 DI flush";
+%subDirStem5 = "5 pH8.5";
 
 global numPoints;
 numPoints = 1024;
@@ -63,7 +61,7 @@ global yMax;
 xMin = 950;
 xMax = 2000;
 yMin = 0;
-yMax = 10;
+yMax = 1.4;
 myFont = 30;
 
 global myDebug;
@@ -71,60 +69,62 @@ myDebug = 0;
 
 figure 
 
-for K = 2:2
+for K = 1:6
     switch K
         case 1
-            pHcolor = red;
+            %xRef = 409; % default
+            pHcolor = purple;
             num1 = myPlot(subDirStem1, thisData1, pHcolor);
-            fprintf('Case 1: %d spectra plotted in red\n', num1);
+            fprintf('Case 1: %d spectra plotted in purple\n', num1);
         case 2
+            %xRef = 416;
             pHcolor = green;
             num2 = myPlot(subDirStem2, thisData2, pHcolor);
             fprintf('Case 2: %d spectra plotted in green\n', num2);
         case 3
-            pHcolor = ciel;
-            num3 = myPlot(subDirStem3, thisData3, pHcolor);
-            fprintf('Case 3: %d spectra plotted in ciel\n', num3);
-        case 4
-            pHcolor = green;
-            num4 = myPlot(subDirStem4, thisData4, pHcolor);
-            fprintf('Case 4: %d spectra plotted in green\n', num4);            
-        case 5
-            pHcolor = blue;
-            num5 = myPlot(subDirStem5, thisData5, pHcolor);
-            fprintf('Case 5: %d spectra plotted in blue\n', num5);   
-        case 6
-            pHcolor = red;
-            num6 = myPlot(subDirStem6, thisData6, pHcolor);
-            fprintf('Case 6: %d spectra plotted in red\n', num6);
-        case 7
+            %xRef = 416;
             pHcolor = purple;
-            num7 = myPlot(subDirStem7, thisData7, pHcolor);
-            fprintf('Case 7: %d spectra plotted in purple\n', num7);               
+            num3 = myPlot(subDirStem3, thisData3, pHcolor);
+            fprintf('Case 3: %d spectra plotted in purple\n', num3);            
+        case 4
+            pHcolor = red;
+            num4 = myPlot(subDirStem4, thisData4, pHcolor);
+            fprintf('Case 4: %d spectra plotted in red\n', num4);
+        case 5
+            pHcolor = purple;
+            num5 = myPlot(subDirStem5, thisData5, pHcolor);
+            fprintf('Case 5: %d spectra plotted in purple\n', num5);
+        case 6
+            pHcolor = blue;
+            num6 = myPlot(subDirStem6, thisData6, pHcolor);
+            fprintf('Case 6: %d spectra plotted in blue\n', num6);
     end
-end
+end    
 
 % TO DO: figure out the coords for labels from the data
-y = 9.3;
-text(1750, y, 'pH 4');
-text(1710, y, '_____', 'Color', red);
-text(1790, y, 'Laser Power = 0.375 Max');
-y = y - 0.2;
-text(1750, y, 'pH 7');
-text(1710, y, '_____', 'Color', green);
-text(1790, y, '5 second integration time per acq');
-y = y - 0.2;
-text(1750, y, 'pH 8.5');
-text(1710, y, '_____', 'Color', ciel);
-text(1790, y, 'Each spectra average of 5 acqs');
-y = y - 0.2;
-text(1750, y, 'pH 10');
-text(1710, y, '_____', 'Color', blue);
+y = 1.3;
+x = 1710;
+deltaY = 0.1;
+deltaX = 80;
+text(x, y, 'pH 4', 'Color', red);
+text(x, y, '_____', 'Color', red);
+text(x + deltaX, y, 'Laser Power = 0.375 Max');
+y = y - deltaY;
+text(x, y, 'pH 7', 'Color', green);
+text(x, y, '_____', 'Color', green);
+text(x + deltaX, y, '5 second integration time per acq');
+y = y - deltaY;
+text(x, y, 'pH 8.5', 'Color', ciel);
+text(x, y, '_____', 'Color', ciel);
+text(x + deltaX, y, 'Each spectra average of 5 acqs');
+y = y - deltaY;
+text(x, y, 'pH 10', 'Color', blue);
+text(x, y, '_____', 'Color', blue);
 
 hold off
 title('Ratiometric continuous real-time MBA AuNPs gel 2X in MES 10 minutes apart', 'FontSize', myFont);
-xlabel('Wavenumber (cm^-1)', 'FontSize', myFont); % x-axis label
-ylabel('Arbitrary Units (A.U.)/Ring-breathing at 1078 cm^-1', 'FontSize', myFont); % y-axis label
+xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
+ylabel('Arbitrary Units (A.U.)/Ring-breathing at 1078 cm^-^1^-1', 'FontSize', myFont); % y-axis label
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
@@ -256,7 +256,7 @@ function g = myPlot(subDirStem, thisData, myColor)
         ylim([yMin yMax]);
         hold on
         fprintf('%d\n', I);
-        pause(10);
+        %pause(1);
         newColor = myColor - [0.005*I, 0., 0.];
         if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
             lineColor = newColor;

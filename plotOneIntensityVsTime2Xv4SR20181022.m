@@ -47,20 +47,18 @@ numPoints = 1024;
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
 %dirStem = "H:\Documents\Data\Embedded hydrogel study\flow through 2X v2\";
-dirStem = "Z:\Documents\Data\"; % Analyzing using remote Matlab client
-subDirStem1 = "pH4 first overnight run";
-subDirStem2 = "2X v2 pH7 25 hours";
-subDirStem3 = "2X v2 pH8.5";
-subDirStem4 = "2X v2 back to pH7 from pH8.5";
-subDirStem5 = "2X v2 pH10";
-subDirStem6 = "2X v2 back to pH4 from pH10";
+dirStem = "Z:\Documents\Data\flow through 2X v4 smoothing 1e4\"; % Analyzing using remote Matlab client
+subDirStem1 = "1 pH10";
+subDirStem2 = "2 DI flush switch from pH10 to pH4";
+subDirStem3 = "3 pH4";
+subDirStem4 = "4 DI flush switch from pH4 to pH8.5";
+subDirStem5 = "5 pH8.5";
 
 thisData1 = zeros(2, numPoints, 'double');
 thisData2 = zeros(2, numPoints, 'double');
 thisData3 = zeros(2, numPoints, 'double');
 thisData4 = zeros(2, numPoints, 'double');
 thisData5 = zeros(2, numPoints, 'double');
-thisData6 = zeros(2, numPoints, 'double');
 
 global myDebug;
 myDebug = 0;
@@ -69,48 +67,44 @@ figure
 
 % subtract this offset 
 global tRef;
-tRef = datenum(2018, 10, 12, 17, 41, 0);
+tRef = datenum(2018, 10, 21, 19, 11, 0);
 
 global myTitleFont;
 global myLabelFont;
 myTitleFont = 30;
 myLabelFont = 20;
 
-for K = 1:6
+for K = 1:2:5 % don't plot the DI water flushes
     switch K
         case 1
-            xRef = 409; % default
-            pHcolor = red;
+            %xRef = 409; % default
+            pHcolor = blue;
             num1 = myPlot(subDirStem1, thisData1, pHcolor);
-            fprintf('Case 1: %d spectra plotted in red\n', num1);
+            fprintf('Case 1: %d spectra plotted in blue\n', num1);
         case 2
-            xRef = 416;
-            pHcolor = green;
+            %xRef = 416;
+            pHcolor = purple;
             num2 = myPlot(subDirStem2, thisData2, pHcolor);
-            fprintf('Case 2: %d spectra plotted in green\n', num2);
+            fprintf('Case 2: %d spectra plotted in purple\n', num2);
         case 3
-            xRef = 416;
-            pHcolor = ciel;
+            %xRef = 416;
+            pHcolor = red;
             num3 = myPlot(subDirStem3, thisData3, pHcolor);
             fprintf('Case 3: %d spectra plotted in red\n', num3);            
         case 4
-            pHcolor = green;
+            pHcolor = purple;
             num4 = myPlot(subDirStem4, thisData4, pHcolor);
-            fprintf('Case 4: %d spectra plotted in green\n', num4);
+            fprintf('Case 4: %d spectra plotted in purple\n', num4);
         case 5
-            pHcolor = blue;
+            pHcolor = ciel;
             num5 = myPlot(subDirStem5, thisData5, pHcolor);
-            fprintf('Case 5: %d spectra plotted in blue\n', num5);
-        case 6
-            pHcolor = red;
-            num6 = myPlot(subDirStem6, thisData6, pHcolor);
-            fprintf('Case 6: %d spectra plotted in red\n', num6);
+            fprintf('Case 5: %d spectra plotted in ciel\n', num5);
     end
 end    
-y = 0.42;
-x = 7;
-deltaY = 0.02;
-deltaX = 1;
+y = 0.21;
+x = 0.1;
+deltaY = 0.01;
+deltaX = 0.02;
 text(x, y, 'Line color', 'Color', black, 'FontSize', myLabelFont);
 text(x+deltaX, y, 'Plot symbol', 'Color', black, 'FontSize', myLabelFont);
 
