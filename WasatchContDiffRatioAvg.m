@@ -371,6 +371,7 @@ function c = plotSpectrum(firstTime, ...
     end
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('Arbitrary Units (A.U.)'); % y-axis label
+    set(gca,'FontSize',16,'FontWeight','bold','box','off')
     
     if (denominator(3) ~= 0)
     % Plot the normalized data
