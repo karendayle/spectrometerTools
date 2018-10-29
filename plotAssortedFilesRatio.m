@@ -9,6 +9,7 @@ purple =  [0.4940, 0.1840, 0.5560];
 green =   [0.4660, 0.6740, 0.1880];
 ciel =    [0.3010, 0.7450, 0.9330];
 cherry =  [0.6350, 0.0780, 0.1840];
+red =     [1.0, 0.0, 0.0];
 
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
@@ -28,17 +29,17 @@ subDirStem1 = "1 pH4 cont 4 hrs 24 meas 10 min separ";
 subDirStem2 = "2 pH4 cont check signal 1 meas";
 subDirStem3 = "3 pH4 cont 4.5 hrs 27 meas 10 min separ";
 %refWaveNumber = 1074.26; % at index 407 - read from file, same for all 3
-refIndex = 0; % index where the reference peak is 
+refIndex = 409; % index where the reference peak is 
                 %(ring breathing near 1078 cm^-1
                 % TO DO: read from avg*.txt file
 numPoints = 1024;
 thisdata1 = zeros(2, numPoints, 'double');
 thisdata2 = zeros(2, numPoints, 'double');
 thisdata3 = zeros(2, numPoints, 'double');
-offset = 400;
-denominator1 = 1;
-denominator2 = 1;
-denominator3 = 1;
+offset = 300;
+denominator1 = 1; % default. Used if refIndex is 0
+denominator2 = 1; % default. Used if refIndex is 0
+denominator3 = 1; % default. Used if refIndex is 0
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
@@ -47,17 +48,21 @@ xMin = 1063;
 xMax = 1800;
 xlim([xMin xMax]);
 %ylim([yMin yMax]);
+
+% initialize color
+lineColor = red;
+
 for K = 1 : 3
     maxIntensity = 0; % set initial value
     if (K == 1)
       str_dir_to_search = dirStem + subDirStem1; % args need to be strings
-      % UGH, this function only in 2018b. 
+      % This function only in 2018b:
       %dir_to_search = convertContainedStringsToChars(str_dir_to_search);
       %How do I get it to char array for fullfile?
       dir_to_search = char(str_dir_to_search);
       txtpattern = fullfile(dir_to_search, 'avg*.txt');
-      dinfo = dir(txtpattern); % TO FIX: this returns a list of files and
-                               % I am handling them as if there is only 1
+      dinfo = dir(txtpattern); 
+      
       for I = 1 : length(dinfo)
           thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
           % 09/29/2018 "load" no longer works when add'l fields
@@ -65,14 +70,20 @@ for K = 1 : 3
           %thisdata2 = load(thisfilename); %load just this file
           fileID = fopen(thisfilename,'r');
           [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
+          % max is FYI, not used. Could be compared to a threshold to
+          % detect that signal is bad.
           fprintf( 'File #%d, "%s", maximum value was: %g\n', K, ...
               thisfilename, max(thisdata1(2,:)) );
-          if (max(thisdata1(2,:)) > maxIntensity)
-              maxIntensity = max(thisdata1(2,:));
-          end
           fclose(fileID);
           
-          %Ratiometric
+          % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
+          % REFERENCE INDEX
+          
+          % 1. Correct the baseline BEFORE calculating denominator + normalizing
+          % Returns trend as 'e' and baseline corrected signal as 'f'
+          [e, f] = correctBaseline(thisdata1(2,:)');    
+          
+          % 2. Ratiometric
           % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
           % on either side of refWaveNumber. This maps to: 1 - 11 total
           % intensities used to calculate the denominator.
@@ -80,22 +91,24 @@ for K = 1 : 3
               numPointsEachSide = 2;
               denominator1 = getDenominator(refIndex, ...
               numPointsEachSide, ...
-              numPoints, thisdata1(2,:));
+              numPoints, f(:));
           end
           fprintf('denominator = %g at index: %d\n', denominator1, refIndex);
           
-          % NEW 10/4/18: Normalize what is plotted
-          normalized = thisdata1(2,:)/denominator1;
-          % Returns trend as 'e' and baseline corrected signal as 'f'
-          [e, f] = correctBaseline(normalized');
+          % 3. NEW 10/4/18: Normalize what is plotted
+          normalized = f/denominator1;
           
           % change to plot starting at index 400
           % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
           % plot just the corrected signal
-          plot(thisdata1(1,offset:end), f(offset:end), 'blue');
+          plot(thisdata1(1,offset:end), normalized(offset:end), 'Color', lineColor);
           %legend(subDirStem1);
           hold on
           pause(1);
+          newColor = lineColor - [0.005*I, 0., 0.];
+          if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
+              lineColor = newColor;
+          end
       end
     else
         if (K == 2)
@@ -103,7 +116,7 @@ for K = 1 : 3
             dir_to_search = char(str_dir_to_search);
             txtpattern = fullfile(dir_to_search, 'avg*.txt');
             dinfo = dir(txtpattern);
-            for (I = 1 : length(dinfo))
+            for I = 1 : length(dinfo)
                 thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
                 % 09/29/2018 "load" no longer works when add'l fields
                 % appended at end. Need to only read 1024 lines
@@ -118,7 +131,14 @@ for K = 1 : 3
                 %thisdata2 = thisdata2';
                 fclose(fileID);
                 
-                %Ratiometric
+                % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
+                % REFERENCE INDEX
+
+                % 1. Correct the baseline BEFORE calculating denominator + normalizing
+                % Returns trend as 'e' and baseline corrected signal as 'f'
+                [e, f] = correctBaseline(thisdata2(2,:)');    
+
+                % 2. Ratiometric
                 % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
                 % on either side of refWaveNumber. This maps to: 1 - 11 total
                 % intensities used to calculate the denominator.
@@ -126,22 +146,24 @@ for K = 1 : 3
                     numPointsEachSide = 2;
                     denominator2 = getDenominator(refIndex, ...
                     numPointsEachSide, ...
-                    numPoints, thisdata2(2,:));
+                    numPoints, f(:));
                 end
                 fprintf('denominator = %g at index: %d\n', denominator2, refIndex);
-          
-                % NEW 10/4/18: normalize what is plotted
-                normalized = thisdata2(2,:)/denominator2;
-                % Returns trend as 'e' and baseline corrected signal as 'f'
-                [e, f] = correctBaseline(normalized');
-          
+
+                % 3. NEW 10/4/18: Normalize what is plotted
+                normalized = f/denominator2;
+
                 % change to plot starting at index 400
-                % plot the trend: plot(thisdata2(1,offset:end), e(offset:end), 'cyan', thisdata2(1,offset:end), f(offset:end), 'blue');
+                % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
                 % plot just the corrected signal
-                plot(thisdata2(1,offset:end), f(offset:end), 'green');
+                plot(thisdata2(1,offset:end), normalized(offset:end), 'Color', lineColor);
                 %legend(subDirStem1);
                 hold on
                 pause(1);
+                newColor = lineColor - [0.005*I, 0., 0.];
+                if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
+                    lineColor = newColor;
+                end
             end
         else
             if (K == 3)
@@ -164,7 +186,14 @@ for K = 1 : 3
                     %thisdata3 = thisdata3';
                     fclose(fileID);
                     
-                    %Ratiometric
+                    % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
+                    % REFERENCE INDEX
+
+                    % 1. Correct the baseline BEFORE calculating denominator + normalizing
+                    % Returns trend as 'e' and baseline corrected signal as 'f'
+                    [e, f] = correctBaseline(thisdata3(2,:)');    
+
+                    % 2. Ratiometric
                     % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
                     % on either side of refWaveNumber. This maps to: 1 - 11 total
                     % intensities used to calculate the denominator.
@@ -172,22 +201,24 @@ for K = 1 : 3
                         numPointsEachSide = 2;
                         denominator3 = getDenominator(refIndex, ...
                         numPointsEachSide, ...
-                        numPoints, thisdata3(2,:));
+                        numPoints, f(:));
                     end
                     fprintf('denominator = %g at index: %d\n', denominator3, refIndex);
-          
-                    % NEW 10/4/18: normalize what is plotted
-                    normalized = thisdata3(2,:)/denominator3;
-                    % Returns trend as 'e' and baseline corrected signal as 'f'
-                    [e, f] = correctBaseline(normalized');
-          
+
+                    % 3. NEW 10/4/18: Normalize what is plotted
+                    normalized = f/denominator3;
+
                     % change to plot starting at index 400
-                    % plot the trend: plot(thisdata3(1,offset:end), e(offset:end), 'cyan', thisdata3(1,offset:end), f(offset:end), 'blue');
+                    % plot the trend: plot(thisdata1(1,offset:end), e(offset:end), 'cyan', thisdata1(1,offset:end), f(offset:end), 'blue');
                     % plot just the corrected signal
-                    plot(thisdata3(1,offset:end), f(offset:end), 'magenta');
+                    plot(thisdata3(1,offset:end), normalized(offset:end), 'Color', lineColor);
                     %legend(subDirStem1);
                     hold on
                     pause(1);
+                    newColor = lineColor - [0.005*I, 0., 0.];
+                    if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
+                        lineColor = newColor;
+                    end
                 end
             end
         end

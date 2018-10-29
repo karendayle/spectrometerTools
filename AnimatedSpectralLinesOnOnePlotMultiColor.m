@@ -18,7 +18,7 @@ numPoints = 1024;
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
-dir_to_search = 'C:\Users\dayle.kotturi\Documents\Data\SORS1';
+dir_to_search = 'H:\Documents\Data\SORS-noSignal-9Trials\';
 txtpattern = fullfile(dir_to_search, 'spectrum-*.txt');
 dinfo = dir(txtpattern);
 
