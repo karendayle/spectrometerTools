@@ -26,13 +26,10 @@ red =     [1.0, 0.0, 0.0];
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
 %dirStem = "H:\Documents\Data\Embedded hydrogel study\flow through 2X v2\";
-dirStem = "Z:\Documents\Data\flow through 2X v5\"; % Analyzing using remote Matlab client
-subDirStem1 = "1 DI flush to begin";
-subDirStem2 = "2 pH 7";
-subDirStem3 = "3 DI flush";
-subDirStem4 = "4 pH 4";
-subDirStem5 = "5 DI flush";
-subDirStem6 = "6 pH 10";
+dirStem = "Z:\Documents\Data\Made by Sureyya\"; % Analyzing using remote Matlab client
+subDirStem1 = "D2 pH4 ref 1581";
+subDirStem2 = "D2 pH7 ref 1581";
+subDirStem3 = "D2 pH10 ref 1581";
 
 global numPoints;
 numPoints = 1024;
@@ -40,9 +37,6 @@ numPoints = 1024;
 thisData1 = zeros(2, numPoints, 'double');
 thisData2 = zeros(2, numPoints, 'double');
 thisData3 = zeros(2, numPoints, 'double');
-thisData4 = zeros(2, numPoints, 'double');
-thisData5 = zeros(2, numPoints, 'double');
-thisData6 = zeros(2, numPoints, 'double');
 
 global xRef;
 xRef = 409; % index where the reference peak is 
@@ -69,13 +63,13 @@ myDebug = 0;
 
 figure 
 
-for K = 1:6
+for K = 2:2
     switch K
         case 1
             %xRef = 409; % default
-            pHcolor = purple;
+            pHcolor = red;
             num1 = myPlot(subDirStem1, thisData1, pHcolor);
-            fprintf('Case 1: %d spectra plotted in purple\n', num1);
+            fprintf('Case 1: %d spectra plotted in red\n', num1);
         case 2
             %xRef = 416;
             pHcolor = green;
@@ -83,9 +77,9 @@ for K = 1:6
             fprintf('Case 2: %d spectra plotted in green\n', num2);
         case 3
             %xRef = 416;
-            pHcolor = purple;
+            pHcolor = blue;
             num3 = myPlot(subDirStem3, thisData3, pHcolor);
-            fprintf('Case 3: %d spectra plotted in purple\n', num3);            
+            fprintf('Case 3: %d spectra plotted in blue\n', num3);            
         case 4
             pHcolor = red;
             num4 = myPlot(subDirStem4, thisData4, pHcolor);
@@ -122,9 +116,9 @@ text(x, y, 'pH 10', 'Color', blue);
 text(x, y, '_____', 'Color', blue);
 
 hold off
-title('Ratiometric continuous real-time MBA AuNPs gel 2X in MES 10 minutes apart', 'FontSize', myFont);
+title('Ratiometric continuous real-time of sample 60 nm D2 in MES 10 minutes apart', 'FontSize', myFont);
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
-ylabel('Arbitrary Units (A.U.)/Ring-breathing at 1078 cm^-^1^-1', 'FontSize', myFont); % y-axis label
+ylabel('Arbitrary Units (A.U.)/Intensity at 1581 cm^-^1 (A.U.)', 'FontSize', myFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
