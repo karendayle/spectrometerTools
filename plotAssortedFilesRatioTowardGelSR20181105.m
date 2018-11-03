@@ -68,7 +68,7 @@ myDebug = 0;
 
 figure 
 
-for K = 1:5
+for K = 2:4
     switch K
         case 1
             %xRef = 409; % default
@@ -116,12 +116,12 @@ y = y - deltaY;
 text(x, y, 'pH 10', 'Color', blue);
 text(x, y, '_____', 'Color', blue);
 text(x + deltaX, y, 'Each spectra average of 5 acqs');
-y = y - deltaY;
-text(x, y, 'no buffer', 'Color', black);
-text(x, y, '_____', 'Color', black);
-y = y - deltaY;
-text(x, y, 'in uCapsules', 'Color', rust);
-text(x, y, '_____', 'Color', rust);
+%y = y - deltaY;
+%text(x, y, 'no buffer', 'Color', black);
+%text(x, y, '_____', 'Color', black);
+%y = y - deltaY;
+%text(x, y, 'in uCapsules', 'Color', rust);
+%text(x, y, '_____', 'Color', rust);
 
 hold off
 title('Ratiometric continuous real-time of sample 60 nm spheres', 'FontSize', myFont);
