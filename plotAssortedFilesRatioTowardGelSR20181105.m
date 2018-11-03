@@ -44,8 +44,8 @@ thisData4 = zeros(2, numPoints, 'double');
 thisData5 = zeros(2, numPoints, 'double');
 
 global xRef;
-xRef = 409; % index where the reference peak is 
-                %(ring breathing near 1078 cm^-1
+xRef = 713; % index where the reference peak is 
+                % COO- at 1582
                 % TO DO: read from avg*.txt file
 
 thisdata1 = zeros(2, numPoints, 'double');
@@ -60,7 +60,7 @@ global yMax;
 xMin = 950;
 xMax = 2000;
 yMin = 0;
-yMax = 1.4;
+yMax = 1.5;
 myFont = 30;
 
 global myDebug;
@@ -116,17 +116,17 @@ y = y - deltaY;
 text(x, y, 'pH 10', 'Color', blue);
 text(x, y, '_____', 'Color', blue);
 text(x + deltaX, y, 'Each spectra average of 5 acqs');
-%y = y - deltaY;
-%text(x, y, 'no buffer', 'Color', black);
-%text(x, y, '_____', 'Color', black);
-%y = y - deltaY;
-%text(x, y, 'in uCapsules', 'Color', rust);
-%text(x, y, '_____', 'Color', rust);
+y = y - deltaY;
+text(x, y, 'no buffer', 'Color', black);
+text(x, y, '_____', 'Color', black);
+y = y - deltaY;
+text(x, y, 'in uCapsules', 'Color', rust);
+text(x, y, '_____', 'Color', rust);
 
 hold off
-title('Ratiometric continuous real-time of sample 60 nm spheres', 'FontSize', myFont);
+title('Ratiometric continuous real-time of sample 54 nm spheres', 'FontSize', myFont);
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
-ylabel('Arbitrary Units (A.U.)/Intensity at 1581 cm^-^1 (A.U.)', 'FontSize', myFont); % y-axis label
+ylabel('Arbitrary Units (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', 'FontSize', myFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
