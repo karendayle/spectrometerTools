@@ -381,6 +381,7 @@ function c = plotSpectrum(firstTime, ...
         title('Ratiometric with N=5');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('(A.U.)/(A.U.)'); % y-axis label
+        set(gca,'FontSize',16,'FontWeight','bold','box','off')
     else
         normalized = spectrum;
     end
@@ -390,7 +391,8 @@ function c = plotSpectrum(firstTime, ...
     plot(wavenumbers, e, 'cyan', wavenumbers, f, 'green');
     title('Baseline Corrected');
     xlabel('Wavenumber (cm^-1)'); % x-axis label
-    ylabel('(A.U.)/(A.U.)'); % y-axis label;   
+    ylabel('(A.U.)/(A.U.)'); % y-axis label;
+    set(gca,'FontSize',16,'FontWeight','bold','box','off')
     legend('removed trend', 'result');
     
     if (firstTime == false)
