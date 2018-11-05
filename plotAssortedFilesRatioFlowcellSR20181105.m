@@ -27,7 +27,7 @@ black =   [0., 0.0, 0.0];
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
 %dirStem = "H:\Documents\Data\Made by Sureyya\Toward the gel\";
-dirStem = "Z:\Documents\Data\Made by Sureyya\Toward the gel\"; % Analyzing using remote Matlab client
+dirStem = "Z:\Documents\Data\Made by Sureyya\Toward the gel\flowcell\"; % Analyzing using remote Matlab client
 subDirStem1 = "Flowcell pH4";
 subDirStem2 = "Flowcell switch from pH4 to pH10";
 subDirStem3 = "Flowcell pH10";
