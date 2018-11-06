@@ -54,6 +54,7 @@ xMax = 2000;
 yMin = 0;
 yMax = 1.5;
 myFont = 30;
+myTextFont = 15;
 
 global myDebug;
 myDebug = 0;
@@ -86,31 +87,32 @@ for K = 1:2:5
 end    
 
 % TO DO: figure out the coords for labels from the data
-y = 1.3;
-x = 1710;
+y = 1.4;
+x = 1650;
 deltaY = 0.1;
-deltaX = 80;
-text(x, y, 'pH 4', 'Color', red);
-text(x, y, '_____', 'Color', red);
-text(x + deltaX, y, 'Laser Power = 48.75 mW');
+deltaX = 60;
+text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+text(x + deltaX, y, 'Laser Power = 48.75 mW', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH 7', 'Color', green);
-text(x, y, '_____', 'Color', green);
-text(x + deltaX, y, '5 second integration time per acq');
+text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
+text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH 10', 'Color', blue);
+text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', blue);
-text(x + deltaX, y, 'Each spectra average of 5 acqs');
+text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
 y = y - deltaY;
 %text(x, y, 'switchover', 'Color', black);
 %text(x, y, '_____', 'Color', black);
-text(x + deltaX, y, 'Normalized using 5 points around ref peak');
-%y = y - deltaY;
+text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
+y = y - deltaY;
 %text(x, y, 'in uCapsules', 'Color', rust);
 %text(x, y, '_____', 'Color', rust);
+text(x + deltaX, y, 'Displaying average spectrum at each pH level', 'FontSize', myTextFont);
 
 hold off
-title('Ratiometric continuous real-time of sample 54 nm spheres', 'FontSize', myFont);
+title('Ratiometric continuous real-time of sample 54 nm spheres in gel in flowcell', 'FontSize', myFont);
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
 ylabel('Arbitrary Units (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', 'FontSize', myFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
@@ -277,16 +279,20 @@ function g = myPlot(subDirStem, myColor)
             % 3. Normalize what is plotted
             normalized = f/denominator1;
             
+            % 4. Add to the sum of the squares
             sumSq = sumSq + (normalized - avg).^2; 
         end
         
+        % 5. Compute standard deviation at each index of the averaged spectra 
         stdDev = sqrt(sumSq/numberOfSpectra);
-        % Now plot stdDev as the array of error bars on the plot...        
-        
+            
         % plot the corrected signal with error bars
-        %plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor);
-        errorbar(thisdata(1,offset:end), normalized(offset:end), ...
-            stdDev(offset:end), 'Color', myColor);
+        plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor);
+        
+        % 11/6/2018 Not needed after all
+        % Now plot stdDev as the array of error bars on the plot...    
+        %errorbar(thisdata(1,offset:end), normalized(offset:end), ...
+        %    stdDev(offset:end), 'Color', myColor);
         xlim([xMin xMax]);
         ylim([yMin yMax]);
         hold on
