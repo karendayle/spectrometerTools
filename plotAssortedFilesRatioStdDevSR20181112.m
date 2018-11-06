@@ -60,7 +60,7 @@ myDebug = 0;
 
 figure 
 
-for K = 1:5
+for K = 1:2:5
     switch K
         case 1
             pHcolor = red;
@@ -92,7 +92,7 @@ deltaY = 0.1;
 deltaX = 80;
 text(x, y, 'pH 4', 'Color', red);
 text(x, y, '_____', 'Color', red);
-text(x + deltaX, y, 'Laser Power = 0.375 Max');
+text(x + deltaX, y, 'Laser Power = 48.75 mW');
 y = y - deltaY;
 text(x, y, 'pH 7', 'Color', green);
 text(x, y, '_____', 'Color', green);
@@ -101,9 +101,10 @@ y = y - deltaY;
 text(x, y, 'pH 10', 'Color', blue);
 text(x, y, '_____', 'Color', blue);
 text(x + deltaX, y, 'Each spectra average of 5 acqs');
-%y = y - deltaY;
+y = y - deltaY;
 %text(x, y, 'switchover', 'Color', black);
 %text(x, y, '_____', 'Color', black);
+text(x + deltaX, y, 'Normalized using 5 points around ref peak');
 %y = y - deltaY;
 %text(x, y, 'in uCapsules', 'Color', rust);
 %text(x, y, '_____', 'Color', rust);
@@ -184,6 +185,7 @@ function g = myPlot(subDirStem, myColor)
     global ciel; 
     global cherry;
     global red;
+    global black;
     global dirStem;
     global numPoints;
     global x1;
@@ -278,21 +280,18 @@ function g = myPlot(subDirStem, myColor)
             sumSq = sumSq + (normalized - avg).^2; 
         end
         
-        stdDev = sqrt(sumSq)/numberOfSpectra;
+        stdDev = sqrt(sumSq/numberOfSpectra);
         % Now plot stdDev as the array of error bars on the plot...        
         
         % plot the corrected signal with error bars
-        plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor);
-        errorbar(thisdata(1,offset:end), normalized(offset:end), stdDev(offset:end));
+        %plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor);
+        errorbar(thisdata(1,offset:end), normalized(offset:end), ...
+            stdDev(offset:end), 'Color', myColor);
         xlim([xMin xMax]);
         ylim([yMin yMax]);
         hold on
         fprintf('%d\n', I);
         %pause(1);
-        newColor = myColor - [0.005*I, 0., 0.];
-        if (newColor(1) > 0.) && (newColor(2) > 0.) && (newColor(3) > 0.)
-            lineColor = newColor;
-        end
     end
     g = numberOfSpectra;
 end
