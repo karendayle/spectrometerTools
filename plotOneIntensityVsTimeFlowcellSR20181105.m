@@ -46,8 +46,8 @@ numPoints = 1024;
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
-%dirStem = "H:\Documents\Data\Made by Sureyya\Toward the gel\";
-dirStem = "Z:\Documents\Data\Made by Sureyya\Toward the gel\flowcell\"; % Analyzing using remote Matlab client
+dirStem = "H:\Documents\Data\Made by Sureyya\Toward the gel\flowcell\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\Toward the gel\flowcell\"; % Analyzing using remote Matlab client
 subDirStem1 = "Flowcell pH4";
 subDirStem2 = "Flowcell switch from pH4 to pH10";
 subDirStem3 = "Flowcell pH10";
@@ -218,7 +218,6 @@ function g = myPlot(subDirStem, myColor)
     thisdata = zeros(2, numPoints, 'double');
     
     numberOfSpectra = length(dinfo);
-    % TO DO: add if stmt to ensure numberOfSpectra > 0
     for I = 1 : numberOfSpectra
         thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name            
         % NEW 10/8/2018: extract time from filename

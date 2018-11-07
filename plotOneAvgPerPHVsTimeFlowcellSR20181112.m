@@ -234,93 +234,153 @@ function g = myPlot(subDirStem, myColor)
     thisdata = zeros(2, numPoints, 'double');
     
     numberOfSpectra = length(dinfo);
-    % TO DO: add if stmt to ensure numberOfSpectra > 0
-    for I = 1 : numberOfSpectra
-        thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name            
-        % NEW 10/8/2018: extract time from filename
-        S = string(thisfilename); 
-        newStr1 = extractAfter(S,"avg-");
-        dateWithHyphens = extractBefore(newStr1,".txt");
-        % No, it would be too easy if this worked
-        %t1 = datetime(dateWithHyphens,'Format','yyyy-MM-dd-hh-mm-ss');
-        [myYear, remain] = strtok(dateWithHyphens, '-');
-        [myMonth, remain] = strtok(remain, '-');
-        [myDay, remain] = strtok(remain, '-');
-        [myHour, remain] = strtok(remain, '-');
-        [myMinute, remain] = strtok(remain, '-');
-        [mySecond, remain] = strtok(remain, '-');
-        % These are strings, need to make them numbers,
-        % by, sigh, first making them char arrays
-        % which wasn't by the way necessary with 2018a.
-        % sigh again.
-        myY = str2num(char(myYear));
-        myMo = str2num(char(myMonth));
-        myD = str2num(char(myDay));
-        myH = str2num(char(myHour));
-        myMi = str2num(char(myMinute));
-        myS = str2num(char(mySecond));
-        % THIS IS THE WEIRD BEHAVIOR THAT TOOK TIME TO FIGURE OUT 9OCT+10OCT
-        % Create the dateTime variable. Hours, minutes, seconds are
-        % ignored so add them in after as fraction of a day
-        % This method doesn't work. See above at tRef setting
-        %dateTime = char(strcat(myYear, '-', myMonth, '-', myDay));
-        % Use tRef just to deal with smaller numbers
-        %t1 = datenum(dateTime, 'yyyy-MM-dd') - tRef;
-        %t(I) = t1 + ((myH + myMi/60 + myS/3600))/24;
-        % NEW 10/10/2018
-        t(I) = datenum(myY, myMo, myD, myH, myMi, myS) - tRef;
-        fprintf...
-            ('CHECK %d file %2d-%2d-%2d-%2d-%2d-%2d has time %10.4f\n',...
-            I, myY, myMo, myD, myH, myMi, myS, t(I));
-        fileID = fopen(thisfilename,'r');
-        [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-        % NEW 10/18 - base corr not done in 10/15/18 SR. This could explain
-        % the lack of steady state...
-        % 1. Correct the baseline BEFORE calculating denominator + normalizing
-        % Returns trend as 'e' and baseline corrected signal as 'f'
-        [e, f] = correctBaseline(thisdata(2,:)'); 
-        % OLDER denominator = thisdata(2, xRef);
-        % OLD denominator = f(xRef);
-        % NEW 10/20/2018
-        denominator = 1; % default
-        if (xRef ~= 0) 
-            numPointsEachSide = 2; % TO DO: This could be increased
-            denominator = getDenominator(xRef, numPointsEachSide, ...
-                numPoints, f(:));
-        end
-        if myDebug
-            fprintf('denominator = %g at index: %d\n', denominator1, xRef);
-        end
-        
-        % NEW 11/6/2018: since peaks at 1430 and 1702/cm red-, blueshift
-        % as function of pH, find the local max in the area
-        f(x1Min:x1Max)
-        x1LocalPeak = localPeak(f(x1Min:x1Max));
-        x2LocalPeak = localPeak(f(x2Min:x2Max));
-        fprintf('local max near 1430/cm is %g\n', x1LocalPeak);
-        fprintf('local max near 1702/cm is %g\n', x2LocalPeak);       
-        
-        y1(I) = x1LocalPeak/denominator;
-        y2(I) = x2LocalPeak/denominator;
+    if numberOfSpectra > 0
+        % first pass on dataset, to get array of average spectra
+        % TO DO: add if stmt to ensure numberOfSpectra > 0
+        for I = 1 : numberOfSpectra
+            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name            
+            % NEW 10/8/2018: extract time from filename
+            S = string(thisfilename); 
+            newStr1 = extractAfter(S,"avg-");
+            dateWithHyphens = extractBefore(newStr1,".txt");
+            % No, it would be too easy if this worked
+            %t1 = datetime(dateWithHyphens,'Format','yyyy-MM-dd-hh-mm-ss');
+            [myYear, remain] = strtok(dateWithHyphens, '-');
+            [myMonth, remain] = strtok(remain, '-');
+            [myDay, remain] = strtok(remain, '-');
+            [myHour, remain] = strtok(remain, '-');
+            [myMinute, remain] = strtok(remain, '-');
+            [mySecond, remain] = strtok(remain, '-');
+            % These are strings, need to make them numbers,
+            % by, sigh, first making them char arrays
+            % which wasn't by the way necessary with 2018a.
+            % sigh again.
+            myY = str2num(char(myYear));
+            myMo = str2num(char(myMonth));
+            myD = str2num(char(myDay));
+            myH = str2num(char(myHour));
+            myMi = str2num(char(myMinute));
+            myS = str2num(char(mySecond));
+            % THIS IS THE WEIRD BEHAVIOR THAT TOOK TIME TO FIGURE OUT 9OCT+10OCT
+            % Create the dateTime variable. Hours, minutes, seconds are
+            % ignored so add them in after as fraction of a day
+            % This method doesn't work. See above at tRef setting
+            %dateTime = char(strcat(myYear, '-', myMonth, '-', myDay));
+            % Use tRef just to deal with smaller numbers
+            %t1 = datenum(dateTime, 'yyyy-MM-dd') - tRef;
+            %t(I) = t1 + ((myH + myMi/60 + myS/3600))/24;
+            % NEW 10/10/2018
+            t(I) = datenum(myY, myMo, myD, myH, myMi, myS) - tRef;
+            fprintf...
+                ('CHECK %d file %2d-%2d-%2d-%2d-%2d-%2d has time %10.4f\n',...
+                I, myY, myMo, myD, myH, myMi, myS, t(I));
+            fileID = fopen(thisfilename,'r');
+            [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
+            % NEW 10/18 - base corr not done in 10/15/18 SR. This could explain
+            % the lack of steady state...
+            % 1. Correct the baseline BEFORE calculating denominator + normalizing
+            % Returns trend as 'e' and baseline corrected signal as 'f'
+            [e, f] = correctBaseline(thisdata(2,:)'); 
+            % OLDER denominator = thisdata(2, xRef);
+            % OLD denominator = f(xRef);
+            % NEW 10/20/2018
+            denominator = 1; % default
+            if (xRef ~= 0) 
+                numPointsEachSide = 2; % TO DO: This could be increased
+                denominator = getDenominator(xRef, numPointsEachSide, ...
+                    numPoints, f(:));
+            end
+            if myDebug
+                fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+            end
 
-        %y1(I) = thisdata(2, x1)/denominator;
-        %y2(I) = thisdata(2, x2)/denominator;
-        %y3(I) = denominator; % NEW Oct. 17th to look for jumps in ref
-        fclose(fileID);
-        sumY1 = sumY1 + y1(I);
-        sumY2 = sumY2 + y2(I);
+            % NEW 11/6/2018: since peaks at 1430 and 1702/cm red-, blueshift
+            % as function of pH, find the local max in the area
+            f(x1Min:x1Max)
+            x1LocalPeak = localPeak(f(x1Min:x1Max));
+            x2LocalPeak = localPeak(f(x2Min:x2Max));
+            fprintf('local max near 1430/cm is %g\n', x1LocalPeak);
+            fprintf('local max near 1702/cm is %g\n', x2LocalPeak);       
+
+            y1(I) = x1LocalPeak/denominator;
+            y2(I) = x2LocalPeak/denominator;
+
+            %y1(I) = thisdata(2, x1)/denominator;
+            %y2(I) = thisdata(2, x2)/denominator;
+            %y3(I) = denominator; % NEW Oct. 17th to look for jumps in ref
+            fclose(fileID);
+            sumY1 = sumY1 + y1(I);
+            sumY2 = sumY2 + y2(I);
+        end
+    
+        % calculate average 
+        avgY1 = sumY1/numberOfSpectra;
+        avgY2 = sumY2/numberOfSpectra;
+        sumSqY1 = 0;
+        sumSqY2 = 0;
+        
+        % second pass on dataset to get (each point - average)^2
+        % for standard deviation, need 
+        for I = 1 : numberOfSpectra
+            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+            fileID = fopen(thisfilename,'r');
+            [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+
+            % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
+            % REFERENCE INDEX
+
+            % 1. Correct the baseline BEFORE calculating denominator + normalizing
+            % Returns trend as 'e' and baseline corrected signal as 'f'
+            [e, f] = correctBaseline(thisdata(2,:)');    
+
+            % 2. Ratiometric
+            % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+            % on either side of refWaveNumber. This maps to: 1 - 11 total
+            % intensities used to calculate the denominator.
+            if (xRef ~= 0) 
+                numPointsEachSide = 2;
+                denominator1 = getDenominator(xRef, numPointsEachSide, ...
+                    numPoints, f(:));
+            end
+            if myDebug
+                fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+            end
+            
+            % 3. Normalize what is plotted
+            % NEW 11/6/2018: since peaks at 1430 and 1702/cm red-, blueshift
+            % as function of pH, find the local max in the area
+            f(x1Min:x1Max)
+            x1LocalPeak = localPeak(f(x1Min:x1Max));
+            x2LocalPeak = localPeak(f(x2Min:x2Max));
+            fprintf('local max near 1430/cm is %g\n', x1LocalPeak);
+            fprintf('local max near 1702/cm is %g\n', x2LocalPeak);       
+
+            y1(I) = x1LocalPeak/denominator;
+            y2(I) = x2LocalPeak/denominator;
+            
+            % 4. Add to the sum of the squares
+            sumSqY1 = sumSqY1 + (y1(I) - avgY1).^2;
+            sumSqY2 = sumSqY2 + (y2(I) - avgY2).^2;
+        end
     end
     
-    %avgY1 = sumY1/N; TO DO: WHAT IS N?
-    %avgY2 = sumY2/N;
-    % TO DO: PUT 2ND PASS HERE FOR STD DEV
+    % 5. Compute standard deviation at each index of the averaged spectra 
+    stdDevY1 = sqrt(sumSqY1/numberOfSpectra);
+    stdDevY2 = sqrt(sumSqY2/numberOfSpectra);
     
-    
+    for J=1:numberOfSpectra
+        avgArrayY1(J) = avgY1;
+        avgArrayY2(J) = avgY2;
+        stdDevArrayY1(J) = stdDevY1;
+        stdDevArrayY2(J) = stdDevY2;
+    end
     
     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
-    plot(t,y1,'-o', 'Color', myColor);
+    errorbar(t, avgArrayY1, stdDevArrayY1, '-o', 'Color', myColor);
+    %plot(t,y1,'-o', 'Color', myColor);
     hold on;
-    plot(t,y2,'-*', 'Color', myColor); % Could vary darkness to distinguish
+    errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', myColor);
     hold on;
     %plot(t,y3,'-*', 'Color', rust);
     g = 1;
