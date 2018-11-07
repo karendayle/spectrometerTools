@@ -11,11 +11,12 @@ x1 = 614;
 % Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
 global x2;
 x2 = 794;
-% Use the index 409 to get the intensity at the reference peak, 1078/cm,
-% ring breathing
-global xRef;
-xRef = 409;
-% These indices could be modified slightly and results compared.
+
+% IMPORTANT: This is index to reference peak. 
+% No, it is not only this value that is used. Rather it is an integration
+% around this point that is used for the denominator that normalizes
+xRef = 713; % COO- at 1582
+            % TO DO: read from avg*.txt file
 
 % Colors:
 global blue;
@@ -64,10 +65,9 @@ figure
 global tRef;
 tRef = datenum(2018, 11, 03, 18, 24, 0);
 
-global myTitleFont;
-global myLabelFont;
 myTitleFont = 30;
 myLabelFont = 20;
+myTextFont = 15;
 
 for K = 1:5
 % IMPORTANT: data for case 6 is bad because of the leak so leave out
@@ -100,29 +100,29 @@ for K = 1:5
     end
 end    
    
-y = 0.33;
+y = 0.24;
 x = 0.01;
 deltaY = 0.01;
 deltaX = 0.025;
-text(x, y, 'pH 4', 'Color', red);
-text(x, y, '_____', 'Color', red);
-text(x + deltaX, y, 'Laser Power = 0.375 Max');
+text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+text(x + deltaX, y, 'Laser Power = 48.75 mW', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH 7', 'Color', green);
-text(x, y, '_____', 'Color', green);
-text(x + deltaX, y, '5 second integration time per acq');
+text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
+text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH 10', 'Color', blue);
-text(x, y, '_____', 'Color', blue);
-text(x + deltaX, y, 'Each spoint average of 5 acqs');
+text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
+text(x + deltaX, y, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'DI water flush', 'Color', black);
-text(x, y, '_____', 'Color', black);
-text(x+deltaX, y, 'o = 1430cm^-^1', 'Color', black);
+text(x, y, 'DI water flush', 'Color', black, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
+text(x+deltaX, y, 'o = 1430cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
-%text(x, y, 'in uCapsules', 'Color', rust);
-%text(x, y, '_____', 'Color', rust);
-text(x+deltaX, y, '* = 1702cm^-^1', 'Color', black);
+%text(x, y, 'in uCapsules', 'Color', rust, 'FontSize', myTextFont);
+%text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
+text(x+deltaX, y, '* = 1702cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
 title('Normalized intensity at pH-sensitive peaks vs time of 54 nm spheres', ...
@@ -287,7 +287,7 @@ function g = myPlot(subDirStem, myColor)
     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
     plot(t,y1,'-o', 'Color', myColor);
     hold on;
-    plot(t,y2,'-*', 'Color', myColor); % Could vary darkness to distinguish
+    plot(t,y2,'-*', 'Color', myColor);
     hold on;
     %plot(t,y3,'-*', 'Color', rust);
     g = 1;

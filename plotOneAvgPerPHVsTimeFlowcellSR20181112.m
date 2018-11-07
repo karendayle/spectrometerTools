@@ -70,8 +70,6 @@ figure
 global tRef;
 tRef = datenum(2018, 11, 03, 18, 24, 0);
 
-global myTitleFont;
-global myLabelFont;
 myTitleFont = 30;
 myLabelFont = 20;
 myTextFont = 15;
@@ -126,6 +124,9 @@ y = y - deltaY;
 text(x, y, 'DI water flush', 'Color', black, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
 text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'avg with std dev', 'Color', purple, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
@@ -210,6 +211,7 @@ function g = myPlot(subDirStem, myColor)
     global ciel; 
     global cherry;
     global red;
+    global black;
     global dirStem;
     global numPoints;
     global x1Min;
@@ -314,51 +316,14 @@ function g = myPlot(subDirStem, myColor)
         end
     
         % calculate average 
-        avgY1 = sumY1/numberOfSpectra;
-        avgY2 = sumY2/numberOfSpectra;
+        avgY1 = sumY1/numberOfSpectra
+        avgY2 = sumY2/numberOfSpectra
         sumSqY1 = 0;
         sumSqY2 = 0;
         
         % second pass on dataset to get (each point - average)^2
         % for standard deviation, need 
-        for I = 1 : numberOfSpectra
-            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-            fileID = fopen(thisfilename,'r');
-            [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-
-            % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-            % REFERENCE INDEX
-
-            % 1. Correct the baseline BEFORE calculating denominator + normalizing
-            % Returns trend as 'e' and baseline corrected signal as 'f'
-            [e, f] = correctBaseline(thisdata(2,:)');    
-
-            % 2. Ratiometric
-            % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-            % on either side of refWaveNumber. This maps to: 1 - 11 total
-            % intensities used to calculate the denominator.
-            if (xRef ~= 0) 
-                numPointsEachSide = 2;
-                denominator1 = getDenominator(xRef, numPointsEachSide, ...
-                    numPoints, f(:));
-            end
-            if myDebug
-                fprintf('denominator = %g at index: %d\n', denominator1, xRef);
-            end
-            
-            % 3. Normalize what is plotted
-            % NEW 11/6/2018: since peaks at 1430 and 1702/cm red-, blueshift
-            % as function of pH, find the local max in the area
-            f(x1Min:x1Max)
-            x1LocalPeak = localPeak(f(x1Min:x1Max));
-            x2LocalPeak = localPeak(f(x2Min:x2Max));
-            fprintf('local max near 1430/cm is %g\n', x1LocalPeak);
-            fprintf('local max near 1702/cm is %g\n', x2LocalPeak);       
-
-            y1(I) = x1LocalPeak/denominator;
-            y2(I) = x2LocalPeak/denominator;
-            
+        for I = 1 : numberOfSpectra            
             % 4. Add to the sum of the squares
             sumSqY1 = sumSqY1 + (y1(I) - avgY1).^2;
             sumSqY2 = sumSqY2 + (y2(I) - avgY2).^2;
@@ -377,10 +342,14 @@ function g = myPlot(subDirStem, myColor)
     end
     
     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
-    errorbar(t, avgArrayY1, stdDevArrayY1, '-o', 'Color', myColor);
+    errorbar(t, avgArrayY1, stdDevArrayY1, '-o', 'Color', purple);
     %plot(t,y1,'-o', 'Color', myColor);
     hold on;
-    errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', myColor);
+    errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', purple);
+    hold on;
+    plot(t,y1,'-o', 'Color', myColor);
+    hold on;
+    plot(t,y2,'-*', 'Color', myColor);
     hold on;
     %plot(t,y3,'-*', 'Color', rust);
     g = 1;
