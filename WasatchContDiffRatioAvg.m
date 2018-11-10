@@ -46,7 +46,7 @@ x = zeros(1, numPoints, 'double');
 avg = zeros(1, numPoints, 'double');
 integrationTimeMS = 5000;
 xMin = 0;
-xMax = 1800;
+xMax = 1800; % SP says to cutoff here 11/7/2018
 yMin = 0;
 yMax = 12000;
 darkStem = '../../Data/dark-%s.txt';
@@ -63,7 +63,10 @@ refWaveNumber = 0;
 denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                                      % increasing number of points
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
-waitBetweenAverages = 595; % Acquire one averaged sample per 10 minutes
+waitBetweenAverages = 120; % Acquire one averaged sample 2 minutes apart
+countBetweenPlots = 5; % Draw one out of every five averages
+counter = 0;
+
 % load the DLL
 % 32 bit dll: NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
 % 64 bit dll: 
@@ -273,11 +276,14 @@ if (myAns1 ~= 4)
                     differenceBetweenAverages(i) = avg(i) - lastAvgData(i);
                 end
             end
-
+            % Too many plots
             % Plot the average spectra of numIter acquisitions
-            plotStatus = plotSpectrum(firstAverage, ...
-                x, darkData, rawData, avg, ...
-                differenceBetweenAverages, denominator, 1, 0);
+            if mod(counter,countBetweenPlots) == 0
+                plotStatus = plotSpectrum(firstAverage, ...
+                    x, darkData, rawData, avg, ...
+                    differenceBetweenAverages, denominator, 1, 0);
+            end
+            counter = counter + 1;
 
             % prepare for next iteration
             for i = 1:pixels
