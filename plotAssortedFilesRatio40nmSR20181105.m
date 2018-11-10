@@ -25,11 +25,11 @@ red =     [1.0, 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-%dirStem = "H:\Documents\Data\Embedded hydrogel study\flow through 2X v2\";
-dirStem = "Z:\Documents\Data\Made by Sureyya\study 20 40 60 nm\"; % Analyzing using remote Matlab client
-subDirStem1 = "A3 60nm MBA pH4";
-subDirStem2 = "A2 60nm MBA pH7";
-subDirStem3 = "A1 60nm MBA pH10";
+dirStem = "H:\Documents\Data\Made by Sureyya\study 20 40 60 nm\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\study 20 40 60 nm\"; % Analyzing using remote Matlab
+subDirStem1 = "B3 40nm MBA pH4";
+subDirStem2 = "B2 40nm MBA pH7";
+subDirStem3 = "B1 40nm MBA pH10";
 
 global numPoints;
 numPoints = 1024;
