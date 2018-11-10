@@ -52,12 +52,15 @@ numPoints = 1024;
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
-%dirStem = "H:\Documents\Data\Made by Sureyya\Gel2 Bubbly Beauty\";
-dirStem = "Z:\Documents\Data\Made by Sureyya\Gel2 Bubbly Beauty\"; % Analyzing using remote Matlab client
+dirStem = "H:\Documents\Data\Made by Sureyya\Gel2 Bubbly Beauty\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\Gel2 Bubbly Beauty\"; % Analyzing using remote Matlab client
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4 no switchover";
 subDirStem3 = "3 pH10 no switchover";
 subDirStem4 = "4 pH8.6 no switchover";
+
+global lineThickness;
+lineThickness = 2;
 
 global myDebug;
 myDebug = 0;
@@ -72,7 +75,7 @@ myTitleFont = 30;
 myLabelFont = 20;
 myTextFont = 15;
 
-for K = 1:4
+for K = 1:3
 
     switch K
         case 1
@@ -94,10 +97,10 @@ for K = 1:4
     end
 end    
    
-y = 0.29;
-x = 0.01;
+y = 0.34;
+x = 0.05;
 deltaY = 0.01;
-deltaX = 0.025;
+deltaX = 0.6;
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
 text(x + deltaX, y, 'Laser Power = 48.75 mW', 'FontSize', myTextFont);
@@ -106,12 +109,10 @@ text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
 text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH 8.6', 'Color', ciel, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
-text(x + deltaX, y, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
-y = y - deltaY;
 text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
+text(x + deltaX, y, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
+y = y - deltaY;
 text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'avg with std dev', 'Color', purple, 'FontSize', myTextFont);
@@ -122,9 +123,9 @@ y = y - deltaY;
 text(x, y, '* = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
-title('Normalized intensity at pH-sensitive peaks vs time of 54 nm spheres in gel 2 "Bubbly Beauty"', ...
+title('Normalized intensity at pH-sensitive peaks vs time of 54 nm spheres in gel #2', ...
     'FontSize', myTitleFont);
-myXlabel = sprintf('Time in days from %s', datestr(tRef));
+myXlabel = sprintf('Time in hours from %s', datestr(tRef));
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
 ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
@@ -210,6 +211,7 @@ function g = myPlot(subDirStem, myColor)
     global xRef;
     global tRef;
     global myDebug;
+    global lineThickness;
     
     sumY1 = 0;
     sumY2 = 0;
@@ -261,7 +263,7 @@ function g = myPlot(subDirStem, myColor)
             %t1 = datenum(dateTime, 'yyyy-MM-dd') - tRef;
             %t(I) = t1 + ((myH + myMi/60 + myS/3600))/24;
             % NEW 10/10/2018
-            t(I) = datenum(myY, myMo, myD, myH, myMi, myS) - tRef;
+            t(I) = (datenum(myY, myMo, myD, myH, myMi, myS) - tRef)*24;
             fprintf...
                 ('CHECK %d file %2d-%2d-%2d-%2d-%2d-%2d has time %10.4f\n',...
                 I, myY, myMo, myD, myH, myMi, myS, t(I));
@@ -330,17 +332,16 @@ function g = myPlot(subDirStem, myColor)
         stdDevArrayY2(J) = stdDevY2;
     end
     
-    % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
-    errorbar(t, avgArrayY1, stdDevArrayY1, '-o', 'Color', purple);
-    %plot(t,y1,'-o', 'Color', myColor);
+%     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
+%     Either:
+%     errorbar(t, avgArrayY1, stdDevArrayY1, '-o', 'Color', purple);
+%     errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', purple);
+%     hold on;
+%     Or:
+    plot(t,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+    plot(t,y2,'-*', 'Color', myColor, 'LineWidth', lineThickness);
     hold on;
-    errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', purple);
-    hold on;
-    plot(t,y1,'-o', 'Color', myColor);
-    hold on;
-    plot(t,y2,'-*', 'Color', myColor);
-    hold on;
-    %plot(t,y3,'-*', 'Color', rust);
+    
     g = 1;
 end
 

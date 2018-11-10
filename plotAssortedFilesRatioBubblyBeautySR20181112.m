@@ -26,8 +26,8 @@ black =   [0., 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-%dirStem = "H:\Documents\Data\Made by Sureyya\Gel2 Bubbly Beauty\";
-dirStem = "Z:\Documents\Data\Made by Sureyya\Gel2 Bubbly Beauty\"; % Analyzing using remote Matlab client
+dirStem = "H:\Documents\Data\Made by Sureyya\Gel2 Bubbly Beauty\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\Gel2 Bubbly Beauty\"; % Analyzing using remote Matlab client
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4 no switchover";
 subDirStem3 = "3 pH10 no switchover";
@@ -49,7 +49,7 @@ global xMax;
 global yMin;
 global yMax;
 xMin = 950;
-xMax = 2000;
+xMax = 1800;
 yMin = 0;
 yMax = 1.5;
 myFont = 30;
@@ -58,9 +58,12 @@ myTextFont = 15;
 global myDebug;
 myDebug = 0;
 
+global lineThickness;
+lineThickness = 2;
+
 figure 
 
-for K = 1:4
+for K = 1:3
     switch K
         case 1
             pHcolor = green;
@@ -83,7 +86,7 @@ end
 
 % TO DO: figure out the coords for labels from the data
 y = 1.4;
-x = 1650;
+x = 1200;
 deltaY = 0.1;
 deltaX = 60;
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
@@ -94,20 +97,18 @@ text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
 text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH 8.6', 'Color', ciel, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', ciel);
-text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
-y = y - deltaY;
 text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
+text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
+y = y - deltaY;
 text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
 y = y - deltaY;
 %text(x, y, 'in uCapsules', 'Color', rust);
 %text(x, y, '_____', 'Color', rust);
-text(x + deltaX, y, 'Displaying average spectrum at each pH level', 'FontSize', myTextFont);
+%text(x + deltaX, y, 'Displaying average spectrum at each pH level', 'FontSize', myTextFont);
 
 hold off
-title('Ratiometric continuous real-time of sample 54 nm spheres in gel in flowcell in gel 2 "Bubbly Beauty"', 'FontSize', myFont);
+title('Ratiometric continuous real-time of sample 54 nm spheres in gel in flowcell in gel #2', 'FontSize', myFont);
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
 ylabel('Arbitrary Units (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', 'FontSize', myFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
@@ -195,6 +196,7 @@ function g = myPlot(subDirStem, myColor)
     global yMin;
     global yMax;
     global myDebug;
+    global lineThickness;
     
     sum = zeros(1, numPoints, 'double');
     avg = zeros(1, numPoints, 'double');
@@ -209,6 +211,7 @@ function g = myPlot(subDirStem, myColor)
     if numberOfSpectra > 0
         % first pass on dataset, to get array of average spectra
         for I = 1 : numberOfSpectra
+            fprintf('I: %d\n', I);
             thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
@@ -238,60 +241,26 @@ function g = myPlot(subDirStem, myColor)
             normalized = f/denominator1;
             
             sum = sum + normalized;
+            
+            % DEBUGGING - Draw individual plots that are being averaged
+            % plot the baseline-corrected, normalized, averaged-over-this-pH signal
+            %plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor);
+            %xlim([xMin xMax]);
+            %ylim([yMin yMax]);
+            %hold on
+            %pause(1);
         end
         
         % calculate average
         avg = sum/numberOfSpectra;
         
-        % second pass on dataset to get (each point - average)^2
-        % for standard deviation, need 
-        for I = 1 : numberOfSpectra
-            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-            fileID = fopen(thisfilename,'r');
-            [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-
-            % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-            % REFERENCE INDEX
-
-            % 1. Correct the baseline BEFORE calculating denominator + normalizing
-            % Returns trend as 'e' and baseline corrected signal as 'f'
-            [e, f] = correctBaseline(thisdata(2,:)');    
-
-            % 2. Ratiometric
-            % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-            % on either side of refWaveNumber. This maps to: 1 - 11 total
-            % intensities used to calculate the denominator.
-            if (xRef ~= 0) 
-                numPointsEachSide = 2;
-                denominator1 = getDenominator(xRef, numPointsEachSide, ...
-                    numPoints, f(:));
-            end
-            if myDebug
-                fprintf('denominator = %g at index: %d\n', denominator1, xRef);
-            end
-
-            % 3. Normalize what is plotted
-            normalized = f/denominator1;
-            
-            % 4. Add to the sum of the squares
-            sumSq = sumSq + (normalized - avg).^2; 
-        end
-        
-        % 5. Compute standard deviation at each index of the averaged spectra 
-        stdDev = sqrt(sumSq/numberOfSpectra);
-            
-        % plot the corrected signal with error bars
-        plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor);
-        
-        % 11/6/2018 Not needed after all
-        % Now plot stdDev as the array of error bars on the plot...    
-        %errorbar(thisdata(1,offset:end), normalized(offset:end), ...
-        %    stdDev(offset:end), 'Color', myColor);
+        % plot the baseline-corrected, normalized, averaged-over-this-pH signal
+        plot(thisdata(1,offset:end), avg(offset:end), 'Color', myColor, ...
+            'LineWidth', lineThickness);
         xlim([xMin xMax]);
         ylim([yMin yMax]);
         hold on
-        fprintf('%d\n', I);
+     
         %pause(1);
     end
     g = numberOfSpectra;
