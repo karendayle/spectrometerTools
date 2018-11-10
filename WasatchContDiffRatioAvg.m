@@ -402,6 +402,7 @@ function c = plotSpectrum(firstTime, ...
         title('Difference to previous');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
+        set(gca,'FontSize',16,'FontWeight','bold','box','off')
     end
     
     if ~isAveragedSpectrum 
