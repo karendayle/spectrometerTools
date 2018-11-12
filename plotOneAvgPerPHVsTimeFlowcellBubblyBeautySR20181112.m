@@ -21,6 +21,7 @@ x2Max = 797;
 % IMPORTANT: This is index to reference peak. 
 % No, it is not only this value that is used. Rather it is an integration
 % around this point that is used for the denominator that normalizes
+global xRef;
 xRef = 713; % COO- at 1582
             % TO DO: read from avg*.txt file
 % Colors:
@@ -339,6 +340,7 @@ function g = myPlot(subDirStem, myColor)
 %     hold on;
 %     Or:
     plot(t,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+    hold on;
     plot(t,y2,'-*', 'Color', myColor, 'LineWidth', lineThickness);
     hold on;
     
