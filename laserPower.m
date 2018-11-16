@@ -11,3 +11,6 @@ xlabel('Fraction of full power')
 %Result of bsc fitting
 fraction = [0.375 0.363 0.35 0.338 0.325]
 power = 6.1e2*fraction - 1.8e2
+
+% what fraction is 20 mW?
+f = (20 + 1.8e2)/6.1e2
