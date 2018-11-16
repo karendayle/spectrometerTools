@@ -6,5 +6,8 @@ plot(x,y)
 title('Measured laser power vs fraction of full power IPS Laser BioSyM Lab');
 ylabel('Power (mW)')
 xlabel('Fraction of full power')
-bsc fitting
-6.1e2*0.375 - 1.8e2
+
+%bsc fitting
+%Result of bsc fitting
+fraction = [0.375 0.363 0.35 0.338 0.325]
+power = 6.1e2*fraction - 1.8e2
