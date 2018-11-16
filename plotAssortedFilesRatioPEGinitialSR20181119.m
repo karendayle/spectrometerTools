@@ -63,7 +63,7 @@ myDebug = 0;
 
 figure 
 
-for K = 2:4
+for K = 1:1
     switch K
         case 1
             pHcolor = black;
@@ -89,26 +89,26 @@ y = 1.4;
 x = 1550;
 deltaY = 0.1;
 deltaX = 40;
-text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
-text(x + deltaX, y, 'Laser Power = 48.75 mW', 'FontSize', myTextFont);
+%text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
+%text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+%text(x + deltaX, y, 'Laser Power = 48.75 mW', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
-text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
+%text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
+%text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
+%text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', blue);
-text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
+%text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
+%text(x, y, '_____', 'Color', blue);
+%text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
+%text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
 y = y - deltaY;
 %text(x, y, 'in uCapsules', 'Color', rust);
 %text(x, y, '_____', 'Color', rust);
-text(x + deltaX, y, 'Displaying average spectrum at each pH level', 'FontSize', myTextFont);
+%text(x + deltaX, y, 'Displaying average spectrum at each pH level', 'FontSize', myTextFont);
 
 hold off
-title('Ratiometric continuous real-time of 54 nm spheres in PEG gel 1 in flowcell', 'FontSize', myFont);
+title('54 nm spheres in PEG gel 1 in flowcell before pH buffer flowing', 'FontSize', myFont);
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
 ylabel('Arbitrary Units (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', 'FontSize', myFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
