@@ -64,7 +64,7 @@ denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                                      % increasing number of points
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
 waitBetweenAverages = 120; % Acquire one averaged sample 2 minutes apart
-countBetweenPlots = 5; % Draw one out of every five averages
+countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
 
 % load the DLL

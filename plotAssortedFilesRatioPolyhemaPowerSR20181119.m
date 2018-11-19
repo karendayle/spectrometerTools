@@ -31,13 +31,13 @@ black =   [0., 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-dirStem = "H:\Documents\Data\Made by Sureyya\PEG\study 2 reduce power\";
-%dirStem = "Z:\Documents\Data\Made by Sureyya\PEG study 2 reduce power\"; % Analyzing using remote Matlab client
-subDirStem1 = "1 0.375";
-subDirStem2 = "5 0.363";
-subDirStem3 = "2 0.35";
-subDirStem4 = "4 0.338";
-subDirStem5 = "3 0.325";
+dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA\study 2 reducing power AGAIN\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA\study 2 reducing power AGAIN\"; % Analyzing using remote Matlab client
+subDirStem1 = "2 0.375";
+subDirStem2 = "6 0.363";
+subDirStem3 = "3 0.35";
+subDirStem4 = "5 0.338";
+subDirStem5 = "4 0.325";
 
 global lineThickness;
 lineThickness = 2;
@@ -119,7 +119,7 @@ text(x, y, '________', 'Color', blue);
 %text(x + deltaX, y, 'Displaying average spectrum at each pH level', 'FontSize', myTextFont);
 
 hold off
-title('54 nm spheres in PEG gel 1 in flowcell in pH7 buffer at various laser powers', 'FontSize', myFont);
+title('54 nm spheres in polyHEMA gel 1 in flowcell in pH7 buffer at various laser powers', 'FontSize', myFont);
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
 ylabel('Arbitrary Units (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', 'FontSize', myFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
