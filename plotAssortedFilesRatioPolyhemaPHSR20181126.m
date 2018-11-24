@@ -26,8 +26,8 @@ black =   [0., 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA\study 3 pH\";
-%dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA\study 3 pH\"; % Analyzing using remote Matlab client
+%dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA\study 4 0.332 pwr\";
+dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA\study 4 0.332 pwr\"; % Analyzing using remote Matlab client
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH10";
 subDirStem3 = "3 pH7";
@@ -86,7 +86,7 @@ deltaY = 0.1;
 deltaX = 40;
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
-text(x + deltaX, y, 'Laser Power = 48.75 mW', 'FontSize', myTextFont);
+text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
