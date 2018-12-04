@@ -45,7 +45,7 @@ differenceBetweenAverages = zeros(1, numPoints, 'double');
 x = zeros(1, numPoints, 'double'); 
 avg = zeros(1, numPoints, 'double');
 integrationTimeMS = 5000;
-xMin = 0;
+xMin = 950;
 xMax = 1800; % SP says to cutoff here 11/7/2018
 yMin = 0;
 yMax = 12000;
@@ -57,7 +57,7 @@ numIter = 5; % number of spectra to average
 %numPointsEachSide = 0; % number of points used on either side of
 % reference wavenumber to integrate for the denominator of normalized
 % spectrum
-laserPowerFraction = 0.375;
+laserPowerFraction = 0.332;
 closestRef = 0;
 refWaveNumber = 0;
 denominator = zeros(1, 6, 'double'); % calculate denominators based on an
@@ -359,6 +359,8 @@ end
 function c = plotSpectrum(firstTime, ...
     wavenumbers, dark, rawSpectrum, spectrum, difference, ...
     denominator, isAveragedSpectrum, acq)
+xMin = 950;
+xMax = 1800; % SP says to cutoff here 11/7/2018
 % local function to graph the spectrum
     if isAveragedSpectrum
         figure('Name','Averaged from 5 integrations');
@@ -378,6 +380,7 @@ function c = plotSpectrum(firstTime, ...
     xlabel('Wavenumber (cm^-1)'); % x-axis label
     ylabel('Arbitrary Units (A.U.)'); % y-axis label
     set(gca,'FontSize',16,'FontWeight','bold','box','off')
+    xlim([xMin xMax]); 
     
     if (denominator(3) ~= 0)
     % Plot the normalized data
@@ -388,10 +391,11 @@ function c = plotSpectrum(firstTime, ...
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('(A.U.)/(A.U.)'); % y-axis label
         set(gca,'FontSize',16,'FontWeight','bold','box','off')
+        xlim([xMin xMax]);
     else
         normalized = spectrum;
     end
-    
+
     [e f] = correctBaseline(normalized');
     subplot(2,4,3)
     plot(wavenumbers, e, 'cyan', wavenumbers, f, 'green');
@@ -400,6 +404,7 @@ function c = plotSpectrum(firstTime, ...
     ylabel('(A.U.)/(A.U.)'); % y-axis label;
     set(gca,'FontSize',16,'FontWeight','bold','box','off')
     legend('removed trend', 'result');
+    xlim([xMin xMax]);
     
     if (firstTime == false)
     % if not firstTime, do the plot the difference
@@ -409,6 +414,7 @@ function c = plotSpectrum(firstTime, ...
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
         set(gca,'FontSize',16,'FontWeight','bold','box','off')
+        xlim([xMin xMax]);
     end
     
     if ~isAveragedSpectrum 
@@ -417,13 +423,15 @@ function c = plotSpectrum(firstTime, ...
         title('Raw');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label;
-
+        xlim([xMin xMax]);
+        
         subplot(2,4,6)
         %plot(wavelengths, dark, 'black');
         plot(wavenumbers, dark, 'black');
         title('Dark');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
+        xlim([xMin xMax]);
         
         % plot of denom vs N
         subplot(2,4,7)
@@ -431,6 +439,7 @@ function c = plotSpectrum(firstTime, ...
         title('Denominator = fn(N points)');
         xlabel('Number of points'); % x-axis label
         ylabel('Denominator for ratio (A.U.)'); % y-axis label
+        xlim([xMin xMax]);
     end
     
     % Additional plots, could be commented out
