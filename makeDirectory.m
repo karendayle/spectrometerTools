@@ -29,7 +29,7 @@ if ~exist(s, 'dir')
     mkdir(s8)
     mkdir(s9)
 else
-    print('directory: %s exists', s);
+    fprintf('directory: %s exists', s);
 end
 
 
