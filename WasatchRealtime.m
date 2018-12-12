@@ -21,10 +21,13 @@ yMax = 12000;
 laserPowerFraction = 0.332;
 closestRef = 0;
 refWaveNumber = 0;
+numIter = 5; % number of spectra to average 
 % -------------------------------------------------------------------------
 % Global Variables. Used in main and functions. May need to change
 % depending on what you want to do.
+global studyName % Set in createDirAndSubDirs
 global subdirs;
+global subdirMax;
 subdirs = ["1 pH7", "2 pH4", "3 pH10", "4 pH7", "5 pH10", "6 pH4", ...
     "7 pH10", "8 pH7", "9 pH4"];
 subdirMax = length(subdirs);
@@ -112,16 +115,8 @@ end
 % NEW: THESE PATHS ARE NO LONGER CONSTANT. THEY NEED studyName embedded 
 % AS WELL AS THE SUBDIR THAT IS CHANGING OVER TIME 
 % Initialize the stems to the first subdir
-subdirNumber = 1;
-global studyName % Set in createDirAndSubDirs
-darkStem = strcat(studyName, '/', subdirs(subdirNumber), '/dark-%s.txt');
-rawStem = strcat(studyName, '/', subdirs(subdirNumber), '/rawSpectrum-%s.txt');
-dataStem = strcat(studyName, '/', subdirs(subdirNumber), '/spectrum-%s.txt');
-avgStem = strcat(studyName, '/', subdirs(subdirNumber), '/avg-%s.txt');
-numIter = 5; % number of spectra to average 
-%numPointsEachSide = 0; % number of points used on either side of
-% reference wavenumber to integrate for the denominator of normalized
-% spectrum
+
+
 
 % next: make this optional so you can see the peak unaltered and THEN enter
 % the index
@@ -211,11 +206,18 @@ if (myAns1 ~= 4)
     if (myAns2 == 1)
         fprintf('Continuing on... Dark will be subtracted from each spectrum');
 
+        subdirNumber = 1;
+        
         % Go through filling the subdirs with the files
-        % Initially, at line 106, the stems have been set to use subdirs(1)
         while subdirNumber <= subdirMax
             fprintf('Top of loop: subdirNumber is %d. Taking %d measurements.\n', ...
                 subdirNumber, increment);
+            
+            darkStem = strcat(studyName, '/', subdirs(subdirNumber), '/dark-%s.txt');
+            rawStem = strcat(studyName, '/', subdirs(subdirNumber), '/rawSpectrum-%s.txt');
+            dataStem = strcat(studyName, '/', subdirs(subdirNumber), '/spectrum-%s.txt');
+            avgStem = strcat(studyName, '/', subdirs(subdirNumber), '/avg-%s.txt');
+            
             loopCounter = 1;
             while (loopCounter <= increment)
                 %%% EG: Take ~1 hour worth of measurements, then prompt to
@@ -606,7 +608,7 @@ function g = createDirAndSubDirs()
     global studyName;
     global subdirs;
     pwd
-    prompt = '\nIs this study: alginate (1), PEG (2) or polyHEMAcoAc (3)?>';
+    prompt = '\nIs this study: Alginate (1), PEG (2) or polyHEMAcoAc (3)?>';
     gelType = input(prompt);
     % Switch on gelType and add to path
     switch gelType
@@ -634,30 +636,18 @@ function g = createDirAndSubDirs()
         if status == 1 % keep going
             s = strcat(studyName, '/');
             % Make the subdirs inside 's'
-            s1 = strcat(s, subdirs(1));
-            s2 = strcat(s, subdirs(2));
-            s3 = strcat(s, subdirs(3));
-            s4 = strcat(s, subdirs(4));
-            s5 = strcat(s, subdirs(5));
-            s6 = strcat(s, subdirs(6));
-            s7 = strcat(s, subdirs(7));
-            s8 = strcat(s, subdirs(8));
-            s9 = strcat(s, subdirs(9));
-            
-            % mkdir(s1) works at the cmd line, but via script, error is:
-            % Error using mkdir. Argument must contain a character vector.
-            [status1, msg, msgID] = mkdir(char(s1));
-            [status2, msg, msgID] = mkdir(char(s2));
-            [status3, msg, msgID] = mkdir(char(s3));
-            [status4, msg, msgID] = mkdir(char(s4));
-            [status5, msg, msgID] = mkdir(char(s5));
-            [status6, msg, msgID] = mkdir(char(s6));
-            [status7, msg, msgID] = mkdir(char(s7));
-            [status8, msg, msgID] = mkdir(char(s8));
-            [status9, msg, msgID] = mkdir(char(s9));
+            sumStatus = 0;
+            for i = 1,subdirMax
+                sub = strcat(s, subdirs(i));
+                % mkdir(s1) works at the cmd line, but via script, error is:
+                % Error using mkdir. Argument must contain a character vector.
+                [status, msg, msgID] = mkdir(char(sub));
+                sumStatus = sumStatus + status;
+            end
+
             status = status1 + status2 + status3 + status4 + ...
                 status5 + status6 + status7 + status8 + status9;
-            if status == 9
+            if sumStatus == 9
                 g = 1;
             else
                 g = -1;
