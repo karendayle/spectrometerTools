@@ -7,7 +7,7 @@
 % Dayle Kotturi December 2018
 
 % -------------------------------------------------------------------------
-% Variables. Might need to change depending on what you want to do.
+% % Variables. Might need to change depending on what you want to do.
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
 waitBetweenAverages = 120; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 1; % Draw one out of every five averages
@@ -249,10 +249,10 @@ if (myAns1 ~= 4)
         while subdirNumber <= subdirMax
             fprintf('Top of loop: subdirNumber is %d. Taking %d measurements.\n', ...
                 subdirNumber, increment);
-            
-            rawStem = strcat(studyName, '/', subdirs(subdirNumber), '/rawSpectrum-%s.txt');
-            dataStem = strcat(studyName, '/', subdirs(subdirNumber), '/spectrum-%s.txt');
-            avgStem = strcat(studyName, '/', subdirs(subdirNumber), '/avg-%s.txt');
+            stem = strcat(studyName, '/', subdirs(subdirNumber));
+            rawStem = strcat(stem, '/rawSpectrum-%s.txt');
+            dataStem = strcat(stem, '/spectrum-%s.txt');
+            avgStem = strcat(stem, '/avg-%s.txt');
             
             loopCounter = 1;
             while (loopCounter <= increment)
@@ -359,15 +359,15 @@ if (myAns1 ~= 4)
                     switch K
                         case {1,4,8}
                             pHcolor = green;
-                            num1 = plotAllSubDirs(subdirs(K), pHcolor);
-                            fprintf('Case %d: %d spectra plotted in red\n', K, num1);
+                            num1 = plotAllSubDirs(strcat(studyName, '/', subdirs(K)), pHcolor);
+                            fprintf('Case %d: %d spectra plotted in green\n', K, num1);
                         case {2,6,9}
                             pHcolor = red;
-                            num2 = plotAllSubDirs(subdirs(K), pHcolor);
-                            fprintf('Case %d: %d spectra plotted in green\n', K, num2);
+                            num2 = plotAllSubDirs(strcat(studyName, '/', subdirs(K)), pHcolor);
+                            fprintf('Case %d: %d spectra plotted in red\n', K, num2);
                         case {3,5,7}
                             pHcolor = blue;
-                            num3 = plotAllSubDirs(subdirs(K), pHcolor);
+                            num3 = plotAllSubDirs(strcat(studyName, '/', subdirs(K)), pHcolor);
                             fprintf('Case %d: %d spectra plotted in blue\n', K, num3);
                     end
                 end
@@ -420,15 +420,15 @@ if (myAns1 ~= 4)
                     switch K
                         case {1,4,8}
                             pHcolor = green;
-                            num1 = plotTimeSeries(subdirs(K), pHcolor);
+                            num1 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
                             fprintf('Case 1: %d spectra plotted in red\n', num1);
                         case {2,6,9}
                             pHcolor = red;
-                            num2 = plotTimeSeries(subdirs(K), pHcolor);
+                            num2 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
                             fprintf('Case 2: %d spectra plotted in green\n', num2);
                         case {3,5,7}
                             pHcolor = blue;
-                            num3 = plotTimeSeries(subdirs(K), pHcolor);
+                            num3 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
                             fprintf('Case 3: %d spectra plotted in blue\n', num3);
                     end
                 end
@@ -712,8 +712,8 @@ function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     % x=(closestRef + numPointsIntegrated) and then divide by number of
     % points to average and scale it.
     
-    fprintf('getDenominator with numPointsEachSide = %d\n', ...
-        numPointsEachSide);
+    %fprintf('getDenominator with numPointsEachSide = %d\n', ...
+    %    numPointsEachSide);
     
     % check that numPointsIntegrated is in range
     lowEnd = closestRef - numPointsEachSide;
@@ -726,17 +726,17 @@ function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     end
     
     sum = 0;
-    fprintf('closestRef: %d, numPointsEachSide: %d\n', closestRef, ...
-        numPointsEachSide);
+    %fprintf('closestRef: %d, numPointsEachSide: %d\n', closestRef, ...
+    %    numPointsEachSide);
     startIndex = closestRef - numPointsEachSide;
     numPointsToIntegrate = 1 + (2 * numPointsEachSide);
     for i = 1 : numPointsToIntegrate
         sum = sum + spectrum(startIndex);
-        fprintf('index: %d, spectrum: %g\n', startIndex, spectrum(startIndex));
+        % fprintf('index: %d, spectrum: %g\n', startIndex, spectrum(startIndex));
         startIndex = startIndex + 1;
     end
     denominator = sum/numPointsToIntegrate;
-    fprintf('denominator: %g\n', denominator);
+    % fprintf('denominator: %g\n', denominator);
     d = denominator;
 end
 
@@ -846,21 +846,22 @@ function g = plotAllSubDirs(subDirStem, myColor)
     global yMax;
     global myDebug;
     global lineThickness;
+    global studyName;
+    global subdirs;
     
     sum = zeros(1, numPoints, 'double');
     avg = zeros(1, numPoints, 'double');
     sumSq = zeros(1, numPoints, 'double');
-    thisdata = zeros(2, numPoints, 'double');   
-    str_dir_to_search = dirStem + subDirStem; % args need to be strings
-    dir_to_search = char(str_dir_to_search);
-    txtpattern = fullfile(dir_to_search, 'avg*.txt');
-    dinfo = dir(txtpattern); 
+    thisdata = zeros(2, numPoints, 'double');
+    
+    txtpattern = fullfile(char(subDirStem), 'avg*.txt');
+    dinfo = dir(txtpattern);
     
     numberOfSpectra = length(dinfo);
     if numberOfSpectra > 0
         % first pass on dataset, to get array of average spectra
         for I = 1 : numberOfSpectra
-            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+            thisfilename = fullfile(char(subDirStem), dinfo(I).name); % just the name
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
@@ -899,7 +900,7 @@ function g = plotAllSubDirs(subDirStem, myColor)
         % second pass on dataset to get (each point - average)^2
         % for standard deviation, need 
         for I = 1 : numberOfSpectra
-            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+            thisfilename = fullfile(char(subDirStem), dinfo(I).name); % just the name
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
@@ -981,9 +982,7 @@ function h = plotTimeSeries(subDirStem, myColor)
     sumSqY1 = 0;
     sumSqY2 = 0;
     
-    str_dir_to_search = dirStem + subDirStem; % args need to be strings
-    dir_to_search = char(str_dir_to_search)
-    txtpattern = fullfile(dir_to_search, 'avg*.txt');
+    txtpattern = fullfile(char(subDirStem), 'avg*.txt');
     dinfo = dir(txtpattern); 
     thisdata = zeros(2, numPoints, 'double');
     
@@ -992,7 +991,7 @@ function h = plotTimeSeries(subDirStem, myColor)
         % first pass on dataset, to get array of average spectra
         % TO DO: add if stmt to ensure numberOfSpectra > 0
         for I = 1 : numberOfSpectra
-            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name            
+            thisfilename = fullfile(char(subDirStem), dinfo(I).name); % just the name            
             % NEW 10/8/2018: extract time from filename
             S = string(thisfilename); 
             newStr1 = extractAfter(S,"avg-");
