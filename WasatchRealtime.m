@@ -175,7 +175,7 @@ else
                 disp(errmsg);
                 filename = input ('3. Open file in C:\\Users\dayle.kotturi\\Documents\\Data\\Official Dark: ', ...
                     's');
-                [fileID,errmsg] = fopen(fullfile ... % FIX PATH DEPENDENCY
+                [fileID,errmsg] = fopen(fullfile ... % FIX PATH DEPENDENCY OR REMOVE
                     ('C:\Users\dayle.kotturi\Documents\Data\Official Dark', ...
                     filename), 'r');
             end
@@ -311,6 +311,11 @@ if (myAns1 ~= 4)
                         differenceBetweenAverages, denominator, 1, 0);
                 end
                 counter = counter + 1;
+                
+                % 12/12/2018 NEW: Here is where we do what used to be the post-
+                % processing
+                
+                
                 
                 % prepare for next iteration
                 for i = 1:pixels
