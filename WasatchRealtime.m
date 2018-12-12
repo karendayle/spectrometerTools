@@ -116,8 +116,6 @@ end
 % AS WELL AS THE SUBDIR THAT IS CHANGING OVER TIME 
 % Initialize the stems to the first subdir
 
-
-
 % next: make this optional so you can see the peak unaltered and THEN enter
 % the index
 prompt = '\nEnter wavenumber (cm^-1) to use for reference intensity (0 to skip)> ';
