@@ -572,6 +572,8 @@ function g = plotAllSubDirs(subDirStem, myColor)
     global studyName;
     global subdirs;
     
+    tic;
+    
     sum = zeros(1, numPoints, 'double');
     avg = zeros(1, numPoints, 'double');
     sumSq = zeros(1, numPoints, 'double');
@@ -680,6 +682,8 @@ function g = plotAllSubDirs(subDirStem, myColor)
         %pause(1);
     end
     g = numberOfSpectra;
+    fprintf('Spectral plot ');
+    toc;
 end
 
 function h = plotTimeSeries(subDirStem, myColor)
@@ -702,6 +706,8 @@ function h = plotTimeSeries(subDirStem, myColor)
     global tRef;
     global myDebug;
     global lineThickness;
+    
+    tic;
     
     sumY1 = 0;
     sumY2 = 0;
@@ -825,6 +831,8 @@ function h = plotTimeSeries(subDirStem, myColor)
         fprintf('No files in this directory: %s\n', subDirStem);
         h = 1;
     end
+    fprintf('Time plot ');
+    toc;
 end
 
 function h = localPeak(range)
