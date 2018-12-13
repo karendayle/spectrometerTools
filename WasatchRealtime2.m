@@ -81,6 +81,8 @@ red =     [1.0, 0.0, 0.0];
 black =   [0., 0.0, 0.0];
 global lineThickness; % KDK FIX 12/12/2018
 lineThickness = 2; % KDK FIX 12/12/2018
+global offset;
+offset = 300;
 % -------------------------------------------------------------------------
 % Fixed. Don't change these ever.
 true = 1;
@@ -103,7 +105,8 @@ x = zeros(1, numPoints, 'double'); % While does x STILL end up as 1x1 sometimes?
 avg = zeros(1, numPoints, 'double');
 denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                                      % increasing number of points
-                                     
+subdirNumber = 1;  
+                                  
     dir1 = '../../Data/Made by Sureyya/'; % just use relative directory
                                           % skip use of pwd for now
     studyName = strcat(dir1, 'Alginate', '/', 'gel 4', '/', 'study1');
@@ -150,7 +153,7 @@ denominator = zeros(1, 6, 'double'); % calculate denominators based on an
 %                 y = y - deltaY;
 %                 %text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
                 
-                hold off
+                %hold off
                 myTitle = sprintf('%s ratiommetric spectra', gelTypeName);
                 title(myTitle, 'FontSize', myFont);
                 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
@@ -161,6 +164,7 @@ denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                 % ---------------------------------------------------------
                 % 12/12/2018 NEW: Here is where we do what used to be the 
                 % time series post-processing
+
                 figure 
 
                 % subtract this offset
@@ -176,11 +180,11 @@ denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                         case {1,4,8}
                             pHcolor = green;
                             num1 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
-                            fprintf('Case 1: %d spectra plotted in red\n', num1);
+                            fprintf('Case 1: %d spectra plotted in green\n', num1);
                         case {2,6,9}
                             pHcolor = red;
                             num2 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
-                            fprintf('Case 2: %d spectra plotted in green\n', num2);
+                            fprintf('Case 2: %d spectra plotted in red\n', num2);
                         case {3,5,7}
                             pHcolor = blue;
                             num3 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
@@ -188,7 +192,7 @@ denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                     end
                 end
                 
-                hold off
+                %hold off
                 myTitle = sprintf('%s time series', gelTypeName);
                 title(myTitle, 'FontSize', myFont);
                 myXlabel = sprintf('Time in hours from %s', datestr(tRef));
@@ -592,6 +596,9 @@ function g = plotAllSubDirs(subDirStem, myColor)
             % Returns trend as 'e' and baseline corrected signal as 'f'
             [e, f] = correctBaseline(thisdata(2,:)');    
 
+            % OOPS. It's weird but it looks like e is 1x1024 and f is 1024x1024 12/13/2018
+            f = f';
+            
             % 2. Ratiometric
             % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
             % on either side of refWaveNumber. This maps to: 1 - 11 total
@@ -610,10 +617,10 @@ function g = plotAllSubDirs(subDirStem, myColor)
             % 3. NEW 10/4/18: Normalize what is plotted
             normalized = f/denominator1;
             
-            sum = sum + normalized;
+            sum = sum + normalized; % OOPS. why is sum 1024x1024?
         end
         
-        % calculate average
+        % calculate average % OOPS. avg is ending up as 1024x1024 after this!
         avg = sum/numberOfSpectra;
         
         % second pass on dataset to get (each point - average)^2
@@ -630,6 +637,8 @@ function g = plotAllSubDirs(subDirStem, myColor)
             % 1. Correct the baseline BEFORE calculating denominator + normalizing
             % Returns trend as 'e' and baseline corrected signal as 'f'
             [e, f] = correctBaseline(thisdata(2,:)');    
+            
+            f = f';
 
             % 2. Ratiometric
             % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
@@ -666,8 +675,8 @@ function g = plotAllSubDirs(subDirStem, myColor)
         %    stdDev(offset:end), 'Color', myColor);
         xlim([xMin xMax]);
         %ylim([yMin yMax]);
-        hold on
-        fprintf('%d\n', I);
+        %hold on
+        %fprintf('%d\n', I);
         %pause(1);
     end
     g = numberOfSpectra;
