@@ -21,6 +21,7 @@ x2Max = 797;
 % IMPORTANT: This is index to reference peak. 
 % No, it is not only this value that is used. Rather it is an integration
 % around this point that is used for the denominator that normalizes
+global xRef;
 xRef = 713; % COO- at 1582
             % TO DO: read from avg*.txt file
 % Colors:
@@ -52,11 +53,11 @@ numPoints = 1024;
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
-%dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA\study 3 pH\";
-dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA\study 3 pH\"; % Analyzing using remote Matlab client
-subDirStem1 = "1 pH4";
-subDirStem2 = "2 pH10";
-subDirStem3 = "3 pH7";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 3\study 5 0.332 pwr pH MES in flow cell\";
+dirStem = "Z:\Documents\Data\Made by Sureyya\Alginate\gel 3\study 5 0.332 pwr pH MES in flow cell\"; % Analyzing using remote Matlab client
+subDirStem1 = "1 pH7";
+subDirStem2 = "2 pH4";
+subDirStem3 = "3 pH10";
 
 global lineThickness;
 lineThickness = 2;
@@ -68,7 +69,7 @@ figure
 
 % subtract this offset 
 global tRef;
-tRef = datenum(2018, 11, 19, 19, 32, 45);
+tRef = datenum(2018, 12, 7, 15, 15, 55);
 
 myTitleFont = 30;
 myLabelFont = 20;
@@ -78,27 +79,27 @@ for K = 1:3
 
     switch K
         case 1
-            pHcolor = red;
-            num1 = myPlot(subDirStem1, pHcolor);
-            fprintf('Case 2: %d spectra plotted in red\n', num1);
-        case 2
-            pHcolor = blue;
-            num2 = myPlot(subDirStem2, pHcolor);
-            fprintf('Case 3: %d spectra plotted in blue\n', num2);            
-        case 3
             pHcolor = green;
+            num1 = myPlot(subDirStem1, pHcolor);
+            fprintf('Case 2: %d spectra plotted in green\n', num1);
+        case 2
+            pHcolor = red;
+            num2 = myPlot(subDirStem2, pHcolor);
+            fprintf('Case 3: %d spectra plotted in red\n', num2);            
+        case 3
+            pHcolor = blue
             num3 = myPlot(subDirStem3, pHcolor);
-            fprintf('Case 4: %d spectra plotted in green\n', num3);
+            fprintf('Case 4: %d spectra plotted in blue\n', num3);
     end
 end    
    
-y = 0.18;
+y = 0.3;
 x = 2;
-deltaY = 0.005;
+deltaY = 0.01;
 deltaX = 0.2;
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
-text(x + deltaX, y, 'Laser Power = 48.75 mW', 'FontSize', myTextFont);
+text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
@@ -118,9 +119,7 @@ y = y - deltaY;
 text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
-%title('Ratiometric continuous real-time of 54 nm spheres in polyHEMA gel 1 in flowcell', ...
-%    'FontSize', myTitleFont);
-title('Averaged by pH ratiometric continuous real-time of 54 nm spheres in polyHEMA gel 1 in flowcell', ...
+title('Ratiometric continuous real-time of 54 nm spheres in alginate gel 3 in flowcell', ...
     'FontSize', myTitleFont);
 myXlabel = sprintf('Time in hours from %s', datestr(tRef));
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
@@ -322,11 +321,10 @@ function g = myPlot(subDirStem, myColor)
     
 %     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
 %     Either:
-    %errorbar(t, avgArrayY1, stdDevArrayY1, '-o', 'Color', myColor, 'LineWidth', lineThickness);
-    %hold on;
-    %errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', myColor, 'LineWidth', lineThickness);
-    %hold on;
-    %Or:
+%     errorbar(t, avgArrayY1, stdDevArrayY1, '-o', 'Color', purple);
+%     errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', purple);
+%     hold on;
+%     Or:
     plot(t,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
     hold on;
     plot(t,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
