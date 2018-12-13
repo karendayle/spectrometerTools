@@ -28,6 +28,14 @@ numIter = 5; % number of spectra to average
 % depending on what you want to do.
 global x;
 global pixels;
+global xMin; % KDK FIX 12/12/2018 next 4 lines
+global xMax;
+global yMin;
+global yMax;
+xMin = 950;
+xMax = 1800; % SP says to cutoff here 11/7/2018
+yMin = 0;
+yMax = 12000;
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
 % NEW 11/06/2018 find the local max instead of looking at const location
@@ -75,11 +83,13 @@ ciel =    [0.3010, 0.7450, 0.9330];
 cherry =  [0.6350, 0.0780, 0.1840];
 red =     [1.0, 0.0, 0.0];
 black =   [0., 0.0, 0.0];
-
+global lineThickness; %%% KDK FIX 12/12/2018
+lineThickness = 2; %%% KDK FIX 12/12/2018
 % -------------------------------------------------------------------------
 % Fixed. Don't change these ever.
 true = 1;
 false = 0;
+global numPoints; %%% KDK FIX 12/12/2018
 numPoints = 1024; % fixed. Based on physical char of spectrometer grating
 % to avoid array changing size every time it's assigned in the loop
 myTextFont = 15;
@@ -1099,4 +1109,7 @@ function h = plotTimeSeries(subDirStem, myColor)
     end
 end
 
+function h = localPeak(range)
+    h = max(range);
+end
   
