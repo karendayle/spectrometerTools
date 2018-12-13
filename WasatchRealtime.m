@@ -14,10 +14,6 @@ countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
 increment = 2;
 integrationTimeMS = 5000;
-xMin = 950;
-xMax = 1800; % SP says to cutoff here 11/7/2018
-yMin = 0;
-yMax = 12000;
 laserPowerFraction = 0.332;
 closestRef = 0;
 refWaveNumber = 0;
@@ -30,12 +26,11 @@ global x;
 global pixels;
 global xMin; % KDK FIX 12/12/2018 next 4 lines
 global xMax;
-global yMin;
-global yMax;
+global yMax1;
+global yMax2;
 xMin = 950;
 xMax = 1800; % SP says to cutoff here 11/7/2018
-yMin = 0;
-yMax = 12000;
+
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
 % NEW 11/06/2018 find the local max instead of looking at const location
@@ -63,6 +58,7 @@ subdirs = ["1 pH7", "2 pH4", "3 pH10", "4 pH7", "5 pH10", "6 pH4", ...
     "7 pH10", "8 pH7", "9 pH4"];
 subdirMax = length(subdirs);
 global gelTypeName;
+global gelNumber;
 
 % Colors:
 global blue;
@@ -255,7 +251,7 @@ if (myAns1 ~= 4)
     if (myAns2 == 1)
         fprintf('Continuing on... Dark will be subtracted from each spectrum');
 
-        subdirNumber = 1;
+        subdirNumber = 1; % initialize
         
         % Go through filling the subdirs with the files
         while subdirNumber <= subdirMax
@@ -265,6 +261,8 @@ if (myAns1 ~= 4)
             rawStem = strcat(stem, '/rawSpectrum-%s.txt');
             dataStem = strcat(stem, '/spectrum-%s.txt');
             avgStem = strcat(stem, '/avg-%s.txt');
+            yMax1 = 0; % initialize
+            yMax2 = 0; % initialize
             
             loopCounter = 1;
             while (loopCounter <= increment)
@@ -384,31 +382,30 @@ if (myAns1 ~= 4)
                     end
                 end
                 
-%                 % TO DO: figure out the coords for labels from the data
-%                 y = 1.1;
-%                 x = 1200;
-%                 deltaY = 0.1;
-%                 %deltaX = 100;
-%                 text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
-%                 text(x, y, '___', 'Color', red, 'FontSize', myTextFont);
-%                 %text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
-%                 text(x, y, '___', 'Color', green, 'FontSize', myTextFont);
-%                 %text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 text(x, y, 'pH10', 'Color', blue, 'FontSize', myTextFont);
-%                 text(x, y, '____', 'Color', blue);
-%                 %text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 %text(x, y, 'four', 'Color', black, 'FontSize', myTextFont);
-%                 %text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
-%                 %text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 %text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
+                y = yMax1;
+                x = xMin;
+                deltaY = 0.1;
+                %deltaX = 100;
+                text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
+                text(x, y, '___', 'Color', red, 'FontSize', myTextFont);
+                %text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
+                y = y - deltaY;
+                text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
+                text(x, y, '___', 'Color', green, 'FontSize', myTextFont);
+                %text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
+                y = y - deltaY;
+                text(x, y, 'pH10', 'Color', blue, 'FontSize', myTextFont);
+                text(x, y, '____', 'Color', blue);
+                %text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
+                y = y - deltaY;
+                %text(x, y, 'four', 'Color', black, 'FontSize', myTextFont);
+                %text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
+                %text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
+                y = y - deltaY;
+                %text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
                 
                 hold off
-                myTitle = sprintf('%s ratiommetric spectra', gelTypeName);
+                myTitle = sprintf('%s gel #%d study %s ratiommetric spectra', gelTypeName, gelNumber, studyName);
                 title(myTitle, 'FontSize', myFont);
                 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
                 ylabel('Arbitrary Units (A.U.)', 'FontSize', myFont); % y-axis label
@@ -444,34 +441,34 @@ if (myAns1 ~= 4)
                             fprintf('Case 3: %d spectra plotted in blue\n', num3);
                     end
                 end
-                
-%                 y = 0.12;
-%                 x = 2;
-%                 deltaY = 0.01;
-%                 %deltaX = 0.2;
-%                 text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
-%                 text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
-%                 %text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
-%                 text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
-%                 %text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
-%                 text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
-%                 %text(x + deltaX, y, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 %text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
-%                 %y = y - deltaY;
-%                 %text(x, y, 'avg with std dev', 'Color', purple, 'FontSize', myTextFont);
-%                 %text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 %text(x + deltaX, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
-%                 y = y - deltaY;
-%                 %text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+                           
+                y = yMax2;
+                x = 2;
+                deltaY = 0.01;
+                %deltaX = 0.2;
+                text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
+                text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+                %text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
+                y = y - deltaY;
+                text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
+                text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
+                %text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
+                y = y - deltaY;
+                text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
+                text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
+                %text(x + deltaX, y, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
+                y = y - deltaY;
+                %text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
+                %y = y - deltaY;
+                %text(x, y, 'avg with std dev', 'Color', purple, 'FontSize', myTextFont);
+                %text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
+                y = y - deltaY;
+                %text(x + deltaX, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+                y = y - deltaY;
+                %text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
                 
                 hold off
-                myTitle = sprintf('%s time series', gelTypeName);
+                myTitle = sprintf('%s gel #%d study %s time series', gelTypeName, gelNumber, studyName);
                 title(myTitle, 'FontSize', myFont);
                 myXlabel = sprintf('Time in hours from %s', datestr(tRef));
                 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
@@ -479,7 +476,6 @@ if (myAns1 ~= 4)
                     'FontSize', myLabelFont); % y-axis label
                 set(gca,'FontSize',16,'FontWeight','bold','box','off')
 
-                
                 % prepare for next iteration
                 for i = 1:pixels
                     lastAvgData(i) = avg(i);
@@ -496,15 +492,15 @@ if (myAns1 ~= 4)
             
             % Check: does user want to repeat another increment or change
             % to next subdir
-            prompt = '\nTake another set (Y) or switch pH (N)?> ';
+            prompt = '\nTake another set (1) or switch pH (2)?> ';
             myAns3 = input(prompt, 's');
-            if myAns3 == 'Y'
+            if myAns3 == '1'
                 fprintf('Continuing with another set of %d measurements at same pH\n', ...
                     subdirNumber);
                 % Reset loop counter
                 loopCounter = 1;
             else
-                if myAns3 == 'N'
+                if myAns3 == '2'
                     prompt = '\nChange pH buffer and enter 1 when ready> ';
                     myAns4 = input(prompt);  
                     if (myAns4 == 1)
@@ -669,7 +665,7 @@ xMax = 1800; % SP says to cutoff here 11/7/2018
         xlim([xMin xMax]);
     end
     
-    % Additional plots, could be commented out
+%    % Additional plots, could be commented out
 %     figure
 %     myTitle = sprintf('Denominator = fn(N points)');
 %     title(myTitle);
@@ -780,6 +776,7 @@ function g = createDirAndSubDirs()
     global subdirs;
     global subdirMax;
     global gelTypeName;
+    global gelNumber;
     pwd % not used
     prompt = '\nIs this study: Alginate (1), PEG (2) or polyHEMAcoAc (3)?>';
     gelType = input(prompt);
@@ -854,15 +851,14 @@ function g = plotAllSubDirs(subDirStem, myColor)
     global offset;
     global xMin;
     global xMax;
-    global yMin;
-    global yMax;
+    global yMax1;
     global myDebug;
     global lineThickness;
     global studyName;
     global subdirs;
     
     tic;
-    
+
     sum = zeros(1, numPoints, 'double');
     avg = zeros(1, numPoints, 'double');
     sumSq = zeros(1, numPoints, 'double');
@@ -957,12 +953,17 @@ function g = plotAllSubDirs(subDirStem, myColor)
         plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor, ...
             'LineWidth', lineThickness);
         
+        % update the global variable used to position the legend on plot
+        yMax = max(normalized(offset:end));
+        if yMax > yMax1
+            yMax1 = yMax;
+        end
+        
         % 11/6/2018 Not needed after all
         % Now plot stdDev as the array of error bars on the plot...    
         %errorbar(thisdata(1,offset:end), normalized(offset:end), ...
         %    stdDev(offset:end), 'Color', myColor);
         xlim([xMin xMax]);
-        %ylim([yMin yMax]);
         hold on
         fprintf('%d\n', I);
         %pause(1);
@@ -992,7 +993,7 @@ function h = plotTimeSeries(subDirStem, myColor)
     global tRef;
     global myDebug;
     global lineThickness;
-    
+    global yMax2;
     tic;
     
     sumY1 = 0;
@@ -1112,6 +1113,14 @@ function h = plotTimeSeries(subDirStem, myColor)
         hold on;
         plot(t,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
         hold on;
+        % update the global variable used to position the legend on plot
+        
+        if y1 > yMax2
+            yMax2 = y1;
+        end
+        if y2 > yMax2
+            yMax2 = y2;
+        end
         h = 1;
     else
         fprintf('No files in this directory: %s\n', subDirStem);
