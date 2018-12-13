@@ -85,6 +85,8 @@ red =     [1.0, 0.0, 0.0];
 black =   [0., 0.0, 0.0];
 global lineThickness; %%% KDK FIX 12/12/2018
 lineThickness = 2; %%% KDK FIX 12/12/2018
+global offset;
+offset = 300;
 % -------------------------------------------------------------------------
 % Fixed. Don't change these ever.
 true = 1;
@@ -881,7 +883,8 @@ function g = plotAllSubDirs(subDirStem, myColor)
 
             % 1. Correct the baseline BEFORE calculating denominator + normalizing
             % Returns trend as 'e' and baseline corrected signal as 'f'
-            [e, f] = correctBaseline(thisdata(2,:)');    
+            [e, f] = correctBaseline(thisdata(2,:)');  
+            f = f'; % FIX required so that avg doesn't end up 1024x1024       
 
             % 2. Ratiometric
             % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
@@ -921,7 +924,8 @@ function g = plotAllSubDirs(subDirStem, myColor)
             % 1. Correct the baseline BEFORE calculating denominator + normalizing
             % Returns trend as 'e' and baseline corrected signal as 'f'
             [e, f] = correctBaseline(thisdata(2,:)');    
-
+            f = f'; % FIX required so that avg doesn't end up 1024x1024  
+            
             % 2. Ratiometric
             % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
             % on either side of refWaveNumber. This maps to: 1 - 11 total
