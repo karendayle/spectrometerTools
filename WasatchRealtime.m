@@ -51,7 +51,8 @@ x2Max = 797;
 global xRef;
 xRef = 713; % COO- at 1582
             % TO DO: read from avg*.txt file
-global studyName % Set in createDirAndSubDirs
+global studyPath % Set in createDirAndSubDirs
+global studyName
 global subdirs;
 global subdirMax;
 subdirs = ["1 pH7", "2 pH4", "3 pH10", "4 pH7", "5 pH10", "6 pH4", ...
@@ -148,7 +149,7 @@ fprintf('Found %s %s with %d pixels (%.2f, %.2fnm)\n', ...
 %%% exist, then create it and its subdirs
 returnCode = createDirAndSubDirs();
 if returnCode == 1
-    fprintf('Success'); % studyName should now be set
+    fprintf('Success'); % studyPath should now be set
 else if returnCode == -1
         fprintf('Failure');
         return;
@@ -207,7 +208,7 @@ if ((myAns1 == 1) || (myAns1 == 4))
         
         % Note that where dark is subtracted, it isn't being
         % subtracted from the normalized signal, only the raw signal
-        darkStem = strcat(studyName, '/', subdirs(1), '/dark-%s.txt');
+        darkStem = strcat(studyPath, '/', subdirs(1), '/dark-%s.txt');
         darkFilename = writeSpectrumToFile(darkData, darkStem,...
             0, 0, zeros(1, 6, 'double'), 0);
     end
@@ -257,7 +258,7 @@ if (myAns1 ~= 4)
         while subdirNumber <= subdirMax
             fprintf('Top of loop: subdirNumber is %d. Taking %d measurements.\n', ...
                 subdirNumber, increment);
-            stem = strcat(studyName, '/', subdirs(subdirNumber));
+            stem = strcat(studyPath, '/', subdirs(subdirNumber));
             rawStem = strcat(stem, '/rawSpectrum-%s.txt');
             dataStem = strcat(stem, '/spectrum-%s.txt');
             avgStem = strcat(stem, '/avg-%s.txt');
@@ -369,40 +370,40 @@ if (myAns1 ~= 4)
                     switch K
                         case {1,4,8}
                             pHcolor = green;
-                            num1 = plotAllSubDirs(strcat(studyName, '/', subdirs(K)), pHcolor);
+                            num1 = plotAllSubDirs(strcat(studyPath, '/', subdirs(K)), pHcolor);
                             fprintf('Case %d: %d spectra plotted in green\n', K, num1);
                         case {2,6,9}
                             pHcolor = red;
-                            num2 = plotAllSubDirs(strcat(studyName, '/', subdirs(K)), pHcolor);
+                            num2 = plotAllSubDirs(strcat(studyPath, '/', subdirs(K)), pHcolor);
                             fprintf('Case %d: %d spectra plotted in red\n', K, num2);
                         case {3,5,7}
                             pHcolor = blue;
-                            num3 = plotAllSubDirs(strcat(studyName, '/', subdirs(K)), pHcolor);
+                            num3 = plotAllSubDirs(strcat(studyPath, '/', subdirs(K)), pHcolor);
                             fprintf('Case %d: %d spectra plotted in blue\n', K, num3);
                     end
                 end
                 
-                y = yMax1;
-                x = xMin;
-                deltaY = 0.1;
-                %deltaX = 100;
-                text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
-                text(x, y, '___', 'Color', red, 'FontSize', myTextFont);
-                %text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
-                y = y - deltaY;
-                text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
-                text(x, y, '___', 'Color', green, 'FontSize', myTextFont);
-                %text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
-                y = y - deltaY;
-                text(x, y, 'pH10', 'Color', blue, 'FontSize', myTextFont);
-                text(x, y, '____', 'Color', blue);
-                %text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
-                y = y - deltaY;
-                %text(x, y, 'four', 'Color', black, 'FontSize', myTextFont);
-                %text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
-                %text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
-                y = y - deltaY;
-                %text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
+                yPlot = yMax1;
+                xPlot = xMin;
+                deltaYPlot = 0.1;
+                %deltaXPlot = 100;
+                text(xPlot, yPlot, 'pH4', 'Color', red, 'FontSize', myTextFont);
+                text(xPlot, yPlot, '___', 'Color', red, 'FontSize', myTextFont);
+                %text(xPlot + deltaXPlot, yPlot, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
+                yPlot = yPlot - deltaYPlot;
+                text(xPlot, yPlot, 'pH7', 'Color', green, 'FontSize', myTextFont);
+                text(xPlot, yPlot, '___', 'Color', green, 'FontSize', myTextFont);
+                %text(xPlot + deltaXPlot, yPlot, '5 second integration time per acq', 'FontSize', myTextFont);
+                yPlot = yPlot - deltaYPlot;
+                text(xPlot, yPlot, 'pH10', 'Color', blue, 'FontSize', myTextFont);
+                text(xPlot, yPlot, '____', 'Color', blue);
+                %text(xPlot + deltaXPlot, yPlot, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
+                yPlot = yPlot - deltaYPlot;
+                %text(xPlot, yPlot, 'four', 'Color', black, 'FontSize', myTextFont);
+                %text(xPlot, yPlot, '_____', 'Color', black, 'FontSize', myTextFont);
+                %text(xPlot + deltaXPlot, yPlot, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
+                yPlot = yPlot - deltaYPlot;
+                %text(xPlot + deltaXPlot, yPlot, 'Displaying average spectrum', 'FontSize', myTextFont);
                 
                 hold off
                 myTitle = sprintf('%s gel #%d study %s ratiommetric spectra', gelTypeName, gelNumber, studyName);
@@ -418,8 +419,26 @@ if (myAns1 ~= 4)
                 figure 
 
                 % subtract this offset
+                
+                myStr = datestr(now,'yyyy-mm-dd-HH-MM-SS');
+                [myYear, remain] = strtok(myStr, '-');
+                [myMonth, remain] = strtok(remain, '-');
+                [myDay, remain] = strtok(remain, '-');
+                [myHour, remain] = strtok(remain, '-');
+                [myMinute, remain] = strtok(remain, '-');
+                [mySecond, remain] = strtok(remain, '-');
+                % These are strings, need to make them numbers,
+                % by, sigh, first making them char arrays
+                % which wasn't by the way necessary with 2018a.
+                % sigh again.
+                myY = str2num(char(myYear));
+                myMo = str2num(char(myMonth));
+                myD = str2num(char(myDay));
+                myH = str2num(char(myHour));
+                myMi = str2num(char(myMinute));
+                myS = str2num(char(mySecond));
                 global tRef;
-                tRef = datenum(2018, 11, 24, 19, 28, 50); % TBD FIX ME
+                tRef = datenum(myY, myMo, myD, myH, myMi, myS);
                 
                 myTitleFont = 30;
                 myLabelFont = 20;
@@ -429,43 +448,43 @@ if (myAns1 ~= 4)
                     switch K
                         case {1,4,8}
                             pHcolor = green;
-                            num1 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
+                            num1 = plotTimeSeries(strcat(studyPath, '/', subdirs(K)), pHcolor);
                             fprintf('Case 1: %d spectra plotted in red\n', num1);
                         case {2,6,9}
                             pHcolor = red;
-                            num2 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
+                            num2 = plotTimeSeries(strcat(studyPath, '/', subdirs(K)), pHcolor);
                             fprintf('Case 2: %d spectra plotted in green\n', num2);
                         case {3,5,7}
                             pHcolor = blue;
-                            num3 = plotTimeSeries(strcat(studyName, '/', subdirs(K)), pHcolor);
+                            num3 = plotTimeSeries(strcat(studyPath, '/', subdirs(K)), pHcolor);
                             fprintf('Case 3: %d spectra plotted in blue\n', num3);
                     end
                 end
                            
-                y = yMax2;
-                x = 2;
-                deltaY = 0.01;
-                %deltaX = 0.2;
-                text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
-                text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
-                %text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
-                y = y - deltaY;
-                text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
-                text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
-                %text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
-                y = y - deltaY;
-                text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
-                text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
-                %text(x + deltaX, y, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
-                y = y - deltaY;
-                %text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
-                %y = y - deltaY;
-                %text(x, y, 'avg with std dev', 'Color', purple, 'FontSize', myTextFont);
-                %text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
-                y = y - deltaY;
-                %text(x + deltaX, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
-                y = y - deltaY;
-                %text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+                yPlot = yMax2;
+                xPlot = 2;  % Ahh, this was my mistake. Overwriting my array of x values
+                deltaYPlot = 0.1;
+                %deltaXPlot = 0.2;
+                text(xPlot, yPlot, 'pH 4', 'Color', red, 'FontSize', myTextFont);
+                text(xPlot, yPlot, '_____', 'Color', red, 'FontSize', myTextFont);
+                %text(xPlot + deltaXPlot, yPlot, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
+                yPlot = yPlot - deltaYPlot;
+                text(xPlot, yPlot, 'pH 7', 'Color', green, 'FontSize', myTextFont);
+                text(xPlot, yPlot, '_____', 'Color', green, 'FontSize', myTextFont);
+                %text(xPlot + deltaXPlot, yPlot, '5 second integration time per acq', 'FontSize', myTextFont);
+                yPlot = yPlot - deltaYPlot;
+                text(xPlot, yPlot, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
+                text(xPlot, yPlot, '_____', 'Color', blue, 'FontSize', myTextFont);
+                %text(xPlot + deltaXPlot, yPlot, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
+                %yPlot = yPlot - deltaYPlot;
+                %text(xPlot + deltaXPlot, yPlot, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
+                %yPlot = y - deltaYPlot;
+                %text(xPlot, yPlot, 'avg with std dev', 'Color', purple, 'FontSize', myTextFont);
+                %text(xPlot, yPlot, '_____', 'Color', purple, 'FontSize', myTextFont);
+                %yPlot = yPlot - deltaYPlot;
+                %text(xPlot + deltaXPlot, yPlot, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+                %yPlot = yPlot - deltaYPlot;
+                %text(xPlot + deltaXPlot, yPlot, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
                 
                 hold off
                 myTitle = sprintf('%s gel #%d study %s time series', gelTypeName, gelNumber, studyName);
@@ -773,6 +792,7 @@ end
 
 function g = createDirAndSubDirs()
     global studyName;
+    global studyPath;
     global subdirs;
     global subdirMax;
     global gelTypeName;
@@ -795,16 +815,16 @@ function g = createDirAndSubDirs()
     gelInstance = sprintf('gel %d/', gelNumber);
     
     prompt = '\nEnter study name> ';
-    dir2 = input(prompt, 's');
+    studyName = input(prompt, 's');
     
     % Now put it all together
     dir1 = '../../Data/Made by Sureyya/'; % just use relative directory
                                           % skip use of pwd for now
-    studyName = strcat(dir1, gelTypeName, '/', gelInstance, dir2);
-    if ~exist(studyName, 'dir')
-        [status, msg, msgID] = mkdir(studyName); % Make all intermediate dirs?
+    studyPath = strcat(dir1, gelTypeName, '/', gelInstance, studyName);
+    if ~exist(studyPath, 'dir')
+        [status, msg, msgID] = mkdir(studyPath); % Make all intermediate dirs?
         if status == 1 % keep going
-            s = strcat(studyName, '/');
+            s = strcat(studyPath, '/');
             % Make the subdirs inside 's'
             sumStatus = 0;
             for i = 1:subdirMax
@@ -827,7 +847,7 @@ function g = createDirAndSubDirs()
             g = status;
         end
     else
-        fprintf('directory: %s exists. Choose another name.', s);
+        fprintf('directory: %s exists. Choose another name.', studyPath);
         g = -1;
     end
 end
@@ -854,7 +874,7 @@ function g = plotAllSubDirs(subDirStem, myColor)
     global yMax1;
     global myDebug;
     global lineThickness;
-    global studyName;
+    global studyPath;
     global subdirs;
     
     tic;
@@ -1010,7 +1030,6 @@ function h = plotTimeSeries(subDirStem, myColor)
     numberOfSpectra = length(dinfo);
     if numberOfSpectra > 0
         % first pass on dataset, to get array of average spectra
-        % TO DO: add if stmt to ensure numberOfSpectra > 0
         for I = 1 : numberOfSpectra
             thisfilename = fullfile(char(subDirStem), dinfo(I).name); % just the name            
             % NEW 10/8/2018: extract time from filename
