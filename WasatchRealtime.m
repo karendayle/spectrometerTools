@@ -462,7 +462,7 @@ if (myAns1 ~= 4)
                 end
                            
                 yPlot = yMax2;
-                xPlot = 2;  % Ahh, this was my mistake. Overwriting my array of x values
+                xPlot = 0;  % Ahh, this was my mistake. Overwriting my array of x values
                 deltaYPlot = 0.1;
                 %deltaXPlot = 0.2;
                 text(xPlot, yPlot, 'pH 4', 'Color', red, 'FontSize', myTextFont);
