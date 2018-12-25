@@ -12,7 +12,7 @@
 waitBetweenAverages = 120; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
-increment = 2;
+increment = 20;
 integrationTimeMS = 5000;
 laserPowerFraction = 0.332;
 closestRef = 0;
@@ -84,6 +84,7 @@ global lineThickness; %%% KDK FIX 12/12/2018
 lineThickness = 2; %%% KDK FIX 12/12/2018
 global offset;
 offset = 300;
+global tRef;
 % -------------------------------------------------------------------------
 % Fixed. Don't change these ever.
 true = 1;
@@ -106,6 +107,7 @@ x = zeros(1, numPoints, 'double'); % While does x STILL end up as 1x1 sometimes?
 avg = zeros(1, numPoints, 'double');
 denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                                      % increasing number of points
+firstTime = true;
 
 % load the DLL
 % 32 bit dll: NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
@@ -418,27 +420,28 @@ if (myAns1 ~= 4)
                 % time series post-processing
                 figure 
 
-                % subtract this offset
-                
-                myStr = datestr(now,'yyyy-mm-dd-HH-MM-SS');
-                [myYear, remain] = strtok(myStr, '-');
-                [myMonth, remain] = strtok(remain, '-');
-                [myDay, remain] = strtok(remain, '-');
-                [myHour, remain] = strtok(remain, '-');
-                [myMinute, remain] = strtok(remain, '-');
-                [mySecond, remain] = strtok(remain, '-');
-                % These are strings, need to make them numbers,
-                % by, sigh, first making them char arrays
-                % which wasn't by the way necessary with 2018a.
-                % sigh again.
-                myY = str2num(char(myYear));
-                myMo = str2num(char(myMonth));
-                myD = str2num(char(myDay));
-                myH = str2num(char(myHour));
-                myMi = str2num(char(myMinute));
-                myS = str2num(char(mySecond));
-                global tRef;
-                tRef = datenum(myY, myMo, myD, myH, myMi, myS);
+                % subtract this offset -- first time only
+                if firstTime == true
+                    myStr = datestr(now,'yyyy-mm-dd-HH-MM-SS');
+                    [myYear, remain] = strtok(myStr, '-');
+                    [myMonth, remain] = strtok(remain, '-');
+                    [myDay, remain] = strtok(remain, '-');
+                    [myHour, remain] = strtok(remain, '-');
+                    [myMinute, remain] = strtok(remain, '-');
+                    [mySecond, remain] = strtok(remain, '-');
+                    % These are strings, need to make them numbers,
+                    % by, sigh, first making them char arrays
+                    % which wasn't by the way necessary with 2018a.
+                    % sigh again.
+                    myY = str2num(char(myYear));
+                    myMo = str2num(char(myMonth));
+                    myD = str2num(char(myDay));
+                    myH = str2num(char(myHour));
+                    myMi = str2num(char(myMinute));
+                    myS = str2num(char(mySecond));
+                    tRef = datenum(myY, myMo, myD, myH, myMi, myS);
+                    firstTime = false;
+                end
                 
                 myTitleFont = 30;
                 myLabelFont = 20;
@@ -1095,6 +1098,14 @@ function h = plotTimeSeries(subDirStem, myColor)
             fclose(fileID);
             sumY1 = sumY1 + y1(I);
             sumY2 = sumY2 + y2(I);
+            
+            % update the global variable used to position the legend on plot
+            if y1(I) > yMax2
+                yMax2 = y1(I);
+            end
+            if y2(I) > yMax2
+                yMax2 = y2(I);
+            end
         end
     
         % calculate average 
@@ -1132,14 +1143,6 @@ function h = plotTimeSeries(subDirStem, myColor)
         hold on;
         plot(t,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
         hold on;
-        % update the global variable used to position the legend on plot
-        
-        if y1 > yMax2
-            yMax2 = y1;
-        end
-        if y2 > yMax2
-            yMax2 = y2;
-        end
         h = 1;
     else
         fprintf('No files in this directory: %s\n', subDirStem);
