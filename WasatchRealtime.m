@@ -9,7 +9,7 @@
 % -------------------------------------------------------------------------
 % % Variables. Might need to change depending on what you want to do.
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
-waitBetweenAverages = 120; % Acquire one averaged sample 2 minutes apart
+waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
 increment = 20;
@@ -85,6 +85,7 @@ lineThickness = 2; %%% KDK FIX 12/12/2018
 global offset;
 offset = 300;
 global tRef;
+tRef = 0;
 % -------------------------------------------------------------------------
 % Fixed. Don't change these ever.
 true = 1;
@@ -107,7 +108,7 @@ x = zeros(1, numPoints, 'double'); % While does x STILL end up as 1x1 sometimes?
 avg = zeros(1, numPoints, 'double');
 denominator = zeros(1, 6, 'double'); % calculate denominators based on an
                                      % increasing number of points
-firstTime = true;
+startTimeSet = false;
 
 % load the DLL
 % 32 bit dll: NET.addAssembly('C:\Program Files (x86)\Wasatch Photonics\Wasatch.NET\WasatchNET.dll');
@@ -186,7 +187,6 @@ if (refWaveNumber ~= 0)
     %numPointsEachSide = input(prompt);
 end
 
-%size(wavenumbers); % This is misleading b/c it is 1x1
 firstTime = true;
 firstAverage = true;
 
@@ -421,7 +421,7 @@ if (myAns1 ~= 4)
                 figure 
 
                 % subtract this offset -- first time only
-                if firstTime == true
+                if startTimeSet == false
                     myStr = datestr(now,'yyyy-mm-dd-HH-MM-SS');
                     [myYear, remain] = strtok(myStr, '-');
                     [myMonth, remain] = strtok(remain, '-');
@@ -440,7 +440,8 @@ if (myAns1 ~= 4)
                     myMi = str2num(char(myMinute));
                     myS = str2num(char(mySecond));
                     tRef = datenum(myY, myMo, myD, myH, myMi, myS);
-                    firstTime = false;
+                    fprintf("*****tRef is %g*****\n", tRef);
+                    startTimeSet = true;
                 end
                 
                 myTitleFont = 30;
