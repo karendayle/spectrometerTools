@@ -12,7 +12,7 @@
 waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
-increment = 20;
+increment = 40;
 integrationTimeMS = 5000;
 laserPowerFraction = 0.332;
 closestRef = 0;
