@@ -81,15 +81,15 @@ for K = 1:3
         case 1
             pHcolor = green;
             num1 = myPlot(subDirStem1, pHcolor);
-            fprintf('Case 2: %d spectra plotted in green\n', num1);
+            fprintf('Case 1: %d spectra plotted in green\n', num1);
         case 2
             pHcolor = red;
             num2 = myPlot(subDirStem2, pHcolor);
-            fprintf('Case 3: %d spectra plotted in red\n', num2);            
+            fprintf('Case 2: %d spectra plotted in red\n', num2);            
         case 3
             pHcolor = blue
             num3 = myPlot(subDirStem3, pHcolor);
-            fprintf('Case 4: %d spectra plotted in blue\n', num3);
+            fprintf('Case 3: %d spectra plotted in blue\n', num3);
     end
 end    
    
