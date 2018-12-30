@@ -387,7 +387,7 @@ if (myAns1 ~= 4)
                 
                 yPlot = yMax1;
                 xPlot = xMin;
-                deltaYPlot = 0.1;
+                deltaYPlot = 0.03;
                 %deltaXPlot = 100;
                 text(xPlot, yPlot, 'pH4', 'Color', red, 'FontSize', myTextFont);
                 text(xPlot, yPlot, '___', 'Color', red, 'FontSize', myTextFont);
@@ -802,7 +802,7 @@ function g = createDirAndSubDirs()
     global gelTypeName;
     global gelNumber;
     pwd % not used
-    prompt = '\nIs this study: Alginate (1), PEG (2) or polyHEMAcoAc (3)?>';
+    prompt = '\nIs this study: Alginate (1), PEG (2), polyHEMA (3) or polyHEMAcoAc (4)?>';
     gelType = input(prompt);
     % Switch on gelType and add to path
     switch gelType
@@ -811,6 +811,8 @@ function g = createDirAndSubDirs()
         case 2
             gelTypeName = 'PEG';
         case 3
+            gelTypeName = 'polyHEMA';
+        case 4
             gelTypeName = 'polyHEMA coAcrylamide';
     end
     
