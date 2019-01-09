@@ -53,8 +53,8 @@ numPoints = 1024;
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
-dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\1\";
-%dirStem = "Z:\Documents\Data\Made by Sureyya\PEG\gel 3\1\"; % Analyzing using remote Matlab client
+dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA\gel  1\2\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA\gel  1\2\"; % Analyzing using remote Matlab client
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4";
 subDirStem3 = "3 pH10";
@@ -75,7 +75,7 @@ figure
 
 % subtract this offset 
 global tRef;
-tRef = datenum(2018, 12, 28, 16, 34, 05);
+tRef = datenum(2018, 12, 30, 22, 55, 56);
 
 myTitleFont = 30;
 myLabelFont = 20;
@@ -149,7 +149,7 @@ y = y - deltaY;
 text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
-title('Ratiometric continuous real-time of 86 nm spheres in microcapsules in PEG in flowcell', ...
+title('Ratiometric continuous real-time of 86 nm spheres in microcapsules in pHEMA in flowcell', ...
     'FontSize', myTitleFont);
 myXlabel = sprintf('Time in hours from %s', datestr(tRef));
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label

@@ -13,7 +13,7 @@ waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
 increment = 40;
-integrationTimeMS = 5000;
+integrationTimeMS = 100;
 laserPowerFraction = 0.332;
 closestRef = 0;
 refWaveNumber = 0;
@@ -387,7 +387,7 @@ if (myAns1 ~= 4)
                 
                 yPlot = yMax1;
                 xPlot = xMin;
-                deltaYPlot = 0.03;
+                deltaYPlot = yMax1/10;
                 %deltaXPlot = 100;
                 text(xPlot, yPlot, 'pH4', 'Color', red, 'FontSize', myTextFont);
                 text(xPlot, yPlot, '___', 'Color', red, 'FontSize', myTextFont);
@@ -467,7 +467,7 @@ if (myAns1 ~= 4)
                            
                 yPlot = yMax2;
                 xPlot = 0;  % Ahh, this was my mistake. Overwriting my array of x values
-                deltaYPlot = 0.1;
+                deltaYPlot = yMax2/10;
                 %deltaXPlot = 0.2;
                 text(xPlot, yPlot, 'pH 4', 'Color', red, 'FontSize', myTextFont);
                 text(xPlot, yPlot, '_____', 'Color', red, 'FontSize', myTextFont);
