@@ -80,9 +80,9 @@ figure
 global tRef;
 tRef = datenum(2018, 12, 30, 22, 55, 56); %pHEMA
 
-myTitleFont = 60;
-myLabelFont = 40;
-myTextFont = 30;
+myTitleFont = 6;
+myLabelFont = 4;
+myTextFont = 32;
 
 for K = 1:9
 
@@ -126,13 +126,14 @@ for K = 1:9
     end
 end    
    
-y = 0.17;
-x = 20.;
+y = 0.19;
+x = 20;
 deltaY = 0.01;
-deltaX = 0.2;
+deltaX = 5;
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
 %text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
+text(x + deltaX, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
@@ -141,6 +142,7 @@ y = y - deltaY;
 text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
 %text(x + deltaX, y, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
+text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 %text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
 %y = y - deltaY;
@@ -158,6 +160,7 @@ myXlabel = sprintf('Time in hours from %s', datestr(tRef));
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
 ylabel('Normalized Intensity (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
+% This value overrides all previous FontSize settings EXCEPT for the text
 set(gca,'FontSize',32,'FontWeight','bold','box','off')
     
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
