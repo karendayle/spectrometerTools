@@ -52,8 +52,12 @@ numPoints = 1024;
 % IMPORTANT: dirStem needs trailing backslash
 % And change title below
 global dirStem;
-%dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA\gel 1\2\"; % Use on lab PC
-dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA\gel 1\2\"; % Analyzing using remote Matlab client
+dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\2\"; % Use on lab PC
+%dirStem = "Z:\Documents\Data\Made by Sureyya\pHEMA\gel 1\2\"; % Analyzing using remote Matlab client
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\6\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\Alginate\gel 4\6\"; % Analyzing using remote Matlab client
+%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\1\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\PEG\gel 3\1\"; % Analyzing using remote Matlab client
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4";
 subDirStem3 = "3 pH10";
@@ -74,11 +78,11 @@ figure
 
 % subtract this offset 
 global tRef;
-tRef = datenum(2018, 12, 30, 22, 55, 56);
+tRef = datenum(2018, 12, 30, 22, 55, 56); %pHEMA
 
-myTitleFont = 30;
-myLabelFont = 20;
-myTextFont = 15;
+myTitleFont = 60;
+myLabelFont = 40;
+myTextFont = 30;
 
 for K = 1:9
 
@@ -148,13 +152,13 @@ y = y - deltaY;
 text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
-title('Ratiometric continuous real-time of 86 nm spheres in microcapsules in polyHEMA in flowcell', ...
-    'FontSize', myTitleFont);
+title('86 nm spheres in microcapsules in polyHEMA in flowcell', ...
+    'FontSize', myTextFont);
 myXlabel = sprintf('Time in hours from %s', datestr(tRef));
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
-ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
+ylabel('Normalized Intensity (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
-set(gca,'FontSize',16,'FontWeight','bold','box','off')
+set(gca,'FontSize',32,'FontWeight','bold','box','off')
     
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug;
