@@ -127,7 +127,7 @@ for K = 1:9
 end    
    
 y = 0.19;
-x = 20;
+x = 0.5;
 deltaY = 0.01;
 deltaX = 5;
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
@@ -138,25 +138,26 @@ y = y - deltaY;
 text(x, y, 'pH 7', 'Color', green, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
 %text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
+text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH 10', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
 %text(x + deltaX, y, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
-text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 %text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
 %y = y - deltaY;
 %text(x, y, 'avg with std dev', 'Color', purple, 'FontSize', myTextFont);
 %text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x + deltaX, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+%y = y - deltaY;
+%text(x + deltaX, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+%y = y - deltaY;
+%text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
 title('86 nm spheres in microcapsules in polyHEMA in flowcell', ...
     'FontSize', myTextFont);
-myXlabel = sprintf('Time in hours from %s', datestr(tRef));
+%myXlabel = sprintf('Time in hours from %s', datestr(tRef));
+myXlabel = sprintf('Time in hours'); % for SPIE 
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
 ylabel('Normalized Intensity (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
