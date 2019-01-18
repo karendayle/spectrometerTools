@@ -27,9 +27,9 @@ black =   [0., 0.0, 0.0];
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
 %dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA-coAc\gel 3\testOnQuartz\";
-%dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA-coAc\gel 3\testOnQuartz\"; % Analyzing using remote Matlab client
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\testPHSensitivityOnQuartz\";
 %dirStem = "H:\Documents\Data\Made by Sureyya\alginate\gel 4\testOnQuartzPHBuffer\";
-dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\testPHSensitivityOnQuartz\";
+dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\TrizPHOnQuartz\";
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
 subDirStem3 = "3 pH10";
@@ -57,7 +57,7 @@ xMax = 1800;
 yMin = 0;
 yMax = 20.0;
 myFont = 30;
-myTextFont = 15;
+myTextFont = 32;
 
 global myDebug;
 myDebug = 0;
@@ -82,8 +82,9 @@ for K = 1:3
 end    
 
 % TO DO: figure out the coords for labels from the data
-y = 1.1;
-x = 1200;
+y = 1.25; %pHEMA
+y = 1.1; %alginate
+x = 1700; %pHEMA
 deltaY = 0.1;
 deltaX = 100;
 text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
@@ -95,7 +96,7 @@ text(x, y, '___', 'Color', green, 'FontSize', myTextFont);
 %text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH10', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '____', 'Color', blue);
+text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
 %text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
 %y = y - deltaY;
 %text(x, y, 'four', 'Color', black, 'FontSize', myTextFont);
@@ -105,11 +106,12 @@ text(x, y, '____', 'Color', blue);
 %text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
 
 hold off
-title('86 nm spheres in microcapsules in pHEMA on quartz', 'FontSize', myFont);
-xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
-ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
-    'FontSize', myLabelFont); % y-axis label
-set(gca,'FontSize',16,'FontWeight','bold','box','off')
+%title('86 nm spheres in microcapsules in pHEMA on quartz', 'FontSize', myFont);
+%title('86 nm spheres in microcapsules in alginate on quartz');
+title('86 nm spheres in microcapsules in PEG on quartz');
+xlabel('Wavenumber (cm^-^1)'); % x-axis label
+ylabel('Normalized Intensity (A.U.)'); % y-axis label
+set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
