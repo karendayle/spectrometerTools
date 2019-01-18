@@ -52,11 +52,11 @@ numPoints = 1024;
 % IMPORTANT: dirStem needs trailing backslash
 % And change title below
 global dirStem;
-dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\2\"; % Use on lab PC
-%dirStem = "Z:\Documents\Data\Made by Sureyya\pHEMA\gel 1\2\"; % Analyzing using remote Matlab client
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\2\"; % Use on lab PC
+%dirStem = "Z:\Documents\Data\Made by Sureyya\pHEMA\gel 1\2\"; % Use with remote Matlab client
 %dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\6\";
 %dirStem = "Z:\Documents\Data\Made by Sureyya\Alginate\gel 4\6\"; % Analyzing using remote Matlab client
-%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\1\";
+dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\1\";
 %dirStem = "Z:\Documents\Data\Made by Sureyya\PEG\gel 3\1\"; % Analyzing using remote Matlab client
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4";
@@ -78,7 +78,9 @@ figure
 
 % subtract this offset 
 global tRef;
-tRef = datenum(2018, 12, 30, 22, 55, 56); %pHEMA
+%tRef = datenum(2018, 12, 30, 22, 55, 56); %pHEMA
+%tRef = datenum(2018, 12, 26, 20, 30, 58); %alginate
+tRef = datenum(2018, 12, 28, 16, 34, 05); %PEG
 
 myTitleFont = 6;
 myLabelFont = 4;
@@ -126,10 +128,14 @@ for K = 1:9
     end
 end    
    
-y = 0.19;
+y = 0.19; %pHEMA, PEG
+%y = 0.28; %alginate
 x = 0.5;
-deltaY = 0.01;
-deltaX = 5;
+%deltaY = 0.01; %pHEMA
+deltaY = 0.015; %alginate
+%deltaX = 5; %pHEMA
+%deltaX = 17; %alginate
+deltaX = 16; %PEG
 text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
 %text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
@@ -154,8 +160,10 @@ y = y - deltaY;
 %text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
-title('86 nm spheres in microcapsules in polyHEMA in flowcell', ...
-    'FontSize', myTextFont);
+%title('86 nm spheres in microcapsules in polyHEMA in flowcell', ...
+%    'FontSize', myTextFont);
+%title('86 nm spheres in microcapsules in alginate in flowcell');
+title('86 nm spheres in microcapsules in PEG in flowcell');
 %myXlabel = sprintf('Time in hours from %s', datestr(tRef));
 myXlabel = sprintf('Time in hours'); % for SPIE 
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
