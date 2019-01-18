@@ -167,10 +167,9 @@ title('86 nm spheres in microcapsules in PEG in flowcell');
 %myXlabel = sprintf('Time in hours from %s', datestr(tRef));
 myXlabel = sprintf('Time in hours'); % for SPIE 
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
-ylabel('Normalized Intensity (A.U.)', ...
-    'FontSize', myLabelFont); % y-axis label
+ylabel('Normalized Intensity (A.U.)','FontSize', myLabelFont); % y-axis label
 % This value overrides all previous FontSize settings EXCEPT for the text
-set(gca,'FontSize',32,'FontWeight','bold','box','off')
+set(gca,'FontSize',32,'FontWeight','bold','box','off');
     
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug;
