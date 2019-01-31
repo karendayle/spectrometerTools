@@ -1,16 +1,19 @@
 % Plot files in different directories
-% Dayle Kotturi October 2018
+% Dayle Kotturi January 2019
 
 % Colors:
+global black;
+global purple;
 global blue;
+global ciel;
+global green;
 global rust;
 global gold;
-global purple;
-global green;
-global ciel; 
-global cherry;
 global red;
-global black;
+global cherry;
+global magenta;
+
+% RGB
 blue =    [0.0000, 0.4470, 0.7410];
 rust =    [0.8500, 0.3250, 0.0980];
 gold =    [0.9290, 0.6940, 0.1250];
@@ -19,27 +22,26 @@ green =   [0.4660, 0.6740, 0.1880];
 ciel =    [0.3010, 0.7450, 0.9330];
 cherry =  [0.6350, 0.0780, 0.1840];
 red =     [1.0, 0.0, 0.0];
-black =   [0., 0.0, 0.0];
+black =   [0.0, 0.0, 0.0];
+magenta = [1.0, 0.0, 1.0];
 
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-%dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA-coAc\gel 3\testOnQuartz\";
-%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\testPHSensitivityOnQuartz\";
-%dirStem = "H:\Documents\Data\Made by Sureyya\alginate\gel 4\testOnQuartzPHBuffer\";
-%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\TrizPHOnQuartz\";
-
-% Long term study
-%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\longtermStudy\";
-%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\longtermStudy\";
-%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\longtermStudy\";
-dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\longtermStudy\";
+dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\calibration\";
 
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
-subDirStem3 = "3 pH10";
+subDirStem3 = "3 pH3.5";
+subDirStem4 = "4 pH3.0";
+subDirStem5 = "5 pH4.5";
+subDirStem6 = "6 pH5.0";
+subDirStem7 = "7 pH5.5";
+subDirStem8 = "8 pH6.0";
+subDirStem9 = "8a pH6.5";
+subDirStem10 = "9 pH7.5";
 
 global lineThickness;
 lineThickness = 2;
@@ -71,21 +73,50 @@ myDebug = 0;
 
 figure 
 
-for K = 1:3
+for K = 1:9
     switch K
-        case 1
+        case 1 % pH4
             pHcolor = red;
             num1 = myPlot(subDirStem1, pHcolor);
             fprintf('Case 1: %d spectra plotted in red\n', num1);
-        case 2
+        case 2 % pH7
             pHcolor = green;
             num2 = myPlot(subDirStem2, pHcolor);
             fprintf('Case 2: %d spectra plotted in green\n', num2);            
-        case 3
-            pHcolor = blue;
+        case 3 % pH3.5
+            pHcolor = cherry;
             num3 = myPlot(subDirStem3, pHcolor);
-            fprintf('Case 3: %d spectra plotted in blue\n', num3);
+            fprintf('Case 3: %d spectra plotted in cherry\n', num3);
+        case 4 % pH3.0
+            pHcolor = magenta;
+            num4 = myPlot(subDirStem4, pHcolor);
+            fprintf('Case 4: %d spectra plotted in magenta\n', num4);
+        case 5 % pH4.5
+            pHcolor = gold;
+            num5 = myPlot(subDirStem5, pHcolor);
+            fprintf('Case 5: %d spectra plotted in gold\n', num5);            
+        case 6 % pH5.0
+            pHcolor = rust;
+            num6 = myPlot(subDirStem6, pHcolor);
+            fprintf('Case 6: %d spectra plotted in rust\n', num6);
+        case 7 % pH 5.5
+            pHcolor = black;
+            num7 = myPlot(subDirStem7, pHcolor);
+            fprintf('Case 7: %d spectra plotted in black\n', num7);
+        case 8 % pH 6.0
+            pHcolor = purple;
+            num8 = myPlot(subDirStem8, pHcolor);
+            fprintf('Case 8: %d spectra plotted in purple\n', num8);            
+        case 9 % pH6.5
+            pHcolor = ciel;
+            num9 = myPlot(subDirStem9, pHcolor);
+            fprintf('Case 9: %d spectra plotted in ciel\n', num9);
+        case 10 % pH7.5
+            pHcolor = blue;
+            num10 = myPlot(subDirStem10, pHcolor);
+            fprintf('Case 10: %d spectra plotted in blue\n', num10);
     end
+    pause(1);
 end    
 
 % TO DO: figure out the coords for labels from the data
@@ -94,30 +125,40 @@ y = 1.1; %alginate
 x = 1700; %pHEMA
 deltaY = 0.1;
 deltaX = 100;
-text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '___', 'Color', red, 'FontSize', myTextFont);
-%text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
+
+text(x, y, 'pH7.5', 'Color', blue, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
 text(x, y, '___', 'Color', green, 'FontSize', myTextFont);
-%text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH10', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
-%text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
-%y = y - deltaY;
-%text(x, y, 'four', 'Color', black, 'FontSize', myTextFont);
-%text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
-%text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
-%y = y - deltaY;
-%text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
-
+text(x, y, 'pH6.5', 'Color', ciel, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pH6.0', 'Color', purple, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pH5.5', 'Color', black, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pH5.0', 'Color', rust, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pH4.5', 'Color', gold, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pH4.0', 'Color', red, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pH3.5', 'Color', cherry, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pH3.0', 'Color', magenta, 'FontSize', myTextFont);
+text(x, y, '_____', 'Color', magenta, 'FontSize', myTextFont);
+y = y - deltaY;
 hold off
 
-%title('86 nm spheres in microcapsules in alginate on quartz');
-%title('86 nm spheres in microcapsules in PEG on quartz');
-%itle('86 nm spheres in microcapsules in pHEMA on quartz');
-title('86 nm spheres in microcapsules in pHEMA coAc on quartz');
+title('86 nm spheres in microcapsules in alginate in flow cell');
 
 xlabel('Wavenumber (cm^-^1)'); % x-axis label
 ylabel('Normalized Intensity (A.U.)'); % y-axis label
