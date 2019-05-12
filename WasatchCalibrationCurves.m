@@ -12,9 +12,9 @@
 waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
-increment = 40;
+increment = 30;
 integrationTimeMS = 100;
-laserPowerFraction = 0.332;
+laserPowerFraction = 0.350;
 closestRef = 0;
 refWaveNumber = 0;
 numIter = 5; % number of spectra to average 
