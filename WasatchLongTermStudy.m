@@ -57,7 +57,8 @@ numIter = 5; % number of spectra to average
 %numPointsEachSide = 0; % number of points used on either side of
 % reference wavenumber to integrate for the denominator of normalized
 % spectrum
-laserPowerFraction = 0.332;
+%laserPowerFraction = 0.332;
+laserPowerFraction = 0.350; % 4/30/2019
 closestRef = 0;
 refWaveNumber = 0;
 denominator = zeros(1, 6, 'double'); % calculate denominators based on an
