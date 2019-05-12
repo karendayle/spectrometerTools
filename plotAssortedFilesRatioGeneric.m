@@ -26,16 +26,33 @@ black =   [0., 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
+
+% SELECT ONE
 %dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA-coAc\gel 3\testOnQuartz\";
 %dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\testPHSensitivityOnQuartz\";
 %dirStem = "H:\Documents\Data\Made by Sureyya\alginate\gel 4\testOnQuartzPHBuffer\";
 %dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\TrizPHOnQuartz\";
-
 % Long term study
-%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\longtermStudy\";
-%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\longtermStudy\";
-%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\longtermStudy\";
-dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\longtermStudy\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\longtermStudy1\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\longtermStudy1\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\longtermStudy1\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\longtermStudy1\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\longtermStudy2\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\longtermStudy2\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\longtermStudy2\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\longtermStudy3\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\longtermStudy3\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\longtermStudy3\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\longtermStudy3\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\longtermStudy3-redo\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\longtermStudy3\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 1\longtermStudy3-redo\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 2\longtermStudy1\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\longtermStudy3-redo\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\longtermStudy3-redo\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA\gel 2\longtermStudy1-redo\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\longtermStudy3-redo2\";
+dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\longtermStudy3-redo2\";
 
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
@@ -43,7 +60,6 @@ subDirStem3 = "3 pH10";
 
 global lineThickness;
 lineThickness = 2;
-
 global numPoints;
 numPoints = 1024;
 
@@ -114,9 +130,10 @@ text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
 
 hold off
 
+% SELECT ONE
 %title('86 nm spheres in microcapsules in alginate on quartz');
 %title('86 nm spheres in microcapsules in PEG on quartz');
-%itle('86 nm spheres in microcapsules in pHEMA on quartz');
+%title('86 nm spheres in microcapsules in pHEMA on quartz');
 title('86 nm spheres in microcapsules in pHEMA coAc on quartz');
 
 xlabel('Wavenumber (cm^-^1)'); % x-axis label
