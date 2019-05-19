@@ -121,30 +121,30 @@ y = 0.21; %alginate
 x = 3.1;
 deltaY = 0.01;
 
-text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH9', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH8', 'Color', ciel, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH6', 'Color', gold, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH5', 'Color', rust, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
-y = y - deltaY;
+% text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
+% text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pH9', 'Color', blue, 'FontSize', myTextFont);
+% text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pH8', 'Color', ciel, 'FontSize', myTextFont);
+% text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
+% text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pH6', 'Color', gold, 'FontSize', myTextFont);
+% text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pH5', 'Color', rust, 'FontSize', myTextFont);
+% text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
+% text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
+% text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
+% y = y - deltaY;
 text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
@@ -240,12 +240,12 @@ function g = myPlot(subDirStem, myColor, pH)
     global myDebug;
     global lineThickness;
     
-    sumY1 = 0;
-    sumY2 = 0;
-    avgY1 = 0;
-    avgY2 = 0;
-    sumSqY1 = 0;
-    sumSqY2 = 0;
+%     sumY1 = 0;
+%     sumY2 = 0;
+%     avgY1 = 0;
+%     avgY2 = 0;
+%     sumSqY1 = 0;
+%     sumSqY2 = 0;
     
     str_dir_to_search = dirStem + subDirStem; % args need to be strings
     dir_to_search = char(str_dir_to_search)
@@ -297,31 +297,31 @@ function g = myPlot(subDirStem, myColor, pH)
             sumY2 = sumY2 + y2(I);
         end
     
-        % calculate average 
-        avgY1 = sumY1/numberOfSpectra;
-        avgY2 = sumY2/numberOfSpectra;
-        sumSqY1 = 0;
-        sumSqY2 = 0;
-        
-        % second pass on dataset to get (each point - average)^2
-        % for standard deviation, need 
-        for I = 1 : numberOfSpectra            
-            % 4. Add to the sum of the squares
-            sumSqY1 = sumSqY1 + (y1(I) - avgY1).^2;
-            sumSqY2 = sumSqY2 + (y2(I) - avgY2).^2;
-        end
+%         % calculate average 
+%         avgY1 = sumY1/numberOfSpectra;
+%         avgY2 = sumY2/numberOfSpectra;
+%         sumSqY1 = 0;
+%         sumSqY2 = 0;
+%         
+%         % second pass on dataset to get (each point - average)^2
+%         % for standard deviation, need 
+%         for I = 1 : numberOfSpectra            
+%             % 4. Add to the sum of the squares
+%             sumSqY1 = sumSqY1 + (y1(I) - avgY1).^2;
+%             sumSqY2 = sumSqY2 + (y2(I) - avgY2).^2;
+%         end
     end
     
-    % 5. Compute standard deviation at each index of the averaged spectra 
-    stdDevY1 = sqrt(sumSqY1/numberOfSpectra);
-    stdDevY2 = sqrt(sumSqY2/numberOfSpectra);
-    
-    for J=1:numberOfSpectra
-        avgArrayY1(J) = avgY1;
-        avgArrayY2(J) = avgY2;
-        stdDevArrayY1(J) = stdDevY1;
-        stdDevArrayY2(J) = stdDevY2;
-    end
+%     % 5. Compute standard deviation at each index of the averaged spectra 
+%     stdDevY1 = sqrt(sumSqY1/numberOfSpectra);
+%     stdDevY2 = sqrt(sumSqY2/numberOfSpectra);
+%     
+%     for J=1:numberOfSpectra
+%         avgArrayY1(J) = avgY1;
+%         avgArrayY2(J) = avgY2;
+%         stdDevArrayY1(J) = stdDevY1;
+%         stdDevArrayY2(J) = stdDevY2;
+%     end
     
 %     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
 %     Either:
@@ -330,9 +330,11 @@ function g = myPlot(subDirStem, myColor, pH)
 %     hold on;
 %     Or:
     plot(pH,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+    hold on;
     plot(pH,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
     hold on;
     plot(pH,lastY1,'-o', 'Color', black, 'LineWidth', lineThickness);
+    hold on;
     plot(pH,lastY2,'-+', 'Color', black, 'LineWidth', lineThickness);
     hold on;
     g = 1;
