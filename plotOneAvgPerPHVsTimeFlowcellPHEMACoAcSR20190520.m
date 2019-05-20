@@ -320,35 +320,35 @@ function g = myPlot(subDirStem, myColor, offset)
             %y2(I) = thisdata(2, x2)/denominator;
             %y3(I) = denominator; % NEW Oct. 17th to look for jumps in ref
             fclose(fileID);
-            sumY1 = sumY1 + y1(I);
-            sumY2 = sumY2 + y2(I);
+%             sumY1 = sumY1 + y1(I);
+%             sumY2 = sumY2 + y2(I);
         end
     
-        % calculate average 
-        avgY1 = sumY1/numberOfSpectra
-        avgY2 = sumY2/numberOfSpectra
-        sumSqY1 = 0;
-        sumSqY2 = 0;
-        
-        % second pass on dataset to get (each point - average)^2
-        % for standard deviation, need 
-        for I = 1 : numberOfSpectra            
-            % 4. Add to the sum of the squares
-            sumSqY1 = sumSqY1 + (y1(I) - avgY1).^2;
-            sumSqY2 = sumSqY2 + (y2(I) - avgY2).^2;
-        end
+%         % calculate average 
+%         avgY1 = sumY1/numberOfSpectra
+%         avgY2 = sumY2/numberOfSpectra
+%         sumSqY1 = 0;
+%         sumSqY2 = 0;
+%         
+%         % second pass on dataset to get (each point - average)^2
+%         % for standard deviation, need 
+%         for I = 1 : numberOfSpectra            
+%             % 4. Add to the sum of the squares
+%             sumSqY1 = sumSqY1 + (y1(I) - avgY1).^2;
+%             sumSqY2 = sumSqY2 + (y2(I) - avgY2).^2;
+%         end
     end
     
-    % 5. Compute standard deviation at each index of the averaged spectra 
-    stdDevY1 = sqrt(sumSqY1/numberOfSpectra);
-    stdDevY2 = sqrt(sumSqY2/numberOfSpectra);
-    
-    for J=1:numberOfSpectra
-        avgArrayY1(J) = avgY1;
-        avgArrayY2(J) = avgY2;
-        stdDevArrayY1(J) = stdDevY1;
-        stdDevArrayY2(J) = stdDevY2;
-    end
+%     % 5. Compute standard deviation at each index of the averaged spectra 
+%     stdDevY1 = sqrt(sumSqY1/numberOfSpectra);
+%     stdDevY2 = sqrt(sumSqY2/numberOfSpectra);
+%     
+%     for J=1:numberOfSpectra
+%         avgArrayY1(J) = avgY1;
+%         avgArrayY2(J) = avgY2;
+%         stdDevArrayY1(J) = stdDevY1;
+%         stdDevArrayY2(J) = stdDevY2;
+%     end
     
 %     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
 %     Either:

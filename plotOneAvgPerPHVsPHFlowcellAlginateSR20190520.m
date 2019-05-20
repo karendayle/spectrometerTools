@@ -47,6 +47,10 @@ pHcolor = [0.0, 0.0, 0.0];
 
 global numPoints;
 numPoints = 1024;
+global lastY1;
+lastY1 = zeros(1, 8, 'double');
+global lastY2;
+lastY2 = zeros(1, 8, 'double');
 
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
@@ -82,38 +86,38 @@ myTextFont = 15;
 for K = 1:8
 
     switch K
-        case 1
-            pHcolor = red;
-            num1 = myPlot(subDirStem1, pHcolor, 4);
-            fprintf('Case 1: %d spectra plotted in red\n', num1);
         case 2
-            pHcolor = green;
-            num2 = myPlot(subDirStem2, pHcolor, 7);
-            fprintf('Case 2: %d spectra plotted in green\n', num2);            
-        case 3
-            pHcolor = purple;
-            num3 = myPlot(subDirStem3, pHcolor, 10);
-            fprintf('Case 3: %d spectra plotted in purple\n', num3);
-        case 4
-            pHcolor = ciel;
-            num4 = myPlot(subDirStem4, pHcolor, 8);
-            fprintf('Case 4: %d spectra plotted in ciel\n', num4);
+            pHcolor = red;
+            num1 = myPlot(subDirStem1, pHcolor, 4, K);
+            fprintf('Case 2: %d spectra plotted in red\n', num1);
         case 5
-            pHcolor = rust;
-            num5 = myPlot(subDirStem5, pHcolor, 5);
-            fprintf('Case 5: %d spectra plotted in rust\n', num5);            
-        case 6
-            pHcolor = cherry;
-            num6 = myPlot(subDirStem6, pHcolor, 3);
-            fprintf('Case 6: %d spectra plotted in cherry\n', num6);
-        case 7
-            pHcolor = gold;
-            num7 = myPlot(subDirStem7, pHcolor, 6);
-            fprintf('Case 7: %d spectra plotted in gold\n', num7);
+            pHcolor = green;
+            num2 = myPlot(subDirStem2, pHcolor, 7, K);
+            fprintf('Case 5: %d spectra plotted in green\n', num2);            
         case 8
+            pHcolor = purple;
+            num3 = myPlot(subDirStem3, pHcolor, 10, K);
+            fprintf('Case 8: %d spectra plotted in purple\n', num3);
+        case 6
+            pHcolor = ciel;
+            num4 = myPlot(subDirStem4, pHcolor, 8, K);
+            fprintf('Case 6: %d spectra plotted in ciel\n', num4);
+        case 3
+            pHcolor = rust;
+            num5 = myPlot(subDirStem5, pHcolor, 5, K);
+            fprintf('Case 3: %d spectra plotted in rust\n', num5);            
+        case 1
+            pHcolor = cherry;
+            num6 = myPlot(subDirStem6, pHcolor, 3, K);
+            fprintf('Case 1: %d spectra plotted in cherry\n', num6);
+        case 4
+            pHcolor = gold;
+            num7 = myPlot(subDirStem7, pHcolor, 6, K);
+            fprintf('Case 4: %d spectra plotted in gold\n', num7);
+        case 7
             pHcolor = blue;
-            num8 = myPlot(subDirStem8, pHcolor, 9);
-            fprintf('Case 8: %d spectra plotted in blue\n', num8);            
+            num8 = myPlot(subDirStem8, pHcolor, 9, K);
+            fprintf('Case 7: %d spectra plotted in blue\n', num8);            
     end
 end    
    
@@ -121,33 +125,12 @@ y = 0.29; %alginate
 x = 3.1;
 deltaY = 0.01;
 
-% text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
-% text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
-% y = y - deltaY;
-% text(x, y, 'pH9', 'Color', blue, 'FontSize', myTextFont);
-% text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
-% y = y - deltaY;
-% text(x, y, 'pH8', 'Color', ciel, 'FontSize', myTextFont);
-% text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
-% y = y - deltaY;
-% text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
-% text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
-% y = y - deltaY;
-% text(x, y, 'pH6', 'Color', gold, 'FontSize', myTextFont);
-% text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
-% y = y - deltaY;
-% text(x, y, 'pH5', 'Color', rust, 'FontSize', myTextFont);
-% text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
-% y = y - deltaY;
-% text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
-% text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
-% y = y - deltaY;
-% text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
-% text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
-% y = y - deltaY;
 text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+xAxis=[3 4 5 6 7 8 9 10];
+plot(xAxis, lastY1, 'Color', black);
+plot(xAxis, lastY2, 'Color', black);
 
 hold off
 title('Ratiometric continuous real-time of 86 nm spheres in alginate gel 4 in flowcell', ...
@@ -219,7 +202,7 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end
 
-function g = myPlot(subDirStem, myColor, pH)
+function g = myPlot(subDirStem, myColor, pH, J)
     global blue;
     global rust;
     global gold;
@@ -239,6 +222,8 @@ function g = myPlot(subDirStem, myColor, pH)
     global tRef;
     global myDebug;
     global lineThickness;
+    global lastY1;
+    global lastY2;
     
 %     sumY1 = 0;
 %     sumY2 = 0;
@@ -288,8 +273,8 @@ function g = myPlot(subDirStem, myColor, pH)
             y2(I) = x2LocalPeak/denominator;
     
             if (I==numberOfSpectra)
-                lastY1 = y1(I);
-                lastY2 = y2(I);
+                lastY1(J) = y1(I);
+                lastY2(J) = y2(I);
             end
 
             fclose(fileID);
@@ -333,9 +318,9 @@ function g = myPlot(subDirStem, myColor, pH)
     hold on;
     plot(pH,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
     hold on;
-    plot(pH,lastY1,'-o', 'Color', black, 'LineWidth', lineThickness);
+    plot(pH,lastY1(J),'-o', 'Color', black, 'LineWidth', lineThickness);
     hold on;
-    plot(pH,lastY2,'-+', 'Color', black, 'LineWidth', lineThickness);
+    plot(pH,lastY2(J),'-+', 'Color', black, 'LineWidth', lineThickness);
     hold on;
     g = 1;
 end
