@@ -48,13 +48,18 @@ pHcolor = [0.0, 0.0, 0.0];
 global numPoints;
 numPoints = 1024;
 
+global lastY1;
+lastY1 = zeros(1, 8, 'double');
+global lastY2;
+lastY2 = zeros(1, 8, 'double');
+
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
-%dirStem = "C:\Users\karen\Documents\Data\Made by Sureyya\Alginate\gel 4\calibration3\"; % Analyzing using remote Matlab client
-dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\calibration3\"; % Analyzing using lab desktop
+dirStem = "C:\Users\karen\Documents\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\calibration\"; % Analyzing using remote Matlab client
+dirStem = "H:\Documents\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\calibration\"; % Analyzing using lab desktop
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
 subDirStem3 = "3 pH10";
@@ -81,81 +86,62 @@ myLabelFont = 20;
 myTextFont = 15;
 
 for K = 1:8
-
+    % The numbering of cases is weird now because data was collected
+    % in the order: pH4,7,10,8,5,3,6,9 and because I want to plot the 
+    % "lastY*" values sequentially: pH3,4,5,6,7,8,9,10, this is required
     switch K
-        case 1
-            pHcolor = red;
-            num1 = myPlot(subDirStem1, pHcolor, 0);
-            fprintf('Case 1: %d spectra plotted in red\n', num1);
         case 2
-            pHcolor = green;
-            num2 = myPlot(subDirStem2, pHcolor, 0);
-            fprintf('Case 2: %d spectra plotted in green\n', num2);            
-        case 3
-            pHcolor = purple;
-            num3 = myPlot(subDirStem3, pHcolor, 0);
-            fprintf('Case 3: %d spectra plotted in purple\n', num3);
-        case 4
-            pHcolor = ciel;
-            num4 = myPlot(subDirStem4, pHcolor, 11.65);
-            fprintf('Case 4: %d spectra plotted in ciel\n', num4);
+            pHcolor = red;
+            num1 = myPlot(subDirStem1, pHcolor, 4, K);
+            fprintf('Case 2: %d spectra plotted in red\n', num1);
         case 5
-            pHcolor = rust;
-            num5 = myPlot(subDirStem5, pHcolor, 11.65);
-            fprintf('Case 5: %d spectra plotted in rust\n', num5);            
-        case 6
-            pHcolor = cherry;
-            num6 = myPlot(subDirStem6, pHcolor, 11.65);
-            fprintf('Case 6: %d spectra plotted in cherry\n', num6);
-        case 7
-            pHcolor = gold;
-            num7 = myPlot(subDirStem7, pHcolor, 11.65);
-            fprintf('Case 7: %d spectra plotted in gold\n', num7);
+            pHcolor = green;
+            num2 = myPlot(subDirStem2, pHcolor, 7, K);
+            fprintf('Case 5: %d spectra plotted in green\n', num2);            
         case 8
+            pHcolor = purple;
+            num3 = myPlot(subDirStem3, pHcolor, 10, K);
+            fprintf('Case 8: %d spectra plotted in purple\n', num3);
+        case 6
+            pHcolor = ciel;
+            num4 = myPlot(subDirStem4, pHcolor, 8, K);
+            fprintf('Case 6: %d spectra plotted in ciel\n', num4);
+        case 3
+            pHcolor = rust;
+            num5 = myPlot(subDirStem5, pHcolor, 5, K);
+            fprintf('Case 3: %d spectra plotted in rust\n', num5);            
+        case 1
+            pHcolor = cherry;
+            num6 = myPlot(subDirStem6, pHcolor, 3, K);
+            fprintf('Case 1: %d spectra plotted in cherry\n', num6);
+        case 4
+            pHcolor = gold;
+            num7 = myPlot(subDirStem7, pHcolor, 6, K);
+            fprintf('Case 4: %d spectra plotted in gold\n', num7);
+        case 7
             pHcolor = blue;
-            num8 = myPlot(subDirStem8, pHcolor, 11.65);
-            fprintf('Case 8: %d spectra plotted in blue\n', num8);            
+            num8 = myPlot(subDirStem8, pHcolor, 9, K);
+            fprintf('Case 7: %d spectra plotted in blue\n', num8);            
     end
 end    
    
-y = 29; %alginate
-x = 0.25;
-deltaY = 1;
+y = 4.9; %pHEMA coAc
+x = 3.1;
+deltaY = 0.01;
 
-text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH9', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH8', 'Color', ciel, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH6', 'Color', gold, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH5', 'Color', rust, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
-text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
-% y = y - deltaY;
 % text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 % y = y - deltaY;
 % text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
 text(x, y, '* = local peak near 1430 cm^-^1/local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+xAxis=[3 4 5 6 7 8 9 10];
+% plot(xAxis, lastY1, 'Color', black);
+% plot(xAxis, lastY2, 'Color', black);
+plot(xAxis, lastY3, 'Color', black);
 
 hold off
-title('Ratiometric continuous real-time of 86 nm spheres in alginate gel 4 in flowcell', ...
+title('Ratiometric continuous real-time of 86 nm spheres in pHEMA coAc gel 3 in flowcell', ...
     'FontSize', myTitleFont);
-myXlabel = sprintf('Time (hours)');
+myXlabel = sprintf('pH Level');
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
 ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
@@ -222,7 +208,7 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end
 
-function g = myPlot(subDirStem, myColor, offset)
+function g = myPlot(subDirStem, myColor, pH, J)
     global blue;
     global rust;
     global gold;
@@ -242,6 +228,9 @@ function g = myPlot(subDirStem, myColor, offset)
     global tRef;
     global myDebug;
     global lineThickness;
+    global lastY1;
+    global lastY2;
+    global lastY3;
     
 %     sumY1 = 0;
 %     sumY2 = 0;
@@ -262,32 +251,6 @@ function g = myPlot(subDirStem, myColor, offset)
         % TO DO: add if stmt to ensure numberOfSpectra > 0
         for I = 1 : numberOfSpectra
             thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name            
-            % NEW 10/8/2018: extract time from filename
-            S = string(thisfilename); 
-            newStr1 = extractAfter(S,"avg-");
-            dateWithHyphens = extractBefore(newStr1,".txt");
-            % No, it would be too easy if this worked
-            %t1 = datetime(dateWithHyphens,'Format','yyyy-MM-dd-hh-mm-ss');
-            [myYear, remain] = strtok(dateWithHyphens, '-');
-            [myMonth, remain] = strtok(remain, '-');
-            [myDay, remain] = strtok(remain, '-');
-            [myHour, remain] = strtok(remain, '-');
-            [myMinute, remain] = strtok(remain, '-');
-            [mySecond, remain] = strtok(remain, '-');
-            % These are strings, need to make them numbers,
-            % by, sigh, first making them char arrays
-            % which wasn't by the way necessary with 2018a.
-            % sigh again.
-            myY = str2num(char(myYear));
-            myMo = str2num(char(myMonth));
-            myD = str2num(char(myDay));
-            myH = str2num(char(myHour));
-            myMi = str2num(char(myMinute));
-            myS = str2num(char(mySecond));
-            t(I) = (datenum(myY, myMo, myD, myH, myMi, myS) - tRef)*24.;
-            fprintf...
-                ('CHECK %d file %2d-%2d-%2d-%2d-%2d-%2d has time %10.4f\n',...
-                I, myY, myMo, myD, myH, myMi, myS, t(I));
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
             % NEW 10/18 - base corr not done in 10/15/18 SR. This could explain
@@ -295,9 +258,6 @@ function g = myPlot(subDirStem, myColor, offset)
             % 1. Correct the baseline BEFORE calculating denominator + normalizing
             % Returns trend as 'e' and baseline corrected signal as 'f'
             [e, f] = correctBaseline(thisdata(2,:)'); 
-            % OLDER denominator = thisdata(2, xRef);
-            % OLD denominator = f(xRef);
-            % NEW 10/20/2018
             denominator = 1; % default
             if (xRef ~= 0) 
                 numPointsEachSide = 2; % TO DO: This could be increased
@@ -314,22 +274,28 @@ function g = myPlot(subDirStem, myColor, offset)
             x2LocalPeak = localPeak(f(x2Min:x2Max));
             fprintf('local max near 1430/cm is %g\n', x1LocalPeak);
             fprintf('local max near 1702/cm is %g\n', x2LocalPeak);       
-
             y1(I) = x1LocalPeak/denominator;
             y2(I) = x2LocalPeak/denominator;
-            y3(I) = y1(I)/y2(I);
+            y3(I) = x1LocalPeak/x2LocalPeak;
+            
+%             offset = 2; % array starts at 1, pH starts at 3
+            if (I==numberOfSpectra)
+                lastY1(J) = y1(I);
+                lastY2(J) = y2(I);
+                lastY3(J) = y3(I);
+            end
 
             fclose(fileID);
 %             sumY1 = sumY1 + y1(I);
 %             sumY2 = sumY2 + y2(I);
         end
     
-%         % calculate average 
-%         avgY1 = sumY1/numberOfSpectra
-%         avgY2 = sumY2/numberOfSpectra
+%         % calculate average as part of std dev calculation
+%         avgY1 = sumY1/numberOfSpectra;
+%         avgY2 = sumY2/numberOfSpectra;
 %         sumSqY1 = 0;
 %         sumSqY2 = 0;
-        
+%         
 %         % second pass on dataset to get (each point - average)^2
 %         % for standard deviation, need 
 %         for I = 1 : numberOfSpectra            
@@ -356,11 +322,17 @@ function g = myPlot(subDirStem, myColor, offset)
 %     errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', purple);
 %     hold on;
 %     Or:
-%     plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+%     plot(pH,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
 %     hold on;
-%     plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+%     plot(pH,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
 %     hold on;
-    plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
+    plot(pH,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
+    hold on;
+%     plot(pH,lastY1(J),'-o', 'Color', black, 'LineWidth', lineThickness);
+%     hold on;
+%     plot(pH,lastY2(J),'-+', 'Color', black, 'LineWidth', lineThickness);
+%     hold on;
+    plot(pH,lastY3(J),'-*', 'Color', black, 'LineWidth', lineThickness);
     hold on;
     g = 1;
 end

@@ -118,7 +118,7 @@ for K = 1:8
     end
 end    
    
-y = 3.9; %pHEMA coAc
+y = 4.9; %pHEMA coAc
 x = 0.25;
 deltaY = 0.1;
 
@@ -145,10 +145,12 @@ text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+text(x, y, '* = local peak near 1430 cm^-^1/local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
 title('Ratiometric continuous real-time of 86 nm spheres in pHEMA coAcrylamide gel 3 in flowcell', ...
@@ -241,12 +243,12 @@ function g = myPlot(subDirStem, myColor, offset)
     global myDebug;
     global lineThickness;
     
-    sumY1 = 0;
-    sumY2 = 0;
-    avgY1 = 0;
-    avgY2 = 0;
-    sumSqY1 = 0;
-    sumSqY2 = 0;
+%     sumY1 = 0;
+%     sumY2 = 0;
+%     avgY1 = 0;
+%     avgY2 = 0;
+%     sumSqY1 = 0;
+%     sumSqY2 = 0;
     
     str_dir_to_search = dirStem + subDirStem; % args need to be strings
     dir_to_search = char(str_dir_to_search)
@@ -308,7 +310,6 @@ function g = myPlot(subDirStem, myColor, offset)
 
             % NEW 11/6/2018: since peaks at 1430 and 1702/cm red-, blueshift
             % as function of pH, find the local max in the area
-            f(x1Min:x1Max)
             x1LocalPeak = localPeak(f(x1Min:x1Max));
             x2LocalPeak = localPeak(f(x2Min:x2Max));
             fprintf('local max near 1430/cm is %g\n', x1LocalPeak);
@@ -316,6 +317,7 @@ function g = myPlot(subDirStem, myColor, offset)
 
             y1(I) = x1LocalPeak/denominator;
             y2(I) = x2LocalPeak/denominator;
+            y3(I) = y1(I)/y2(I);
 
             %y1(I) = thisdata(2, x1)/denominator;
             %y2(I) = thisdata(2, x2)/denominator;
@@ -357,11 +359,11 @@ function g = myPlot(subDirStem, myColor, offset)
 %     errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', purple);
 %     hold on;
 %     Or:
-    %plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
-    %hold on;
-    %plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-    %hold on;
-    plot(t-offset,y1/y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+%     plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+%     hold on;
+%     plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+%     hold on;
+    plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
     hold on;
     g = 1;
 end

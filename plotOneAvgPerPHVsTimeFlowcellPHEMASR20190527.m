@@ -118,9 +118,9 @@ for K = 1:8
     end
 end    
    
-y = 1.18;
+y = 1.75;
 x = 0.25;
-deltaY = 0.01;
+deltaY = 0.05;
 
 text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
@@ -145,10 +145,12 @@ text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+text(x, y, '* = local peak near 1430 cm^-^1/local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
 title('Ratiometric continuous real-time of 86 nm spheres in pHEMA gel 2 in flowcell', ...
@@ -316,40 +318,41 @@ function g = myPlot(subDirStem, myColor, offset)
 
             y1(I) = x1LocalPeak/denominator;
             y2(I) = x2LocalPeak/denominator;
-
+            y3(I) = y1(I)/y2(I);
+            
             %y1(I) = thisdata(2, x1)/denominator;
             %y2(I) = thisdata(2, x2)/denominator;
             %y3(I) = denominator; % NEW Oct. 17th to look for jumps in ref
             fclose(fileID);
-            sumY1 = sumY1 + y1(I);
-            sumY2 = sumY2 + y2(I);
+%             sumY1 = sumY1 + y1(I);
+%             sumY2 = sumY2 + y2(I);
         end
     
-        % calculate average 
-        avgY1 = sumY1/numberOfSpectra
-        avgY2 = sumY2/numberOfSpectra
-        sumSqY1 = 0;
-        sumSqY2 = 0;
-        
-        % second pass on dataset to get (each point - average)^2
-        % for standard deviation, need 
-        for I = 1 : numberOfSpectra            
-            % 4. Add to the sum of the squares
-            sumSqY1 = sumSqY1 + (y1(I) - avgY1).^2;
-            sumSqY2 = sumSqY2 + (y2(I) - avgY2).^2;
-        end
+%         % calculate average 
+%         avgY1 = sumY1/numberOfSpectra
+%         avgY2 = sumY2/numberOfSpectra
+%         sumSqY1 = 0;
+%         sumSqY2 = 0;
+%         
+%         % second pass on dataset to get (each point - average)^2
+%         % for standard deviation, need 
+%         for I = 1 : numberOfSpectra            
+%             % 4. Add to the sum of the squares
+%             sumSqY1 = sumSqY1 + (y1(I) - avgY1).^2;
+%             sumSqY2 = sumSqY2 + (y2(I) - avgY2).^2;
+%         end
     end
     
-    % 5. Compute standard deviation at each index of the averaged spectra 
-    stdDevY1 = sqrt(sumSqY1/numberOfSpectra);
-    stdDevY2 = sqrt(sumSqY2/numberOfSpectra);
-    
-    for J=1:numberOfSpectra
-        avgArrayY1(J) = avgY1;
-        avgArrayY2(J) = avgY2;
-        stdDevArrayY1(J) = stdDevY1;
-        stdDevArrayY2(J) = stdDevY2;
-    end
+%     % 5. Compute standard deviation at each index of the averaged spectra 
+%     stdDevY1 = sqrt(sumSqY1/numberOfSpectra);
+%     stdDevY2 = sqrt(sumSqY2/numberOfSpectra);
+%     
+%     for J=1:numberOfSpectra
+%         avgArrayY1(J) = avgY1;
+%         avgArrayY2(J) = avgY2;
+%         stdDevArrayY1(J) = stdDevY1;
+%         stdDevArrayY2(J) = stdDevY2;
+%     end
     
 %     % Now have points for the 1430 plot at t,y1 and for the 1702 plot at t,y2
 %     Either:
@@ -361,7 +364,7 @@ function g = myPlot(subDirStem, myColor, offset)
     %hold on;
     %plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
     %hold on;
-    plot(t-offset,y1/y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+    plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
     hold on;
     g = 1;
 end
