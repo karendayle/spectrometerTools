@@ -118,9 +118,9 @@ for K = 1:8
     end
 end    
    
-y = 0.29; %alginate
-x = 7;
-deltaY = 0.01;
+y = 17.5; %alginate
+x = 0.25;
+deltaY = 0.5;
 
 text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);

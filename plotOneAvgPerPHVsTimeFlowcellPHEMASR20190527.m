@@ -118,8 +118,8 @@ for K = 1:8
     end
 end    
    
-y = 0.49; %PEG
-x = 9.5;
+y = 1.18;
+x = 0.25;
 deltaY = 0.01;
 
 text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);

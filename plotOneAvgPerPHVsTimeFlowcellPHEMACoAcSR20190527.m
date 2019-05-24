@@ -118,9 +118,9 @@ for K = 1:8
     end
 end    
    
-y = 0.2; %pHEMA coAc
-x = 8;
-deltaY = 0.005;
+y = 3.9; %pHEMA coAc
+x = 0.25;
+deltaY = 0.1;
 
 text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
 text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
