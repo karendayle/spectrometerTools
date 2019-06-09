@@ -52,19 +52,19 @@ global plotOption;
 plotOption = 1; % plot y1 and y2
 %plotOption = 2; % plot y3
 
-global gel;
-gel = 1;
-%gel = 2;
+global gelOption;
+%gelOption = 1;
+gelOption = 2;
 
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
-if gel == 1
-    dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 5 aka alg gox 1\Glucose punch4\";
+if gelOption == 1
+    dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox1\Glucose punch4\";
 else
-    dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 5 aka alg gox 2\Glucose punch3\";
+    dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox2\Glucose punch3\";
 end
 subDirStem1 = "1 0mgdL";
 subDirStem2 = "2 100mgdL";
@@ -82,7 +82,11 @@ figure
 
 % subtract this offset 
 global tRef;
-tRef = datenum(2019, 6, 6, 15, 32, 05);
+if gelOption == 1
+    tRef = datenum(2019, 6, 6, 15, 32, 05);
+else
+    tRef = datenum(2019, 6, 7, 14, 32, 31);
+end
 
 myTitleFont = 30;
 myLabelFont = 20;
@@ -119,9 +123,16 @@ if plotOption == 1
     deltaY = 0.02;
     x = 0.25;
 else
-    y = 16.5; % y3
-    deltaY = 0.5; % y3
-    x = 3;
+    if gelOption == 1
+        y = 16.5;
+        deltaY = 0.5;
+        x = 3;
+    else
+        y = 10.5;
+        deltaY = 0.25;
+        x = 7;
+    end
+    
 end
 
 text(x, y, '0 mg/dL', 'Color', green, 'FontSize', myTextFont);
@@ -148,11 +159,11 @@ if plotOption == 1
 end
 
 hold off
-if gel == 1
-    title('Ratiometric continuous real-time of 54 nm spheres in alginate GOx gel 1 in flowcell', ...
+if gelOption == 1
+    title('Ratiometric continuous real-time of 54nm spheres in alginate GOx gel1 in flowcell', ...
         'FontSize', myTitleFont);
 else
-    title('Ratiometric continuous real-time of 54 nm spheres in alginate GOx gel 1 in flowcell', ...
+    title('Ratiometric continuous real-time of 54nm spheres in alginate GOx gel2 in flowcell', ...
         'FontSize', myTitleFont);
 end
 myXlabel = sprintf('Time (hours)');
