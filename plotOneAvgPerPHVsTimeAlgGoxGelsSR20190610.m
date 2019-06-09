@@ -49,12 +49,15 @@ global numPoints;
 numPoints = 1024;
 
 global plotOption;
-plotOption = 1; % plot y1 and y2
+%plotOption = 1; % plot y1 and y2
 %plotOption = 2; % plot y3
+plotOption = 3; % check pH sens
 
 global gelOption;
 %gelOption = 1;
-gelOption = 2;
+%gelOption = 2;
+%gelOption = 3; % gox1 check pH sens
+gelOption = 4; % gox2 check pH sens
 
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
@@ -64,13 +67,30 @@ global dirStem;
 if gelOption == 1
     dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox1\Glucose punch4\";
 else
-    dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox2\Glucose punch3\";
+    if gelOption == 2
+        dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox2\Glucose punch3\";
+    else
+        if gelOption == 3
+            dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox1\punch4 inPH3.5Tris\";
+        else
+            dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox2\TrisPH3.5\"
+        end
+    end
 end
-subDirStem1 = "1 0mgdL";
-subDirStem2 = "2 100mgdL";
-subDirStem3 = "3 200mgdL";
-subDirStem4 = "4 300mgdL";
-subDirStem5 = "5 400mgdL";
+
+if gelOption == 1 || gelOption == 2
+    subDirStem1 = "1 0mgdL";
+    subDirStem2 = "2 100mgdL";
+    subDirStem3 = "3 200mgdL";
+    subDirStem4 = "4 300mgdL";
+    subDirStem5 = "5 400mgdL";
+    Kmax = 5;
+else
+    if gelOption == 3 || gelOption == 4
+        subDirStem1 = "pH3.5 tris";
+        Kmax = 1;
+    end
+end
 
 global lineThickness;
 lineThickness = 2;
@@ -85,14 +105,22 @@ global tRef;
 if gelOption == 1
     tRef = datenum(2019, 6, 6, 15, 32, 05);
 else
-    tRef = datenum(2019, 6, 7, 14, 32, 31);
+    if gelOption == 2
+        tRef = datenum(2019, 6, 7, 14, 32, 31);
+    else
+        if gelOption == 3
+            tRef = datenum(2019, 6, 7, 13, 25, 31);
+        else
+            tRef = datenum(2019, 6, 8, 11, 52, 48);
+        end
+    end
 end
 
 myTitleFont = 30;
 myLabelFont = 20;
 myTextFont = 15;
 
-for K = 1:5
+for K = 1:Kmax
 
     switch K
         case 1
@@ -159,12 +187,14 @@ if plotOption == 1
 end
 
 hold off
-if gelOption == 1
+if gelOption == 1 || gelOption == 3
     title('Ratiometric continuous real-time of 54nm spheres in alginate GOx gel1 in flowcell', ...
         'FontSize', myTitleFont);
 else
-    title('Ratiometric continuous real-time of 54nm spheres in alginate GOx gel2 in flowcell', ...
-        'FontSize', myTitleFont);
+    if gelOption == 2 || gelOption == 4
+        title('Ratiometric continuous real-time of 54nm spheres in alginate GOx gel2 in flowcell', ...
+            'FontSize', myTitleFont);
+    end
 end
 myXlabel = sprintf('Time (hours)');
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
@@ -373,15 +403,16 @@ function g = myPlot(subDirStem, myColor, offset)
 %     errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', purple);
 %     hold on;
 %     Or:
-    if plotOption == 1
+    if plotOption == 1 || plotOption == 3
         plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
         hold on;
         plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-        hold on;
     else
-        plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
-        hold on;
+        if plotOption == 2
+            plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
+        end
     end
+    hold on;
     g = 1;
 end
 
