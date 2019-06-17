@@ -23,8 +23,10 @@ black =   [0., 0.0, 0.0];
 
 % Change next lines to what you want to plot
 global plotOption;
-plotOption = 1; % alg gox1
-%plotOption = 2; % alg gox2
+%plotOption = 1; % alg gox1
+%plotOption = 2; % alg gox2 1 hour soak, punch8 data for 400mg/dL data is
+%missing
+plotOption = 3; % alg gox2 overnight soak
 
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
@@ -39,12 +41,23 @@ if plotOption == 1
     subDirStem4 = "4 1mLmin";
     subDirStem5 = "5 0mLmin";
 else
-    dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox2\";
-    subDirStem1 = "punch4 0mgdL";
-    subDirStem2 = "punch5 100mgdL";
-    subDirStem3 = "punch6 200mgdL";
-    subDirStem4 = "punch7 300mgdL";
-    subDirStem5 = "punch8 400mgdL";
+    if plotOption == 2
+        dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox2\";
+        subDirStem1 = "punch4 0mgdL";
+        subDirStem2 = "punch5 100mgdL";
+        subDirStem3 = "punch6 200mgdL";
+        subDirStem4 = "punch7 300mgdL";
+        subDirStem5 = "punch8 400mgdL";
+    else
+        if plotOption == 3
+            dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox2\";
+            subDirStem1 = "punch4 0mgdL nextday";
+            subDirStem2 = "punch5 100mgdL nextday";
+            subDirStem3 = "punch6 200mgdL nextday";
+            subDirStem4 = "punch7 300mgdL nextday";
+            subDirStem5 = "punch8 400mgdL nextday";
+        end
+    end
 end
 
 global lineThickness;
@@ -84,15 +97,15 @@ for K = 1:5
 
     switch K
         case 1
-            pHcolor = gold;
-            num2 = myPlot(subDirStem2, pHcolor);
-            fprintf('Case 2: %d spectra plotted in gold\n', num2);            
-        case 3
-            pHcolor = rust;
             pHcolor = green;
             num1 = myPlot(subDirStem1, pHcolor);
-            fprintf('Case 1: %d spectra plotted in green\n', num1);
+            fprintf('Case 1: %d spectra plotted in green\n', num1);            
         case 2
+            pHcolor = gold;
+            num2 = myPlot(subDirStem2, pHcolor);
+            fprintf('Case 1: %d spectra plotted in gold\n', num2);
+        case 3
+            pHcolor = rust;
             num3 = myPlot(subDirStem3, pHcolor);
             fprintf('Case 3: %d spectra plotted in rust\n', num3);
         case 4
@@ -128,23 +141,44 @@ if plotOption == 1
     text(x, y, '________', 'Color', cherry, 'FontSize', myTextFont);
     y = y - deltaY;
 else
-    text(x, y, 'Punch4 0 mg/dL', 'Color', green, 'FontSize', myTextFont);
-    text(x, y, '______________', 'Color', green, 'FontSize', myTextFont);
-    y = y - deltaY;
-    text(x, y, 'Punch5 100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
-    text(x, y, '________________', 'Color', gold, 'FontSize', myTextFont);
-    y = y - deltaY;
-    text(x, y, 'Punch6 200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
-    text(x, y, '________________', 'Color', rust, 'FontSize', myTextFont);
-    y = y - deltaY;
-    text(x, y, 'Punch7 300 mg/dL', 'Color', red, 'FontSize', myTextFont);
-    text(x, y, '________________', 'Color', red, 'FontSize', myTextFont);
-    y = y - deltaY;
-    text(x, y, 'Punch8 400 mg/dL', 'Color', cherry, 'FontSize', myTextFont);
-    text(x, y, '________________', 'Color', cherry, 'FontSize', myTextFont);
-    y = y - deltaY;
+    if plotOption == 2
+            text(x, y, 'Punch4 0 mg/dL', 'Color', green, 'FontSize', myTextFont);
+            text(x, y, '______________', 'Color', green, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'Punch5 100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
+            text(x, y, '________________', 'Color', gold, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'Punch6 200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
+            text(x, y, '________________', 'Color', rust, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'Punch7 300 mg/dL', 'Color', red, 'FontSize', myTextFont);
+            text(x, y, '________________', 'Color', red, 'FontSize', myTextFont);
+            y = y - deltaY;
+% The 400mg/dL files for 1h soak were lost so only show up to 300mg/dL
+%             text(x, y, 'Punch8 400 mg/dL', 'Color', cherry, 'FontSize', myTextFont);
+%             text(x, y, '________________', 'Color', cherry, 'FontSize', myTextFont);
+%             y = y - deltaY;
+    else   
+        if plotOption == 3
+            text(x, y, 'Punch4 0 mg/dL', 'Color', green, 'FontSize', myTextFont);
+            text(x, y, '______________', 'Color', green, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'Punch5 100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
+            text(x, y, '________________', 'Color', gold, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'Punch6 200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
+            text(x, y, '________________', 'Color', rust, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'Punch7 300 mg/dL', 'Color', red, 'FontSize', myTextFont);
+            text(x, y, '________________', 'Color', red, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'Punch8 400 mg/dL', 'Color', cherry, 'FontSize', myTextFont);
+            text(x, y, '________________', 'Color', cherry, 'FontSize', myTextFont);
+            y = y - deltaY;
+        end
+    end
 end
-if plotOption == 2
+if plotOption == 2 || plotOption == 3
     text(x, y, 'o = local peak near 1430cm^-^1', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
     text(x, y, '+ = local peak near 1702cm^-^1', 'Color', black, 'FontSize', myTextFont);
@@ -156,8 +190,13 @@ if plotOption == 1
     title('54nm MBA Au NPs in alginate GOx gel#3 in flowcell with 400mg/dL glucose at various flow rates', ...
         'FontSize', myTitleFont);
 else
-    title('Alginate GOx2 soaked in static glucose buffer for 1 hour on quartz', ...
+    if plotOption == 2
+        title('54nm MBA Au NPs in alginate GOx gel#2 soaked in static glucose buffer for 1 hour on quartz', ...
+            'FontSize', myTitleFont);
+    else
+        title('54nm MBA Au NPs in alginate GOx gel#2 soaked in static glucose buffer overnight on quartz', ...
         'FontSize', myTitleFont);
+    end
 end
 
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myLabelFont); % x-axis label

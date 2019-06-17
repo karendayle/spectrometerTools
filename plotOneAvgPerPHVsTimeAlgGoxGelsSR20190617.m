@@ -84,6 +84,7 @@ if gelOption == 1
     subDirStem3 = "3 2mLmin";
     subDirStem4 = "4 1mLmin";
     subDirStem5 = "5 0mLmin";
+    Kmin = 1;
     Kmax = 5;
 else
     if gelOption == 2
@@ -95,9 +96,17 @@ else
         subDirStem6 = "6 0mgdL at 4mLmin 0613 1648to1823"; % start drive to neutral
         subDirStem7 = "7 400mgdL at 4mLmin 0613 1832to2245"; % start drive to acidic (fails)
         subDirStem8 = "8 400mgdL at 0mLmin 0613to0614"; % stop to let acid pool
-        Kmax = 8;
+        subDirStem9 = "9 0mgdL at 4mLmin"; % drive to neutral
+        subDirStem10 = "10 400mgdL at 4mLmin"; % drive to acidic
+        subDirStem11 = "11 400mgdL 0mLmin"; % stop to let acid pool
+        subDirStem12 = "12 0mgdL 4mLmin"; % drive to neutral
+        subDirStem13 = "13 400mgdL 4mLmin"; % drive to acidic
+        subDirStem14 = "14 400mgdL 0mLmin"; % stop to let acid pool
+        Kmin = 5;
+        Kmax = 14;
     else
         subDirStem1 = "1 0mLmin";
+        Kmin = 1;
         Kmax = 1;
     end
 
@@ -122,7 +131,8 @@ if gelOption == 1
     tRef = datenum(2019, 6, 11, 15, 4, 44);
 else
     if gelOption == 2
-        tRef = datenum(2019, 6, 12, 10, 50, 48);
+        %tRef = datenum(2019, 6, 12, 10, 50, 48); % when Kmin=1
+        tRef = datenum(2019, 6, 13, 15, 17, 59); % when Kmin=5
 %     else
 %         if gelOption == 3
 %             tRef = datenum(2019, 6, 7, 13, 25, 31);
@@ -136,7 +146,7 @@ myTitleFont = 30;
 myLabelFont = 20;
 myTextFont = 15;
 
-for K = 1:Kmax
+for K = Kmin:Kmax
 
     switch K
         case 1
@@ -170,7 +180,31 @@ for K = 1:Kmax
         case 8
             pHcolor = red;
             num8 = myPlot(subDirStem8, pHcolor, 0);
-            fprintf('Case 8: %d spectra plotted in red\n', num8);      
+            fprintf('Case 8: %d spectra plotted in red\n', num8); 
+        case 9
+            pHcolor = gold;
+            num9 = myPlot(subDirStem9, pHcolor, 0);
+            fprintf('Case 9: %d spectra plotted in gold\n', num9);
+        case 10
+            pHcolor = blue;
+            num10 = myPlot(subDirStem10, pHcolor, 0);
+            fprintf('Case 10: %d spectra plotted in blue\n', num10);
+        case 11
+            pHcolor = red;
+            num11 = myPlot(subDirStem11, pHcolor, 0);
+            fprintf('Case 11: %d spectra plotted in red\n', num11);
+        case 12
+            pHcolor = gold;
+            num12 = myPlot(subDirStem12, pHcolor, 40);
+            fprintf('Case 12: %d spectra plotted in gold\n', num12);
+        case 13
+            pHcolor = blue;
+            num13 = myPlot(subDirStem13, pHcolor, 40);
+            fprintf('Case 13: %d spectra plotted in blue\n', num13);
+        case 14
+            pHcolor = red;
+            num14 = myPlot(subDirStem14, pHcolor, 40);
+            fprintf('Case 14: %d spectra plotted in red\n', num14);
     end
 end    
    
@@ -181,9 +215,9 @@ if plotOption == 1
         x = 0.25;
     else
         if gelOption == 2
-            y = 0.17;
+            y = 0.215;
             deltaY = 0.01;
-            x = 2.5;
+            x = 43;
         else
             y = 0.21;
             deltaY = 0.01;
@@ -202,20 +236,14 @@ else
     end   
 end
 
-text(x, y, '400mg/dL glucose at 0mL/min', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '____________________________', 'Color', red, 'FontSize', myTextFont);
+text(x, y, '400mg/dL glucose at 0mL/min (flow stopped)', 'Color', red, 'FontSize', myTextFont);
+text(x, y, '_____________________________________', 'Color', red, 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, '400mg/dL glucose at 1mL/min', 'Color', green, 'FontSize', myTextFont);
-text(x, y, '____________________________', 'Color', green, 'FontSize', myTextFont);
+text(x, y, '400mg/dL glucose at 4mL/min (flow pumping)', 'Color', blue, 'FontSize', myTextFont);
+text(x, y, '_____________________________________', 'Color', blue, 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, 'pH3.5 Tris flush at 4mL/min', 'Color', black, 'FontSize', myTextFont);
-text(x, y, '____________________________', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '400mg/dL glucose at 4mL/min', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '___________________________', 'Color', blue, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '0mg/dL glucose at 4mL/min', 'Color', gold, 'FontSize', myTextFont);
-text(x, y, '__________________________', 'Color', gold, 'FontSize', myTextFont);
+text(x, y, '0mg/dL glucose at 4mL/min (flow pumping)', 'Color', gold, 'FontSize', myTextFont);
+text(x, y, '___________________________________', 'Color', gold, 'FontSize', myTextFont);
 y = y - deltaY;
 
 if plotOption == 1
