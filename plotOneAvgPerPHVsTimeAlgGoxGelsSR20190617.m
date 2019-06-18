@@ -279,7 +279,7 @@ else
     ylabel('Intensity at 1430cm^-^1(A.U.)/Intensity at 1702cm^-^1(A.U.)', ...
         'FontSize', myLabelFont); % y-axis label
 end
-set(gca,'FontSize',16,'FontWeight','bold','box','off')
+%set(gca,'FontSize',16,'FontWeight','bold','box','off')
     
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug;
