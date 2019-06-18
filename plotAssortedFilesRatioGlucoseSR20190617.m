@@ -88,8 +88,8 @@ global myDebug;
 myDebug = 0;
 
 myTitleFont = 30;
-myLabelFont = 20;
-myTextFont = 15;
+myLabelFont = 30; % was 20
+myTextFont = 30; % was 15
 
 figure 
 
@@ -118,13 +118,15 @@ for K = 1:5
             fprintf('Case 5: %d spectra plotted in cherry\n', num5);                       
     end
 end   
-
-% TO DO: figure out the coords for labels from the data
+ylim([0. 1.2])
 y = 0.9; 
 x = 1200; 
 deltaY = 0.1;
 
 if plotOption == 1
+    y = 0.9; 
+    x = 1200;
+    deltaY = 0.1;
     text(x, y, '4 mL/min', 'Color', green, 'FontSize', myTextFont);
     text(x, y, '________', 'Color', green, 'FontSize', myTextFont);
     y = y - deltaY;
@@ -142,43 +144,62 @@ if plotOption == 1
     y = y - deltaY;
 else
     if plotOption == 2
-            text(x, y, 'Punch4 0 mg/dL', 'Color', green, 'FontSize', myTextFont);
-            text(x, y, '______________', 'Color', green, 'FontSize', myTextFont);
-            y = y - deltaY;
-            text(x, y, 'Punch5 100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
-            text(x, y, '________________', 'Color', gold, 'FontSize', myTextFont);
-            y = y - deltaY;
-            text(x, y, 'Punch6 200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
-            text(x, y, '________________', 'Color', rust, 'FontSize', myTextFont);
-            y = y - deltaY;
-            text(x, y, 'Punch7 300 mg/dL', 'Color', red, 'FontSize', myTextFont);
-            text(x, y, '________________', 'Color', red, 'FontSize', myTextFont);
-            y = y - deltaY;
+        y = 0.9; 
+        x = 1200;
+        deltaY = 0.1;
+        text(x, y, 'Punch4 0 mg/dL', 'Color', green, 'FontSize', myTextFont);
+        text(x, y, '______________', 'Color', green, 'FontSize', myTextFont);
+        y = y - deltaY;
+        text(x, y, 'Punch5 100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
+        text(x, y, '________________', 'Color', gold, 'FontSize', myTextFont);
+        y = y - deltaY;
+        text(x, y, 'Punch6 200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
+        text(x, y, '________________', 'Color', rust, 'FontSize', myTextFont);
+        y = y - deltaY;
+        text(x, y, 'Punch7 300 mg/dL', 'Color', red, 'FontSize', myTextFont);
+        text(x, y, '________________', 'Color', red, 'FontSize', myTextFont);
+
 % The 400mg/dL files for 1h soak were lost so only show up to 300mg/dL
 %             text(x, y, 'Punch8 400 mg/dL', 'Color', cherry, 'FontSize', myTextFont);
 %             text(x, y, '________________', 'Color', cherry, 'FontSize', myTextFont);
 %             y = y - deltaY;
     else   
         if plotOption == 3
-            text(x, y, 'Punch4 0 mg/dL', 'Color', green, 'FontSize', myTextFont);
-            text(x, y, '______________', 'Color', green, 'FontSize', myTextFont);
+            y = 1.1; 
+            x = 1625;
+            deltaY = 0.05;
+%             text(x, y, 'Punch4 0 mg/dL', 'Color', green, 'FontSize', myTextFont);
+%             text(x, y, '______________', 'Color', green, 'FontSize', myTextFont);
+%             y = y - deltaY;
+%             text(x, y, 'Punch5 100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
+%             text(x, y, '________________', 'Color', gold, 'FontSize', myTextFont);
+%             y = y - deltaY;
+%             text(x, y, 'Punch6 200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
+%             text(x, y, '________________', 'Color', rust, 'FontSize', myTextFont);
+%             y = y - deltaY;
+%             text(x, y, 'Punch7 300 mg/dL', 'Color', red, 'FontSize', myTextFont);
+%             text(x, y, '________________', 'Color', red, 'FontSize', myTextFont);
+%             y = y - deltaY;
+%             text(x, y, 'Punch8 400 mg/dL', 'Color', cherry, 'FontSize', myTextFont);
+%             text(x, y, '________________', 'Color', cherry, 'FontSize', myTextFont);
+%             y = y - deltaY;
+            % for IEEE figure
+            text(x, y, '0 mg/dL', 'Color', green, 'FontSize', myTextFont);
+            text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
             y = y - deltaY;
-            text(x, y, 'Punch5 100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
-            text(x, y, '________________', 'Color', gold, 'FontSize', myTextFont);
+            text(x, y, '100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
+            text(x, y, '_________', 'Color', gold, 'FontSize', myTextFont);
             y = y - deltaY;
-            text(x, y, 'Punch6 200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
-            text(x, y, '________________', 'Color', rust, 'FontSize', myTextFont);
+            text(x, y, '200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
+            text(x, y, '_________', 'Color', rust, 'FontSize', myTextFont);
             y = y - deltaY;
-            text(x, y, 'Punch7 300 mg/dL', 'Color', red, 'FontSize', myTextFont);
-            text(x, y, '________________', 'Color', red, 'FontSize', myTextFont);
-            y = y - deltaY;
-            text(x, y, 'Punch8 400 mg/dL', 'Color', cherry, 'FontSize', myTextFont);
-            text(x, y, '________________', 'Color', cherry, 'FontSize', myTextFont);
+            text(x, y, '300 mg/dL', 'Color', red, 'FontSize', myTextFont);
+            text(x, y, '_________', 'Color', red, 'FontSize', myTextFont);
             y = y - deltaY;
         end
     end
 end
-if plotOption == 2 || plotOption == 3
+if plotOption == 2
     text(x, y, 'o = local peak near 1430cm^-^1', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
     text(x, y, '+ = local peak near 1702cm^-^1', 'Color', black, 'FontSize', myTextFont);
@@ -193,9 +214,9 @@ else
     if plotOption == 2
         title('54nm MBA Au NPs in alginate GOx gel#2 soaked in static glucose buffer for 1 hour on quartz', ...
             'FontSize', myTitleFont);
-    else
-        title('54nm MBA Au NPs in alginate GOx gel#2 soaked in static glucose buffer overnight on quartz', ...
-        'FontSize', myTitleFont);
+%     else for IEEE figure
+%         title('54nm MBA Au NPs in alginate GOx gel#2 soaked in static glucose buffer overnight on quartz', ...
+%         'FontSize', myTitleFont);
     end
 end
 

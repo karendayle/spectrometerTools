@@ -102,8 +102,9 @@ else
         subDirStem12 = "12 0mgdL 4mLmin"; % drive to neutral
         subDirStem13 = "13 400mgdL 4mLmin"; % drive to acidic
         subDirStem14 = "14 400mgdL 0mLmin"; % stop to let acid pool
+        subDirStem15 = "15 400mgdL steady state"; % steady state
         Kmin = 5;
-        Kmax = 14;
+        Kmax = 5;
     else
         subDirStem1 = "1 0mLmin";
         Kmin = 1;
@@ -143,8 +144,8 @@ else
 end
 
 myTitleFont = 30;
-myLabelFont = 20;
-myTextFont = 15;
+myLabelFont = 30; % was 20
+myTextFont = 30; % was 15
 
 for K = Kmin:Kmax
 
@@ -205,6 +206,10 @@ for K = Kmin:Kmax
             pHcolor = red;
             num14 = myPlot(subDirStem14, pHcolor, 40);
             fprintf('Case 14: %d spectra plotted in red\n', num14);
+        case 15
+            pHcolor = red;
+            num15 = myPlot(subDirStem15, pHcolor, 44.2);
+            fprintf('Case 15: %d spectra plotted in red\n', num15);
     end
 end    
    
@@ -235,14 +240,14 @@ else
         x = 7;
     end   
 end
-
-text(x, y, '400mg/dL glucose at 0mL/min (flow stopped)', 'Color', red, 'FontSize', myTextFont);
+ylim([0. 0.22])
+text(x, y, '400 mg/dL glucose at 0 mL/min (flow stopped)', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '_____________________________________', 'Color', red, 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, '400mg/dL glucose at 4mL/min (flow pumping)', 'Color', blue, 'FontSize', myTextFont);
+text(x, y, '400 mg/dL glucose at 4 mL/min (flow pumping)', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '_____________________________________', 'Color', blue, 'FontSize', myTextFont);
 y = y - deltaY;
-text(x, y, '0mg/dL glucose at 4mL/min (flow pumping)', 'Color', gold, 'FontSize', myTextFont);
+text(x, y, '0 mg/dL glucose at 4 mL/min (flow pumping)', 'Color', gold, 'FontSize', myTextFont);
 text(x, y, '___________________________________', 'Color', gold, 'FontSize', myTextFont);
 y = y - deltaY;
 
@@ -258,11 +263,11 @@ hold off
 if gelOption == 1 || gelOption == 3
     title('54nm MBA Au NPs in alginate GOx gel#3 in flowcell with 400mg/dL glucose at various rates', ...
         'FontSize', myTitleFont);
-else
-    if gelOption == 2 || gelOption == 4
-        title('54nm MBA Au NPs in alginate GOx gel#3 in flowcell with stop/start flow', ...
-            'FontSize', myTitleFont);
-    end
+% else OUT FOR IEEE FIGURE
+%     if gelOption == 2 || gelOption == 4
+%         title('54nm MBA Au NPs in alginate GOx gel#3 in flowcell with stop/start flow', ...
+%             'FontSize', myTitleFont);
+%     end
 end
 myXlabel = sprintf('Time (hours)');
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
