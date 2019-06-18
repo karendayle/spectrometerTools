@@ -50,7 +50,7 @@ else
         subDirStem5 = "punch8 400mgdL";
     else
         if plotOption == 3
-            dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox2\";
+            dirStem = 'C:\Users\dayle.kotturi\Documents\Data\Recovery2\';
             subDirStem1 = "punch4 0mgdL nextday";
             subDirStem2 = "punch5 100mgdL nextday";
             subDirStem3 = "punch6 200mgdL nextday";

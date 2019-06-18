@@ -68,7 +68,8 @@ if gelOption == 1
     dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox3\flowRate\";
 else
     if gelOption == 2
-        dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox3\stopStart\";
+%         dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox3\stopStart\";
+        dirStem = "C:\Users\dayle.kotturi\Documents\Data\Recovery\";
     else
         if gelOption == 3
             dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 7\400mgdL again\";
@@ -104,7 +105,7 @@ else
         subDirStem14 = "14 400mgdL 0mLmin"; % stop to let acid pool
         subDirStem15 = "15 400mgdL steady state"; % steady state
         Kmin = 5;
-        Kmax = 5;
+        Kmax = 15;
     else
         subDirStem1 = "1 0mLmin";
         Kmin = 1;
@@ -196,19 +197,19 @@ for K = Kmin:Kmax
             fprintf('Case 11: %d spectra plotted in red\n', num11);
         case 12
             pHcolor = gold;
-            num12 = myPlot(subDirStem12, pHcolor, 40);
+            num12 = myPlot(subDirStem12, pHcolor, 27);
             fprintf('Case 12: %d spectra plotted in gold\n', num12);
         case 13
             pHcolor = blue;
-            num13 = myPlot(subDirStem13, pHcolor, 40);
+            num13 = myPlot(subDirStem13, pHcolor, 27);
             fprintf('Case 13: %d spectra plotted in blue\n', num13);
         case 14
             pHcolor = red;
-            num14 = myPlot(subDirStem14, pHcolor, 40);
+            num14 = myPlot(subDirStem14, pHcolor, 27);
             fprintf('Case 14: %d spectra plotted in red\n', num14);
         case 15
             pHcolor = red;
-            num15 = myPlot(subDirStem15, pHcolor, 44.2);
+            num15 = myPlot(subDirStem15, pHcolor, 31.3);
             fprintf('Case 15: %d spectra plotted in red\n', num15);
     end
 end    
@@ -220,11 +221,11 @@ if plotOption == 1
         x = 0.25;
     else
         if gelOption == 2
-            y = 0.215;
-            deltaY = 0.01;
-            x = 43;
+            y = 0.235;
+            deltaY = 0.012;
+            x = 9;
         else
-            y = 0.21;
+            y = 0.2;
             deltaY = 0.01;
             x = 0.1;
         end
@@ -240,7 +241,7 @@ else
         x = 7;
     end   
 end
-ylim([0. 0.22])
+ylim([0. 0.24])
 text(x, y, '400 mg/dL glucose at 0 mL/min (flow stopped)', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '_____________________________________', 'Color', red, 'FontSize', myTextFont);
 y = y - deltaY;
@@ -251,13 +252,13 @@ text(x, y, '0 mg/dL glucose at 4 mL/min (flow pumping)', 'Color', gold, 'FontSiz
 text(x, y, '___________________________________', 'Color', gold, 'FontSize', myTextFont);
 y = y - deltaY;
 
-if plotOption == 1
-    text(x, y, 'o = local peak near 1430cm^-^1', 'Color', black, 'FontSize', myTextFont);
-    y = y - deltaY;
-    text(x, y, '+ = local peak near 1702cm^-^1', 'Color', black, 'FontSize', myTextFont);
+%if plotOption == 1
+%    text(x, y, 'o = local peak near 1430cm^-^1', 'Color', black, 'FontSize', myTextFont);
+%    y = y - deltaY;
+%    text(x, y, '+ = local peak near 1702cm^-^1', 'Color', black, 'FontSize', myTextFont);
 % else
 %     text(x, y, '. = peak near 1430cm^-^1/peak near 1702cm^-^1', 'Color', black, 'FontSize', myTextFont);
-end
+%end
 
 hold off
 if gelOption == 1 || gelOption == 3
