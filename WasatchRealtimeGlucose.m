@@ -12,7 +12,7 @@
 waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
-increment = 30;
+increment = 300; % from 30, to go overnight
 integrationTimeMS = 100;
 laserPowerFraction = 0.350;
 closestRef = 0;
@@ -55,7 +55,8 @@ global studyPath % Set in createDirAndSubDirs
 global studyName
 global subdirs;
 global subdirMax;
-subdirs = ["1 0mgdL", "2 100mgdL", "3 200mgdL", "4 300mgdL", "5 400mgdL"];
+%subdirs = ["1 0mgdL", "2 100mgdL", "3 200mgdL", "4 300mgdL", "5 400mgdL"];
+subdirs = ["1 0mLmin", "2 1mLmin", "3 0mLmin", "4 1mLmin", "5 0mLmin"];
 subdirMax = length(subdirs);
 global gelTypeName;
 global gelNumber;
@@ -396,22 +397,22 @@ if (myAns1 ~= 4)
                 xPlot = xMin;
                 deltaYPlot = yMax1/10;
                 %deltaXPlot = 100;
-                text(xPlot, yPlot, '0mg/dL glucose', 'Color', red, 'FontSize', myTextFont);
-                text(xPlot, yPlot, '______________', 'Color', red, 'FontSize', myTextFont);
-                %text(xPlot + deltaXPlot, yPlot, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
-                yPlot = yPlot - deltaYPlot;
-                text(xPlot, yPlot, '100mg/dL glucose', 'Color', green, 'FontSize', myTextFont);
-                text(xPlot, yPlot, '_______________', 'Color', green, 'FontSize', myTextFont);
-                %text(xPlot + deltaXPlot, yPlot, '5 second integration time per acq', 'FontSize', myTextFont);
-                yPlot = yPlot - deltaYPlot;
-                text(xPlot, yPlot, '200mg/dL glucose', 'Color', blue, 'FontSize', myTextFont);
-                text(xPlot, yPlot, '____', 'Color', blue);
-                yPlot = yPlot - deltaYPlot;
-                text(xPlot, yPlot, '200mg/dL glucose', 'Color', purple, 'FontSize', myTextFont);
-                text(xPlot, yPlot, '____', 'Color', purple);
-                yPlot = yPlot - deltaYPlot;
-                text(xPlot, yPlot, '200mg/dL glucose', 'Color', rust, 'FontSize', myTextFont);
-                text(xPlot, yPlot, '____', 'Color', rust);
+%                 text(xPlot, yPlot, '0mg/dL glucose', 'Color', red, 'FontSize', myTextFont);
+%                 text(xPlot, yPlot, '______________', 'Color', red, 'FontSize', myTextFont);
+%                 %text(xPlot + deltaXPlot, yPlot, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
+%                 yPlot = yPlot - deltaYPlot;
+%                 text(xPlot, yPlot, '100mg/dL glucose', 'Color', green, 'FontSize', myTextFont);
+%                 text(xPlot, yPlot, '_______________', 'Color', green, 'FontSize', myTextFont);
+%                 %text(xPlot + deltaXPlot, yPlot, '5 second integration time per acq', 'FontSize', myTextFont);
+%                 yPlot = yPlot - deltaYPlot;
+%                 text(xPlot, yPlot, '200mg/dL glucose', 'Color', blue, 'FontSize', myTextFont);
+%                 text(xPlot, yPlot, '____', 'Color', blue);
+%                 yPlot = yPlot - deltaYPlot;
+%                 text(xPlot, yPlot, '200mg/dL glucose', 'Color', purple, 'FontSize', myTextFont);
+%                 text(xPlot, yPlot, '____', 'Color', purple);
+%                 yPlot = yPlot - deltaYPlot;
+%                 text(xPlot, yPlot, '200mg/dL glucose', 'Color', rust, 'FontSize', myTextFont);
+%                 text(xPlot, yPlot, '____', 'Color', rust);
                 %text(xPlot + deltaXPlot, yPlot, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
                 %yPlot = yPlot - deltaYPlot;
                 %text(xPlot, yPlot, 'four', 'Color', black, 'FontSize', myTextFont);
@@ -421,7 +422,7 @@ if (myAns1 ~= 4)
                 %text(xPlot + deltaXPlot, yPlot, 'Displaying average spectrum', 'FontSize', myTextFont);
                 
                 hold off
-                myTitle = sprintf('%s gel #%d study %s ratiommetric spectra', gelTypeName, gelNumber, studyName);
+                myTitle = sprintf('%s gel #%d study %s ratiometric spectra', gelTypeName, gelNumber, studyName);
                 title(myTitle, 'FontSize', myFont);
                 xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
                 ylabel('Arbitrary Units (A.U.)', 'FontSize', myFont); % y-axis label
