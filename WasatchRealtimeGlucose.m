@@ -881,7 +881,7 @@ function g = createDirAndSubDirs()
                 sumStatus = sumStatus + status;
             end
 
-            if sumStatus == 5
+            if sumStatus == subdirMax
                 g = 1;
             else
                 fprintf('Result from making all subdirs: %d\n', sumStatus);
