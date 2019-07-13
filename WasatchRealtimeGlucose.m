@@ -12,7 +12,7 @@
 waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 1; % Draw one out of every five averages
 counter = 0;
-increment = 300; % from 30, to go overnight
+increment = 1; % from 30, to go overnight
 integrationTimeMS = 100;
 laserPowerFraction = 0.350;
 closestRef = 0;
@@ -55,8 +55,8 @@ global studyPath % Set in createDirAndSubDirs
 global studyName
 global subdirs;
 global subdirMax;
-%subdirs = ["1 0mgdL", "2 100mgdL", "3 200mgdL", "4 300mgdL", "5 400mgdL"];
-subdirs = ["1 0mLmin", "2 1mLmin", "3 0mLmin", "4 1mLmin", "5 0mLmin"];
+subdirs = ["1 0mgdL", "2 400mgdL", "3 0mgdL", "4 400mgdL", "5 0mgdL", "6 400mgdL"];
+%subdirs = ["1 0mLmin", "2 1mLmin", "3 0mLmin", "4 1mLmin", "5 0mLmin"];
 subdirMax = length(subdirs);
 global gelTypeName;
 global gelNumber;
@@ -543,16 +543,16 @@ if (myAns1 ~= 4)
             
             % Check: does user want to repeat another increment or change
             % to next subdir
-            prompt = '\nTake another set (1) or switch pH (2)?> ';
-            myAns3 = input(prompt, 's');
-            if myAns3 == '1'
+            prompt = '\nTake another set with this buffer (1), switch buffer but keep #iter (2) or switch buffer AND change number of iterations (3)?> ';
+            myAns3 = input(prompt);
+            if myAns3 == 1
                 fprintf('Continuing with another set of %d measurements at same pH\n', ...
                     subdirNumber);
                 % Reset loop counter
                 loopCounter = 1;
             else
-                if myAns3 == '2'
-                    prompt = '\nChange pH buffer and enter 1 when ready> ';
+                if myAns3 == 2
+                    prompt = '\nChange buffer and enter 1 when ready> ';
                     myAns4 = input(prompt);  
                     if (myAns4 == 1)
                         subdirNumber = subdirNumber + 1;
@@ -560,6 +560,17 @@ if (myAns1 ~= 4)
                             subdirNumber);
                         % Don't reset loop counter yet. Use the fact it is >
                         % increment to break out of inner while loop
+                    end
+                else
+                    if myAns3 == 3
+                        prompt = '\nEnter new number of iterations when ready> ';
+                        myAns4 = input(prompt);
+                        increment = myAns4;
+                        subdirNumber = subdirNumber + 1;
+                        fprintf("Switching to write to subdir %d\n", ...
+                            subdirNumber);
+                        % Reset loop counter
+                        loopCounter = 1;
                     else
                         fprintf('Unrecognized input: %d\n', myAns4);
                     end
