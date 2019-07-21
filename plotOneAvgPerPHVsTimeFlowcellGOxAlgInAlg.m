@@ -56,32 +56,20 @@ global dirStem;
 %dirStem = "Z:\Documents\Data\Made by Sureyya\pHEMA\gel 1\2\"; % Use with remote Matlab client
 %dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\6\";
 %dirStem = "Z:\Documents\Data\Made by Sureyya\Alginate\gel 4\6\"; % Analyzing using remote Matlab client
-%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 9\glucose cycles\";
-%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 9\sample2\";
-%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 9\hold 400mgdL\";
-dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 9\sample2 cycle2 400mgdL\";
-% subDirStem1 = "1 0mgdL 4mLmin";
-% subDirStem2 = "2 400mgdL 4mLmin";
-% subDirStem3 = "3 400mgdL 0mLmin";
-% subDirStem4 = "4 0mgdL 4mLmin";
-% subDirStem5 = "5 400mgdL 4mLmin";
-% subDirStem6 = "6 400mgdL 0mLmin"; % extra hold
-% subDirStem7 = "7 400mgdL 0mLmin";
-% subDirStem8 = "8 0mgdL 4mLmin";
-% subDirStem9 = "9 400mgdL 4mLmin";
-% subDirStem10 = "10 400mgdL 0mLmin";
-% subDirStem11 = "11 400mgdL 0mLmin extra";
-% subDirStem1 = "1 0mgdL 4mLmin";
-% subDirStem2 = "2 400mgdL 4mLmin";
-% subDirStem3 = "3 400mgdL 0mLmin";
-% subDirStem4 = "4 0mgdL 4mLmin";
-% subDirStem5 = "5 400mgdL mLmin";
-subDirStem1 = "1 0mgdL";
-subDirStem2 = "2 400mgdL";
-subDirStem3 = "3 0mgdL";
-subDirStem4 = "4 400mgdL";
-subDirStem5 = "5 0mgdL";
-subDirStem6 = "6 400mgdL";
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 9\glucose cycles\";
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 9\5\";
+subDirStem1 = "1 0mgdL 4mLmin";
+subDirStem2 = "2 400mgdL 4mLmin";
+subDirStem3 = "3 400mgdL 0mLmin";
+subDirStem4 = "4 0mgdL 4mLmin";
+subDirStem5 = "5 400mgdL 4mLmin";
+subDirStem6 = "6 400mgdL 0mLmin"; % extra hold
+subDirStem7 = "7 400mgdL 0mLmin";
+subDirStem8 = "8 0mgdL 4mLmin";
+subDirStem9 = "9 400mgdL 4mLmin";
+subDirStem10 = "10 400mgdL 0mLmin";
+subDirStem11 = "11 400mgdL 0mLmin extra";
+
 global lineThickness;
 lineThickness = 2;
 
@@ -95,26 +83,25 @@ global tRef;
 %tRef = datenum(2018, 12, 30, 22, 55, 56); %pHEMA
 %tRef = datenum(2018, 12, 26, 20, 30, 58); %alginate
 %tRef = datenum(2018, 12, 28, 16, 34, 05); %PEG
-%tRef = datenum(2019, 7, 13, 18, 39, 13);
-tRef = datenum(2019, 7, 17, 21, 55, 46);
+tRef = datenum(2019, 7, 13, 18, 39, 13);
 
 myTitleFont = 6;
 myLabelFont = 4;
 myTextFont = 32;
 
-for K = 1:6
+for K = 1:11
 
     switch K
         case 1
-            pHcolor = blue;
+            pHcolor = gold;
             num1 = myPlot(subDirStem1, pHcolor, 0);
             fprintf('Case 1: %d spectra plotted in gold\n', num1);
         case 2
-            pHcolor = gold;
+            pHcolor = blue;
             num2 = myPlot(subDirStem2, pHcolor, 0);
             fprintf('Case 2: %d spectra plotted in blue\n', num2);            
         case 3
-            pHcolor = blue;
+            pHcolor = red;
             num3 = myPlot(subDirStem3, pHcolor, 0);
             fprintf('Case 3: %d spectra plotted in red\n', num3);
         case 4
@@ -154,12 +141,12 @@ end
    
 %y = 0.19; %pHEMA, PEG
 %y = 0.28; %alginate
-y = 0.245; %glucose
-x = 20;
+y = 0.14; %glucose
+x = 0.5;
 %deltaY = 0.01; %pHEMA
 deltaY = 0.015; %alginate
 %deltaX = 5; %pHEMA
-deltaX = 20; %alginate
+%deltaX = 17; %alginate
 %deltaX = 16; %PEG
 %text(x, y, 'pH 4', 'Color', red, 'FontSize', myTextFont);
 %text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
@@ -183,14 +170,16 @@ deltaX = 20; %alginate
 %text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 text(x, y, '0mg/dL 4mL/min', 'Color', gold, 'FontSize', myTextFont);
 text(x, y, '____________', 'Color', gold, 'FontSize', myTextFont);
-text(x + deltaX, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, '400mg/dL 4mL/min', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '________________', 'Color', blue, 'FontSize', myTextFont);
-text(x + deltaX, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, '400mg/dl 0mL/min', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '________________', 'Color', red, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
 
 hold off
 %title('86 nm spheres in microcapsules in polyHEMA in flowcell', ...

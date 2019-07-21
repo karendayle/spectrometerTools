@@ -10,9 +10,9 @@
 % % Variables. Might need to change depending on what you want to do.
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
 waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
-countBetweenPlots = 1; % Draw one out of every five averages
+countBetweenPlots = 5; % Draw one out of every five averages
 counter = 0;
-increment = 30;
+increment = 300;
 integrationTimeMS = 100;
 laserPowerFraction = 0.350;
 closestRef = 0;
@@ -83,7 +83,7 @@ black =   [0., 0.0, 0.0];
 global lineThickness; %%% KDK FIX 12/12/2018
 lineThickness = 2; %%% KDK FIX 12/12/2018
 global offset;
-offset = 300;
+offset = 30;
 global tRef;
 tRef = 0;
 % -------------------------------------------------------------------------
