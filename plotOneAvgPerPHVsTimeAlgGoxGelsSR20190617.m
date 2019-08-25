@@ -69,7 +69,8 @@ if gelOption == 1
 else
     if gelOption == 2
 %         dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\alg gox3\stopStart\";
-        dirStem = "C:\Users\dayle.kotturi\Documents\Data\Recovery\";
+%         dirStem = "C:\Users\dayle.kotturi\Documents\Data\Recovery\";
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\alg gox3\stopStart\";
     else
         if gelOption == 3
             dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 7\400mgdL again\";
@@ -272,14 +273,9 @@ if gelOption == 1 || gelOption == 3
 end
 myXlabel = sprintf('Time (hours)');
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
-if plotOption == 1
-    ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
+ylabel('Normalized Intensity', ...
         'FontSize', myLabelFont); % y-axis label
-else
-    ylabel('Intensity at 1430cm^-^1(A.U.)/Intensity at 1702cm^-^1(A.U.)', ...
-        'FontSize', myLabelFont); % y-axis label
-end
-%set(gca,'FontSize',16,'FontWeight','bold','box','off')
+set(gca,'FontSize',myLabelFont,'FontWeight','bold','box','off')
     
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug;

@@ -224,7 +224,7 @@ else
 end
 
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myLabelFont); % x-axis label
-ylabel('Normalized Intensity (A.U.)', 'FontSize', myLabelFont); % y-axis label
+ylabel('Normalized Intensity', 'FontSize', myLabelFont); % y-axis label
 set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
