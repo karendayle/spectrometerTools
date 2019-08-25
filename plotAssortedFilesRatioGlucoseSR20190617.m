@@ -87,9 +87,10 @@ myFont = 30;
 global myDebug;
 myDebug = 0;
 
+% Make them all the same for legibility
 myTitleFont = 30;
-myLabelFont = 30; % was 20
-myTextFont = 30; % was 15
+myLabelFont = 30;
+myTextFont = 30;
 
 figure 
 
@@ -227,6 +228,11 @@ xlabel('Wavenumber (cm^-^1)', 'FontSize', myLabelFont); % x-axis label
 ylabel('Normalized Intensity', 'FontSize', myLabelFont); % y-axis label
 set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
+
+% Bring in inset now
+% [bottomleftcornerXposition bottomleftcornerYposition width height]
+axes('pos',[.2 .6 .5 .3]); 
+imshow('R:\Students\Dayle\Data\Made by Sureyya\Alginate\alg gox2\inset.png');
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug
