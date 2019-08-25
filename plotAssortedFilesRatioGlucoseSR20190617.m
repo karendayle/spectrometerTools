@@ -50,7 +50,8 @@ else
         subDirStem5 = "punch8 400mgdL";
     else
         if plotOption == 3
-            dirStem = 'C:\Users\dayle.kotturi\Documents\Data\Recovery2\';
+            %dirStem = "C:\Users\karen\Documents\Data\Recovery2\";
+            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\alg gox2\";
             subDirStem1 = "punch4 0mgdL nextday";
             subDirStem2 = "punch5 100mgdL nextday";
             subDirStem3 = "punch6 200mgdL nextday";
@@ -82,7 +83,6 @@ xMax = 1800;
 yMin = 0;
 yMax = 20.0;
 myFont = 30;
-myTextFont = 32;
 
 global myDebug;
 myDebug = 0;
@@ -167,7 +167,7 @@ else
         if plotOption == 3
             y = 1.1; 
             x = 1625;
-            deltaY = 0.05;
+            deltaY = 0.1;
 %             text(x, y, 'Punch4 0 mg/dL', 'Color', green, 'FontSize', myTextFont);
 %             text(x, y, '______________', 'Color', green, 'FontSize', myTextFont);
 %             y = y - deltaY;
@@ -196,6 +196,9 @@ else
             text(x, y, '300 mg/dL', 'Color', red, 'FontSize', myTextFont);
             text(x, y, '_________', 'Color', red, 'FontSize', myTextFont);
             y = y - deltaY;
+            text(x, y, '400 mg/dL', 'Color', cherry, 'FontSize', myTextFont);
+            text(x, y, '_________', 'Color', cherry, 'FontSize', myTextFont);
+            y = y - deltaY;
         end
     end
 end
@@ -222,7 +225,7 @@ end
 
 xlabel('Wavenumber (cm^-^1)', 'FontSize', myLabelFont); % x-axis label
 ylabel('Normalized Intensity (A.U.)', 'FontSize', myLabelFont); % y-axis label
-set(gca,'FontSize',16,'FontWeight','bold','box','off')
+set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
 % Plot each spectrum (intensity vs wavenumber in a new color overtop
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
