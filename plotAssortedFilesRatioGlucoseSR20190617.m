@@ -232,7 +232,7 @@ set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
 % Bring in inset now
 % [bottomleftcornerXposition bottomleftcornerYposition width height]
 axes('pos',[.2 .6 .5 .3]); 
-imshow('R:\Students\Dayle\Data\Made by Sureyya\Alginate\alg gox2\inset.png');
+imshow('R:\Students\Dayle\Data\Made by Sureyya\Alginate\alg gox2\framed inset.jpg');
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug

@@ -223,8 +223,8 @@ if plotOption == 1
     else
         if gelOption == 2
             y = 0.235;
-            deltaY = 0.012;
-            x = 9;
+            deltaY = 0.015;
+            x = 0;
         else
             y = 0.2;
             deltaY = 0.01;
