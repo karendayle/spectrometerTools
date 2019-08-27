@@ -5,7 +5,7 @@ green =   [0.4660, 0.6740, 0.1880];
 cherry =  [0.6350, 0.0780, 0.1840];
 red =     [1.0, 0.0, 0.0];
 
-myTextFont = 30;
+myTextFont = 55;
 figure
 % Read off main plot at x=1430.19 cm^-1 for all y
 y = [ 0.18573, 0.16502, 0.033594, 0.031751, 0.023905 ];
@@ -19,7 +19,7 @@ scatter(x(4),y(4),500,red,'filled');
 scatter(x(5),y(5),500,cherry,'filled');
 title('');
 xlabel('Glucose Concentration (mg/dL)', 'FontSize', myLabelFont); % x-axis label
-ylabel('Normalized Intensity at 1430 cm^-^1', 'FontSize', myLabelFont); % y-axis label
+ylabel('Normalized Intensity', 'FontSize', myLabelFont); % y-axis label
 set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
 set(gca,'Xtick',0:100:400)
 set(gca,'XtickLabel',x(1:end))

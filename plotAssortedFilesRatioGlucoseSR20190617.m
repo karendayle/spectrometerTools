@@ -231,8 +231,12 @@ set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
 
 % Bring in inset now
 % [bottomleftcornerXposition bottomleftcornerYposition width height]
-axes('pos',[.2 .6 .5 .3]); 
+axes('pos',[.255 .4 .44 .5]); 
 imshow('R:\Students\Dayle\Data\Made by Sureyya\Alginate\alg gox2\framed inset.jpg');
+
+hold on
+plot(1430.19, 0, 1430.19, 0.4);
+hold off
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug
