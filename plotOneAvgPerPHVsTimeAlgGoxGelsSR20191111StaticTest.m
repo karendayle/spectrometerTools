@@ -54,8 +54,8 @@ plotOption = 1; % plot y1 and y2
 %plotOption = 3; % check pH sens
 
 %global gelOption;
-%gelOption = 1;
-gelOption = 2;
+gelOption = 1;
+%gelOption = 2;
 %gelOption = 3; % gox1 check pH sens
 %gelOption = 4; % gox2 check pH sens
 
@@ -65,7 +65,7 @@ gelOption = 2;
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
 if gelOption == 1
-    dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 10\punch1 flowcell1 avgs\";
+    dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 10\static test extremes on quartz\";
 else
     if gelOption == 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 10\punch3 flowcell1 avgs\";
@@ -73,10 +73,10 @@ else
 end
 
 if gelOption == 1
-    subDirStem1 = "1 0mgdL 4mLmin";
-    subDirStem2 = "2 400mgdL 4mLmin";
-    subDirStem3 = "3 400mgdL 0mLmin";
-    Kmin = 1;
+    subDirStem1 = "1 0mgdL";
+    subDirStem2 = "2 1809.6mgdL";
+    subDirStem3 = "3 1809.6mgdL longer";
+    Kmin = 3;
     Kmax = 3;
 else
     if gelOption == 2
@@ -84,7 +84,7 @@ else
         subDirStem2 = "2 400mgdL 4mLmin";
         subDirStem3 = "3 400mgdL 0mLmin";
         Kmin = 1;
-        Kmax = 3;
+        Kmax = 2;
     end
 end
 
@@ -99,7 +99,7 @@ figure
 % subtract this offset 
 global tRef;
 if gelOption == 1
-    tRef = datenum(2019, 11, 9, 19, 58, 27);
+    tRef = datenum(2019, 11, 9, 16, 19, 53);
 else
     if gelOption == 2
         tRef = datenum(2019, 11, 10, 19, 51, 03); % when Kmin=5
@@ -199,20 +199,20 @@ else
         x = 7;
     end   
 end
-ylim([0. 0.24])
-text(x, y, '400 mg/dL glucose at 0 mL/min (flow stopped)', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '_____________________________________', 'Color', red, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '400 mg/dL glucose at 4 mL/min (flow pumping)', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '_____________________________________', 'Color', blue, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '0 mg/dL glucose at 4 mL/min (flow pumping)', 'Color', gold, 'FontSize', myTextFont);
-text(x, y, '___________________________________', 'Color', gold, 'FontSize', myTextFont);
-y = y - deltaY;
+%ylim([0. 0.24])
+%text(x, y, '400 mg/dL glucose at 0 mL/min (flow stopped)', 'Color', red, 'FontSize', myTextFont);
+%text(x, y, '_____________________________________', 'Color', red, 'FontSize', myTextFont);
+%y = y - deltaY;
+%text(x, y, '400 mg/dL glucose at 4 mL/min (flow pumping)', 'Color', blue, 'FontSize', myTextFont);
+%text(x, y, '_____________________________________', 'Color', blue, 'FontSize', myTextFont);
+%y = y - deltaY;
+%text(x, y, '0 mg/dL glucose at 4 mL/min (flow pumping)', 'Color', gold, 'FontSize', myTextFont);
+%text(x, y, '___________________________________', 'Color', gold, 'FontSize', myTextFont);
+%y = y - deltaY;
 
 hold off
 if gelOption == 1 || gelOption == 3
-    title('54nm MBA Au NPs in alginate GOx in MCs in flowcell', ...
+    title('54nm MBA Au NPs GOx in MCs with 1809.6mg/dL glucose on quartz', ...
         'FontSize', myTitleFont);
 end
 myXlabel = sprintf('Time (hours)');
