@@ -45,29 +45,30 @@ numberOfSpectra = zeros(1,numConc); % reset each iter
 
 % REPEAT FOR ALL ANALYTES
 for J = 2 : 2 % set to 1:3 to do all analytes
+    sumOverall = zeros(1,numPoints); % reset each analyte
     figure % without this, no plots are drawn
     for K = 1 : 5 % 6 concentrations
         dir_to_search = char(dirStem); % args need to be strings
         txtpattern = fullfile(dir_to_search, patterns(J,K));
         dinfo = dir(txtpattern);
         sum1 = zeros(1,numPoints); % reset each iter
-        sum2 = zeros(1,numPoints); % reset each iter
+        
         for (I = 1 : length(dinfo))
             thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
             [D,S,R] = xlsread(thisfilename); % the numbers go into D.
             D2 = D(18:end); % now have them in 1x1024 array
-            
-            % Returns trend as 'e' and baseline corrected signal as 'f'
-            [e, f] = correctBaseline(D2');
+
             % add to sum for average
-            sum1 = sum1 + D2;
-            sum2 = sum2 + f; % use 'f' when baseline correction is done
+            sum1 = sum1 + D2; % for this conc
+            sumOverall = sumOverall + D2; % cumulative over all
         end
         
         numberOfSpectra(K)= length(dinfo);
         sum1 = sum1/numberOfSpectra(K);
-        sum2 = sum2/numberOfSpectra(K);
-        
+        sumOverall = sumOverall + sum1;
+        % Returns trend as 'e' and baseline corrected signal as 'f'
+        [e, f] = correctBaseline(sumOverall');
+            
         subplot(2,1,1)
         plot(sum1, 'Color', colors(K,:));
         title1 = sprintf('%s averaged, but before baseline correction',analytes(J));
@@ -86,8 +87,8 @@ for J = 2 : 2 % set to 1:3 to do all analytes
         text(800, 1200, str5, 'Color', purple);
         hold on;
         subplot(2,1,2)
-        plot(sum2, 'Color', colors(K,:));
-        title2 = sprintf('%s averaged, baseline corrected -- baselining each concentration',analytes(J));
+        plot(f, 'Color', colors(K,:));
+        title2 = sprintf('%s averaged, baseline corrected -- common baseline for all concentrations',analytes(J));
         title(title2);
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
