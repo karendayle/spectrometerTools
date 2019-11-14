@@ -68,9 +68,10 @@ for J = 2 : 2 % set to 1:3 to do all analytes
         sum1 = sum1/numberOfSpectra(K);
         sumOverall = sumOverall + sum1; % create the input for the single baseline
         [e, f] = correctBaseline(sumOverall');
-        subplot(2,1,1)
-        plot(e, 'Color', colors(K,:));
-        title1 = sprintf('%s cumulative baseline over conc before divide by 5',analytes(J));
+        
+        subplot(2,2,1)
+        plot(sum1, 'Color', colors(K,:));
+        title1 = sprintf('%s averaged, but before baseline correction',analytes(J));
         title(title1);
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
@@ -84,6 +85,14 @@ for J = 2 : 2 % set to 1:3 to do all analytes
         text(800, 1400, str3, 'Color', green);
         text(800, 1300, str4, 'Color', blue);
         text(800, 1200, str5, 'Color', purple);
+        hold on;
+        
+        subplot(2,2,2)
+        plot(e, 'Color', colors(K,:));
+        title1 = sprintf('%s cumulative baseline over conc before divide by 5',analytes(J));
+        title(title1);
+        xlabel('Wavenumber (cm^-1)'); % x-axis label
+        ylabel('Arbitrary Units (A.U.)'); % y-axis label
         hold on;
     end
     
@@ -107,11 +116,10 @@ for J = 2 : 2 % set to 1:3 to do all analytes
             sum1 = sum1 + D2; % for this conc  
         end
         
-        numberOfSpectra(K)= length(dinfo);
         sum1 = sum1/numberOfSpectra(K);
-        subplot(2,1,2)
-        plot(e, 'Color', colors(K,:));
-        title2 = sprintf('%s overall baseline for all concentrations/5',analytes(J));
+        subplot(2,2,3)
+        plot(sum1-f, 'Color', colors(K,:));
+        title2 = sprintf('%s averaged, baseline corrected -- common baseline for all concentrations',analytes(J));
         title(title2);
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
@@ -125,6 +133,16 @@ for J = 2 : 2 % set to 1:3 to do all analytes
         text(800, 1400, str3, 'Color', green);
         text(800, 1300, str4, 'Color', blue);
         text(800, 1200, str5, 'Color', purple);
+        hold on;
+        
+        numberOfSpectra(K)= length(dinfo);
+        sum1 = sum1/numberOfSpectra(K);
+        subplot(2,2,4)
+        plot(e, 'Color', colors(K,:));
+        title2 = sprintf('%s overall baseline for all concentrations/5',analytes(J));
+        title(title2);
+        xlabel('Wavenumber (cm^-1)'); % x-axis label
+        ylabel('Arbitrary Units (A.U.)'); % y-axis label
         hold on;
     end
 end
