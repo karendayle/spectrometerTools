@@ -17,9 +17,10 @@ thisdata1 = zeros(2, numPoints, 'double');
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
 %dirStem = "H:\Documents\Data\";
-dirStem = "Z:\Documents\Data\";
-subDirStem1 = "2X v2 pH7 anomalies";
-%subDirStem1 = "2X v2 pH7 25 hours";
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 10\static test extremes on quartz\";
+%subDirStem1 = "1 0mgdL";
+%subDirStem1 = "2 1809.6mgdL";
+subDirStem1 = "3 1809.6mgdL longer";
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
@@ -39,7 +40,8 @@ for K = 1 : 1
           % Returns trend as 'e' and baseline corrected signal as 'f'
           [e, f] = correctBaseline(thisdata1(2,:)');          
           %plot(thisdata1(1,:), thisdata1(2,:), 'green'); % drift obvious
-          plot(thisdata1(1,:), f, 'green'); % drift not obvious
+          %plot(thisdata1(1,:), f, 'green'); % drift not obvious
+          plot(thisdata1(1,:), f)
           pause(1);
           hold on;
       end
@@ -49,7 +51,7 @@ end
 title(subDirStem1);
 xlabel('Wavenumber (cm^-1)'); % x-axis label
 ylabel('Arbitrary Units (A.U.)'); % y-axis label
-legend('pH7');
+%legend('pH7');
 
 function [e f] = correctBaseline(tics)
     lambda=1e4; % smoothing parameter
