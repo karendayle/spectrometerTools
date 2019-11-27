@@ -12,7 +12,7 @@
 waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 5; % Draw one out of every five averages
 counter = 0;
-increment = 300;
+increment = 30;
 integrationTimeMS = 1000;
 laserPowerFraction = 0.358;
 closestRef = 0;
@@ -55,8 +55,7 @@ global studyPath % Set in createDirAndSubDirs
 global studyName
 global subdirs;
 global subdirMax;
-subdirs = ["1 0mgdL", "2 400mgdL", "3 0mgdL", "4 400mgdL", "5 0mgdL", "6 400mgdL"];
-%subdirs = ["1 0mLmin", "2 1mLmin", "3 0mLmin", "4 1mLmin", "5 0mLmin"];
+subdirs = ["1", "2", "3", "4", "5", "6"];
 subdirMax = length(subdirs);
 global gelTypeName;
 global gelNumber;
@@ -863,8 +862,8 @@ function g = createDirAndSubDirs()
     studyName = input(prompt, 's');
     
     % Now put it all together
-    dir1 = '../../Data/Made by Sureyya/'; % just use relative directory
-                                          % skip use of pwd for now
+    %dir1 = '../../Data/Made by Sureyya/'; % old location (network drive)
+    dir1 = 'C:/ExperimentalData/Dayle/Data/Made by Sureyya/'; % local
     studyPath = strcat(dir1, gelTypeName, '/', gelInstance, studyName);
     if ~exist(studyPath, 'dir')
         [status, msg, msgID] = mkdir(studyPath); % Make all intermediate dirs?
