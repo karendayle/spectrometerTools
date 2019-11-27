@@ -67,7 +67,7 @@ for J = 2 : 2 % set to 1:3 to do all analytes
         numberOfSpectra(K)= length(dinfo);
         sum1 = sum1/numberOfSpectra(K);
         sumOverall = sumOverall + sum1; % create the input for the single baseline
-        [e, f] = correctBaseline(sumOverall');
+        [e, f] = correctBaseline(sumOverall'); % plot the trend 'e' in subplot 2,2,2
         
         subplot(2,2,1)
         plot(sum1, 'Color', colors(K,:));
@@ -88,11 +88,21 @@ for J = 2 : 2 % set to 1:3 to do all analytes
         hold on;
         
         subplot(2,2,2)
-        plot(e, 'Color', colors(K,:));
+        plot(e, 'Color', colors(K,:)); % calculated above, once per conc
         title1 = sprintf('%s cumulative baseline over conc before divide by 5',analytes(J));
         title(title1);
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
+        str1 = sprintf('accumulation of %d',numberOfSpectra(1));
+        str2 = sprintf('conc 2 number of spectra %d',numberOfSpectra(2));
+        str3 = sprintf('conc 2 number of spectra %d',numberOfSpectra(3));
+        str4 = sprintf('conc 2 number of spectra %d',numberOfSpectra(4));
+        str5 = sprintf('conc 2 number of spectra %d',numberOfSpectra(5));
+        text(800, 1600, str1, 'Color', cherry);
+        text(800, 1500, str2, 'Color', gold);
+        text(800, 1400, str3, 'Color', green);
+        text(800, 1300, str4, 'Color', blue);
+        text(800, 1200, str5, 'Color', purple);
         hold on;
     end
     
