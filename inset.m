@@ -10,6 +10,8 @@ figure
 % Read off main plot at x=1430.19 cm^-1 for all y
 y = [ 0.18573, 0.16502, 0.033594, 0.031751, 0.023905 ];
 x = [ 0, 100, 200, 300. 400 ];
+y_upperLim = [0.002097 0.004208 0.001858 0.002292 0.003534]; %read off aoomed in fig2
+y_lowerLim = [-0.002097 0.004208 -0.001858 -0.002292 -0.003534];
 %scatter(x,y,'*','SizeData',100);
 scatter(x(1),y(1),500,green,'filled');
 hold on
@@ -17,9 +19,13 @@ scatter(x(2),y(2),500,gold,'filled');
 scatter(x(3),y(3),500,rust,'filled');
 scatter(x(4),y(4),500,red,'filled');
 scatter(x(5),y(5),500,cherry,'filled');
+
+% plot stdDev as the array of error bars on the plot...    
+errorbar( x,y,y_upperLim, 'LineStyle','none', 'Color', black);
+
 title('');
-xlabel('Glucose Concentration (mg/dL)', 'FontSize', myLabelFont); % x-axis label
-ylabel('Normalized Intensity', 'FontSize', myLabelFont); % y-axis label
+xlabel('Glucose Concentration (mg/dL)', 'FontSize', myTextFont); % x-axis label
+ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
 set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
 set(gca,'Xtick',0:100:400)
 set(gca,'XtickLabel',x(1:end))
