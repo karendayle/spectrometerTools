@@ -76,8 +76,9 @@ if gelOption == 1
     subDirStem8 = "8 400mgdL 0mLmin";
     subDirStem9 = "9 400mgdL 0mLmin";
     subDirStem10 = "10 0mgdL 4mLmin";
+    subDirStem11 = "11 400mgdL 4mLmin";
     Kmin = 1;
-    Kmax = 10;
+    Kmax = 11;
 end
 
 global lineThickness;
@@ -141,9 +142,9 @@ for K = Kmin:Kmax
             num10 = myPlot(subDirStem10, pHcolor, 0);
             fprintf('Case 10: %d spectra plotted in gold\n', num10);
         case 11
-            pHcolor = gold;
+            pHcolor = blue;
             num11 = myPlot(subDirStem11, pHcolor, 0);
-            fprintf('Case 11: %d spectra plotted in gold\n', num11);
+            fprintf('Case 11: %d spectra plotted in blue\n', num11);
         case 12
             pHcolor = blue;
             num12 = myPlot(subDirStem12, pHcolor, 0);
