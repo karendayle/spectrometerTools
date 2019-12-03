@@ -27,7 +27,7 @@ black =   [0., 0.0, 0.0];
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
 
-dirStem = "H:\Documents\Data\Made by Sureyya\Glucose Sensors\";
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Glucose Sensors\";
 
 subDirStem1 = "Dayle MC8\MCsOnQuartz";
 subDirStem2 = "MP7 microcapsules";
