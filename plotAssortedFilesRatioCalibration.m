@@ -59,7 +59,7 @@ myTextFont = 32;
 global myDebug;
 myDebug = 0;
 
-for J = 1:5
+for J = 2:2
     figure 
     switch J
         case 1
@@ -306,9 +306,11 @@ for J = 1:5
 
     % TO DO: figure out the coords for labels from the data
     %y = 1.95; %pHEMA
-    y = 1.1; %alginate, PEG, pHEMA coAc
+    %y = 1.1; %alginate, PEG, pHEMA coAc
+    y = 2000; %if not normalized
     x = 1700; %pHEMA
-    deltaY = 0.1; %alginate, PEG, pHEMA coAc
+    %deltaY = 0.1; %alginate, PEG, pHEMA coAc
+    deltaY = 200; %if not normalized
     %deltaY = 0.2; %pHEMA
     deltaX = 100;
 
@@ -529,7 +531,9 @@ function g = myPlot(subDirStem, myColor)
         stdDev = sqrt(sumSq/numberOfSpectra);
             
         % plot the corrected signal
-        plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor, ...
+        %plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor, ...
+        %    'LineWidth', lineThickness);
+        plot(thisdata(1,offset:end), f(offset:end), 'Color', myColor, ...
             'LineWidth', lineThickness);
         
         % 11/6/2018 Not needed after all

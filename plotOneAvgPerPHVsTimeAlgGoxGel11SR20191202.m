@@ -54,18 +54,16 @@ plotOption = 1; % plot y1 and y2
 %plotOption = 3; % check pH sens
 
 %global gelOption;
-gelOption = 1; 
+gelOption = 2; 
 
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
+global tRef;
 if gelOption == 1
     dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 11\punch1 flowcell all\";
-end
-
-if gelOption == 1
     subDirStem1 = "1 0mgdL 4mLmin";
     subDirStem2 = "2 400mgdL 4mLmin";
     subDirStem3 = "3 400mgdL 0mLmin";
@@ -77,8 +75,25 @@ if gelOption == 1
     subDirStem9 = "9 400mgdL 0mLmin";
     subDirStem10 = "10 0mgdL 4mLmin";
     subDirStem11 = "11 400mgdL 4mLmin";
+    subDirStem12 = "12 400mgdL 0mLmin";
+    subDirStem13 = "13 0mgdL 4mLmin";
+    subDirStem14 = "14 400mgdL 4mLmin";
+    subDirStem15 = "15 400mgdL 0mLmin";
     Kmin = 1;
-    Kmax = 11;
+    Kmax = 15;
+    % subtract this offset 
+    tRef = datenum(2019, 11, 26, 13, 55, 12);
+else
+    if gelOption == 2
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 10\punch7 flowcell1\";
+        subDirStem1 = "1 0mgdL 4mLmin";
+        subDirStem2 = "2 400mgdL pH3 4mLmin";
+        subDirStem3 = "3 0mgdL 4mLmin";
+        Kmin = 1;
+        Kmax = 3;
+        % subtract this offset 
+        tRef = datenum(2019, 11, 29, 17, 21, 9);
+    end
 end
 
 global lineThickness;
@@ -88,12 +103,6 @@ global myDebug;
 myDebug = 0;
 
 figure 
-
-% subtract this offset 
-global tRef;
-if gelOption == 1
-    tRef = datenum(2019, 11, 26, 13, 55, 12);
-end
 
 myTitleFont = 30;
 myLabelFont = 30; % was 20
@@ -110,9 +119,9 @@ for K = Kmin:Kmax
             num2 = myPlot(subDirStem2, pHcolor, 0);
             fprintf('Case 2: %d spectra plotted in blue\n', num2);            
         case 3
-            pHcolor = red;
+            pHcolor = gold;
             num3 = myPlot(subDirStem3, pHcolor, 0);
-            fprintf('Case 3: %d spectra plotted in red\n', num3);
+            fprintf('Case 3: %d spectra plotted in god\n', num3);
         case 4
             pHcolor = red;
             num4 = myPlot(subDirStem4, pHcolor, 0);
@@ -146,17 +155,17 @@ for K = Kmin:Kmax
             num11 = myPlot(subDirStem11, pHcolor, 0);
             fprintf('Case 11: %d spectra plotted in blue\n', num11);
         case 12
-            pHcolor = blue;
+            pHcolor = red;
             num12 = myPlot(subDirStem12, pHcolor, 0);
-            fprintf('Case 12: %d spectra plotted in blue\n', num12);
+            fprintf('Case 12: %d spectra plotted in red\n', num12);
         case 13
-            pHcolor = red;
+            pHcolor = gold;
             num13 = myPlot(subDirStem13, pHcolor, 0);
-            fprintf('Case 13: %d spectra plotted in red\n', num13);
+            fprintf('Case 13: %d spectra plotted in gold\n', num13);
         case 14
-            pHcolor = red;
+            pHcolor = blue;
             num14 = myPlot(subDirStem14, pHcolor, 0);
-            fprintf('Case 14: %d spectra plotted in red\n', num14);
+            fprintf('Case 14: %d spectra plotted in blue\n', num14);
         case 15
             pHcolor = red;
             num15 = myPlot(subDirStem15, pHcolor, 0);
@@ -169,32 +178,30 @@ for K = Kmin:Kmax
 end    
    
 if plotOption == 1
-    if gelOption == 1 || gelOption == 2 || gelOption == 4
-        y = 0.1;
+    if gelOption == 1
+        y = 0.2;
         deltaY = 0.02;
         x = 0.25;
     else
-        if gelOption == 3
-            y = 0.325;
+        if gelOption == 2
+            y = 0.2;
             deltaY = 0.02;
-            x = 32;
+            x = 0.0;
+        else
+            if gelOption == 3
+                y = 0.325;
+                deltaY = 0.02;
+                x = 32;
+            end
         end
-    end
-else
-    if gelOption == 1
-        y = 8.9;
-        deltaY = 0.25;
-        x = 0.25;
-    else
-        y = 8.9;
-        deltaY = 0.1;
-        x = 7;
-    end   
+    end 
 end
 ylim([0. 0.24])
-text(x, y, '400 mg/dL glucose at 0 mL/min (flow stopped)', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '_____________________________________', 'Color', red, 'FontSize', myTextFont);
-y = y - deltaY;
+if gelOption == 1
+    text(x, y, '400 mg/dL glucose at 0 mL/min (flow stopped)', 'Color', red, 'FontSize', myTextFont);
+    text(x, y, '_____________________________________', 'Color', red, 'FontSize', myTextFont);
+    y = y - deltaY;
+end
 text(x, y, '400 mg/dL glucose at 4 mL/min (flow pumping)', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '_____________________________________', 'Color', blue, 'FontSize', myTextFont);
 y = y - deltaY;
@@ -209,8 +216,15 @@ text(x, y, '+ = normalized local peak near 1702 cm^-^1', 'Color', black, 'FontSi
 y = y - deltaY;
 
 hold off
-title('54nm MBA Au NPs and GOx in MCs in alginate in flowcell', ...
+%title('54nm MBA Au NPs and GOx in MCs in alginate in flowcell', ...
+%        'FontSize', myTitleFont);
+if gelOption == 1
+    title('54nm MBA-AuNPs and GOx in alginate (no MCs) in flowcell', ...
         'FontSize', myTitleFont);
+else
+    title('54nm MBA-AuNPs and GOx in MCs in alginate in flowcell', ...
+        'FontSize', myTitleFont);
+end
 myXlabel = sprintf('Time (hours)');
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
 if plotOption == 1
