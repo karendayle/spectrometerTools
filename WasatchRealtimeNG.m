@@ -452,13 +452,13 @@ if (myAns1 ~= 4)
                 for K = 1:5
                     switch K
                         case {1}
-                            pHcolor = red;
-                            num1 = plotTimeSeries(strcat(studyPath, '/', subdirs(K)), pHcolor);
-                            fprintf('Case 1: %d spectra plotted in red\n', num1);
-                        case {2}
                             pHcolor = green;
+                            num1 = plotTimeSeries(strcat(studyPath, '/', subdirs(K)), pHcolor);
+                            fprintf('Case 1: %d spectra plotted in green\n', num1);
+                        case {2}
+                            pHcolor = red;
                             num2 = plotTimeSeries(strcat(studyPath, '/', subdirs(K)), pHcolor);
-                            fprintf('Case 2: %d spectra plotted in green\n', num2);
+                            fprintf('Case 2: %d spectra plotted in red\n', num2);
                         case {3}
                             pHcolor = blue;
                             num3 = plotTimeSeries(strcat(studyPath, '/', subdirs(K)), pHcolor);
