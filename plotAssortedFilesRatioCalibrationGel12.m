@@ -24,23 +24,6 @@ cherry =  [0.6350, 0.0780, 0.1840];
 red =     [1.0, 0.0, 0.0];
 black =   [0.0, 0.0, 0.0];
 magenta = [1.0, 0.0, 1.0];
-
-% Change next 4 lines to what you want to plot
-% These are used to find the spectra that get plotted.
-% Multiple spectra in each subdir, but the latest one is used for plot
-% IMPORTANT: dirStem needs trailing backslash
-global dirStem
-
-dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\";
-subDirStem1 = "pH4.5 after 36h soak\1";
-subDirStem2 = "pH5.3 after 36h soak\1";
-subDirStem3 = "pH8.87 after 36h soak\1";
-% subDirStem4 = "4 pH8";
-% subDirStem5 = "5 pH5";
-% subDirStem6 = "6 pH3";
-% subDirStem7 = "7 pH6";
-% subDirStem8 = "8 pH9";
-
 global lineThickness;
 lineThickness = 2;
 
@@ -69,45 +52,195 @@ myTextFont = 32;
 global myDebug;
 myDebug = 0;
 
-figure 
+% Change next 4 lines to what you want to plot
+% These are used to find the spectra that get plotted.
+% Multiple spectra in each subdir, but the latest one is used for plot
+% IMPORTANT: dirStem needs trailing backslash
+global dirStem
 
-for K = 1:3
-    switch K                       
-        case 1 % pH4.5
-            pHcolor = red;
-            num1 = myPlot(subDirStem1, pHcolor);
-            fprintf('Case 1: %d spectra plotted in red\n', num1);
-        case 2 % pH5.3
-            pHcolor = rust;
-            num2 = myPlot(subDirStem2, pHcolor);
-            fprintf('Case 2: %d spectra plotted in rust\n', num2);            
-        case 3 % pH8.9
-            pHcolor = blue;
-            num3 = myPlot(subDirStem3, pHcolor);
-            fprintf('Case 3: %d spectra plotted in purple\n', num3);
-        case 4 % pH8
-            pHcolor = ciel;
-            num4 = myPlot(subDirStem4, pHcolor);
-            fprintf('Case 4: %d spectra plotted in ciel\n', num4);
-        case 5 % pH5
-            pHcolor = rust;
-            num5 = myPlot(subDirStem5, pHcolor);
-            fprintf('Case 5: %d spectra plotted in rust\n', num5);            
-        case 6 % pH3
-            pHcolor = cherry;
-            num6 = myPlot(subDirStem6, pHcolor);
-            fprintf('Case 6: %d spectra plotted in cherry\n', num6);
-        case 7 % pH6
-            pHcolor = gold;
-            num7 = myPlot(subDirStem7, pHcolor);
-            fprintf('Case 7: %d spectra plotted in gold\n', num7);
-        case 8 % pH9
-            pHcolor = blue;
-            num8 = myPlot(subDirStem8, pHcolor);
-            fprintf('Case 8: %d spectra plotted in blue\n', num8);
+for J = 1:1
+    figure 
+    switch J
+        case 1
+            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\";
+            subDirStem1 = "pH4.5 after 36h soak\1";
+            subDirStem2 = "pH5.3 after 36h soak\1";
+            subDirStem3 = "pH8.87 after 36h soak\1";
+            for K = 1:3
+                switch K
+                    case 1 % pH4.5
+                        pHcolor = red;
+                        num1 = myPlot(subDirStem1, pHcolor);
+                        fprintf('Case 1: %d spectra plotted in red\n', num1);
+                    case 2 % pH5.3
+                        pHcolor = rust;
+                        num2 = myPlot(subDirStem2, pHcolor);
+                        fprintf('Case 2: %d spectra plotted in rust\n', num2);
+                    case 3 % pH8.9
+                        pHcolor = blue;
+                        num3 = myPlot(subDirStem3, pHcolor);
+                        fprintf('Case 3: %d spectra plotted in purple\n', num3);
+                end
+            end
+            % TO DO: figure out the coords for labels from the data
+            %y = 1.95; %pHEMA
+            y = 1.1; %alginate, PEG, pHEMA coAc
+            x = 1700; %pHEMA
+            deltaY = 0.1; %alginate, PEG, pHEMA coAc
+            %deltaY = 0.2; %pHEMA
+            deltaX = 100;
+            
+            % text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            text(x, y, 'pH8.9', 'Color', blue, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
+            y = y - deltaY;
+            % text(x, y, 'pH8', 'Color', ciel, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            % text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
+            % text(x, y, '____', 'Color', green, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            % text(x, y, 'pH6', 'Color', gold, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            text(x, y, 'pH5.3', 'Color', rust, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'pH4.5', 'Color', red, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+            y = y - deltaY;
+            % text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            hold off
+            title('56 nm spheres in microcapsules in alginate in flow cell');
+            xlabel('Wavenumber (cm^-^1)'); % x-axis label
+            ylabel('Normalized Intensity (A.U.)'); % y-axis label
+            set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
+            % Plot each spectrum (intensity vs wavenumber in a new color overtop
+
+        case 2
+            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\";
+            subDirStem1 = "pH test low\1";
+            subDirStem2 = "pH test med\1";
+            subDirStem3 = "pH test high\1";
+            for K = 1:3
+                switch K
+                    case 1 % pH4.5
+                        pHcolor = red;
+                        num1 = myPlot(subDirStem1, pHcolor);
+                        fprintf('Case 1: %d spectra plotted in red\n', num1);
+                    case 2 % pH5.3
+                        pHcolor = rust;
+                        num2 = myPlot(subDirStem2, pHcolor);
+                        fprintf('Case 2: %d spectra plotted in rust\n', num2);
+                    case 3 % pH8.9
+                        pHcolor = blue;
+                        num3 = myPlot(subDirStem3, pHcolor);
+                        fprintf('Case 3: %d spectra plotted in purple\n', num3);
+                end
+            end
+            % TO DO: figure out the coords for labels from the data
+            %y = 1.95; %pHEMA
+            y = 1.1; %alginate, PEG, pHEMA coAc
+            x = 1700; %pHEMA
+            deltaY = 0.1; %alginate, PEG, pHEMA coAc
+            %deltaY = 0.2; %pHEMA
+            deltaX = 100;
+            
+            % text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            text(x, y, 'pH8.64', 'Color', blue, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
+            y = y - deltaY;
+            % text(x, y, 'pH8', 'Color', ciel, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            % text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
+            % text(x, y, '____', 'Color', green, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            % text(x, y, 'pH6', 'Color', gold, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            text(x, y, 'pH4.76', 'Color', rust, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'pH4.38', 'Color', red, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+            y = y - deltaY;
+            % text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            hold off
+            title('56 nm spheres in microcapsules in alginate in flow cell');
+            xlabel('Wavenumber (cm^-^1)'); % x-axis label
+            ylabel('Normalized Intensity (A.U.)'); % y-axis label
+            set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
+            % Plot each spectrum (intensity vs wavenumber in a new color overtop
+        case 3
+            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\";
+            subDirStem1 = "pH low2\1";
+            subDirStem2 = "pH med2\1";
+            subDirStem3 = "pH high2\1";
+            for K = 1:3
+                switch K
+                    case 1 % pH4.5
+                        pHcolor = red;
+                        num1 = myPlot(subDirStem1, pHcolor);
+                        fprintf('Case 1: %d spectra plotted in red\n', num1);
+                    case 2 % pH5.3
+                        pHcolor = rust;
+                        num2 = myPlot(subDirStem2, pHcolor);
+                        fprintf('Case 2: %d spectra plotted in rust\n', num2);
+                    case 3 % pH8.9
+                        pHcolor = blue;
+                        num3 = myPlot(subDirStem3, pHcolor);
+                        fprintf('Case 3: %d spectra plotted in purple\n', num3);
+                end
+            end
+                        % TO DO: figure out the coords for labels from the data
+            %y = 1.95; %pHEMA
+            y = 1.1; %alginate, PEG, pHEMA coAc
+            x = 1700; %pHEMA
+            deltaY = 0.1; %alginate, PEG, pHEMA coAc
+            %deltaY = 0.2; %pHEMA
+            deltaX = 100;
+            
+            % text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            text(x, y, 'pH8.03', 'Color', blue, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
+            y = y - deltaY;
+            % text(x, y, 'pH8', 'Color', ciel, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            % text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
+            % text(x, y, '____', 'Color', green, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            % text(x, y, 'pH6', 'Color', gold, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            text(x, y, 'pH4.73', 'Color', rust, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
+            y = y - deltaY;
+            text(x, y, 'pH4.41', 'Color', red, 'FontSize', myTextFont);
+            text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+            y = y - deltaY;
+            % text(x, y, 'pH3', 'Color', cherry, 'FontSize', myTextFont);
+            % text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
+            % y = y - deltaY;
+            hold off
+            title('56 nm spheres in microcapsules in alginate in flow cell');
+            xlabel('Wavenumber (cm^-^1)'); % x-axis label
+            ylabel('Normalized Intensity (A.U.)'); % y-axis label
+            set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
+            % Plot each spectrum (intensity vs wavenumber in a new color overtop
     end
-    pause(1);
-end    
+end
 
 % TO DO: figure out the coords for labels from the data
 %y = 1.95; %pHEMA
@@ -142,12 +275,7 @@ y = y - deltaY;
 % text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
 % y = y - deltaY;
 hold off
-
 title('56 nm spheres in microcapsules in alginate in flow cell');
-%title('56 nm spheres in microcapsules in PEG in flow cell');
-%title('56 nm spheres in microcapsules in pHEMA in flow cell');
-%title('56 nm spheres in microcapsules in pHEMA coAc in flow cell');
-
 xlabel('Wavenumber (cm^-^1)'); % x-axis label
 ylabel('Normalized Intensity (A.U.)'); % y-axis label
 set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
