@@ -96,6 +96,14 @@ false = 0;
 global numPoints;
 numPoints = 1024; % fixed. Based on physical char of spectrometer grating
 % to avoid array changing size every time it's assigned in the loop
+
+% allocating memory once only and reusing it is not enough to stop PC 
+% from running out of memory, so delete old figures before redrawing new
+% ones
+global f1;
+global f2;
+global f3;
+
 myTextFont = 15;
 myFont = 30;
 % Statically declaring array sizes to save resources needed to do
@@ -374,11 +382,14 @@ if (myAns1 ~= 4)
                 end
                 counter = counter + 1;
                 
+                % 1/26/2020 delete last figure of this type first
+                if ishghandle(f1) 
+                    close(f1);
+                end
+                f1= figure % Make the ratiometric average spectra plot
                 % ---------------------------------------------------------
                 % 12/12/2018 NEW: Here is where we do what used to be the post-
                 % processing
-                figure % Make the ratiometric average spectra plot
-
                 for K = 1:5
                     switch K
                         case {1}
@@ -416,10 +427,14 @@ if (myAns1 ~= 4)
                 set(gca,'FontSize',16,'FontWeight','bold','box','off')
                 % Plot each spectrum (intensity vs wavenumber in a new color overtop
                 
+                % 1/26/2020 delete last figure of this type first
+                if ishghandle(f2) 
+                    close(f2);
+                end
                 % ---------------------------------------------------------
                 % 12/12/2018 NEW: Here is where we do what used to be the 
                 % time series post-processing
-                figure 
+                f2 = figure 
 
                 % subtract this offset -- first time only
                 if startTimeSet == false
@@ -478,22 +493,6 @@ if (myAns1 ~= 4)
                 xPlot = 0;  % Ahh, this was my mistake. Overwriting my array of x values
                 deltaYPlot = yMax2/10;
                 %deltaXPlot = 0.2;
-%                 text(xPlot, yPlot, '0mg/dL Glucose', 'Color', red, 'FontSize', myTextFont);
-%                 text(xPlot, yPlot, '______________', 'Color', red, 'FontSize', myTextFont);
-%                 %text(xPlot + deltaXPlot, yPlot, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
-%                 yPlot = yPlot - deltaYPlot;
-%                 text(xPlot, yPlot, '100mg/dL Glucose', 'Color', green, 'FontSize', myTextFont);
-%                 text(xPlot, yPlot, '________________', 'Color', green, 'FontSize', myTextFont);
-%                 %text(xPlot + deltaXPlot, yPlot, '5 second integration time per acq', 'FontSize', myTextFont);
-%                 yPlot = yPlot - deltaYPlot;
-%                 text(xPlot, yPlot, '200mg/dL Glucose', 'Color', blue, 'FontSize', myTextFont);
-%                 text(xPlot, yPlot, '________________', 'Color', blue, 'FontSize', myTextFont);
-%                 yPlot = yPlot - deltaYPlot;
-%                 text(xPlot, yPlot, '300mg/dL Glucose', 'Color', purple, 'FontSize', myTextFont);
-%                 text(xPlot, yPlot, '________________', 'Color', purple, 'FontSize', myTextFont);
-%                 yPlot = yPlot - deltaYPlot;
-%                 text(xPlot, yPlot, '400mg/dL Glucose', 'Color', rust, 'FontSize', myTextFont);
-%                 text(xPlot, yPlot, '________________', 'Color', rust, 'FontSize', myTextFont);
                 %text(xPlot + deltaXPlot, yPlot, 'Each spoint average of 5 acqs', 'FontSize', myTextFont);
                 %yPlot = yPlot - deltaYPlot;
                 %text(xPlot + deltaXPlot, yPlot, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
@@ -631,14 +630,19 @@ end
 function c = plotSpectrum(firstTime, ...
     wavenumbers, dark, rawSpectrum, spectrum, difference, ...
     denominator, isAveragedSpectrum, acq)
+global f3;
 xMin = 950;
 xMax = 1800; % SP says to cutoff here 11/7/2018
+% 1/26/2020 delete last figure of this type first
+if ishghandle(f3) 
+    close(f3);
+end
 % local function to graph the spectrum
     if isAveragedSpectrum
-        figure('Name','Averaged from 5 integrations');
+        f3 = figure('Name','Averaged from 5 integrations');
     else
         myTitle=sprintf('Acquisition %d', acq);
-        figure('Name',myTitle);
+        f3 = figure('Name',myTitle);
     end
     
     subplot(2,4,1)
