@@ -48,6 +48,19 @@ pHcolor = [0.0, 0.0, 0.0];
 global numPoints;
 numPoints = 1024;
 
+global lineThickness;
+lineThickness = 2;
+
+global myDebug;
+myDebug = 0;
+
+% subtract this offset to start x axis at zero
+global tRef;
+
+myTitleFont = 30;
+myLabelFont = 30; 
+myTextFont = 30; 
+
 global plotOption;
 %plotOption = 1; % plot y1 and y2
 %plotOption = 2; % plot y3
@@ -55,18 +68,44 @@ global plotOption;
 plotOption = 4; % do curve fitting
 
 global gelOption;
-gelOption = 1;
 
-% Change next 4 lines to what you want to plot
-% These are used to find the spectra that get plotted.
-% Multiple spectra in each subdir, but the latest one is used for plot
-% IMPORTANT: dirStem needs trailing backslash
 global dirStem;
-if gelOption == 1
-    dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
-end
 
-if gelOption == 1
+for gelOption = 6:6
+    % Do for each dataset
+    figure
+    
+    switch gelOption
+      case 1 % alginate time series 3
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\";
+        tRef = datenum(2020, 1, 12, 16, 15, 57);
+      case 2 % pHEMA time series 3
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
+        tRef = datenum(2020, 2, 1, 17, 54, 20);
+      case 3 % pHEMA/coAc time series 3
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
+        tRef = datenum(2020, 2, 3, 19, 50, 17);
+      % add  PEG time series 3
+     
+      case 4  % alginate time series 2
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\";
+        tRef = datenum(2020, 1, 10, 13, 45, 1);
+      case 5 % pHEMA time series 2
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\";
+        tRef = datenum(2020, 1, 25, 17, 54, 20); 
+      % add pHEMA/coAc  time series 2
+      % add PEG time series 2
+      
+      case 6 % alginate time series 1
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
+        tRef = datenum(2019, 12, 10, 14, 1, 8);
+      % add pHEMA time series 2 
+      % add pHEMA/coAc  time series 2 
+      case 7 % PEG time series 1
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
+        tRef = datenum(2018, 12, 28, 16, 34, 5);
+    end
+    
     subDirStem1 = "1 pH7";
     subDirStem2 = "2 pH4";
     subDirStem3 = "3 pH10";
@@ -78,113 +117,124 @@ if gelOption == 1
     subDirStem9 = "9 pH4";
     Kmin = 1;
     Kmax = 9;
-end
-
-global lineThickness;
-lineThickness = 2;
-
-global myDebug;
-myDebug = 0;
-
-figure 
-
-% subtract this offset 
-global tRef;
-if gelOption == 1
-    tRef = datenum(2020, 2, 3, 19, 50, 17);
-end
-
-myTitleFont = 30;
-myLabelFont = 30; % was 20
-myTextFont = 30; % was 15
-
-for K = Kmin:Kmax
-
-    switch K
-        case 1
-            pHcolor = green;
-            num1 = myPlot(subDirStem1, pHcolor, 0);
-            fprintf('Case 1: %d spectra plotted in green\n', num1);
-        case 2
-            pHcolor = red;
-            num2 = myPlot(subDirStem2, pHcolor, 0);
-            fprintf('Case 2: %d spectra plotted in red\n', num2);            
-        case 3
-            pHcolor = blue;
-            num3 = myPlot(subDirStem3, pHcolor, 0);
-            fprintf('Case 3: %d spectra plotted in blue\n', num3);
-        case 4
-            pHcolor = green;
-            num4 = myPlot(subDirStem4, pHcolor, 0);
-            fprintf('Case 4: %d spectra plotted in green\n', num4);    
-        case 5
-            pHcolor = blue;
-            num5 = myPlot(subDirStem5, pHcolor, 0);
-            fprintf('Case 5: %d spectra plotted in blue\n', num5);
-        case 6
-            pHcolor = red;
-            num6 = myPlot(subDirStem6, pHcolor, 0);
-            fprintf('Case 6: %d spectra plotted in red\n', num6); 
-        case 7
-            pHcolor = blue;
-            num7 = myPlot(subDirStem7, pHcolor, 10);
-            fprintf('Case 7: %d spectra plotted in blue\n', num7);
-        case 8
-            pHcolor = green;
-            num8 = myPlot(subDirStem8, pHcolor, 10);
-            fprintf('Case 8: %d spectra plotted in green\n', num8);
-        case 9
-            pHcolor = red;
-            num9 = myPlot(subDirStem9, pHcolor, 10);
-            fprintf('Case 9: %d spectra plotted in red\n', num9);
-    end
-end    
-   
-if plotOption == 1
-    if gelOption == 1 || gelOption == 2 || gelOption == 4
-        y = 0.24;
-        deltaY = 0.02;
-        x = 2.5;
-    else
-        if gelOption == 3
-            y = 0.325;
-            deltaY = 0.02;
-            x = 32;
-        end
-    end
-else
-    if gelOption == 1
-        y = 8.9;
-        deltaY = 0.25;
-        x = 0.25;
-    else
-        y = 8.9;
-        deltaY = 0.1;
-        x = 7;
-    end   
-end
-%ylim([0. 0.24])
-
-% YES for SRs, NO for pubs
-text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-
-hold off
-title('54nm MBA Au NPs in MCs in pHEMA coAc (75/25) in flowcell', ...
-        'FontSize', myTitleFont);
-myXlabel = sprintf('Time (hours)');
-xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
-if plotOption == 1
-    ylabel('Normalized Intensity', ...
-        'FontSize', myLabelFont); % y-axis label
-else
-    ylabel('Intensity at 1430cm^-^1(A.U.)/Intensity at 1702cm^-^1(A.U.)', ...
-        'FontSize', myLabelFont); % y-axis label
-end
-%set(gca,'FontSize',16,'FontWeight','bold','box','off')
     
+    for K = Kmin:Kmax
+        switch K
+            case 1
+                pHcolor = green;
+                num1 = myPlot(subDirStem1, pHcolor, 0, K);
+                fprintf('Case 1: %d spectra plotted in green\n', num1);
+            case 2
+                pHcolor = red;
+                num2 = myPlot(subDirStem2, pHcolor, 0, K);
+                fprintf('Case 2: %d spectra plotted in red\n', num2);            
+            case 3
+                pHcolor = blue;
+                num3 = myPlot(subDirStem3, pHcolor, 0, K);
+                fprintf('Case 3: %d spectra plotted in blue\n', num3);
+            case 4
+                pHcolor = green;
+                num4 = myPlot(subDirStem4, pHcolor, 0, K);
+                fprintf('Case 4: %d spectra plotted in green\n', num4);    
+            case 5
+                pHcolor = blue;
+                num5 = myPlot(subDirStem5, pHcolor, 0, K);
+                fprintf('Case 5: %d spectra plotted in blue\n', num5);
+            case 6
+                pHcolor = red;
+                num6 = myPlot(subDirStem6, pHcolor, 0, K);
+                fprintf('Case 6: %d spectra plotted in red\n', num6); 
+            case 7
+                pHcolor = blue;
+                num7 = myPlot(subDirStem7, pHcolor, 10, K);
+                fprintf('Case 7: %d spectra plotted in blue\n', num7);
+            case 8
+                pHcolor = green;
+                num8 = myPlot(subDirStem8, pHcolor, 10, K);
+                fprintf('Case 8: %d spectra plotted in green\n', num8);
+            case 9
+                pHcolor = red;
+                num9 = myPlot(subDirStem9, pHcolor, 10, K);
+                fprintf('Case 9: %d spectra plotted in red\n', num9);
+        end
+    end    
+
+    if plotOption == 1
+        if gelOption == 1 || gelOption == 2 || gelOption == 4
+            y = 0.24;
+            deltaY = 0.02;
+            x = 2.5;
+        else
+            if gelOption == 3
+                y = 0.325;
+                deltaY = 0.02;
+                x = 32;
+            end
+        end
+    else
+        if gelOption == 1
+            y = 8.9;
+            deltaY = 0.25;
+            x = 0.25;
+        else
+            y = 8.9;
+            deltaY = 0.1;
+            x = 7;
+        end   
+    end
+    % limit height of the exponential curves that get drawn
+    if plotOption == 4
+        ylim([0. 5.]);
+        y = 4.9;
+        deltaY = 0.25;
+    end
+
+    % YES for SRs, NO for pubs
+    text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+    y = y - deltaY;
+    text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+    y = y - deltaY;
+    hold off
+    
+    % Title
+    switch gelOption
+        % Time series 3/3
+        case 1 
+            title('54nm MBA AuNPs MCs alginate gel12 punch3 flowcell', ...
+           'FontSize', myTitleFont);
+        case 2 % pHEMA gel 13 punch2
+            title('54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell', ...
+           'FontSize', myTitleFont);
+        case 3 % pHEMA/coAc gel 14 punch2
+           title('54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell', ...
+           'FontSize', myTitleFont);
+        %case 4 will be PEG
+        
+        % Time series 2/3
+        case 4
+            title('54nm MBA AuNPs MCs alginate gel12 punch2 flowcell', ...
+           'FontSize', myTitleFont);
+       
+       % Time series 3/3
+        case 5
+            title('54nm MBA AuNPs MCs alginate gel12 punch1 flowcell', ...
+           'FontSize', myTitleFont); 
+        case 6
+            title('54nm MBA AuNPs MCs PEG gel3 punch1 flowcell', ...
+           'FontSize', myTitleFont); 
+    end
+
+    myXlabel = sprintf('Time (hours)');
+    xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
+    if plotOption == 1 || plotOption == 4
+        ylabel('Normalized Intensity', ...
+            'FontSize', myLabelFont); % y-axis label
+    else
+        ylabel('Intensity at 1430cm^-^1(A.U.)/Intensity at 1702cm^-^1(A.U.)', ...
+            'FontSize', myLabelFont); % y-axis label
+    end
+end
+
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug;
     % use the closestRef as the x-value of the center point of the peak
@@ -246,7 +296,7 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end
 
-function g = myPlot(subDirStem, myColor, offset)
+function g = myPlot(subDirStem, myColor, offset, K)
     global blue;
     global rust;
     global gold;
@@ -392,25 +442,16 @@ function g = myPlot(subDirStem, myColor, offset)
             if plotOption == 4 % do curve fitting
                 plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
                 hold on;
-                
-                % fit exponential curve to y1
-                %curveFit(t-offset,y1,myColor);
-                g = fittype('a*exp(b*x)');
-                xCurve = (t-offset)'
-                yCurve = y1'
-                % xCurve and yCurve are both nx1 row-column form 
-                % StartPoint wants 2 points for this type of fit
-                f0 = fit(xCurve,yCurve,g,'StartPoint',[0. 0.]);
-                % set the range to draw the exponential curve
-                numRows = size(xCurve,1);
-                startXX = xCurve(1) - 10.;
-                finishXX = xCurve(numRows) + 10;
-                xx = linspace(startXX, finishXX, numRows);
-                %plot(xCurve,yCurve,'o',xx,f0(xx),'r-', 'Color', black);
-                plot(xCurve,yCurve,'o',xx,f0(xx), 'Color', myColor);
+                % fit exponential curve to y1 and plot it
+                result = curveFitting(t, offset, y1, myColor);
+                fprintf('%d-1: a=%f b=%f\n', K, result.a, result.b);
+                % names = coeffnames(result);
                 hold on;
-                plot(t-offset,yCurve,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-                % fit exponential curve to y2
+                
+                plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+                % fit exponential curve to y2 and plot it
+                result = curveFitting(t, offset, y2, myColor);
+                fprintf('%d-2: a=%f b=%f\n', K, result.a, result.b);
                 hold on;
             end
         end
@@ -421,5 +462,23 @@ end
 
 function h = localPeak(range)
     h = max(range);
+end
+
+function j = curveFitting(t, offset, y, myColor)
+    % fit exponential curve to y1
+    %curveFit(t-offset,y,myColor);
+    g = fittype('a*exp(b*x)');
+    xCurve = (t-offset)';
+    yCurve = y';
+    % xCurve and yCurve are both nx1 row-column form 
+    % StartPoint wants 2 points for this type of fit
+    f0 = fit(xCurve,yCurve,g,'StartPoint',[0. 0.]) % output here
+    % set the range to draw the exponential curve
+    numRows = size(xCurve,1);
+    startXX = xCurve(1) - 10.;
+    finishXX = xCurve(numRows) + 10;
+    xx = linspace(startXX, finishXX, numRows);
+    plot(xCurve,yCurve,'o',xx,f0(xx), 'Color', myColor);
+    j = f0;
 end
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
