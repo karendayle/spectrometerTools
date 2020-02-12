@@ -68,10 +68,9 @@ global plotOption;
 plotOption = 4; % do curve fitting
 
 global gelOption;
-
 global dirStem;
 
-for gelOption = 6:6
+for gelOption = 8:8
     % Do for each dataset
     figure
     
@@ -79,31 +78,53 @@ for gelOption = 6:6
       case 1 % alginate time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\";
         tRef = datenum(2020, 1, 12, 16, 15, 57);
+        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch3 flowcell';
       case 2 % pHEMA time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
         tRef = datenum(2020, 2, 1, 17, 54, 20);
+        myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell';
       case 3 % pHEMA/coAc time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
         tRef = datenum(2020, 2, 3, 19, 50, 17);
-      % add  PEG time series 3
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell';
+      %case 4 PEG time series 3
      
       case 4  % alginate time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\";
         tRef = datenum(2020, 1, 10, 13, 45, 1);
+        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch2 flowcell';
+        
       case 5 % pHEMA time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\";
         tRef = datenum(2020, 1, 25, 17, 54, 20); 
-      % add pHEMA/coAc  time series 2
-      % add PEG time series 2
+        %myTitle = 
+        
+      case 6 % add pHEMA/coAc  time series 2
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
+        tRef = datenum(2020, 1, 27, 12, 27, 47); 
+        %myTitle = 
+        
+      %case 7 PEG time series 2
       
-      case 6 % alginate time series 1
+      case 7 % alginate time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
         tRef = datenum(2019, 12, 10, 14, 1, 8);
-      % add pHEMA time series 2 
-      % add pHEMA/coAc  time series 2 
-      case 7 % PEG time series 1
+        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch1 flowcell';
+        
+      case 8 % pHEMA time series 1 FIX ME: only first 3 folders have files
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
+        tRef = datenum(2018, 12, 30, 16, 1, 17);
+        myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell';
+        
+      case 9 % pHEMA/coAc  time series 1
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\4\"; 
+        tRef = datenum(2019, 01, 26, 16, 28, 6);
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell';
+        
+      case 10 % PEG time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
         tRef = datenum(2018, 12, 28, 16, 34, 5);
+        myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';
     end
     
     subDirStem1 = "1 pH7";
@@ -196,34 +217,8 @@ for gelOption = 6:6
     y = y - deltaY;
     hold off
     
-    % Title
-    switch gelOption
-        % Time series 3/3
-        case 1 
-            title('54nm MBA AuNPs MCs alginate gel12 punch3 flowcell', ...
-           'FontSize', myTitleFont);
-        case 2 % pHEMA gel 13 punch2
-            title('54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell', ...
-           'FontSize', myTitleFont);
-        case 3 % pHEMA/coAc gel 14 punch2
-           title('54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell', ...
-           'FontSize', myTitleFont);
-        %case 4 will be PEG
-        
-        % Time series 2/3
-        case 4
-            title('54nm MBA AuNPs MCs alginate gel12 punch2 flowcell', ...
-           'FontSize', myTitleFont);
-       
-       % Time series 3/3
-        case 5
-            title('54nm MBA AuNPs MCs alginate gel12 punch1 flowcell', ...
-           'FontSize', myTitleFont); 
-        case 6
-            title('54nm MBA AuNPs MCs PEG gel3 punch1 flowcell', ...
-           'FontSize', myTitleFont); 
-    end
-
+    title(myTitle, 'FontSize', myTitleFont);
+    
     myXlabel = sprintf('Time (hours)');
     xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
     if plotOption == 1 || plotOption == 4
