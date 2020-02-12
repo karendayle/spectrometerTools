@@ -70,7 +70,19 @@ plotOption = 4; % do curve fitting
 global gelOption;
 global dirStem;
 
-for gelOption = 8:8
+subDirStem1 = "1 pH7";
+subDirStem2 = "2 pH4";
+subDirStem3 = "3 pH10";
+subDirStem4 = "4 pH7";
+subDirStem5 = "5 pH10";
+subDirStem6 = "6 pH4";
+subDirStem7 = "7 pH10";
+subDirStem8 = "8 pH7";
+subDirStem9 = "9 pH4";
+Kmin = 1;
+Kmax = 9;
+
+for gelOption = 1:10
     % Do for each dataset
     figure
     
@@ -87,57 +99,40 @@ for gelOption = 8:8
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
         tRef = datenum(2020, 2, 3, 19, 50, 17);
         myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell';
-      %case 4 PEG time series 3
+      %case 4 PEG time series 3 NOT READY AS OF 2/12/2020
      
       case 4  % alginate time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\";
         tRef = datenum(2020, 1, 10, 13, 45, 1);
         myTitle = '54nm MBA AuNPs MCs alginate gel12 punch2 flowcell';
-        
       case 5 % pHEMA time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\";
-        tRef = datenum(2020, 1, 25, 17, 54, 20); 
-        %myTitle = 
-        
+        tRef = datenum(2020, 1, 25, 17, 10, 17); 
+        myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell';
       case 6 % add pHEMA/coAc  time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
         tRef = datenum(2020, 1, 27, 12, 27, 47); 
-        %myTitle = 
-        
-      %case 7 PEG time series 2
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell';      
+      %case 7 PEG time series 2 NOT READY AS OF 2/12/2020
       
       case 7 % alginate time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
         tRef = datenum(2019, 12, 10, 14, 1, 8);
-        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch1 flowcell';
-        
+        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch1 flowcell';       
       case 8 % pHEMA time series 1 FIX ME: only first 3 folders have files
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
         tRef = datenum(2018, 12, 30, 16, 1, 17);
-        myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell';
-        
+        myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell';     
       case 9 % pHEMA/coAc  time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\4\"; 
         tRef = datenum(2019, 01, 26, 16, 28, 6);
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell';
-        
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell'; 
+        Kmax = 8; % special case b/c final pH4 is missing
       case 10 % PEG time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
         tRef = datenum(2018, 12, 28, 16, 34, 5);
         myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';
     end
-    
-    subDirStem1 = "1 pH7";
-    subDirStem2 = "2 pH4";
-    subDirStem3 = "3 pH10";
-    subDirStem4 = "4 pH7";
-    subDirStem5 = "5 pH10";
-    subDirStem6 = "6 pH4";
-    subDirStem7 = "7 pH10";
-    subDirStem8 = "8 pH7";
-    subDirStem9 = "9 pH4";
-    Kmin = 1;
-    Kmax = 9;
     
     for K = Kmin:Kmax
         switch K
