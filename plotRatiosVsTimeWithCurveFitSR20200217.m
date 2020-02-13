@@ -434,14 +434,13 @@ function g = myPlot(subDirStem, myColor, offset, K)
                 hold on;
                 % fit exponential curve to y1 and plot it
                 result = curveFitting(t, offset, y1, myColor);
-                fprintf('%d-1: a=%f b=%f\n', K, result.a, result.b);
-                % names = coeffnames(result);
+                rc = parseCurveFittingObject(K, 1, result);
                 hold on;
                 
                 plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
                 % fit exponential curve to y2 and plot it
                 result = curveFitting(t, offset, y2, myColor);
-                fprintf('%d-2: a=%f b=%f\n', K, result.a, result.b);
+                rc = parseCurveFittingObject(K, 2, result);
                 hold on;
             end
         end
@@ -462,19 +461,29 @@ function j = curveFitting(t, offset, y, myColor)
     yCurve = y';
     % xCurve and yCurve are both nx1 row-column form 
     % StartPoint wants 2 points for this type of fit
-    f0 = fit(xCurve,yCurve,g,'StartPoint',[0. 0.]) % output here
+    f0 = fit(xCurve,yCurve,g,'StartPoint',[0. 0.]);
     
+    % set the range to draw the exponential curve
+    numRows = size(xCurve,1);
+    startXX = xCurve(1) - 10.;
+    finishXX = xCurve(numRows) + 10;
+    xx = linspace(startXX, finishXX, numRows);
+    plot(xCurve,yCurve,'o',xx,f0(xx), 'Color', myColor);
+    j = f0;
+end
+
+function k = parseCurveFittingObject(myIter, mySubIter, f0)
     % sinc confidence intervals are inaccessible as fields, convert val to 
     % string and parse them out
     % ref: 
     % https://www.mathworks.com/help/matlab/ref/matlab.unittest.diagnostics.constraintdiagnostic.getdisplayablestring.html
-    str = matlab.unittest.diagnostics.ConstraintDiagnostic.getDisplayableString(f0)
-    fprintf(str);
+    str = matlab.unittest.diagnostics.ConstraintDiagnostic.getDisplayableString(f0);
+    %fprintf(str);
     remain = str;
     segments = strings(0);
     while (remain ~= "")
         [token,remain] = strtok(remain, '(');
-        segments = [segments ; token];
+        segments = [segments; token];
     end
     
     % confidence intervals are in segments(5) and (6)
@@ -497,13 +506,8 @@ function j = curveFitting(t, offset, y, myColor)
     aHigh = double(aHigh);
     bLow = double(bLow);
     bHigh = double(bHigh);
-    
-    % set the range to draw the exponential curve
-    numRows = size(xCurve,1);
-    startXX = xCurve(1) - 10.;
-    finishXX = xCurve(numRows) + 10;
-    xx = linspace(startXX, finishXX, numRows);
-    plot(xCurve,yCurve,'o',xx,f0(xx), 'Color', myColor);
-    j = f0;
+    fprintf('KDK: %d-%d: a=%f (%f, %f), b=%f (%f, %f)\n', myIter, mySubIter, ...
+        f0.a, aLow, aHigh, f0.b, bLow, bHigh);
+    k = 1;
 end
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
