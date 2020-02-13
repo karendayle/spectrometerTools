@@ -463,6 +463,41 @@ function j = curveFitting(t, offset, y, myColor)
     % xCurve and yCurve are both nx1 row-column form 
     % StartPoint wants 2 points for this type of fit
     f0 = fit(xCurve,yCurve,g,'StartPoint',[0. 0.]) % output here
+    
+    % sinc confidence intervals are inaccessible as fields, convert val to 
+    % string and parse them out
+    % ref: 
+    % https://www.mathworks.com/help/matlab/ref/matlab.unittest.diagnostics.constraintdiagnostic.getdisplayablestring.html
+    str = matlab.unittest.diagnostics.ConstraintDiagnostic.getDisplayableString(f0)
+    fprintf(str);
+    remain = str;
+    segments = strings(0);
+    while (remain ~= "")
+        [token,remain] = strtok(remain, '(');
+        segments = [segments ; token];
+    end
+    
+    % confidence intervals are in segments(5) and (6)
+    remain = segments(5);
+    [aLow,remain] = strtok(remain, ',');
+    % remain contains the ',' and a space and THEN value we want
+    [comma,remain] = strtok(remain);
+    [aHigh,remain] = strtok(remain, ')');
+    % now aLow and aHigh are correct, but string type
+    aLow = double(aLow);
+    aHigh = double(aHigh);
+    
+    remain = segments(6);
+    [bLow,remain] = strtok(remain, ',');
+     % remain contains the ',' and a space and THEN value we want
+    [comma,remain] = strtok(remain);
+    [bHigh,remain] = strtok(remain, ')');
+    % now bLow and bHigh are correct, but string type
+    aLow = double(aLow);
+    aHigh = double(aHigh);
+    bLow = double(bLow);
+    bHigh = double(bHigh);
+    
     % set the range to draw the exponential curve
     numRows = size(xCurve,1);
     startXX = xCurve(1) - 10.;
