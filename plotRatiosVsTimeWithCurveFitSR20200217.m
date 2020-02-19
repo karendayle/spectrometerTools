@@ -67,7 +67,7 @@ global plotOption;
 %plotOption = 3; % check pH sens
 plotOption = 4; % do curve fitting
 
-global gelOption;
+%global gelOption; 2020/2/19 pass it instead
 global dirStem;
 
 subDirStem1 = "1 pH7";
@@ -82,96 +82,96 @@ subDirStem9 = "9 pH4";
 Kmin = 1;
 Kmax = 9;
 
-for gelOption = 1:10
+for gelOption = 1:3 % 2020/2/19 deal with only alginate for dev
     % Do for each dataset
     figure
     
     switch gelOption
-      case 1 % alginate time series 3
-        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\";
-        tRef = datenum(2020, 1, 12, 16, 15, 57);
-        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch3 flowcell';
-      case 2 % pHEMA time series 3
-        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
-        tRef = datenum(2020, 2, 1, 17, 54, 20);
-        myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell';
-      case 3 % pHEMA/coAc time series 3
-        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
-        tRef = datenum(2020, 2, 3, 19, 50, 17);
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell';
-      %case 4 PEG time series 3 NOT READY AS OF 2/12/2020
-     
-      case 4  % alginate time series 2
+      case 1 % alginate time series 1
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
+        tRef = datenum(2019, 12, 10, 14, 1, 8);
+        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch1 flowcell';
+      case 2  % alginate time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\";
         tRef = datenum(2020, 1, 10, 13, 45, 1);
         myTitle = '54nm MBA AuNPs MCs alginate gel12 punch2 flowcell';
-      case 5 % pHEMA time series 2
+      case 3 % alginate time series 3
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\";
+        tRef = datenum(2020, 1, 12, 16, 15, 57);
+        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch3 flowcell';
+        
+      case 4 % PEG time series 1
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
+        tRef = datenum(2018, 12, 28, 16, 34, 5);
+        myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';        
+      % add PEG time series 2 and 3
+      
+      case 5 % pHEMA time series 1
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
+        tRef = datenum(2018, 12, 30, 16, 1, 17);
+        myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell';    
+      case 6 % pHEMA time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\";
         tRef = datenum(2020, 1, 25, 17, 10, 17); 
         myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell';
-      case 6 % add pHEMA/coAc  time series 2
-        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
-        tRef = datenum(2020, 1, 27, 12, 27, 47); 
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell';      
-      %case 7 PEG time series 2 NOT READY AS OF 2/12/2020
-      
-      case 7 % alginate time series 1
-        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
-        tRef = datenum(2019, 12, 10, 14, 1, 8);
-        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch1 flowcell';       
-      case 8 % pHEMA time series 1 FIX ME: only first 3 folders have files
-        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
-        tRef = datenum(2018, 12, 30, 16, 1, 17);
-        myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell';     
-      case 9 % pHEMA/coAc  time series 1
+      case 7 % pHEMA time series 3
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
+        tRef = datenum(2020, 2, 1, 17, 54, 20);
+        myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell';
+     
+      case 8 % pHEMA/coAc  time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\4\"; 
         tRef = datenum(2019, 01, 26, 16, 28, 6);
         myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell'; 
-        Kmax = 8; % special case b/c final pH4 is missing
-      case 10 % PEG time series 1
-        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
-        tRef = datenum(2018, 12, 28, 16, 34, 5);
-        myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';
+        Kmax = 8; % special case b/c final pH4 is missing!
+      case 9 % add pHEMA/coAc  time series 2
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
+        tRef = datenum(2020, 1, 27, 12, 27, 47); 
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell';  
+      case 10 % pHEMA/coAc time series 3
+        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
+        tRef = datenum(2020, 2, 3, 19, 50, 17);
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell';
     end
     
     for K = Kmin:Kmax
         switch K
             case 1
                 pHcolor = green;
-                num1 = myPlot(subDirStem1, pHcolor, 0, K);
-                fprintf('Case 1: %d spectra plotted in green\n', num1);
+                num1 = myPlot(subDirStem1, pHcolor, 0, gelOption, K);
+                %fprintf('Case 1: %d spectra plotted in green\n', num1);
             case 2
                 pHcolor = red;
-                num2 = myPlot(subDirStem2, pHcolor, 0, K);
-                fprintf('Case 2: %d spectra plotted in red\n', num2);            
+                num2 = myPlot(subDirStem2, pHcolor, 0, gelOption, K);
+                %fprintf('Case 2: %d spectra plotted in red\n', num2);            
             case 3
                 pHcolor = blue;
-                num3 = myPlot(subDirStem3, pHcolor, 0, K);
-                fprintf('Case 3: %d spectra plotted in blue\n', num3);
+                num3 = myPlot(subDirStem3, pHcolor, 0, gelOption, K);
+                %fprintf('Case 3: %d spectra plotted in blue\n', num3);
             case 4
                 pHcolor = green;
-                num4 = myPlot(subDirStem4, pHcolor, 0, K);
-                fprintf('Case 4: %d spectra plotted in green\n', num4);    
+                num4 = myPlot(subDirStem4, pHcolor, 0, gelOption, K);
+                %fprintf('Case 4: %d spectra plotted in green\n', num4);    
             case 5
                 pHcolor = blue;
-                num5 = myPlot(subDirStem5, pHcolor, 0, K);
-                fprintf('Case 5: %d spectra plotted in blue\n', num5);
+                num5 = myPlot(subDirStem5, pHcolor, 0, gelOption, K);
+                %fprintf('Case 5: %d spectra plotted in blue\n', num5);
             case 6
                 pHcolor = red;
-                num6 = myPlot(subDirStem6, pHcolor, 0, K);
-                fprintf('Case 6: %d spectra plotted in red\n', num6); 
+                num6 = myPlot(subDirStem6, pHcolor, 0, gelOption, K);
+                %fprintf('Case 6: %d spectra plotted in red\n', num6); 
             case 7
                 pHcolor = blue;
-                num7 = myPlot(subDirStem7, pHcolor, 10, K);
-                fprintf('Case 7: %d spectra plotted in blue\n', num7);
+                num7 = myPlot(subDirStem7, pHcolor, 10, gelOption, K);
+                %fprintf('Case 7: %d spectra plotted in blue\n', num7);
             case 8
                 pHcolor = green;
-                num8 = myPlot(subDirStem8, pHcolor, 10, K);
-                fprintf('Case 8: %d spectra plotted in green\n', num8);
+                num8 = myPlot(subDirStem8, pHcolor, 10, gelOption, K);
+                %fprintf('Case 8: %d spectra plotted in green\n', num8);
             case 9
                 pHcolor = red;
-                num9 = myPlot(subDirStem9, pHcolor, 10, K);
-                fprintf('Case 9: %d spectra plotted in red\n', num9);
+                num9 = myPlot(subDirStem9, pHcolor, 10, gelOption, K);
+                %fprintf('Case 9: %d spectra plotted in red\n', num9);
         end
     end    
 
@@ -286,7 +286,7 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end
 
-function g = myPlot(subDirStem, myColor, offset, K)
+function g = myPlot(subDirStem, myColor, offset, gelOption, K)
     global blue;
     global rust;
     global gold;
@@ -316,7 +316,7 @@ function g = myPlot(subDirStem, myColor, offset, K)
 %     sumSqY2 = 0;
     
     str_dir_to_search = dirStem + subDirStem; % args need to be strings
-    dir_to_search = char(str_dir_to_search)
+    dir_to_search = char(str_dir_to_search); % 2020/2/19 add comma
     txtpattern = fullfile(dir_to_search, 'avg*.txt');
     dinfo = dir(txtpattern); 
     thisdata = zeros(2, numPoints, 'double');
@@ -434,13 +434,13 @@ function g = myPlot(subDirStem, myColor, offset, K)
                 hold on;
                 % fit exponential curve to y1 and plot it
                 result = curveFitting(t, offset, y1, myColor);
-                rc = parseCurveFittingObject(K, 1, result);
+                rc = parseCurveFittingObject(gelOption, K, 1, result);
                 hold on;
                 
                 plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
                 % fit exponential curve to y2 and plot it
                 result = curveFitting(t, offset, y2, myColor);
-                rc = parseCurveFittingObject(K, 2, result);
+                rc = parseCurveFittingObject(gelOption, K, 2, result);
                 hold on;
             end
         end
@@ -472,8 +472,8 @@ function j = curveFitting(t, offset, y, myColor)
     j = f0;
 end
 
-function k = parseCurveFittingObject(myIter, mySubIter, f0)
-    % sinc confidence intervals are inaccessible as fields, convert val to 
+function k = parseCurveFittingObject(gelOption, myIter, mySubIter, f0)
+    % 2020/2/8 since confidence intervals are inaccessible as fields, convert val to 
     % string and parse them out
     % ref: 
     % https://www.mathworks.com/help/matlab/ref/matlab.unittest.diagnostics.constraintdiagnostic.getdisplayablestring.html
@@ -506,8 +506,37 @@ function k = parseCurveFittingObject(myIter, mySubIter, f0)
     aHigh = double(aHigh);
     bLow = double(bLow);
     bHigh = double(bHigh);
-    fprintf('KDK: %d-%d: a=%f (%f, %f), b=%f (%f, %f)\n', myIter, mySubIter, ...
+    pHStr = getPH(myIter);
+    gelStr = getGel(gelOption);
+    fprintf('%s-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, pHStr, mySubIter, ...
         f0.a, aLow, aHigh, f0.b, bLow, bHigh);
     k = 1;
 end
+
+function m = getPH(iter)
+    switch(iter)
+        case {1, 4, 8}
+            m = 'pH7';
+        case {2, 6, 9}
+            m = 'pH4';
+        case {3, 5, 7}
+            m = 'pH10';
+        case other
+            m = 'error';
+    end
+end
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+function n = getGel(gelOption)
+    switch(gelOption)
+        case {1,2,3}
+            n = 'alginate';
+        case {4}
+            n = 'PEG';
+        case {5,6,7}
+            n = 'pHEMA';
+        case {8,9,10}
+            n = 'pHEMA/coAc';
+        case other
+            n = 'error';
+    end
+end
