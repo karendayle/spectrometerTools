@@ -62,10 +62,10 @@ myLabelFont = 30;
 myTextFont = 30; 
 
 global plotOption;
-%plotOption = 1; % plot y1 and y2
+plotOption = 1; % plot y1 and y2
 %plotOption = 2; % plot y3
 %plotOption = 3; % check pH sens
-plotOption = 4; % do curve fitting
+%plotOption = 4; % do curve fitting
 
 %global gelOption; 2020/2/19 pass it instead
 global dirStem;
@@ -79,10 +79,11 @@ subDirStem6 = "6 pH4";
 subDirStem7 = "7 pH10";
 subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
-Kmin = 1;
-Kmax = 9;
 
-for gelOption = 1:3 % 2020/2/19 deal with only alginate for dev
+
+for gelOption = 1:10
+    Kmin = 1;
+    Kmax = 9;
     % Do for each dataset
     figure
     
@@ -127,7 +128,7 @@ for gelOption = 1:3 % 2020/2/19 deal with only alginate for dev
       case 9 % add pHEMA/coAc  time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
         tRef = datenum(2020, 1, 27, 12, 27, 47); 
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell';  
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell'; 
       case 10 % pHEMA/coAc time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
         tRef = datenum(2020, 2, 3, 19, 50, 17);
@@ -162,15 +163,15 @@ for gelOption = 1:3 % 2020/2/19 deal with only alginate for dev
                 %fprintf('Case 6: %d spectra plotted in red\n', num6); 
             case 7
                 pHcolor = blue;
-                num7 = myPlot(subDirStem7, pHcolor, 10, gelOption, K);
+                num7 = myPlot(subDirStem7, pHcolor, 0, gelOption, K);
                 %fprintf('Case 7: %d spectra plotted in blue\n', num7);
             case 8
                 pHcolor = green;
-                num8 = myPlot(subDirStem8, pHcolor, 10, gelOption, K);
+                num8 = myPlot(subDirStem8, pHcolor, 0, gelOption, K);
                 %fprintf('Case 8: %d spectra plotted in green\n', num8);
             case 9
                 pHcolor = red;
-                num9 = myPlot(subDirStem9, pHcolor, 10, gelOption, K);
+                num9 = myPlot(subDirStem9, pHcolor, 0, gelOption, K);
                 %fprintf('Case 9: %d spectra plotted in red\n', num9);
         end
     end    
@@ -432,14 +433,17 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
             if plotOption == 4 % do curve fitting
                 plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
                 hold on;
+                
                 % fit exponential curve to y1 and plot it
-                result = curveFitting(t, offset, y1, myColor);
+                result = curveFitting(t, offset, y1, myColor, K, 1);
                 rc = parseCurveFittingObject(gelOption, K, 1, result);
-                hold on;
+                hold on;         
                 
                 plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+                hold on;
+                
                 % fit exponential curve to y2 and plot it
-                result = curveFitting(t, offset, y2, myColor);
+                result = curveFitting(t, offset, y2, myColor, K, 2);
                 rc = parseCurveFittingObject(gelOption, K, 2, result);
                 hold on;
             end
@@ -453,15 +457,46 @@ function h = localPeak(range)
     h = max(range);
 end
 
-function j = curveFitting(t, offset, y, myColor)
+function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
+
+% To avoid this error: "NaN computed by model function, fitting cannot continue.
+% Try using or tightening upper and lower bounds on coefficients.", do not set
+% start point to 0. 
+% Ref=https://www.mathworks.com/matlabcentral/answers/132082-curve-fitting-toolbox-error
     % fit exponential curve to y1
     %curveFit(t-offset,y,myColor);
-    g = fittype('a*exp(b*x)');
+    if (mySubIter == 1) 
+        % for 1430 peak time series
+        switch myIter
+            case {1,2,4,6,8,9}
+                % when pH goes from H to L, it's like discharging capacitor
+                g = fittype('1 - a*exp(-1*x/b)');
+                startPoint = [1. 0.01];
+            case {3,5,7}
+                % when pH goes from L to H, it's like charging capacitor
+                g = fittype('a*exp(-1*x/b)');
+                startPoint = [0.01 0.01];
+        end
+    else
+        if (mySubIter == 2)
+            % for 1702 peak time series
+            switch myIter
+                case {1,2,4,6,8,9}
+                    % when pH goes from L to H, it's like charging capacitor
+                    g = fittype('a*exp(-1*x/b)');
+                    startPoint = [0.01 0.01];
+                case {3,5,7}
+                    % when pH goes from H to L, it's like discharging capacitor
+                    g = fittype('1 - a*exp(-1*x/b)');
+                    startPoint = [1. 0.01];
+            end       
+        end
+    end
     xCurve = (t-offset)';
     yCurve = y';
     % xCurve and yCurve are both nx1 row-column form 
     % StartPoint wants 2 points for this type of fit
-    f0 = fit(xCurve,yCurve,g,'StartPoint',[0. 0.]);
+    f0 = fit(xCurve,yCurve,g,'StartPoint',startPoint);
     
     % set the range to draw the exponential curve
     numRows = size(xCurve,1);
@@ -486,29 +521,41 @@ function k = parseCurveFittingObject(gelOption, myIter, mySubIter, f0)
         segments = [segments; token];
     end
     
+    % For case of fittype e^-t/RC ONLY,
     % confidence intervals are in segments(5) and (6)
-    remain = segments(5);
-    [aLow,remain] = strtok(remain, ',');
-    % remain contains the ',' and a space and THEN value we want
-    [comma,remain] = strtok(remain);
-    [aHigh,remain] = strtok(remain, ')');
-    % now aLow and aHigh are correct, but string type
-    aLow = double(aLow);
-    aHigh = double(aHigh);
+    if length(segments) == 6
+        remain = segments(5);
+        [aLow,remain] = strtok(remain, ',');
+        % remain contains the ',' and a space and THEN value we want
+        [comma,remain] = strtok(remain);
+        [aHigh,remain] = strtok(remain, ')');
+        % now aLow and aHigh are correct, but string type
+        aLow = double(aLow);
+        aHigh = double(aHigh);
     
-    remain = segments(6);
-    [bLow,remain] = strtok(remain, ',');
-     % remain contains the ',' and a space and THEN value we want
-    [comma,remain] = strtok(remain);
-    [bHigh,remain] = strtok(remain, ')');
-    % now bLow and bHigh are correct, but string type
-    aLow = double(aLow);
-    aHigh = double(aHigh);
-    bLow = double(bLow);
-    bHigh = double(bHigh);
+        remain = segments(6);
+        [bLow,remain] = strtok(remain, ',');
+    	% remain contains the ',' and a space and THEN value we want
+        [comma,remain] = strtok(remain);
+        [bHigh,remain] = strtok(remain, ')');
+        % now bLow and bHigh are correct, but string type
+        aLow = double(aLow);
+        aHigh = double(aHigh);
+        bLow = double(bLow);
+        bHigh = double(bHigh);
+    else
+        % For case of fittype 1-e^-t/RC,
+        % confidence intervals are NOT in segments(5) and (6)
+        % and segments array only has 4 elements
+        aLow = 0;
+        aHigh = 0;
+        bLow = 0;
+        bHigh = 0;
+    end
     pHStr = getPH(myIter);
     gelStr = getGel(gelOption);
-    fprintf('%s-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, pHStr, mySubIter, ...
+    peak = getPeak(mySubIter);
+    fprintf('%s-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, pHStr, peak, ...
         f0.a, aLow, aHigh, f0.b, bLow, bHigh);
     k = 1;
 end
@@ -538,5 +585,16 @@ function n = getGel(gelOption)
             n = 'pHEMA/coAc';
         case other
             n = 'error';
+    end
+end
+
+function p = getPeak(mySubIter)
+    switch(mySubIter)
+        case 1
+            p = 1430;
+        case 2
+            p = 1702;
+        case other
+            p = -1;
     end
 end
