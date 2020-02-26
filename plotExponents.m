@@ -23,9 +23,21 @@ end
 % now play with y1 and y2 and try to fit them to a model
 %result1 = curveFitting(x, 0, y1, 1, [0.01 0.01]);
 %result2 = curveFitting(x, 0, y2, 2, [0.01 0.01]);
-result3 = curveFitting(x, 0, y1, 2, [0.01 0.01]);
+result3 = curveFitting(x, 0, y1, 2, [0.01 0.01]); % DOESN'T FIND CORRECT a,b
 pause(1);
-result4 = curveFitting(x, 0, y2, 1, [0.01 0.01]);
+result3 = curveFitting(x, 0, y1, 2, [0.05 0.05]); % DOESN'T FIND CORRECT a,b
+pause(1);
+result3 = curveFitting(x, 0, y1, 2, [0.07 0.07]); % WORKS TO FIND CORRECT a,b
+pause(1);
+result3 = curveFitting(x, 0, y1, 2, [0.1 0.1]); % WORKS TO FIND CORRECT a,b
+pause(1);
+result3 = curveFitting(x, 0, y1, 2, [1.0 0.01]); % DOESN'T FIND CORRECT a,b
+pause(1);
+result3 = curveFitting(x, 0, y1, 2, [1.0 1.0]); % WORKS TO FIND CORRECT a,b
+pause(1);
+
+%result4 = curveFitting(x, 0, y2, 1, [0.01 0.01]);
+pause(1);
 
 function j = curveFitting(t, offset, y, model, startPoint)
     % To avoid this error: "NaN computed by model function, fitting cannot continue.
