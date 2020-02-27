@@ -57,15 +57,19 @@ myDebug = 0;
 % subtract this offset to start x axis at zero
 global tRef;
 
+%global ss; % NEW 2020/2/25
+%ss=zeros(4,3,9,2);  % keep track of last norm'd ratio for 
+                    % both peaks, for all segs, for all gels
+
 myTitleFont = 30;
 myLabelFont = 30; 
 myTextFont = 30; 
 
 global plotOption;
-plotOption = 1; % plot y1 and y2
+%plotOption = 1; % plot y1 and y2
 %plotOption = 2; % plot y3
 %plotOption = 3; % check pH sens
-%plotOption = 4; % do curve fitting
+plotOption = 4; % do curve fitting
 
 %global gelOption; 2020/2/19 pass it instead
 global dirStem;
@@ -80,8 +84,7 @@ subDirStem7 = "7 pH10";
 subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
-
-for gelOption = 1:10
+for gelOption = 1:1
     Kmin = 1;
     Kmax = 9;
     % Do for each dataset
@@ -92,47 +95,57 @@ for gelOption = 1:10
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
         tRef = datenum(2019, 12, 10, 14, 1, 8);
         myTitle = '54nm MBA AuNPs MCs alginate gel12 punch1 flowcell';
+        %gel = 1; series = 1; not now 
       case 2  % alginate time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\";
         tRef = datenum(2020, 1, 10, 13, 45, 1);
         myTitle = '54nm MBA AuNPs MCs alginate gel12 punch2 flowcell';
+        %gel = 1; series = 2; not now 
       case 3 % alginate time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\";
         tRef = datenum(2020, 1, 12, 16, 15, 57);
         myTitle = '54nm MBA AuNPs MCs alginate gel12 punch3 flowcell';
+        %gel = 1; series = 3; not now 
         
       case 4 % PEG time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
         tRef = datenum(2018, 12, 28, 16, 34, 5);
-        myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';        
+        myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';
+        %gel = 2; series = 1; not now 
       % add PEG time series 2 and 3
       
       case 5 % pHEMA time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
         tRef = datenum(2018, 12, 30, 16, 1, 17);
-        myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell';    
+        myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell'; 
+        %gel = 3; series = 1; not now 
       case 6 % pHEMA time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\";
         tRef = datenum(2020, 1, 25, 17, 10, 17); 
         myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell';
+        %gel = 3; series = 2; not now 
       case 7 % pHEMA time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
         tRef = datenum(2020, 2, 1, 17, 54, 20);
         myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell';
-     
+        %gel = 3; series = 3; not now 
+        
       case 8 % pHEMA/coAc  time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\4\"; 
         tRef = datenum(2019, 01, 26, 16, 28, 6);
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell'; 
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell';
+        %gel = 4; series = 1; not now 
         Kmax = 8; % special case b/c final pH4 is missing!
       case 9 % add pHEMA/coAc  time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
         tRef = datenum(2020, 1, 27, 12, 27, 47); 
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell'; 
+        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell';
+        %gel = 4; series = 2; not now 
       case 10 % pHEMA/coAc time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
         tRef = datenum(2020, 2, 3, 19, 50, 17);
         myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell';
+        %gel = 4; series = 3; not now 
     end
     
     for K = Kmin:Kmax
@@ -201,7 +214,7 @@ for gelOption = 1:10
     end
     % limit height of the exponential curves that get drawn
     if plotOption == 4
-        ylim([0. 5.]);
+        ylim([0. 0.35]);
         y = 4.9;
         deltaY = 0.25;
     end
@@ -308,6 +321,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
     global myDebug;
     global lineThickness;
     global plotOption;
+%    global ss;
     
 %     sumY1 = 0;
 %     sumY2 = 0;
@@ -389,7 +403,10 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
 %             sumY1 = sumY1 + y1(I);
 %             sumY2 = sumY2 + y2(I);
         end
-    
+        
+%        ss(gel, series, K, 1) = y1(numberOfSpectra);
+%        ss(gel, series, K, 1) = y2(numberOfSpectra);
+        
 %         % calculate average 
 %         avgY1 = sumY1/numberOfSpectra
 %         avgY2 = sumY2/numberOfSpectra
@@ -432,19 +449,23 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
         else
             if plotOption == 4 % do curve fitting
                 plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+                ylim([0. 0.35]);
                 hold on;
                 
                 % fit exponential curve to y1 and plot it
                 result = curveFitting(t, offset, y1, myColor, K, 1);
                 rc = parseCurveFittingObject(gelOption, K, 1, result);
+                ylim([0. 0.35]);
                 hold on;         
                 
                 plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+                ylim([0. 0.35]);
                 hold on;
                 
                 % fit exponential curve to y2 and plot it
                 result = curveFitting(t, offset, y2, myColor, K, 2);
                 rc = parseCurveFittingObject(gelOption, K, 2, result);
+                ylim([0. 0.35]);
                 hold on;
             end
         end
@@ -470,12 +491,10 @@ function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
         switch myIter
             case {1,2,4,6,8,9}
                 % when pH goes from H to L, it's like discharging capacitor
-                g = fittype('1 - a*exp(-1*x/b)');
-                startPoint = [1. 0.01];
+                g = fittype('a*exp(-1*x/b)');
             case {3,5,7}
                 % when pH goes from L to H, it's like charging capacitor
-                g = fittype('a*exp(-1*x/b)');
-                startPoint = [0.01 0.01];
+                g = fittype('1 - a*exp(-1*x/b)');
         end
     else
         if (mySubIter == 2)
@@ -483,15 +502,24 @@ function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
             switch myIter
                 case {1,2,4,6,8,9}
                     % when pH goes from L to H, it's like charging capacitor
-                    g = fittype('a*exp(-1*x/b)');
-                    startPoint = [0.01 0.01];
+                    g = fittype('1 - a*exp(-1*x/b)');
                 case {3,5,7}
                     % when pH goes from H to L, it's like discharging capacitor
-                    g = fittype('1 - a*exp(-1*x/b)');
-                    startPoint = [1. 0.01];
+                    g = fittype('a*exp(-1*x/b)');
             end       
         end
     end
+    
+    % don't allow exact zeros
+    xStart = (t(1)-offset);
+    yStart = y(1);
+    if xStart == 0.
+        xStart = 0.01;
+    end
+    if yStart == 0.
+        yStart = 0.01;
+    end
+    startPoint = [ xStart yStart];
     xCurve = (t-offset)';
     yCurve = y';
     % xCurve and yCurve are both nx1 row-column form 
@@ -555,7 +583,7 @@ function k = parseCurveFittingObject(gelOption, myIter, mySubIter, f0)
     pHStr = getPH(myIter);
     gelStr = getGel(gelOption);
     peak = getPeak(mySubIter);
-    fprintf('%s-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, pHStr, peak, ...
+    fprintf('%s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, myIter, pHStr, peak, ...
         f0.a, aLow, aHigh, f0.b, bLow, bHigh);
     k = 1;
 end
