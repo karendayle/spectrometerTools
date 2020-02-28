@@ -1,3 +1,4 @@
+% 2/27/2020 dayle play with natural log curve fitting
 % start with some curves
 x=1:100;
 for a=5
@@ -82,6 +83,6 @@ function j = curveFitting(t, offset, y, model, startPoint)
     semilogx(xCurve,yCurve,'o',xx,f0(xx));
     myTitle = sprintf('use start point [%f %f]', startPoint);
     title(myTitle);
-    fprintf('a=%f, b=%f\n', f0.a, f0.b);
+    fprintf('curve fitting results for model y=a+b*log(x):  a=%f, b=%f\n', f0.a, f0.b);
     j = f0;
 end
