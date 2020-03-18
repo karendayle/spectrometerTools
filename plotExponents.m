@@ -23,21 +23,26 @@ end
 % now play with y1 and y2 and try to fit them to a model
 %result1 = curveFitting(x, 0, y1, 1, [0.01 0.01]);
 %result2 = curveFitting(x, 0, y2, 2, [0.01 0.01]);
-result3 = curveFitting(x, 0, y1, 2, [0.01 0.01]); % DOESN'T FIND CORRECT a,b
+
+% see which starting points work to find the correct coeffs a and b
+result3 = curveFitting(x, 0, y1, 1, [0.01 0.01]); % no
 pause(1);
-result3 = curveFitting(x, 0, y1, 2, [0.05 0.05]); % DOESN'T FIND CORRECT a,b
+result3 = curveFitting(x, 0, y1, 1, [0.05 0.05]); % no
 pause(1);
-result3 = curveFitting(x, 0, y1, 2, [0.07 0.07]); % WORKS TO FIND CORRECT a,b
+result3 = curveFitting(x, 0, y1, 1, [0.07 0.07]); % yes
 pause(1);
-result3 = curveFitting(x, 0, y1, 2, [0.1 0.1]); % WORKS TO FIND CORRECT a,b
+result3 = curveFitting(x, 0, y1, 1, [0.1 0.1]); % yes
 pause(1);
-result3 = curveFitting(x, 0, y1, 2, [1.0 0.01]); % DOESN'T FIND CORRECT a,b
+result3 = curveFitting(x, 0, y1, 1, [1.0 0.01]); % no
 pause(1);
-result3 = curveFitting(x, 0, y1, 2, [1.0 1.0]); % WORKS TO FIND CORRECT a,b
+result3 = curveFitting(x, 0, y1, 1, [1.0 1.0]); % yes
+pause(1);
+% give it first point of dataset
+result3 = curveFitting(x, 0, y1, 1, [1.0 4.0937]); % yes
 pause(1);
 
 %result4 = curveFitting(x, 0, y2, 1, [0.01 0.01]);
-pause(1);
+%pause(1);
 
 function j = curveFitting(t, offset, y, model, startPoint)
     % To avoid this error: "NaN computed by model function, fitting cannot continue.
@@ -47,10 +52,10 @@ function j = curveFitting(t, offset, y, model, startPoint)
     switch model
         case 1
             % it's like discharging capacitor
-            g = fittype('1 - a*exp(-1*x/b)');
+            g = fittype('a*exp(-1*x/b)');
         case 2
             % it's like charging capacitor
-            g = fittype('a*exp(-1*x/b)');
+            g = fittype('1 - a*exp(-1*x/b)');
      end
 
     xCurve = (t-offset)';
@@ -66,6 +71,8 @@ function j = curveFitting(t, offset, y, model, startPoint)
     xx = linspace(startXX, finishXX, numRows);
     figure
     plot(xCurve,yCurve,'o',xx,f0(xx));
+    myTitle = sprintf('use start point [%f %f]', startPoint);
+    title(myTitle);
     fprintf('a=%f, b=%f\n', f0.a, f0.b);
     j = f0;
 end

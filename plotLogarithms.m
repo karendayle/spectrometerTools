@@ -15,15 +15,15 @@ for a=5
         semilogx(x,y1); % straight
         myTitle = sprintf('semilogx: a+b*log(x), a=%f, b=%f', a,b); 
         title(myTitle);
-        xlabel('x');
+        xlabel('log x');
         ylabel('y');
         
         figure
         loglog(x,y1);
         myTitle = sprintf('loglog: a+b*log(x), a=%f, b=%f', a,b);
         title(myTitle);
-        xlabel('x');
-        ylabel('y');
+        xlabel('log x');
+        ylabel('log y');
         
 %         y2=1-a*exp(-1.*x/b); % SHAPE FOR 1702 PEAK TIME SERIES
 %         figure
