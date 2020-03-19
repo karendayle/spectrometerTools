@@ -76,7 +76,7 @@ if gelOption == 1
     subDirStem8 = "8 pH7";
     subDirStem9 = "9 pH4";
     Kmin = 1;
-    Kmax = 2;
+    Kmax = 9;
 end
 
 global lineThickness;

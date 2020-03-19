@@ -62,7 +62,7 @@ gelOption = 1;
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
 if gelOption == 1
-    dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
+    dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
 end
 
 if gelOption == 1
@@ -76,7 +76,7 @@ if gelOption == 1
     subDirStem8 = "8 pH7";
     subDirStem9 = "9 pH4";
     Kmin = 1;
-    Kmax = 2;
+    Kmax = 9;
 end
 
 global lineThickness;
@@ -90,7 +90,7 @@ figure
 % subtract this offset 
 global tRef;
 if gelOption == 1
-    tRef = datenum(2020, 2, 3, 19, 50, 17);
+    tRef = datenum(2020, 2, 1, 17, 54, 20);
 end
 
 myTitleFont = 30;
@@ -110,40 +110,40 @@ for K = Kmin:Kmax
             fprintf('Case 2: %d spectra plotted in red\n', num2);            
         case 3
             pHcolor = blue;
-            num3 = myPlot(subDirStem3, pHcolor, 0);
+            num3 = myPlot(subDirStem3, pHcolor, 0); %16);
             fprintf('Case 3: %d spectra plotted in blue\n', num3);
         case 4
             pHcolor = green;
-            num4 = myPlot(subDirStem4, pHcolor, 0);
-            fprintf('Case 4: %d spectra plotted in green\n', num4);    
+            num4 = myPlot(subDirStem4, pHcolor, 0); %16);
+            fprintf('Case 4: %d spectra plotted in green\n', num4);             
         case 5
             pHcolor = blue;
-            num5 = myPlot(subDirStem5, pHcolor, 0);
-            fprintf('Case 5: %d spectra plotted in blue\n', num5);
+            num5 = myPlot(subDirStem5, pHcolor, 0); %16);
+            fprintf('Case 7: %d spectra plotted in blue\n', num5);
         case 6
             pHcolor = red;
-            num6 = myPlot(subDirStem6, pHcolor, 0);
-            fprintf('Case 6: %d spectra plotted in red\n', num6); 
+            num6 = myPlot(subDirStem6, pHcolor, 0); %16);
+            fprintf('Case 8: %d spectra plotted in red\n', num6); 
         case 7
             pHcolor = blue;
-            num7 = myPlot(subDirStem7, pHcolor, 10);
-            fprintf('Case 7: %d spectra plotted in blue\n', num7);
+            num7 = myPlot(subDirStem7, pHcolor, 0); %26);
+            fprintf('Case 9: %d spectra plotted in blue\n', num7);
         case 8
             pHcolor = green;
-            num8 = myPlot(subDirStem8, pHcolor, 10);
-            fprintf('Case 8: %d spectra plotted in green\n', num8);
+            num8 = myPlot(subDirStem8, pHcolor, 0); %26);
+            fprintf('Case 9: %d spectra plotted in green\n', num8);
         case 9
             pHcolor = red;
-            num9 = myPlot(subDirStem9, pHcolor, 10);
+            num9 = myPlot(subDirStem9, pHcolor, 0); %26);
             fprintf('Case 9: %d spectra plotted in red\n', num9);
     end
 end    
    
 if plotOption == 1
     if gelOption == 1 || gelOption == 2 || gelOption == 4
-        y = 0.24;
+        y = 0.1;
         deltaY = 0.02;
-        x = 2.5;
+        x = 0.25;
     else
         if gelOption == 3
             y = 0.325;
@@ -171,7 +171,7 @@ text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myText
 y = y - deltaY;
 
 hold off
-title('54nm MBA Au NPs in MCs in pHEMA coAc (75/25) in flowcell', ...
+title('54nm MBA Au NPs in MCs in pHEMA in flowcell', ...
         'FontSize', myTitleFont);
 myXlabel = sprintf('Time (hours)');
 xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
