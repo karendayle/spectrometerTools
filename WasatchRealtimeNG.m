@@ -16,8 +16,8 @@ waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 5; % Draw one out of every five averages
 counter = 0;
 increment = 60; % up from 30 for 20201
-integrationTimeMS = 1000; %was 1000 before power jumped to 80 mW -- 300 ms had peak at 4000, so go back to 1000
-laserPowerFraction = 0.360;
+integrationTimeMS = 300; %was 1000 before power jumped to 80 mW -- 300 ms had peak at 4000, so go back to 1000
+laserPowerFraction = 0.370;
 closestRef = 0;
 refWaveNumber = 0;
 numIter = 5; % number of spectra to average 
@@ -808,8 +808,8 @@ function g = createDirAndSubDirs()
     studyName = input(prompt, 's');
     
     % Now put it all together
-    %dir1 = '../../Data/Made by Sureyya/'; % old location (network drive)
-    dir1 = 'C:/ExperimentalData/Dayle/Data/Made by Sureyya/'; % local
+    dir1 = '../../Data/Made by Sureyya/'; % old location (network drive)
+    %dir1 = 'C:/ExperimentalData/Dayle/Data/Made by Sureyya/'; % local
     studyPath = strcat(dir1, gelTypeName, '/', gelInstance, studyName);
     if ~exist(studyPath, 'dir')
         [status, msg, msgID] = mkdir(studyPath); % Make all intermediate dirs?
