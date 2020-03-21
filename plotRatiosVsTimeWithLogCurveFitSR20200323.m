@@ -66,10 +66,10 @@ myLabelFont = 30;
 myTextFont = 30; 
 
 global plotOption;
-plotOption = 1; % plot y1 and y2
+%plotOption = 1; % plot y1 and y2
 %plotOption = 2; % plot y3
 %plotOption = 3; % check pH sens
-%plotOption = 4; % do curve fitting
+plotOption = 4; % do curve fitting
 
 %global gelOption; 2020/2/19 pass it instead
 global dirStem;
@@ -177,7 +177,7 @@ for gelOption = 6:6
                 num4 = myPlot(subDirStem4, pHcolor, offset, gelOption, K);
                 %fprintf('Case 4: %d spectra plotted in green\n', num4);
                 if gelOption == 6 % plot part 2
-                    offset = offset + 14; % for the rest of gelOption 6
+                    offset = offset; % for the rest of gelOption 6
                     num4 = myPlot("4 pH7 part2", pHcolor, offset, gelOption, K);
                 end
             case 5
@@ -197,9 +197,6 @@ for gelOption = 6:6
                 num8 = myPlot(subDirStem8, pHcolor, offset, gelOption, K);
                 %fprintf('Case 8: %d spectra plotted in green\n', num8);
             case 9
-                if gelOption == 6
-                    offset = offset + 6;
-                end
                 pHcolor = red;
                 num9 = myPlot(subDirStem9, pHcolor, offset, gelOption, K);
                 %fprintf('Case 9: %d spectra plotted in red\n', num9);
@@ -469,9 +466,10 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
                 %ylim([0. 0.35]);
                 hold on;
                 
-                % take last 15 points instead of full 60 
-                xSubset = t(end-15+1:end); 
-                y1 = y1(end-15+1:end);
+                % take last N points instead of full set
+                lastPoints = 20;
+                xSubset = t(end-lastPoints+1:end); 
+                y1 = y1(end-lastPoints+1:end);
                 
                 % fit exponential curve to y1 and plot it
                 result = curveFitting(xSubset, offset, y1, myColor, K, 1);
@@ -483,8 +481,8 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
                 ylim([0. 0.35]);
                 hold on;
                 
-                % take last 15 points instead of full 60
-                y2 = y2(end-15+1:end);          
+                % take last N points instead of full segment
+                y2 = y2(end-lastPoints+1:end);          
                 
                 % fit exponential curve to y2 and plot it
                 result = curveFitting(xSubset, offset, y2, myColor, K, 2);
