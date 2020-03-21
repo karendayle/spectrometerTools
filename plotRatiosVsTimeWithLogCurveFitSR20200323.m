@@ -700,6 +700,7 @@ function q = plotVals()
                     xAllPH = [1 2 3];
                     
                     % pH 4
+                    xPH4 = [ 2 6 9 ];
                     yPH4 = [vals(gel, series, 2, peak, coeff) ...
                         vals(gel, series, 6, peak, coeff) ...
                         vals(gel, series, 9, peak, coeff)];
@@ -724,61 +725,63 @@ function q = plotVals()
                     posErrPH4 = [posErr1 posErr2 posErr3];
                     
                     %plot(xAllPH, yPH4, '-o');
-                    errorbar(xAllPH, yPH4, negErrPH4, posErrPH4, '-o', 'Color', red);
+                    errorbar(xPH4, yPH4, negErrPH4, posErrPH4, '-o', 'Color', red);
                     hold on;
                     
-%                     % pH 7
-%                     yPH7 = [vals(gel, series, 1, peak, coeff) ...
-%                         vals(gel, series, 4, peak, coeff) ...
-%                         vals(gel, series, 8, peak, coeff)];
-%                     % error bars are relative to data point, not absolute,
-%                     % so need to convert them from absolute
-%                     negErr1 = vals(gel, series, 1, peak, coeff) - ...
-%                         vals(gel, series, 1, peak, coeff+1);
-%                     negErr2 = vals(gel, series, 4, peak, coeff) - ...
-%                         vals(gel, series, 4, peak, coeff+1);
-%                     negErr3 = vals(gel, series, 8, peak, coeff) - ...
-%                         vals(gel, series, 8, peak, coeff+1);
-%                     % put them in an array
-%                     negErrPH7 = [negErr1 negErr2 negErr3];
-%                     
-%                     posErr1 = vals(gel, series, 1, peak, coeff+2) - ...
-%                         vals(gel, series, 1, peak, coeff);
-%                     posErr2 = vals(gel, series, 4, peak, coeff+2) - ...
-%                         vals(gel, series, 4, peak, coeff);
-%                     posErr3 = vals(gel, series, 8, peak, coeff+2) - ...
-%                         vals(gel, series, 8, peak, coeff);
-%                     % put them in an array
-%                     posErrPH7 = [posErr1 posErr2 posErr3];
-%                     
-%                     errorbar(xAllPH, yPH7, negErrPH7, posErrPH7, '-o', 'Color', green);
-%                     hold on;
-%                     
-%                     % pH 10
-%                     yPH10 = [vals(gel, series, 3, peak, coeff) ...
-%                         vals(gel, series, 5, peak, coeff) ...
-%                         vals(gel, series, 7, peak, coeff)];
-%                     % error bars are relative to data point, not absolute,
-%                     % so need to convert them from absolute
-%                     negErr1 = vals(gel, series, 3, peak, coeff) - ...
-%                         vals(gel, series, 3, peak, coeff+1);
-%                     negErr2 = vals(gel, series, 5, peak, coeff) - ...
-%                         vals(gel, series, 5, peak, coeff+1);
-%                     negErr3 = vals(gel, series, 7, peak, coeff) - ...
-%                         vals(gel, series, 7, peak, coeff+1);
-%                     % put them in an array
-%                     negErrPH10 = [negErr1 negErr2 negErr3];
-%                     
-%                     posErr1 = vals(gel, series, 3, peak, coeff+2) - ...
-%                         vals(gel, series, 3, peak, coeff);
-%                     posErr2 = vals(gel, series, 5, peak, coeff+2) - ...
-%                         vals(gel, series, 5, peak, coeff);
-%                     posErr3 = vals(gel, series, 7, peak, coeff+2) - ...
-%                         vals(gel, series, 7, peak, coeff);
-%                     % put them in an array
-%                     posErrPH10 = [posErr1 posErr2 posErr3];
-%                     %plot(xAllPH, yPH4, '-o');
-%                     errorbar(xAllPH, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
+                    % pH 7
+                    xPH7 = [ 1 4 8 ];
+                    yPH7 = [vals(gel, series, 1, peak, coeff) ...
+                        vals(gel, series, 4, peak, coeff) ...
+                        vals(gel, series, 8, peak, coeff)];
+                    % error bars are relative to data point, not absolute,
+                    % so need to convert them from absolute
+                    negErr1 = vals(gel, series, 1, peak, coeff) - ...
+                        vals(gel, series, 1, peak, coeff+1);
+                    negErr2 = vals(gel, series, 4, peak, coeff) - ...
+                        vals(gel, series, 4, peak, coeff+1);
+                    negErr3 = vals(gel, series, 8, peak, coeff) - ...
+                        vals(gel, series, 8, peak, coeff+1);
+                    % put them in an array
+                    negErrPH7 = [negErr1 negErr2 negErr3];
+                    
+                    posErr1 = vals(gel, series, 1, peak, coeff+2) - ...
+                        vals(gel, series, 1, peak, coeff);
+                    posErr2 = vals(gel, series, 4, peak, coeff+2) - ...
+                        vals(gel, series, 4, peak, coeff);
+                    posErr3 = vals(gel, series, 8, peak, coeff+2) - ...
+                        vals(gel, series, 8, peak, coeff);
+                    % put them in an array
+                    posErrPH7 = [posErr1 posErr2 posErr3];
+                    
+                    errorbar(xPH7, yPH7, negErrPH7, posErrPH7, '-o', 'Color', green);
+                    hold on;
+                    
+                    % pH 10
+                    xPH10 = [ 3 5 7 ];
+                    yPH10 = [vals(gel, series, 3, peak, coeff) ...
+                        vals(gel, series, 5, peak, coeff) ...
+                        vals(gel, series, 7, peak, coeff)];
+                    % error bars are relative to data point, not absolute,
+                    % so need to convert them from absolute
+                    negErr1 = vals(gel, series, 3, peak, coeff) - ...
+                        vals(gel, series, 3, peak, coeff+1);
+                    negErr2 = vals(gel, series, 5, peak, coeff) - ...
+                        vals(gel, series, 5, peak, coeff+1);
+                    negErr3 = vals(gel, series, 7, peak, coeff) - ...
+                        vals(gel, series, 7, peak, coeff+1);
+                    % put them in an array
+                    negErrPH10 = [negErr1 negErr2 negErr3];
+                    
+                    posErr1 = vals(gel, series, 3, peak, coeff+2) - ...
+                        vals(gel, series, 3, peak, coeff);
+                    posErr2 = vals(gel, series, 5, peak, coeff+2) - ...
+                        vals(gel, series, 5, peak, coeff);
+                    posErr3 = vals(gel, series, 7, peak, coeff+2) - ...
+                        vals(gel, series, 7, peak, coeff);
+                    % put them in an array
+                    posErrPH10 = [posErr1 posErr2 posErr3];
+                    %plot(xAllPH, yPH4, '-o');
+                    errorbar(xPH10, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
                     myTitle = sprintf('gel %d series %d', gel, series);
                     title(myTitle);
                 end
