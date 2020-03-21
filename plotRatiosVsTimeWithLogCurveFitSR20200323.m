@@ -74,6 +74,8 @@ plotOption = 4; % do curve fitting
 %global gelOption; 2020/2/19 pass it instead
 global dirStem;
 
+global vals
+
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4";
 subDirStem3 = "3 pH10";
@@ -97,108 +99,110 @@ for gelOption = 6:6
         tRef = datenum(2019, 12, 10, 14, 1, 8);
         % 2020/03/16 why is x scale not log?
         myTitle = '54nm MBA AuNPs MCs alginate gel12 punch1 flowcell';
-        %gel = 1; series = 1; not now 
+        gel = 1; series = 1;
       case 2  % alginate time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\";
         tRef = datenum(2020, 1, 10, 13, 45, 1);
         % 2020/03/16 why is x scale not log?
         myTitle = '54nm MBA AuNPs MCs alginate gel12 punch2 flowcell';
-        %gel = 1; series = 2; not now 
+        gel = 1; series = 2;
       case 3 % alginate time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\";
         tRef = datenum(2020, 1, 12, 16, 15, 57);
         myTitle = '54nm MBA AuNPs MCs alginate gel12 punch3 flowcell';
-        %gel = 1; series = 3; not now 
+        gel = 1; series = 3;
         
       case 4 % PEG time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
         tRef = datenum(2018, 12, 28, 16, 34, 5);
         myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';
-        %gel = 2; series = 1; not now 
+        gel = 2; series = 1;
       case 5 % PEG time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 15\";
         tRef = datenum(2020, 3, 14, 21, 22, 41);
         myTitle = '54nm MBA AuNPs MCs PEG gel15 punch1 flowcell';
+        gel = 3; series = 2;
       case 6 % PEG time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\punch1 flowcell all\";
         tRef = datenum(2020, 3, 17, 15, 38, 43);
         myTitle = '54nm MBA AuNPs MCs PEG gel16 punch1 flowcell';
+        gel = 3; series = 3;
         
       case 7 % pHEMA time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
         tRef = datenum(2018, 12, 30, 16, 1, 17);
         myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell'; 
-        %gel = 3; series = 1; not now 
+        gel = 3; series = 1;
       case 8 % pHEMA time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\";
         tRef = datenum(2020, 1, 25, 17, 10, 17); 
         myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell';
-        %gel = 3; series = 2; not now 
+        gel = 3; series = 2; 
       case 9 % pHEMA time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
         tRef = datenum(2020, 2, 1, 17, 54, 20);
         myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell';
-        %gel = 3; series = 3; not now 
+        gel = 3; series = 3;
         
       case 10 % pHEMA/coAc  time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\4\"; 
         tRef = datenum(2019, 01, 26, 16, 28, 6);
         myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell';
-        %gel = 4; series = 1; not now 
+        gel = 4; series = 1;
         Kmax = 8; % special case b/c final pH4 is missing!
       case 11 % add pHEMA/coAc  time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
         tRef = datenum(2020, 1, 27, 12, 27, 47); 
         myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell';
-        %gel = 4; series = 2; not now 
+        gel = 4; series = 2;
       case 12 % pHEMA/coAc time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
         tRef = datenum(2020, 2, 3, 19, 50, 17);
         myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell';
-        %gel = 4; series = 3; not now 
+        gel = 4; series = 3;
     end
     
     for K = Kmin:Kmax
         switch K
             case 1
                 pHcolor = green;
-                num1 = myPlot(subDirStem1, pHcolor, offset, gelOption, K);
+                num1 = myPlot(subDirStem1, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 1: %d spectra plotted in green\n', num1);
             case 2
                 pHcolor = red;
-                num2 = myPlot(subDirStem2, pHcolor, offset, gelOption, K);
+                num2 = myPlot(subDirStem2, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 2: %d spectra plotted in red\n', num2);            
             case 3
                 pHcolor = blue;
-                num3 = myPlot(subDirStem3, pHcolor, offset, gelOption, K);
+                num3 = myPlot(subDirStem3, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 3: %d spectra plotted in blue\n', num3);
             case 4
                 pHcolor = green;
-                num4 = myPlot(subDirStem4, pHcolor, offset, gelOption, K);
+                num4 = myPlot(subDirStem4, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 4: %d spectra plotted in green\n', num4);
                 if gelOption == 6 % plot part 2
                     offset = offset; % for the rest of gelOption 6
-                    num4 = myPlot("4 pH7 part2", pHcolor, offset, gelOption, K);
+                    num4 = myPlot("4 pH7 part2", pHcolor, offset, gelOption, gel, series, K);
                 end
             case 5
                 pHcolor = blue;
-                num5 = myPlot(subDirStem5, pHcolor, offset, gelOption, K);
+                num5 = myPlot(subDirStem5, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 5: %d spectra plotted in blue\n', num5);
             case 6
                 pHcolor = red;
-                num6 = myPlot(subDirStem6, pHcolor, offset, gelOption, K);
+                num6 = myPlot(subDirStem6, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 6: %d spectra plotted in red\n', num6); 
             case 7
                 pHcolor = blue;
-                num7 = myPlot(subDirStem7, pHcolor, offset, gelOption, K);
+                num7 = myPlot(subDirStem7, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 7: %d spectra plotted in blue\n', num7);
             case 8
                 pHcolor = green;
-                num8 = myPlot(subDirStem8, pHcolor, offset, gelOption, K);
+                num8 = myPlot(subDirStem8, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 8: %d spectra plotted in green\n', num8);
             case 9
                 pHcolor = red;
-                num9 = myPlot(subDirStem9, pHcolor, offset, gelOption, K);
+                num9 = myPlot(subDirStem9, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 9: %d spectra plotted in red\n', num9);
         end
     end    
@@ -252,6 +256,11 @@ for gelOption = 6:6
             'FontSize', myLabelFont); % y-axis label
     end
 end
+
+if plotOption == 4
+    plotVals();
+end
+%end main portion
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug;
@@ -314,7 +323,7 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end
 
-function g = myPlot(subDirStem, myColor, offset, gelOption, K)
+function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
     global blue;
     global rust;
     global gold;
@@ -335,7 +344,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
     global myDebug;
     global lineThickness;
     global plotOption;
-%    global ss;
+    global vals;
     
 %     sumY1 = 0;
 %     sumY2 = 0;
@@ -473,7 +482,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
                 
                 % fit exponential curve to y1 and plot it
                 result = curveFitting(xSubset, offset, y1, myColor, K, 1);
-                rc = parseCurveFittingObject(gelOption, K, 1, result);
+                rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
                 ylim([0. 0.35]);
                 hold on;         
             
@@ -486,7 +495,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, K)
                 
                 % fit exponential curve to y2 and plot it
                 result = curveFitting(xSubset, offset, y2, myColor, K, 2);
-                rc = parseCurveFittingObject(gelOption, K, 2, result);
+                rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
                 ylim([0. 0.35]);
                 hold on;
             end
@@ -566,7 +575,8 @@ function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
     j = f0;
 end
 
-function k = parseCurveFittingObject(gelOption, myIter, mySubIter, f0)
+function k = parseCurveFittingObject(gelOption, gel, series, pH, peak, f0)
+    global vals
     % 2020/2/8 since confidence intervals are inaccessible as fields, convert val to 
     % string and parse them out
     % ref: 
@@ -613,11 +623,19 @@ function k = parseCurveFittingObject(gelOption, myIter, mySubIter, f0)
         bLow = 0;
         bHigh = 0;
     end
-    pHStr = getPH(myIter);
+    pHStr = getPH(pH);
     gelStr = getGel(gelOption);
-    peak = getPeak(mySubIter);
-    fprintf('%s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, myIter, pHStr, peak, ...
+    peakVal = getPeak(peak);
+    fprintf('%s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, pH, pHStr, peakVal, ...
         f0.a, aLow, aHigh, f0.b, bLow, bHigh);
+    
+    vals(gel, series, pH, peak, 1) = f0.a;
+    vals(gel, series, pH, peak, 2) = aLow;
+    vals(gel, series, pH, peak, 3) = aHigh;
+    vals(gel, series, pH, peak, 4) = f0.b;
+    vals(gel, series, pH, peak, 5) = bLow;
+    vals(gel, series, pH, peak, 6) = bHigh;
+    
     k = 1;
 end
 
@@ -658,4 +676,114 @@ function p = getPeak(mySubIter)
         case other
             p = -1;
     end
+end
+
+function q = plotVals()
+    % Colors:
+    global blue;
+    global rust;
+    global gold;
+    global purple;
+    global green;
+    global ciel; 
+    global cherry;
+    global red;
+    global black;
+    global vals
+
+    % compare all the pH 4  values: these are in pH= 2, 6, 9
+    for gel = 3:3 %1:4
+        for series = 3:3 %1:3
+            figure
+            for peak = 1:1 % do 2 later
+                for coeff = 1:3:6
+                    xAllPH = [1 2 3];
+                    
+                    % pH 4
+                    yPH4 = [vals(gel, series, 2, peak, coeff) ...
+                        vals(gel, series, 6, peak, coeff) ...
+                        vals(gel, series, 9, peak, coeff)];
+                    % error bars are relative to data point, not absolute,
+                    % so need to convert them from absolute
+                    negErr1 = vals(gel, series, 2, peak, coeff) - ...
+                        vals(gel, series, 2, peak, coeff+1);
+                    negErr2 = vals(gel, series, 6, peak, coeff) - ...
+                        vals(gel, series, 6, peak, coeff+1);
+                    negErr3 = vals(gel, series, 9, peak, coeff) - ...
+                        vals(gel, series, 9, peak, coeff+1);
+                    % put them in an array
+                    negErrPH4 = [negErr1 negErr2 negErr3];
+                    
+                    posErr1 = vals(gel, series, 2, peak, coeff+2) - ...
+                        vals(gel, series, 2, peak, coeff);
+                    posErr2 = vals(gel, series, 6, peak, coeff+2) - ...
+                        vals(gel, series, 6, peak, coeff);
+                    posErr3 = vals(gel, series, 9, peak, coeff+2) - ...
+                        vals(gel, series, 9, peak, coeff);
+                    % put them in an array
+                    posErrPH4 = [posErr1 posErr2 posErr3];
+                    
+                    %plot(xAllPH, yPH4, '-o');
+                    errorbar(xAllPH, yPH4, negErrPH4, posErrPH4, '-o', 'Color', red);
+                    hold on;
+                    
+%                     % pH 7
+%                     yPH7 = [vals(gel, series, 1, peak, coeff) ...
+%                         vals(gel, series, 4, peak, coeff) ...
+%                         vals(gel, series, 8, peak, coeff)];
+%                     % error bars are relative to data point, not absolute,
+%                     % so need to convert them from absolute
+%                     negErr1 = vals(gel, series, 1, peak, coeff) - ...
+%                         vals(gel, series, 1, peak, coeff+1);
+%                     negErr2 = vals(gel, series, 4, peak, coeff) - ...
+%                         vals(gel, series, 4, peak, coeff+1);
+%                     negErr3 = vals(gel, series, 8, peak, coeff) - ...
+%                         vals(gel, series, 8, peak, coeff+1);
+%                     % put them in an array
+%                     negErrPH7 = [negErr1 negErr2 negErr3];
+%                     
+%                     posErr1 = vals(gel, series, 1, peak, coeff+2) - ...
+%                         vals(gel, series, 1, peak, coeff);
+%                     posErr2 = vals(gel, series, 4, peak, coeff+2) - ...
+%                         vals(gel, series, 4, peak, coeff);
+%                     posErr3 = vals(gel, series, 8, peak, coeff+2) - ...
+%                         vals(gel, series, 8, peak, coeff);
+%                     % put them in an array
+%                     posErrPH7 = [posErr1 posErr2 posErr3];
+%                     
+%                     errorbar(xAllPH, yPH7, negErrPH7, posErrPH7, '-o', 'Color', green);
+%                     hold on;
+%                     
+%                     % pH 10
+%                     yPH10 = [vals(gel, series, 3, peak, coeff) ...
+%                         vals(gel, series, 5, peak, coeff) ...
+%                         vals(gel, series, 7, peak, coeff)];
+%                     % error bars are relative to data point, not absolute,
+%                     % so need to convert them from absolute
+%                     negErr1 = vals(gel, series, 3, peak, coeff) - ...
+%                         vals(gel, series, 3, peak, coeff+1);
+%                     negErr2 = vals(gel, series, 5, peak, coeff) - ...
+%                         vals(gel, series, 5, peak, coeff+1);
+%                     negErr3 = vals(gel, series, 7, peak, coeff) - ...
+%                         vals(gel, series, 7, peak, coeff+1);
+%                     % put them in an array
+%                     negErrPH10 = [negErr1 negErr2 negErr3];
+%                     
+%                     posErr1 = vals(gel, series, 3, peak, coeff+2) - ...
+%                         vals(gel, series, 3, peak, coeff);
+%                     posErr2 = vals(gel, series, 5, peak, coeff+2) - ...
+%                         vals(gel, series, 5, peak, coeff);
+%                     posErr3 = vals(gel, series, 7, peak, coeff+2) - ...
+%                         vals(gel, series, 7, peak, coeff);
+%                     % put them in an array
+%                     posErrPH10 = [posErr1 posErr2 posErr3];
+%                     %plot(xAllPH, yPH4, '-o');
+%                     errorbar(xAllPH, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
+                    myTitle = sprintf('gel %d series %d', gel, series);
+                    title(myTitle);
+                end
+            end
+        end
+    end
+    q = 1;
 end
