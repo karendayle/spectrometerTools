@@ -175,7 +175,11 @@ for gelOption = 6:6
             case 4
                 pHcolor = green;
                 num4 = myPlot(subDirStem4, pHcolor, offset, gelOption, K);
-                %fprintf('Case 4: %d spectra plotted in green\n', num4);    
+                %fprintf('Case 4: %d spectra plotted in green\n', num4);
+                if gelOption == 6 % plot part 2
+                    offset = offset + 14; % for the rest of gelOption 6
+                    num4 = myPlot("4 pH7 part2", pHcolor, offset, gelOption, K);
+                end
             case 5
                 pHcolor = blue;
                 num5 = myPlot(subDirStem5, pHcolor, offset, gelOption, K);
