@@ -86,7 +86,7 @@ subDirStem7 = "7 pH10";
 subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
-for gelOption = 6:6
+for gelOption = 1:12
     Kmin = 1;
     Kmax = 9;
     offset = -24; % 2020/3/16 new
@@ -471,33 +471,38 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
             plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
         else
             if plotOption == 4 % do curve fitting
-                semilogx(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness); % new
-                %ylim([0. 0.35]);
-                hold on;
-                
-                % take last N points instead of full set
-                lastPoints = 20;
-                xSubset = t(end-lastPoints+1:end); 
-                y1 = y1(end-lastPoints+1:end);
-                
-                % fit exponential curve to y1 and plot it
-                result = curveFitting(xSubset, offset, y1, myColor, K, 1);
-                rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
-                ylim([0. 0.35]);
-                hold on;         
-            
-                semilogx(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-                ylim([0. 0.35]);
-                hold on;
-                
-                % take last N points instead of full segment
-                y2 = y2(end-lastPoints+1:end);          
-                
-                % fit exponential curve to y2 and plot it
-                result = curveFitting(xSubset, offset, y2, myColor, K, 2);
-                rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
-                ylim([0. 0.35]);
-                hold on;
+%                 semilogx(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness); % new
+%                 %ylim([0. 0.35]);
+%                 hold on;
+%             
+%                 semilogx(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+%                 ylim([0. 0.35]);
+%                 hold on;
+%                 
+%                 % throw away the transitioning part of the segment and just
+%                 % take the end of the segment when steady state occurs
+%                 lastPoints = 20;
+%                 nPoints = length(t)-lastPoints+1;
+%                 
+%                 % if there are enough points, take last N points instead of full set
+%                 if nPoints > 0
+%                     xSubset = t(nPoints:end); 
+%                     y1 = y1(nPoints:end);
+%                     % fit exponential curve to y1 and plot it
+%                     result = curveFitting(xSubset, offset, y1, myColor, K, 1);
+%                     rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
+%                     ylim([0. 0.35]);
+%                     hold on;   
+%                     
+%                     % take last N points instead of full segment
+%                     y2 = y2(end-lastPoints+1:end);          
+% 
+%                     % fit exponential curve to y2 and plot it
+%                     result = curveFitting(xSubset, offset, y2, myColor, K, 2);
+%                     rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
+%                     ylim([0. 0.35]);
+%                     hold on;
+%                 end
             end
         end
     end
@@ -692,13 +697,27 @@ function q = plotVals()
     global vals
 
     % compare all the pH 4  values: these are in pH= 2, 6, 9
-    for gel = 3:3 %1:4
-        for series = 3:3 %1:3
+    for peak = 1:2
+        for coeff = 1:3:6
             figure
-            for peak = 1:1 % do 2 later
-                for coeff = 1:3:6
-                    xAllPH = [1 2 3];
-                    
+            switch peak
+                case 1
+                    mySgTitle = sprintf('1430 cm-1 pk');
+                case 2
+                    mySgTitle = sprintf('1702 cm-1 pk');
+            end
+            switch coeff
+                case 1
+                    mySgTitle = strcat(mySgTitle, ' coeff a');
+                case 4
+                    mySgTitle = strcat(mySgTitle, ' coeff b');
+            end
+            
+            sgtitle(mySgTitle);
+            for gel = 1:4
+                for series = 1:3
+                    subplot(4,3,(gel-1)*3 + series);
+
                     % pH 4
                     xPH4 = [ 2 6 9 ];
                     yPH4 = [vals(gel, series, 2, peak, coeff) ...
@@ -723,8 +742,7 @@ function q = plotVals()
                         vals(gel, series, 9, peak, coeff);
                     % put them in an array
                     posErrPH4 = [posErr1 posErr2 posErr3];
-                    
-                    %plot(xAllPH, yPH4, '-o');
+
                     errorbar(xPH4, yPH4, negErrPH4, posErrPH4, '-o', 'Color', red);
                     hold on;
                     
@@ -782,8 +800,9 @@ function q = plotVals()
                     posErrPH10 = [posErr1 posErr2 posErr3];
                     %plot(xAllPH, yPH4, '-o');
                     errorbar(xPH10, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
-                    myTitle = sprintf('gel %d series %d', gel, series);
+                    myTitle = sprintf('gel %d series %d 1430 cm-1 peak curve', gel, series);
                     title(myTitle);
+                    xlim([0 10]);
                 end
             end
         end
