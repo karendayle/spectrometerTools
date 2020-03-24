@@ -121,12 +121,12 @@ for gelOption = 1:12
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 15\";
         tRef = datenum(2020, 3, 14, 21, 22, 41);
         myTitle = '54nm MBA AuNPs MCs PEG gel15 punch1 flowcell';
-        gel = 3; series = 2;
+        gel = 2; series = 2;
       case 6 % PEG time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\punch1 flowcell all\";
         tRef = datenum(2020, 3, 17, 15, 38, 43);
         myTitle = '54nm MBA AuNPs MCs PEG gel16 punch1 flowcell';
-        gel = 3; series = 3;
+        gel = 2; series = 3;
         
       case 7 % pHEMA time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
@@ -471,38 +471,38 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
             plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
         else
             if plotOption == 4 % do curve fitting
-%                 semilogx(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness); % new
-%                 %ylim([0. 0.35]);
-%                 hold on;
-%             
-%                 semilogx(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-%                 ylim([0. 0.35]);
-%                 hold on;
-%                 
-%                 % throw away the transitioning part of the segment and just
-%                 % take the end of the segment when steady state occurs
-%                 lastPoints = 20;
-%                 nPoints = length(t)-lastPoints+1;
-%                 
-%                 % if there are enough points, take last N points instead of full set
-%                 if nPoints > 0
-%                     xSubset = t(nPoints:end); 
-%                     y1 = y1(nPoints:end);
-%                     % fit exponential curve to y1 and plot it
-%                     result = curveFitting(xSubset, offset, y1, myColor, K, 1);
-%                     rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
-%                     ylim([0. 0.35]);
-%                     hold on;   
-%                     
-%                     % take last N points instead of full segment
-%                     y2 = y2(end-lastPoints+1:end);          
-% 
-%                     % fit exponential curve to y2 and plot it
-%                     result = curveFitting(xSubset, offset, y2, myColor, K, 2);
-%                     rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
-%                     ylim([0. 0.35]);
-%                     hold on;
-%                 end
+                semilogx(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness); % new
+                %ylim([0. 0.35]);
+                hold on;
+            
+                semilogx(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+                ylim([0. 0.35]);
+                hold on;
+                
+                % throw away the transitioning part of the segment and just
+                % take the end of the segment when steady state occurs
+                lastPoints = 10; % CHANGE THIS NUMBER TO COMPARE THE RESULTS
+                nPoints = length(t)-lastPoints+1;
+                
+                % if there are enough points, take last N points instead of full set
+                if nPoints > 0
+                    xSubset = t(nPoints:end); 
+                    y1 = y1(nPoints:end);
+                    % fit exponential curve to y1 and plot it
+                    result = curveFitting(xSubset, offset, y1, myColor, K, 1);
+                    rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
+                    ylim([0. 0.35]);
+                    hold on;   
+                    
+                    % take last N points instead of full segment
+                    y2 = y2(end-lastPoints+1:end);          
+
+                    % fit exponential curve to y2 and plot it
+                    result = curveFitting(xSubset, offset, y2, myColor, K, 2);
+                    rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
+                    ylim([0. 0.35]);
+                    hold on;
+                end
             end
         end
     end
@@ -800,7 +800,7 @@ function q = plotVals()
                     posErrPH10 = [posErr1 posErr2 posErr3];
                     %plot(xAllPH, yPH4, '-o');
                     errorbar(xPH10, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
-                    myTitle = sprintf('gel %d series %d 1430 cm-1 peak curve', gel, series);
+                    myTitle = sprintf('gel %d series %d', gel, series);
                     title(myTitle);
                     xlim([0 10]);
                 end
