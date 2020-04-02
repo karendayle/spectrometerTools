@@ -66,10 +66,10 @@ myLabelFont = 30;
 myTextFont = 30; 
 
 global plotOption;
-%plotOption = 1; % plot y1 and y2
+plotOption = 1; % plot y1 and y2
 %plotOption = 2; % plot y3
 %plotOption = 3; % check pH sens
-plotOption = 4; % do curve fitting
+%plotOption = 4; % do curve fitting
 
 %global gelOption; 2020/2/19 pass it instead
 global dirStem;
@@ -86,15 +86,20 @@ subDirStem7 = "7 pH10";
 subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
-for gelOption = 1:12
+for gelOption = 4:4 % 12 for prelim do 1, 4, 9, 12
     Kmin = 1;
     Kmax = 9;
-    offset = -24; % 2020/3/16 new
+    if plotOption == 4
+        offset = -24; % 2020/3/16 new
+    else
+        offset = 0;
+    end
     % Do for each dataset
     figure
-    
+    set(gca,'FontSize', myTextFont); % has no effect on tick label size
     switch gelOption
       case 1 % alginate time series 1
+        % yes for prelim
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
         tRef = datenum(2019, 12, 10, 14, 1, 8);
         % 2020/03/16 why is x scale not log?
@@ -113,6 +118,7 @@ for gelOption = 1:12
         gel = 1; series = 3;
         
       case 4 % PEG time series 1
+        % yes for prelim
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
         tRef = datenum(2018, 12, 28, 16, 34, 5);
         myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';
@@ -139,6 +145,7 @@ for gelOption = 1:12
         myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell';
         gel = 3; series = 2; 
       case 9 % pHEMA time series 3
+        % yes for prelim
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
         tRef = datenum(2020, 2, 1, 17, 54, 20);
         myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell';
@@ -156,6 +163,7 @@ for gelOption = 1:12
         myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell';
         gel = 4; series = 2;
       case 12 % pHEMA/coAc time series 3
+          % yes for prelim
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
         tRef = datenum(2020, 2, 3, 19, 50, 17);
         myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell';
@@ -352,7 +360,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
 %     avgY2 = 0;
 %     sumSqY1 = 0;
 %     sumSqY2 = 0;
-    
+    set(gca,'FontSize', 30); % has to be here to effect tick labels
     str_dir_to_search = dirStem + subDirStem; % args need to be strings
     dir_to_search = char(str_dir_to_search); % 2020/2/19 add comma
     txtpattern = fullfile(dir_to_search, 'avg*.txt');
@@ -481,7 +489,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                 
                 % throw away the transitioning part of the segment and just
                 % take the end of the segment when steady state occurs
-                lastPoints = 10; % CHANGE THIS NUMBER TO COMPARE THE RESULTS
+                lastPoints = 15; % CHANGE THIS NUMBER TO COMPARE THE RESULTS
                 nPoints = length(t)-lastPoints+1;
                 
                 % if there are enough points, take last N points instead of full set
@@ -714,9 +722,11 @@ function q = plotVals()
             end
             
             sgtitle(mySgTitle);
-            for gel = 1:4
-                for series = 1:3
-                    subplot(4,3,(gel-1)*3 + series);
+%             for gel = 1:4
+%                 for series = 1:3
+            for gel = 1:1 % for prelim
+                for series = 1:1 % for prelim
+                    %subplot(4,3,(gel-1)*3 + series); not for prelim
 
                     % pH 4
                     xPH4 = [ 2 6 9 ];
