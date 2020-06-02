@@ -786,7 +786,7 @@ function g = createDirAndSubDirs()
     global gelTypeName;
     global gelNumber;
     pwd % not used
-    prompt = '\nIs this study: Alginate (1), PEG (2), polyHEMA (3) or polyHEMAcoAc (4)?>';
+    prompt = '\nIs this study: Alginate (1), PEG (2), pHEMA (3) or pHEMAcoAc (4)?>';
     gelType = input(prompt);
     % Switch on gelType and add to path
     switch gelType
@@ -795,9 +795,9 @@ function g = createDirAndSubDirs()
         case 2
             gelTypeName = 'PEG';
         case 3
-            gelTypeName = 'polyHEMA';
+            gelTypeName = 'pHEMA';
         case 4
-            gelTypeName = 'polyHEMA coAcrylamide';
+            gelTypeName = 'pHEMA coAcrylamide';
     end
     
     prompt = '\nEnter gel#>';
