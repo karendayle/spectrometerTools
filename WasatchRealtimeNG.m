@@ -12,12 +12,12 @@
 % -------------------------------------------------------------------------
 % % Variables. Might need to change depending on what you want to do.
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
-waitBetweenAverages = 120.; % Acquire one averaged sample 2 minutes apart
+waitBetweenAverages = 30.; % Acquire one averaged sample 2 minutes apart 6/3: chg from 120 for calib curves
 countBetweenPlots = 5; % Draw one out of every five averages
 counter = 0;
 increment = 60; % up from 30 for 20201
 integrationTimeMS = 300; %was 1000 before power jumped to 80 mW -- 300 ms had peak at 4000, so go back to 1000
-laserPowerFraction = 0.370;
+laserPowerFraction = 0.368;
 closestRef = 0;
 refWaveNumber = 0;
 numIter = 5; % number of spectra to average 
