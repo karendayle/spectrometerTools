@@ -72,7 +72,7 @@ for J = 1:4
             subDirStem6 = "calib pH6.5\1";
             subDirStem7 = "calib pH7\1";
             subDirStem8 = "calib pH7.5\1";
-            for K = 1:6
+            for K = 1:8
                 switch K
                     case 1 % pH4
                        pHcolor = black;
@@ -103,9 +103,9 @@ for J = 1:4
                        num7 = myPlot(subDirStem7, pHcolor);
                        fprintf('Case 7: %d spectra plotted in green\n', num7);
                     case 8 % pH7.5
-                       pHcolor = purple;
+                       pHcolor = ciel;
                        num8 = myPlot(subDirStem8, pHcolor);
-                       fprintf('Case 8: %d spectra plotted in purple\n', num8);            
+                       fprintf('Case 8: %d spectra plotted in ciel\n', num8);            
                 end
             end
         case 2
@@ -118,7 +118,7 @@ for J = 1:4
             subDirStem6 = "calib pH6.5\1";
             subDirStem7 = "calib pH7\1";
             subDirStem8 = "calib pH7.5\1";
-            for K = 1:6
+            for K = 1:8
                 switch K
                     case 1 % pH4
                        pHcolor = black;
@@ -149,9 +149,9 @@ for J = 1:4
                        num7 = myPlot(subDirStem7, pHcolor);
                        fprintf('Case 7: %d spectra plotted in green\n', num7);
                     case 8 % pH7.5
-                       pHcolor = purple;
+                       pHcolor = ciel;
                        num8 = myPlot(subDirStem8, pHcolor);
-                       fprintf('Case 8: %d spectra plotted in purple\n', num8);  
+                       fprintf('Case 8: %d spectra plotted in ciel\n', num8);  
                 end
             end
         case 3
@@ -164,7 +164,7 @@ for J = 1:4
             subDirStem6 = "calib pH6.5\1";
             subDirStem7 = "calib pH7\1";
             subDirStem8 = "calib pH7.5\1";
-            for K = 1:6
+            for K = 1:8
                 switch K
                     case 1 % pH4
                        pHcolor = black;
@@ -195,9 +195,9 @@ for J = 1:4
                        num7 = myPlot(subDirStem7, pHcolor);
                        fprintf('Case 7: %d spectra plotted in green\n', num7);
                     case 8 % pH7.5
-                       pHcolor = purple;
+                       pHcolor = ciel;
                        num8 = myPlot(subDirStem8, pHcolor);
-                       fprintf('Case 8: %d spectra plotted in purple\n', num8);  
+                       fprintf('Case 8: %d spectra plotted in ciel\n', num8);  
                 end
             end
         case 4
@@ -210,7 +210,7 @@ for J = 1:4
             subDirStem6 = "calib pH6.5\1";
             subDirStem7 = "calib pH7\1";
             subDirStem8 = "calib pH7.5\1";
-            for K = 1:6
+            for K = 1:8
                 switch K
                     case 1 % pH4
                        pHcolor = black;
@@ -241,29 +241,33 @@ for J = 1:4
                        num7 = myPlot(subDirStem7, pHcolor);
                        fprintf('Case 7: %d spectra plotted in green\n', num7);
                     case 8 % pH7.5
-                       pHcolor = purple;
+                       pHcolor = ciel;
                        num8 = myPlot(subDirStem8, pHcolor);
-                       fprintf('Case 8: %d spectra plotted in purple\n', num8);  
+                       fprintf('Case 8: %d spectra plotted in ciel\n', num8);  
                 end
             end
     end   
 
     % TO DO: figure out the coords for labels from the data
-    %y = 1.95; %pHEMA
-    %y = 1.1; %alginate, PEG, pHEMA coAc
-    y = 2000; %if not normalized
+    if J==1
+        y = 1.1; %alg
+        deltaY = 0.1; %alg
+    else
+        y = 1.4; %pHEMA, PEG, pHEMA coAc
+        deltaY = 0.15; %pHEMA, PEG, pHEMA coAc
+    end
+    %y = 2000; %if not normalized
     x = 1700; %pHEMA
     %deltaY = 0.1; %alginate, PEG, pHEMA coAc
-    deltaY = 200; %if not normalized
-    %deltaY = 0.2; %pHEMA
+    %deltaY = 200; %if not normalized
     deltaX = 100;
 
-%     text(x, y, 'pH10', 'Color', purple, 'FontSize', myTextFont);
-%     text(x, y, '_____', 'Color', purple, 'FontSize', myTextFont);
-%     y = y - deltaY;
-%     text(x, y, 'pH9', 'Color', blue, 'FontSize', myTextFont);
-%     text(x, y, '_____', 'Color', blue, 'FontSize', myTextFont);
-%     y = y - deltaY;
+    text(x, y, 'pH7.5', 'Color', ciel, 'FontSize', myTextFont);
+    text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
+    y = y - deltaY;
+    text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
+    text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
+    y = y - deltaY;
     text(x, y, 'pH6.5', 'Color', gold, 'FontSize', myTextFont);
     text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
     y = y - deltaY;
