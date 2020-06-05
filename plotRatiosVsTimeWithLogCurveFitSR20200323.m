@@ -48,6 +48,8 @@ pHcolor = [0.0, 0.0, 0.0];
 global numPoints;
 numPoints = 1024;
 
+global nPoints;
+
 global lineThickness;
 lineThickness = 2;
 
@@ -66,10 +68,10 @@ myLabelFont = 30;
 myTextFont = 30; 
 
 global plotOption;
-plotOption = 1; % plot y1 and y2
+%plotOption = 1; % plot y1 and y2
 %plotOption = 2; % plot y3
 %plotOption = 3; % check pH sens
-%plotOption = 4; % do curve fitting
+plotOption = 4; % do curve fitting
 
 %global gelOption; 2020/2/19 pass it instead
 global dirStem;
@@ -86,7 +88,7 @@ subDirStem7 = "7 pH10";
 subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
-for gelOption = 4:4 % 12 for prelim do 1, 4, 9, 12
+for gelOption = 1:1 % 12 for prelim do 1, 4, 9, 12
     Kmin = 1;
     Kmax = 9;
     if plotOption == 4
@@ -353,6 +355,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
     global lineThickness;
     global plotOption;
     global vals;
+    global nPoints;
     
 %     sumY1 = 0;
 %     sumY2 = 0;
@@ -480,11 +483,11 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
         else
             if plotOption == 4 % do curve fitting
                 semilogx(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness); % new
-                %ylim([0. 0.35]);
+                %ylim([0. 0.3]);
                 hold on;
             
                 semilogx(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-                ylim([0. 0.35]);
+                ylim([0. 0.3]);
                 hold on;
                 
                 % throw away the transitioning part of the segment and just
@@ -499,7 +502,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                     % fit exponential curve to y1 and plot it
                     result = curveFitting(xSubset, offset, y1, myColor, K, 1);
                     rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
-                    ylim([0. 0.35]);
+                    ylim([0. 0.3]);
                     hold on;   
                     
                     % take last N points instead of full segment
@@ -508,7 +511,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                     % fit exponential curve to y2 and plot it
                     result = curveFitting(xSubset, offset, y2, myColor, K, 2);
                     rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
-                    ylim([0. 0.35]);
+                    ylim([0. 0.3]);
                     hold on;
                 end
             end
@@ -703,6 +706,7 @@ function q = plotVals()
     global red;
     global black;
     global vals
+    global nPoints;
 
     % compare all the pH 4  values: these are in pH= 2, 6, 9
     for peak = 1:2
@@ -710,7 +714,7 @@ function q = plotVals()
             figure
             switch peak
                 case 1
-                    mySgTitle = sprintf('1430 cm-1 pk');
+                    mySgTitle = sprintf('1430 cm-1 pk ');
                 case 2
                     mySgTitle = sprintf('1702 cm-1 pk');
             end
@@ -721,11 +725,13 @@ function q = plotVals()
                     mySgTitle = strcat(mySgTitle, ' coeff b');
             end
             
-            sgtitle(mySgTitle);
+            % sgtitle(mySgTitle); not for prelim
+
 %             for gel = 1:4
 %                 for series = 1:3
             for gel = 1:1 % for prelim
                 for series = 1:1 % for prelim
+                    set(gca,'FontSize', 30); % this doesn't work
                     %subplot(4,3,(gel-1)*3 + series); not for prelim
 
                     % pH 4
@@ -810,9 +816,13 @@ function q = plotVals()
                     posErrPH10 = [posErr1 posErr2 posErr3];
                     %plot(xAllPH, yPH4, '-o');
                     errorbar(xPH10, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
-                    myTitle = sprintf('gel %d series %d', gel, series);
-                    title(myTitle);
+                    %myTitle = sprintf('gel %d series %d', gel, series);
+                    myTitle = sprintf('alginate gel12 punch1 using last %d points of each segment', nPoints);
+                    title(myTitle,'FontSize',30);
+                    set(gca,'FontSize', 30); % this works
                     xlim([0 10]);
+                    xlabel('pH buffer segment', 'FontSize', 30);
+                    ylabel(mySgTitle, 'FontSize', 30); % for prelim 
                 end
             end
         end
