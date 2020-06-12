@@ -64,7 +64,8 @@ for J = 1:4
     switch J
         case 1
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\";
-            subDirStem1 = "calib pH4\1";
+            %subDirStem1 = "calib pH4\1";
+            subDirStem1 = "calib pH4 repeat\1";
             subDirStem2 = "calib pH4.5\1";
             subDirStem3 = "calib pH5\1";
             subDirStem4 = "calib pH5.5\1";
@@ -110,7 +111,8 @@ for J = 1:4
             end
         case 2
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\";
-            subDirStem1 = "calib pH4\1";
+            %subDirStem1 = "calib pH4\1";
+            subDirStem1 = "calib pH4 repeat\1";
             subDirStem2 = "calib pH4.5\1";
             subDirStem3 = "calib pH5\1";
             subDirStem4 = "calib pH5.5\1";
@@ -156,7 +158,8 @@ for J = 1:4
             end
         case 3
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\";
-            subDirStem1 = "calib pH4\1";
+            %subDirStem1 = "calib pH4\1";
+            subDirStem1 = "calib pH4 repeat\1";
             subDirStem2 = "calib pH4.5\1";
             subDirStem3 = "calib pH5\1";
             subDirStem4 = "calib pH5.5\1";
@@ -202,7 +205,8 @@ for J = 1:4
             end
         case 4
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\";
-            subDirStem1 = "calib pH4\1";
+            %subDirStem1 = "calib pH4\1";
+            subDirStem1 = "calib pH4 repeat\1";
             subDirStem2 = "calib pH4.5\1";
             subDirStem3 = "calib pH5\1";
             subDirStem4 = "calib pH5.5\1";
@@ -290,13 +294,13 @@ for J = 1:4
 
     switch J
         case 1
-            title('86 nm spheres in microcapsules in alginate');
+            title('56 nm spheres in microcapsules in alginate');
         case 2
-            title('86 nm spheres in microcapsules in PEG');
+            title('56 nm spheres in microcapsules in PEG');
         case 3
-            title('86 nm spheres in microcapsules in pHEMA');
+            title('56 nm spheres in microcapsules in pHEMA');
         case 4
-            title('86 nm spheres in microcapsules in pHEMA coAc');
+            title('56 nm spheres in microcapsules in pHEMA coAc');
     end
 
     xlabel('Wavenumber (cm^-^1)'); % x-axis label
