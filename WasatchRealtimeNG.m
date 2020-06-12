@@ -12,7 +12,7 @@
 % -------------------------------------------------------------------------
 % % Variables. Might need to change depending on what you want to do.
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
-waitBetweenAverages = 30.; % Acquire one averaged sample 2 minutes apart 6/3: chg from 120 for calib curves
+waitBetweenAverages = 30.; % Acquire one averaged sample 2 minutes apart
 countBetweenPlots = 5; % Draw one out of every five averages
 counter = 0;
 increment = 60; % up from 30 for 20201
