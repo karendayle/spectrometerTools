@@ -36,6 +36,12 @@ magenta = [1.0, 0.0, 1.0];
 global pH
 pH = [ 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5 ];
 
+global myX
+global myY1
+global myY2
+global myErr1
+global myErr2
+
 % The paths to each hydrogel type and gel number
 % This script deals with the four gels made on 6/3/2020 by SP
 global dirStem
@@ -92,6 +98,12 @@ myDebug = 0;
  
 for J =1:4
     figure
+    myX = zeros(1, 8, 'double');
+    myY1 = zeros(1, 8, 'double');
+    myY2 = zeros(1, 8, 'double');
+    myErr1 = zeros(1, 8, 'double');
+    myErr2 = zeros(1, 8, 'double'); 
+    
     switch J
         case 1
             dirStem = dirStem1;
@@ -142,9 +154,14 @@ for J =1:4
                 num8 = myPlot(subDirStem8, pHcolor, K);
                 fprintf('Case 8: %d spectra\n', num8);  
         end
+
     end   
-    
-%     ylim([0. 1.2]);
+%    errorbar(myX, myY1, myErr1); % 1430/cm 
+    xlim([4 7.5]);
+    ylim([0. 0.2]);
+%     figure
+    errorbar(myX, myY2, myErr2); % 1702/cm
+%     
 %     y = 1.1; 
 %     x = 1650;
 %     deltaY = 0.1;
@@ -315,12 +332,12 @@ function g = myPlot(subDirStem, myColor, K)
             normalized2= numerator2/denominator;
             
             sum1 = sum1 + normalized1;
-            sum2 = sum2 + normalized1;
+            sum2 = sum2 + normalized2;
         end
         
         % calculate average
         avg1 = sum1/numberOfSpectra;
-        avg2 = sum1/numberOfSpectra;
+        avg2 = sum2/numberOfSpectra;
         
         % second pass on dataset to get (each point - average)^2
         % for standard deviation, need 
@@ -373,15 +390,25 @@ function g = myPlot(subDirStem, myColor, K)
         %plot(pH(K), normalized2);
         
         % Now plot stdDev as the array of error bars on the plot...    
-        %errorbar(thisdata(1,offset:end), normalized(offset:end), ...
-        %    stdDev(offset:end), 'Color', myColor);
-        errorbar(pH(K), normalized1, stdDev1, 'MarkerSize', 10, 'Color', myColor);
-        %errorbar(pH(K), normalized2, stdDev1, 'Color', myColor);
+        %errorbar(pH(K), normalized1, stdDev1, 'MarkerSize', 10, 'Color', myColor);
+        %errorbar(pH(K), normalized2, stdDev2, 'Color', myColor);
+        % Build up arrays to plot later
+        global myX
+        global myY1
+        global myY2
+        global myErr1
+        global myErr2
+        
+        myX(K) = pH(K);
+        myY1(K) = normalized1;
+        myErr1(K) = stdDev1;
+        myY2(K) = normalized2;
+        myErr2(K) = stdDev2;
 
         %xlim([xMin xMax]);
         %ylim([yMin yMax]);
-        hold on
-        fprintf('%d\n', I);
+        %hold on
+        %fprintf('%d\n', I);
         %pause(5);
     end
     g = numberOfSpectra;
