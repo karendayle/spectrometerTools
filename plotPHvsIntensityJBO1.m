@@ -66,7 +66,7 @@ lineThickness = 2;
 global numPoints;
 numPoints = 1024;
 global numPointsEachSide;
-numPointsEachSide = 4;
+numPointsEachSide = 2;
 
 % % Use the index 713 to get the intensity at the reference peak, is COO-
 % at 1582/cm. Note that the numPointsEachSide is used to take the area 
