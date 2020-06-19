@@ -66,7 +66,7 @@ lineThickness = 2;
 global numPoints;
 numPoints = 1024;
 global numPointsEachSide;
-numPointsEachSide = 2;
+numPointsEachSide = 4;
 
 % % Use the index 713 to get the intensity at the reference peak, is COO-
 % at 1582/cm. Note that the numPointsEachSide is used to take the area 
@@ -79,9 +79,6 @@ x1 = 614;
 % Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
 global x2;
 x2 = 794;
-
-global offset;
-offset = 300;
 
 global xMin;
 global xMax;
@@ -97,7 +94,6 @@ global myDebug;
 myDebug = 0;
  
 for J =1:4
-    figure
     myX = zeros(1, 8, 'double');
     myY1 = zeros(1, 8, 'double');
     myY2 = zeros(1, 8, 'double');
@@ -107,93 +103,84 @@ for J =1:4
     switch J
         case 1
             dirStem = dirStem1;
+            myTitle = '54nm MBA AuNPs in alginate gel#17 in static buffer for 1 hour';
         case 2
             dirStem = dirStem2;
+            myTitle = '54nm MBA AuNPs in PEG gel#18 in static buffer for 1 hour'
         case 3
             dirStem = dirStem3;
+            myTitle = '54nm MBA AuNPs in pHEMA gel#19 in static buffer for 1 hour'
         case 4
             dirStem = dirStem4;
+            myTitle = '54nm MBA AuNPs in pHEMA/coAc gel#20 in static buffer for 1 hour'
     end
     for K = 1:8
         switch K
             case 1
                 pHcolor = black;
-                num1 = myPlot(subDirStem1, pHcolor, K);
+                num1 = prepPlotData(subDirStem1, K);
                 fprintf('Case 1: %d spectra\n', num1);            
             case 2
                 pHcolor = magenta;
-                num2 = myPlot(subDirStem2, pHcolor, K);
+                num2 = prepPlotData(subDirStem2, K);
                 fprintf('Case 2: %d spectra\n', num2);
             case 3
                 pHcolor = cherry;
-                num3 = myPlot(subDirStem3, pHcolor, K);
+                num3 = prepPlotData(subDirStem3, K);
                 fprintf('Case 3: %d spectra\n', num3);
             case 4
                 pHcolor = red;
-                num4 = myPlot(subDirStem4, pHcolor, K);
+                num4 = prepPlotData(subDirStem4, K);
                 fprintf('Case 4: %d spectra\n', num4);
             case 5
                 pHcolor = rust;
                 % special case for pHEMA
                 if J==3
-                    num5 = myPlot("calib pH6 repeat2\1", pHcolor, K);
+                    num5 = prepPlotData("calib pH6 repeat2\1", K);
                 else
-                    num5 = myPlot(subDirStem5, pHcolor, K);
+                    num5 = prepPlotData(subDirStem5, K);
                 end
                 fprintf('Case 5: %d spectra\n', num5);
             case 6
                 pHcolor = gold;
-                num6 = myPlot(subDirStem6, pHcolor, K);
+                num6 = prepPlotData(subDirStem6, K);
                 fprintf('Case 6: %d spectra\n', num6);
             case 7
                 pHcolor = green;
-                num7 = myPlot(subDirStem7, pHcolor, K);
+                num7 = prepPlotData(subDirStem7, K);
                 fprintf('Case 7: %d spectra\n', num7);
             case 8
                 pHcolor = ciel;
-                num8 = myPlot(subDirStem8, pHcolor, K);
+                num8 = prepPlotData(subDirStem8, K);
                 fprintf('Case 8: %d spectra\n', num8);  
         end
 
-    end   
-%    errorbar(myX, myY1, myErr1); % 1430/cm 
+    end 
+    figure
+    errorbar(myX, myY1, myErr1, 'Color', red); % 1430/cm 
     xlim([4 7.5]);
     ylim([0. 0.2]);
-%     figure
-    errorbar(myX, myY2, myErr2); % 1702/cm
-%     
-%     y = 1.1; 
-%     x = 1650;
-%     deltaY = 0.1;
-%     text(x, y, '0 mg/dL', 'Color', green, 'FontSize', myTextFont);
-%     text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
-%     y = y - deltaY;
-%     text(x, y, '100 mg/dL', 'Color', gold, 'FontSize', myTextFont);
-%     text(x, y, '_________', 'Color', gold, 'FontSize', myTextFont);
-%     y = y - deltaY;
-%     text(x, y, '200 mg/dL', 'Color', rust, 'FontSize', myTextFont);
-%     text(x, y, '_________', 'Color', rust, 'FontSize', myTextFont);
-%     y = y - deltaY;
-%     text(x, y, '300 mg/dL', 'Color', red, 'FontSize', myTextFont);
-%     text(x, y, '_________', 'Color', red, 'FontSize', myTextFont);
-%     y = y - deltaY;
-%     text(x, y, '400 mg/dL', 'Color', cherry, 'FontSize', myTextFont);
-%     text(x, y, '_________', 'Color', cherry, 'FontSize', myTextFont);
-%     y = y - deltaY;
-%     text(x, y, 'o = local peak near 1430cm^-^1', 'Color', black, 'FontSize', myTextFont);
-%     y = y - deltaY;
-%     text(x, y, '+ = local peak near 1702cm^-^1', 'Color', black, 'FontSize', myTextFont);
+    hold on
+    errorbar(myX, myY2, myErr2, 'Color', blue); % 1702/cm
+    xlim([4 7.5]);
+    ylim([0. 0.2]);
 
-    hold off
-
-    % for IEEE figure
-    % title('54nm MBA Au NPs in alginate GOx gel#2 soaked in static glucose buffer overnight on quartz', ...
-    %     'FontSize', myTextFont);
-
+    title(myTitle, 'FontSize', myTextFont);
     xlabel('pH', 'FontSize', myTextFont); % x-axis label
-    ylabel('Normalized Intensity under curve near 1430 cm^-1', 'FontSize', myTextFont); % y-axis label
+    ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
     set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
-    % Plot each spectrum (intensity vs wavenumber in a new color overtop
+    
+    y = 0.18; 
+    x = 4.1;
+    deltaY = 0.02;
+    text(x, y, '1430 cm^-1 peak', 'Color', red, 'FontSize', myTextFont);
+    text(x, y, '_____________', 'Color', red, 'FontSize', myTextFont);
+    y = y - deltaY;
+    text(x, y, '1702 cm^-1 peak', 'Color', blue, 'FontSize', myTextFont);
+    text(x, y, '_____________', 'Color', blue, 'FontSize', myTextFont);
+    y = y - deltaY;
+    myStr = sprintf('using %d points under the each peak',numPointsEachSide * 2 + 1);
+    text(x, y, myStr, 'FontSize', myTextFont);
 end
 
 function d = getAreaUnderCurve(xCenter, spectrum)
@@ -257,23 +244,22 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end   
 
-function g = myPlot(subDirStem, myColor, K)
-    global blue
-    global rust
-    global gold
-    global purple
-    global green
-    global ciel
-    global cherry
-    global red
-    global black
+function g = prepPlotData(subDirStem, K)
+%     global blue
+%     global rust
+%     global gold
+%     global purple
+%     global green
+%     global ciel
+%     global cherry
+%     global red
+%     global black
     global dirStem
     global numPoints
     global x1
     global x2
     global xRef
     global tRef
-    global offset
     global xMin
     global xMax
     global yMin
@@ -383,15 +369,6 @@ function g = myPlot(subDirStem, myColor, K)
         stdDev1 = sqrt(sumSq1/numberOfSpectra);
         stdDev2 = sqrt(sumSq2/numberOfSpectra);
             
-        % plot the corrected signal
-        %plot(thisdata(1,offset:end), normalized(offset:end), 'Color', myColor, ...
-        %    'LineWidth', lineThickness);
-        %plot(pH(K), normalized1);
-        %plot(pH(K), normalized2);
-        
-        % Now plot stdDev as the array of error bars on the plot...    
-        %errorbar(pH(K), normalized1, stdDev1, 'MarkerSize', 10, 'Color', myColor);
-        %errorbar(pH(K), normalized2, stdDev2, 'Color', myColor);
         % Build up arrays to plot later
         global myX
         global myY1
