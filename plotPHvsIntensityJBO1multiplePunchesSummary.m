@@ -47,7 +47,7 @@ global myErr2
 % This script deals with the four gels made on 6/3/2020 by SP
 global dirStem
 
-newGels = 0; % set to 0 to use old gels and 1 to use new gels
+newGels = 1; % set to 0 to use old gels and 1 to use new gels
 if newGels 
     dirStem = [ ...
         "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 17\", ...
@@ -117,19 +117,21 @@ global myDebug;
 myDebug = 0;
 
 for J=1:4
+    myX = zeros(1, 8, 'double');
+    myY1 = zeros(1, 8, 'double');
+    myY2 = zeros(1, 8, 'double');
+    myErr1 = zeros(1, 8, 'double');
+    myErr2 = zeros(1, 8, 'double'); 
+    
     figure % one plot for each gel
+    
     if newGels 
-        maxM = 5;
+        maxM = 5; % all punches 1-5 of new gels
     else
-        maxM = 1;
+        maxM = 1; % 1a of old gels
     end
-    for M =1:maxM % all punches 1-5 of new gels, 1a of old gels
-        myX = zeros(1, 8, 'double');
-        myY1 = zeros(1, 8, 'double');
-        myY2 = zeros(1, 8, 'double');
-        myErr1 = zeros(1, 8, 'double');
-        myErr2 = zeros(1, 8, 'double'); 
-        
+    
+    for M =1:maxM 
         for K = 1:8 % all pH levels 4, 4.5, ..., 7.5
             if newGels
                 subDirWithPunch = subDirStem(K) + M + "\1";
@@ -145,17 +147,100 @@ for J=1:4
 
         % store these arrays to be able to make a combined plot for all
         % gels later
-        if J == 1
+        if J == 1 && M == 1
             allX = myX; % Use the same set of x values for all gels
-            allY1 = myY1; % Put the first gel's values into a row
-            allErr1 = myErr1;
-            allY2 = myY2;
-            allErr2 = myErr2;
-        else
-            allY1 = [allY1; myY1]; % Append the other gels' in subsequent rows
-            allErr1 = [allErr1; myErr1];
-            allY2 = [allY2; myY2];
-            allErr2 = [allErr2; myErr2];
+        end
+        
+        switch J
+            case 1
+                if M == 1
+                    allAlgY1 = myY1; % Put the first gel's values into a row
+                    allAlgErr1 = myErr1;
+                    allAlgY2 = myY2;
+                    allAlgErr2 = myErr2;
+                else
+                    allAlgY1 = [allAlgY1; myY1]; % Append the other gels' in subsequent rows
+                    allAlgErr1 = [allAlgErr1; myErr1];
+                    allAlgY2 = [allAlgY2; myY2];
+                    allAlgErr2 = [allAlgErr2; myErr2];
+                end
+            case 2
+                if M == 1
+                    allPEGY1 = myY1; % Put the first gel's values into a row
+                    allPEGErr1 = myErr1;
+                    allPEGY2 = myY2;
+                    allPEGErr2 = myErr2;
+                else
+                    allPEGY1 = [allPEGY1; myY1]; % Append the other gels' in subsequent rows
+                    allPEGErr1 = [allPEGErr1; myErr1];
+                    allPEGY2 = [allPEGY2; myY2];
+                    allPEGErr2 = [allPEGErr2; myErr2];
+                end
+            case 3
+                if M == 1
+                    allHEMAY1 = myY1; % Put the first gel's values into a row
+                    allHEMAErr1 = myErr1;
+                    allHEMAY2 = myY2;
+                    allHEMAErr2 = myErr2;
+                else
+                    allHEMAY1 = [allHEMAY1; myY1]; % Append the other gels' in subsequent rows
+                    allHEMAErr1 = [allHEMAErr1; myErr1];
+                    allHEMAY2 = [allHEMAY2; myY2];
+                    allHEMAErr2 = [allHEMAErr2; myErr2];
+                end
+            case 4
+                if M == 1
+                    allHEMACoY1 = myY1; % Put the first gel's values into a row
+                    allHEMACoErr1 = myErr1;
+                    allHEMACoY2 = myY2;
+                    allHEMACoErr2 = myErr2;
+                else
+                    allHEMACoY1 = [allHEMACoY1; myY1]; % Append the other gels' in subsequent rows
+                    allHEMACoErr1 = [allHEMACoErr1; myErr1];
+                    allHEMACoY2 = [allHEMACoY2; myY2];
+                    allHEMACoErr2 = [allHEMACoErr2; myErr2];
+                end
+        end
+    
+        % Now for the table of values for gel comparison
+        % get min, max, delta and %delta 
+        switch J % fill the correct array based on the type of gel
+            case 1
+                myAlgY1Min(M) = min(allAlgY1(M,:));    
+                myAlgY1Max(M) = max(allAlgY1(M,:));
+                myAlgY1Delta(M) = myAlgY1Max(M) - myAlgY1Min(M);
+                myAlgY1PercentDelta(M) = myAlgY1Delta(M)/myAlgY1Min(M)*100.;
+                myAlgY2Min(M) = min(allAlgY2(M,:));    
+                myAlgY2Max(M) = max(allAlgY2(M,:));
+                myAlgY2Delta(M) = myAlgY2Max(M) - myAlgY2Min(M);
+                myAlgY2PercentDelta(M) = myAlgY2Delta(M)/myAlgY2Min(M)*100.;
+            case 2
+                myPEGY1Min(M) = min(allPEGY1(M,:));    
+                myPEGY1Max(M) = max(allPEGY1(M,:));
+                myPEGY1Delta(M) = myPEGY1Max(M) - myPEGY1Min(M);
+                myPEGY1PercentDelta(M) = myPEGY1Delta(M)/myPEGY1Min(M)*100.;
+                myPEGY2Min(M) = min(allPEGY2(M,:));    
+                myPEGY2Max(M) = max(allPEGY2(M,:));
+                myPEGY2Delta(M) = myPEGY2Max(M) - myPEGY2Min(M);
+                myPEGY2PercentDelta(M) = myPEGY2Delta(M)/myPEGY2Min(M)*100.;
+            case 3                
+                myHEMAY1Min(M) = min(allHEMAY1(M,:));    
+                myHEMAY1Max(M) = max(allHEMAY1(M,:));
+                myHEMAY1Delta(M) = myHEMAY1Max(M) - myHEMAY1Min(M);
+                myHEMAY1PercentDelta(M) = myHEMAY1Delta(M)/myHEMAY1Min(M)*100.;
+                myHEMAY2Min(M) = min(allHEMAY2(M,:));    
+                myHEMAY2Max(M) = max(allHEMAY2(M,:));
+                myHEMAY2Delta(M) = myHEMAY2Max(M) - myHEMAY2Min(M);
+                myHEMAY2PercentDelta(M) = myHEMAY2Delta(M)/myHEMAY2Min(M)*100.;        
+            case 4
+                myHEMACoY1Min(M) = min(allHEMACoY1(M,:));    
+                myHEMACoY1Max(M) = max(allHEMACoY1(M,:));
+                myHEMACoY1Delta(M) = myHEMACoY1Max(M) - myHEMACoY1Min(M);
+                myHEMACoY1PercentDelta(M) = myHEMACoY1Delta(M)/myHEMACoY1Min(M)*100.;
+                myHEMACoY2Min(M) = min(allHEMACoY2(M,:));    
+                myHEMACoY2Max(M) = max(allHEMACoY2(M,:));
+                myHEMACoY2Delta(M) = myHEMACoY2Max(M) - myHEMACoY2Min(M);
+                myHEMACoY2PercentDelta(M) = myHEMACoY2Delta(M)/myHEMACoY2Min(M)*100.;
         end
     end
 
@@ -172,8 +257,7 @@ for J=1:4
     text(x, y, 'squares = 1702 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
     text(x, y, '______', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
-    %myStr = sprintf('using %d points under the each peak',numPointsEachSide * 2 + 1);
-    %text(x, y, myStr, 'FontSize', myTextFont);
+
     if newGels
         text(x, y, 'punch 1', 'Color', punchColor(1,:), 'FontSize', myTextFont);
         text(x, y, '_______', 'Color', punchColor(1,:), 'FontSize', myTextFont);
@@ -194,41 +278,54 @@ for J=1:4
         text(x, y, 'punch 1a', 'Color', punchColor(6,:), 'FontSize', myTextFont);
         text(x, y, '________', 'Color', punchColor(6,:), 'FontSize', myTextFont);
     end
-    
-    % Now for the table of values for gel comparison
-    % get min, max, delta and %delta 
-    myY1Min(J) = min(allY1(J,:));    
-    myY1Max(J) = max(allY1(J,:));
-    myY1Delta(J) = myY1Max(J) - myY1Min(J);
-    myY1PercentDelta(J) = myY1Delta(J)/myY1Min(J)*100.;
-    myY2Min(J) = min(allY2(J,:));    
-    myY2Max(J) = max(allY2(J,:));
-    myY2Delta(J) = myY2Max(J) - myY2Min(J);
-    myY2PercentDelta(J) = myY2Delta(J)/myY2Min(J)*100.;
 end
 
 % New, per 6/19 MJM comments
 % 7/1 TO DO: combine the punches
 figure % Put all of the 1430/cm curves on one plot
-plot(allX, allY1(1,:), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', red, 'linewidth', 2);
-hold on;
-errorbar(allX, allY1(1,:), allErr1(1,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
-hold on;
-plot(allX, allY1(2,:), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', blue, 'linewidth', 2);
-hold on;
-errorbar(allX, allY1(2,:), allErr1(2,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
-hold on;
-plot(allX, allY1(3,:), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', green, 'linewidth', 2);
-hold on;
-errorbar(allX, allY1(3,:), allErr1(3,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
-hold on;
-plot(allX, allY1(4,:), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', purple, 'linewidth', 2);
-hold on;
-errorbar(allX, allY1(4,:), allErr1(4,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+
+myColor = [ red; blue; green; purple ];
+for J = 1:4
+    switch J
+        case 1
+            for M = 1:maxM
+                plot(allX, allAlgY1(M,:), '-o', 'LineStyle','none', ...
+                    'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+                hold on;
+                errorbar(allX, allAlgY1(M,:), allAlgErr1(M,:), 'LineStyle','none', ...
+                    'Color', black,'linewidth', 2);
+                hold on;
+            end
+        case 2
+            for M = 1:maxM
+                plot(allX, allPEGY1(M,:), '-o', 'LineStyle','none', ...
+                    'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+                hold on;
+                errorbar(allX, allPEGY1(M,:), allPEGErr1(M,:), 'LineStyle','none', ...
+                    'Color', black,'linewidth', 2);
+                hold on;
+            end
+        case 3
+            for M = 1:maxM
+                plot(allX, allHEMAY1(M,:), '-o', 'LineStyle','none', ...
+                    'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+                hold on;
+                errorbar(allX, allHEMAY1(M,:), allHEMAErr1(M,:), 'LineStyle','none', ...
+                    'Color', black,'linewidth', 2);
+                hold on;
+            end
+        case 4
+            for M = 1:maxM
+                plot(allX, allHEMACoY1(M,:), '-o', 'LineStyle','none', ...
+                    'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+                hold on;
+                errorbar(allX, allHEMACoY1(M,:), allHEMACoErr1(M,:), 'LineStyle','none', ...
+                    'Color', black,'linewidth', 2);
+                hold on;
+            end
+    end
+end
+
 title('1430 cm-1 normalized peak for all gels', 'FontSize', myTextFont);
 xlabel('pH', 'FontSize', myTextFont); % x-axis label
 ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
@@ -252,25 +349,47 @@ text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 
 % 7/1 TO DO: combine the punches
 figure % Put all of the 170%2/cm curves on one plot
-plot(allX, allY2(1,:), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', red, 'linewidth', 2);
-hold on;
-errorbar(allX, allY2(1,:), allErr2(1,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
-hold on;
-plot(allX, allY2(2,:), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', blue, 'linewidth', 2);
-hold on;
-errorbar(allX, allY2(2,:), allErr2(2,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
-hold on;
-plot(allX, allY2(3,:), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', green, 'linewidth', 2);
-hold on;
-errorbar(allX, allY2(3,:), allErr2(3,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
-hold on;
-plot(allX, allY2(4,:), '-s', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', purple, 'linewidth', 2);
-hold on;
-errorbar(allX, allY2(4,:), allErr2(4,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+for J = 1:4
+    switch J
+        case 1
+            for M = 1:maxM
+                plot(allX, allAlgY2(M,:), '-o', 'LineStyle','none', ...
+                    'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+                hold on;
+                errorbar(allX, allAlgY2(M,:), allAlgErr2(M,:), 'LineStyle','none', ...
+                    'Color', black,'linewidth', 2);
+                hold on;
+            end
+        case 2
+            for M = 1:maxM
+                plot(allX, allPEGY2(M,:), '-o', 'LineStyle','none', ...
+                    'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+                hold on;
+                errorbar(allX, allPEGY2(M,:), allPEGErr2(M,:), 'LineStyle','none', ...
+                    'Color', black,'linewidth', 2);
+                hold on;
+            end
+        case 3
+            for M = 1:maxM
+                plot(allX, allHEMAY2(M,:), '-o', 'LineStyle','none', ...
+                    'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+                hold on;
+                errorbar(allX, allHEMAY2(M,:), allHEMAErr2(M,:), 'LineStyle','none', ...
+                    'Color', black,'linewidth', 2);
+                hold on;
+            end
+        case 4
+            for M = 1:maxM
+                plot(allX, allHEMACoY2(M,:), '-o', 'LineStyle','none', ...
+                    'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+                hold on;
+                errorbar(allX, allHEMACoY2(M,:), allHEMACoErr2(M,:), 'LineStyle','none', ...
+                    'Color', black,'linewidth', 2);
+                hold on;
+            end
+    end
+end
+
 title('1702 cm-1 normalized peak for all gels', 'FontSize', myTextFont);
 xlabel('pH', 'FontSize', myTextFont); % x-axis label
 ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
@@ -292,11 +411,34 @@ y = y - deltaY;
 text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
 text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 
-for J = 1:4
-    fprintf('%.3f %.3f %.3f %.3f\n', myY1Min(J), myY1Max(J), myY1Delta(J), myY1PercentDelta(J));
+% From this point on, condense the data for all punches down to average
+% and std dev for each gel type
+% Compute the average and std dev of the punches of each gel
+% This is only meaningful when number of punches > 1
+for M=1:maxM
+    fprintf('%.3f %.3f %.3f %.3f\n', myAlgY1Min(M), myAlgY1Max(M), myAlgY1Delta(M), myAlgY1PercentDelta(M));
+    
 end
-for J = 1:4
-    fprintf('%.3f %.3f %.3f %.3f\n', myY2Min(J), myY2Max(J), myY2Delta(J), myY2PercentDelta(J));
+for M=1:maxM
+    fprintf('%.3f %.3f %.3f %.3f\n', myAlgY2Min(M), myAlgY2Max(M), myAlgY2Delta(M), myAlgY2PercentDelta(M));
+end
+for M=1:maxM
+    fprintf('%.3f %.3f %.3f %.3f\n', myPEGY1Min(M), myPEGY1Max(M), myPEGY1Delta(M), myPEGY1PercentDelta(M));
+end
+for M=1:maxM
+    fprintf('%.3f %.3f %.3f %.3f\n', myPEGY2Min(M), myPEGY2Max(M), myPEGY2Delta(M), myPEGY2PercentDelta(M));
+end
+for M=1:maxM
+    fprintf('%.3f %.3f %.3f %.3f\n', myHEMAY1Min(M), myHEMAY1Max(M), myHEMAY1Delta(M), myHEMAY1PercentDelta(M));
+end
+for M=1:maxM
+    fprintf('%.3f %.3f %.3f %.3f\n', myHEMAY2Min(M), myHEMAY2Max(M), myHEMAY2Delta(M), myHEMAY2PercentDelta(M));
+end
+for M=1:maxM
+    fprintf('%.3f %.3f %.3f %.3f\n', myHEMACoY1Min(M), myHEMACoY1Max(M), myHEMACoY1Delta(M), myHEMACoY1PercentDelta(M));
+end
+for M=1:maxM
+    fprintf('%.3f %.3f %.3f %.3f\n', myHEMACoY2Min(M), myHEMACoY2Max(M), myHEMACoY2Delta(M), myHEMACoY2PercentDelta(M));
 end
 
 function d = getAreaUnderCurve(xCenter, spectrum)
