@@ -326,7 +326,7 @@ for J = 1:4
     end
 end
 
-title('1430 cm-1 normalized peak for all gels', 'FontSize', myTextFont);
+title('1430 cm-1 normalized peak for all punches of all gels', 'FontSize', myTextFont);
 xlabel('pH', 'FontSize', myTextFont); % x-axis label
 ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
 set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
@@ -390,7 +390,7 @@ for J = 1:4
     end
 end
 
-title('1702 cm-1 normalized peak for all gels', 'FontSize', myTextFont);
+title('1702 cm-1 normalized peak for all punches of all gels', 'FontSize', myTextFont);
 xlabel('pH', 'FontSize', myTextFont); % x-axis label
 ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
 set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
@@ -415,31 +415,232 @@ text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 % and std dev for each gel type
 % Compute the average and std dev of the punches of each gel
 % This is only meaningful when number of punches > 1
-for M=1:maxM
-    fprintf('%.3f %.3f %.3f %.3f\n', myAlgY1Min(M), myAlgY1Max(M), myAlgY1Delta(M), myAlgY1PercentDelta(M));
+% As written, this std dev is ignoring the variance in the 5 averaged msmts
+% Want to plot these with err bars
+fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
+for K = 1:8
+    a = getAverageAndStdDev(allAlgY1(:,K));
+    myAlgY1allPunches(K) = a(1);
+    myAlgY1allPunchesStdDev(K) = a(2);
+    fprintf('pH(%d) alg 1430/cm %.3f %.3f\n', K, myAlgY1allPunches(K), myAlgY1allPunchesStdDev(K));
+        
+    a = getAverageAndStdDev(allAlgY2(:,K));
+    myAlgY2allPunches(K) = a(1);
+    myAlgY2allPunchesStdDev(K) = a(2);
+    fprintf('pH(%d) alg 1702/cm %.3f %.3f\n', K, myAlgY2allPunches(K), myAlgY2allPunchesStdDev(K));
     
+    a = getAverageAndStdDev(allPEGY1(:,K));
+    myPEGY1allPunches(K) = a(1);
+    myPEGY1allPunchesStdDev(K) = a(2);
+    fprintf('pH(%d) peg 1430/cm %.3f %.3f\n', K, myPEGY1allPunches(K), myPEGY1allPunchesStdDev(K));
+        
+    a = getAverageAndStdDev(allPEGY2(:,K));
+    myPEGY2allPunches(K) = a(1);
+    myPEGY2allPunchesStdDev(K) = a(2);
+    fprintf('pH(%d) peg 1702/cm %.3f %.3f\n', K, myPEGY2allPunches(K), myPEGY2allPunchesStdDev(K));
+    
+    a = getAverageAndStdDev(allHEMAY1(:,K));
+    myHEMAY1allPunches(K) = a(1);
+    myHEMAY1allPunchesStdDev(K) = a(2);
+    fprintf('pH(%d) pHE 1430/cm %.3f %.3f\n', K, myHEMAY1allPunches(K), myHEMAY1allPunchesStdDev(K));
+        
+    a = getAverageAndStdDev(allHEMAY2(:,K));
+    myHEMAY2allPunches(K) = a(1);
+    myHEMAY2allPunchesStdDev(K) = a(2);
+    fprintf('pH(%d) pHE 1702/cm %.3f %.3f\n', K, myHEMAY2allPunches(K), myHEMAY2allPunchesStdDev(K));
+    
+    a = getAverageAndStdDev(allHEMACoY1(:,K));
+    myHEMACoY1allPunches(K) = a(1);
+    myHEMACoY1allPunchesStdDev(K) = a(2);
+    fprintf('pH(%d) pHC 1430/cm %.3f %.3f\n', K, myHEMACoY1allPunches(K), myHEMACoY1allPunchesStdDev(K));
+        
+    a = getAverageAndStdDev(allHEMACoY2(:,K));
+    myHEMACoY2allPunches(K) = a(1);
+    myHEMACoY2allPunchesStdDev(K) = a(2);
+    fprintf('pH(%d) pHC 1702/cm %.3f %.3f\n', K, myHEMACoY2allPunches(K), myHEMACoY2allPunchesStdDev(K));
 end
-for M=1:maxM
+
+% Plot the averages of the punches with their std dev on one plot for all
+% gel types
+figure
+for J = 1:4
+    switch J
+        case 1         
+            plot(allX, myAlgY1allPunches, '-o', 'LineStyle','none', ...
+                'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+            hold on;
+            errorbar(allX, myAlgY1allPunches, myAlgY1allPunchesStdDev, 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on;
+        case 2
+            plot(allX, myPEGY1allPunches, '-o', 'LineStyle','none', ...
+                'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+            hold on;
+            errorbar(allX, myPEGY1allPunches, myPEGY1allPunchesStdDev, 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on;        
+        case 3
+            plot(allX, myHEMAY1allPunches, '-o', 'LineStyle','none', ...
+                'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+            hold on;
+            errorbar(allX, myHEMAY1allPunches, myHEMAY1allPunchesStdDev, 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on;
+        case 4
+            plot(allX,  myHEMACoY1allPunches, '-o', 'LineStyle','none', ...
+                'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+            hold on;
+            errorbar(allX,  myHEMACoY1allPunches,  myHEMACoY1allPunchesStdDev, 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on;
+    end 
+end
+title('1430 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont);
+xlabel('pH', 'FontSize', myTextFont); % x-axis label
+ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
+xlim([3.5 8]);
+ylim([0. 0.25]);
+y = 0.25; 
+x = 4.1;
+deltaY = 0.02;
+text(x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
+text(x, y, '______', 'Color', red, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
+text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
+text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
+text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+
+figure
+for J = 1:4
+    switch J
+        case 1         
+            plot(allX, myAlgY2allPunches, '-o', 'LineStyle','none', ...
+                'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+            hold on;
+            errorbar(allX, myAlgY2allPunches, myAlgY2allPunchesStdDev, 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on;
+        case 2
+            plot(allX, myPEGY2allPunches, '-o', 'LineStyle','none', ...
+                'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+            hold on;
+            errorbar(allX, myPEGY2allPunches, myPEGY2allPunchesStdDev, 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on;        
+        case 3
+            plot(allX, myHEMAY2allPunches, '-o', 'LineStyle','none', ...
+                'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+            hold on;
+            errorbar(allX, myHEMAY2allPunches, myHEMAY2allPunchesStdDev, 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on;
+        case 4
+            plot(allX,  myHEMACoY2allPunches, '-o', 'LineStyle','none', ...
+                'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
+            hold on;
+            errorbar(allX,  myHEMACoY2allPunches,  myHEMACoY2allPunchesStdDev, 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on;
+    end 
+end
+title('1702 cm-1 normalized peak for average and std dev of all punches of all gels', 'FontSize', myTextFont);
+xlabel('pH', 'FontSize', myTextFont); % x-axis label
+ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
+xlim([3.5 8]);
+ylim([0. 0.25]);
+y = 0.2; 
+x = 6.5;
+deltaY = 0.015;
+text(x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
+text(x, y, '______', 'Color', red, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
+text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
+text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
+y = y - deltaY;
+text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
+text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+
+% Extract min, max and delta from the arrays of averaged values of all
+% punches. Put these values in an additional row of the matrix created 
+% for the individual punches
+for J = 1:4
+    % Now for the table of values for gel comparison
+    % get min, max, delta and %delta 
+    switch J % fill the correct array based on the type of gel
+        case 1
+            myAlgY1Min(maxM+1) = min(myAlgY1allPunches);    
+            myAlgY1Max(maxM+1) = max(myAlgY1allPunches);
+            myAlgY1Delta(maxM+1) = myAlgY1Max(maxM+1) - myAlgY1Min(maxM+1);
+            myAlgY1PercentDelta(maxM+1) = myAlgY1Delta(maxM+1)/myAlgY1Min(maxM+1)*100.;
+            myAlgY2Min(maxM+1) = min(myAlgY2allPunches);    
+            myAlgY2Max(maxM+1) = max(myAlgY2allPunches);
+            myAlgY2Delta(maxM+1) = myAlgY2Max(maxM+1) - myAlgY2Min(maxM+1);
+            myAlgY2PercentDelta(maxM+1) = myAlgY2Delta(maxM+1)/myAlgY2Min(maxM+1)*100.;
+        case 2
+            myPEGY1Min(maxM+1) = min(myPEGY1allPunches);    
+            myPEGY1Max(maxM+1) = max(myPEGY1allPunches);
+            myPEGY1Delta(maxM+1) = myPEGY1Max(maxM+1) - myPEGY1Min(maxM+1);
+            myPEGY1PercentDelta(maxM+1) = myPEGY1Delta(maxM+1)/myPEGY1Min(maxM+1)*100.;
+            myPEGY2Min(maxM+1) = min(myPEGY2allPunches);    
+            myPEGY2Max(maxM+1) = max(myPEGY2allPunches);
+            myPEGY2Delta(maxM+1) = myPEGY2Max(maxM+1) - myPEGY2Min(maxM+1);
+            myPEGY2PercentDelta(maxM+1) = myPEGY2Delta(maxM+1)/myPEGY2Min(maxM+1)*100.;
+        case 3                
+            myHEMAY1Min(maxM+1) = min(myHEMAY1allPunches);    
+            myHEMAY1Max(maxM+1) = max(myHEMAY1allPunches);
+            myHEMAY1Delta(maxM+1) = myHEMAY1Max(maxM+1) - myHEMAY1Min(maxM+1);
+            myHEMAY1PercentDelta(maxM+1) = myHEMAY1Delta(maxM+1)/myHEMAY1Min(maxM+1)*100.;
+            myHEMAY2Min(maxM+1) = min(myHEMAY2allPunches);    
+            myHEMAY2Max(maxM+1) = max(myHEMAY2allPunches);
+            myHEMAY2Delta(maxM+1) = myHEMAY2Max(maxM+1) - myHEMAY2Min(maxM+1);
+            myHEMAY2PercentDelta(maxM+1) = myHEMAY2Delta(maxM+1)/myHEMAY2Min(maxM+1)*100.;        
+        case 4
+            myHEMACoY1Min(maxM+1) = min(myHEMACoY1allPunches);    
+            myHEMACoY1Max(maxM+1) = max(myHEMACoY1allPunches);
+            myHEMACoY1Delta(maxM+1) = myHEMACoY1Max(maxM+1) - myHEMACoY1Min(maxM+1);
+            myHEMACoY1PercentDelta(maxM+1) = myHEMACoY1Delta(maxM+1)/myHEMACoY1Min(maxM+1)*100.;
+            myHEMACoY2Min(maxM+1) = min(myHEMACoY2allPunches);    
+            myHEMACoY2Max(maxM+1) = max(myHEMACoY2allPunches);
+            myHEMACoY2Delta(maxM+1) = myHEMACoY2Max(maxM+1) - myHEMACoY2Min(maxM+1);
+            myHEMACoY2PercentDelta(maxM+1) = myHEMACoY2Delta(maxM+1)/myHEMACoY2Min(maxM+1)*100.;
+    end
+end
+
+for M=1:maxM+1
+    fprintf('%.3f %.3f %.3f %.3f\n', myAlgY1Min(M), myAlgY1Max(M), myAlgY1Delta(M), myAlgY1PercentDelta(M));
+end
+for M=1:maxM+1
     fprintf('%.3f %.3f %.3f %.3f\n', myAlgY2Min(M), myAlgY2Max(M), myAlgY2Delta(M), myAlgY2PercentDelta(M));
 end
-for M=1:maxM
+for M=1:maxM+1
     fprintf('%.3f %.3f %.3f %.3f\n', myPEGY1Min(M), myPEGY1Max(M), myPEGY1Delta(M), myPEGY1PercentDelta(M));
 end
-for M=1:maxM
+for M=1:maxM+1
     fprintf('%.3f %.3f %.3f %.3f\n', myPEGY2Min(M), myPEGY2Max(M), myPEGY2Delta(M), myPEGY2PercentDelta(M));
 end
-for M=1:maxM
+for M=1:maxM+1
     fprintf('%.3f %.3f %.3f %.3f\n', myHEMAY1Min(M), myHEMAY1Max(M), myHEMAY1Delta(M), myHEMAY1PercentDelta(M));
 end
-for M=1:maxM
+for M=1:maxM+1
     fprintf('%.3f %.3f %.3f %.3f\n', myHEMAY2Min(M), myHEMAY2Max(M), myHEMAY2Delta(M), myHEMAY2PercentDelta(M));
 end
-for M=1:maxM
+for M=1:maxM+1
     fprintf('%.3f %.3f %.3f %.3f\n', myHEMACoY1Min(M), myHEMACoY1Max(M), myHEMACoY1Delta(M), myHEMACoY1PercentDelta(M));
 end
-for M=1:maxM
+for M=1:maxM+1
     fprintf('%.3f %.3f %.3f %.3f\n', myHEMACoY2Min(M), myHEMACoY2Max(M), myHEMACoY2Delta(M), myHEMACoY2PercentDelta(M));
 end
+% end of main program
 
 function d = getAreaUnderCurve(xCenter, spectrum)
     global numPointsEachSide;
@@ -671,5 +872,29 @@ function g = prepPlotData(J, subDirStem, K, myColor, M)
         ylim([0. max(myY1(K),0.2)]);
     end
     g = numberOfSpectra;
+end
+
+function h = getAverageAndStdDev(dataPoints)
+        %Pass in array of points
+        myN = length(dataPoints);
+        mySum = 0;
+        mySumSq = 0;
+        for I = 1 : myN
+            mySum = mySum + dataPoints(I);
+        end
+        % calculate average
+        myAvg = mySum/myN;
+        
+        % second pass on dataset to get (each point - average)^2
+        % for standard deviation, need 
+        for I = 1 : myN
+            % 4. Add to the sum of the squares
+            mySumSq = mySumSq + (dataPoints(I) - myAvg).^2; 
+        end
+        
+        % 5. Compute standard deviation at each index of the averaged spectra 
+        myStdDev = sqrt(mySumSq/myN);
+
+        h = [ myAvg, myStdDev ];
 end
   
