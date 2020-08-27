@@ -46,20 +46,18 @@ global myErr2
 % This script deals with the four gels made on 6/3/2020 by SP
 global dirStem
 
-dirStem1 = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 17\";
-dirStem2 = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 18\";
-dirStem3 = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 19\";
-dirStem4 = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 20\";
-
-% These are common to all gels
-subDirStem1 = "calib pH4\1";
-subDirStem2 = "calib pH4.5\1";
-subDirStem3 = "calib pH5\1";
-subDirStem4 = "calib pH5.5\1";
-subDirStem5 = "calib pH6\1";
-subDirStem6 = "calib pH6.5\1";
-subDirStem7 = "calib pH7\1";
-subDirStem8 = "calib pH7.5\1";
+newGels = 1; % set to 0 to use old gels and 1 to use new gels
+if newGels 
+    dirStem1 = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 17\";
+    dirStem2 = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 18\";
+    dirStem3 = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 19\";
+    dirStem4 = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 20\";
+else
+    dirStem1 = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\";
+    dirStem2 = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\";
+    dirStem3 = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\";
+    dirStem4 = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\";
+end
 
 global lineThickness;
 lineThickness = 2;
@@ -92,84 +90,182 @@ myTextFont = 30;
 
 global myDebug;
 myDebug = 0;
- 
-for J =1:4
-    myX = zeros(1, 8, 'double');
-    myY1 = zeros(1, 8, 'double');
-    myY2 = zeros(1, 8, 'double');
-    myErr1 = zeros(1, 8, 'double');
-    myErr2 = zeros(1, 8, 'double'); 
-    
-    switch J
-        case 1
-            dirStem = dirStem1;
-            myTitle = '54nm MBA AuNPs in alginate gel#17 in static buffer for 1 hour';
-        case 2
-            dirStem = dirStem2;
-            myTitle = '54nm MBA AuNPs in PEG gel#18 in static buffer for 1 hour'
-        case 3
-            dirStem = dirStem3;
-            myTitle = '54nm MBA AuNPs in pHEMA gel#19 in static buffer for 1 hour'
-        case 4
-            dirStem = dirStem4;
-            myTitle = '54nm MBA AuNPs in pHEMA/coAc gel#20 in static buffer for 1 hour'
-    end
-    for K = 1:8
-        switch K
+for J=1:4
+    figure
+    for M =1:5 % repeat for all punches 1-5 of new gels, 1a of old gels
+        switch M
             case 1
-                pHcolor = black;
-                num1 = prepPlotData(subDirStem1, K);
-                fprintf('Case 1: %d spectra\n', num1);            
+                subDirStem1 = "pH4 punch1\1";
+                %subDirStem1 = "pH4 repeat punch1\1"; % special case of "old" gels: 12-14 and 16
+                subDirStem2 = "pH4.5 punch1\1";
+                subDirStem3 = "pH5 punch1\1";
+                subDirStem4 = "pH5.5 punch1\1";
+                subDirStem5 = "pH6 punch1\1";
+                subDirStem6 = "pH6.5 punch1\1";
+                subDirStem7 = "pH7 punch1\1";
+                subDirStem8 = "pH7.5 punch1\1";
             case 2
-                pHcolor = magenta;
-                num2 = prepPlotData(subDirStem2, K);
-                fprintf('Case 2: %d spectra\n', num2);
+                subDirStem1 = "pH4 punch2\1";
+                subDirStem2 = "pH4.5 punch2\1";
+                subDirStem3 = "pH5 punch2\1";
+                subDirStem4 = "pH5.5 punch2\1";
+                subDirStem5 = "pH6 punch2\1";
+                subDirStem6 = "pH6.5 punch2\1";
+                subDirStem7 = "pH7 punch2\1";
+                subDirStem8 = "pH7.5 punch2\1";
             case 3
-                pHcolor = cherry;
-                num3 = prepPlotData(subDirStem3, K);
-                fprintf('Case 3: %d spectra\n', num3);
+                subDirStem1 = "pH4 punch3\1";
+                subDirStem2 = "pH4.5 punch3\1";
+                subDirStem3 = "pH5 punch3\1";
+                subDirStem4 = "pH5.5 punch3\1";
+                subDirStem5 = "pH6 punch3\1";
+                subDirStem6 = "pH6.5 punch3\1";
+                subDirStem7 = "pH7 punch3\1";
+                subDirStem8 = "pH7.5 punch3\1";
             case 4
-                pHcolor = red;
-                num4 = prepPlotData(subDirStem4, K);
-                fprintf('Case 4: %d spectra\n', num4);
+                subDirStem1 = "pH4 punch4\1";
+                subDirStem2 = "pH4.5 punch4\1";
+                subDirStem3 = "pH5 punch4\1";
+                subDirStem4 = "pH5.5 punch4\1";
+                subDirStem5 = "pH6 punch4\1";
+                subDirStem6 = "pH6.5 punch4\1";
+                subDirStem7 = "pH7 punch4\1";
+                subDirStem8 = "pH7.5 punch4\1";
             case 5
-                pHcolor = rust;
-                % special case for pHEMA
-                if J==3
-                    num5 = prepPlotData("calib pH6 repeat2\1", K);
-                else
-                    num5 = prepPlotData(subDirStem5, K);
-                end
-                fprintf('Case 5: %d spectra\n', num5);
+                subDirStem1 = "pH4 punch5\1";
+                subDirStem2 = "pH4.5 punch5\1";
+                subDirStem3 = "pH5 punch5\1";
+                subDirStem4 = "pH5.5 punch5\1";
+                subDirStem5 = "pH6 punch5\1";
+                subDirStem6 = "pH6.5 punch5\1";
+                subDirStem7 = "pH7 punch5\1";
+                subDirStem8 = "pH7.5 punch5\1";
             case 6
-                pHcolor = gold;
-                num6 = prepPlotData(subDirStem6, K);
-                fprintf('Case 6: %d spectra\n', num6);
-            case 7
-                pHcolor = green;
-                num7 = prepPlotData(subDirStem7, K);
-                fprintf('Case 7: %d spectra\n', num7);
-            case 8
-                pHcolor = ciel;
-                num8 = prepPlotData(subDirStem8, K);
-                fprintf('Case 8: %d spectra\n', num8);  
+                subDirStem1 = "pH4 punch1a\1";
+                subDirStem2 = "pH4.5 punch1a\1";
+                subDirStem3 = "pH5 punch1a\1";
+                subDirStem4 = "pH5.5 punch1a\1";
+                subDirStem5 = "pH6 punch1a\1";
+                subDirStem6 = "pH6.5 punch1a\1";
+                subDirStem7 = "pH7 punch1a\1";
+                subDirStem8 = "pH7.5 punch1a\1";
         end
 
-    end 
-    figure
-    errorbar(myX, myY1, myErr1, 'Color', red); % 1430/cm 
-    xlim([4 7.5]);
-    ylim([0. 0.2]);
-    hold on
-    errorbar(myX, myY2, myErr2, 'Color', blue); % 1702/cm
-    xlim([4 7.5]);
-    ylim([0. 0.2]);
+        myX = zeros(1, 8, 'double');
+        myY1 = zeros(1, 8, 'double');
+        myY2 = zeros(1, 8, 'double');
+        myErr1 = zeros(1, 8, 'double');
+        myErr2 = zeros(1, 8, 'double'); 
+
+        if newGels
+            switch J
+                case 1
+                    dirStem = dirStem1;
+                    myTitle = '54nm MBA AuNPs in alginate gel#17 in static buffer for 1 hour';
+                case 2
+                    dirStem = dirStem2;
+                    myTitle = '54nm MBA AuNPs in PEG gel#18 in static buffer for 1 hour'
+                case 3
+                    dirStem = dirStem3;
+                    myTitle = '54nm MBA AuNPs in pHEMA gel#19 in static buffer for 1 hour'
+                case 4
+                    dirStem = dirStem4;
+                    myTitle = '54nm MBA AuNPs in pHEMA/coAc gel#20 in static buffer for 1 hour'
+            end
+        else
+            switch J
+                case 1
+                    dirStem = dirStem1;
+                    myTitle = '54nm MBA AuNPs in alginate gel#12 in static buffer for 1 hour';
+                case 2
+                    dirStem = dirStem2;
+                    myTitle = '54nm MBA AuNPs in PEG gel#16 in static buffer for 1 hour'
+                case 3
+                    dirStem = dirStem3;
+                    myTitle = '54nm MBA AuNPs in pHEMA gel#13 in static buffer for 1 hour'
+                case 4
+                    dirStem = dirStem4;
+                    myTitle = '54nm MBA AuNPs in pHEMA/coAc gel#14 in static buffer for 1 hour'
+            end
+        end
+        for K = 2:8
+            switch K
+                case 1
+                    pHcolor = black;
+                    numSpectra(K) = prepPlotData(subDirStem1, K, pHcolor);
+                case 2
+                    pHcolor = magenta;
+                    numSpectra(K) = prepPlotData(subDirStem2, K, pHcolor);
+                case 3
+                    pHcolor = cherry;
+                    numSpectra(K) = prepPlotData(subDirStem3, K, pHcolor);
+                case 4
+                    pHcolor = red;
+                    numSpectra(K) = prepPlotData(subDirStem4, K, pHcolor);
+                case 5
+                    pHcolor = rust;
+                    % special case for pHEMA
+                    if J==3 & newGels
+                        numSpectra(K) = prepPlotData("pH6 repeat2 punch1\1", K, pHcolor);
+                    else
+                        numSpectra(K) = prepPlotData(subDirStem5, K, pHcolor);
+                    end
+                case 6
+                    pHcolor = gold;
+                    numSpectra(K) = prepPlotData(subDirStem6, K, pHcolor);
+                case 7
+                    pHcolor = green;
+                    numSpectra(K) = prepPlotData(subDirStem7, K, pHcolor);
+                case 8
+                    pHcolor = ciel;
+                    numSpectra(K) = prepPlotData(subDirStem8, K, pHcolor);
+            end
+            fprintf('Case %d: %d spectra\n', K, numSpectra(K));    
+        end 
+        %figure
+        % To get the error bars to show up use different color than marker;
+        % to get the second color, need to draw twice per:
+        % https://www.mathworks.com/matlabcentral/answers/488524-different-error-bar-color-than-the-plot
+        % Also, MJM doesn't want a line btw points
+        % Note that order matters: the markers will cover the error bars if
+        % drawn last
+
+    %     % part 1: do the 1430 cm-1 plot
+    %     plot(myX, myY1, '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', red); 
+    %     hold on
+    %     errorbar(myX, myY1, myErr1, 'LineStyle','none', 'Color', black,'linewidth', 2);
+    %     xlim([4 7.5]);
+    %     ylim([0. 0.2]);
+    %     hold on
+    %     
+    %     % part 2: do the 1702 cm-1 plot
+    %     plot(myX, myY2, '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', blue); 
+    %     hold on
+    %     errorbar(myX, myY2, myErr2, 'LineStyle','none', 'Color', black,'linewidth', 2);
+    %     xlim([4 7.5]);
+    %     ylim([0. 0.2]);
+    %     hold on
+
+        %NEW: store these arrays to be able to make a combined plot for all
+        %gels later
+        if J == 1
+            allX = myX; % Use the same set of x values for all gels
+            allY1 = myY1; % Put the first gel's values into a row
+            allErr1 = myErr1;
+            allY2 = myY2;
+            allErr2 = myErr2;
+        else
+            allY1 = [allY1; myY1]; % Append the other gels' in subsequent rows
+            allErr1 = [allErr1; myErr1];
+            allY2 = [allY2; myY2];
+            allErr2 = [allErr2; myErr2];
+        end
+    end
 
     title(myTitle, 'FontSize', myTextFont);
     xlabel('pH', 'FontSize', myTextFont); % x-axis label
     ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
     set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
-    
     y = 0.18; 
     x = 4.1;
     deltaY = 0.02;
@@ -179,8 +275,104 @@ for J =1:4
     text(x, y, '1702 cm^-1 peak', 'Color', blue, 'FontSize', myTextFont);
     text(x, y, '_____________', 'Color', blue, 'FontSize', myTextFont);
     y = y - deltaY;
-    myStr = sprintf('using %d points under the each peak',numPointsEachSide * 2 + 1);
-    text(x, y, myStr, 'FontSize', myTextFont);
+    %myStr = sprintf('using %d points under the each peak',numPointsEachSide * 2 + 1);
+    %text(x, y, myStr, 'FontSize', myTextFont);
+    
+    % Now for the table of values for gel comparison
+    % get min, max, delta and %delta 
+    myY1Min(J) = min(allY1(J,:));    
+    myY1Max(J) = max(allY1(J,:));
+    myY1Delta(J) = myY1Max(J) - myY1Min(J);
+    myY1PercentDelta(J) = myY1Delta(J)/myY1Min(J)*100.;
+    myY2Min(J) = min(allY2(J,:));    
+    myY2Max(J) = max(allY2(J,:));
+    myY2Delta(J) = myY2Max(J) - myY2Min(J);
+    myY2PercentDelta(J) = myY2Delta(J)/myY2Min(J)*100.;
+end
+% % New, per 6/19 MJM comments
+% figure % Put all of the 1430/cm curves on one plot
+% plot(allX, allY1(1,:), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', red);
+% hold on;
+% errorbar(allX, allY1(1,:), allErr1(1,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+% hold on;
+% plot(allX, allY1(2,:), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', blue);
+% hold on;
+% errorbar(allX, allY1(2,:), allErr1(2,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+% hold on;
+% plot(allX, allY1(3,:), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', green);
+% hold on;
+% errorbar(allX, allY1(3,:), allErr1(3,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+% hold on;
+% plot(allX, allY1(4,:), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', purple);
+% hold on;
+% errorbar(allX, allY1(4,:), allErr1(4,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+% title('1430 cm-1 normalized peak for all gels', 'FontSize', myTextFont);
+% xlabel('pH', 'FontSize', myTextFont); % x-axis label
+% ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+% set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
+% ylim([0. 0.25]);
+% y = 0.23; 
+% x = 4.1;
+% deltaY = 0.02;
+% text(x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
+% text(x, y, '______', 'Color', red, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
+% text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
+% text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
+% text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+% %y = y - deltaY;
+% %myStr = sprintf('using %d points under the each peak',numPointsEachSide * 2 + 1);
+% %text(x, y, myStr, 'FontSize', myTextFont);
+%     
+% figure % Put all of the 170%2/cm curves on one plot
+% plot(allX, allY2(1,:), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', red);
+% hold on;
+% errorbar(allX, allY2(1,:), allErr2(1,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+% hold on;
+% plot(allX, allY2(2,:), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', blue);
+% hold on;
+% errorbar(allX, allY2(2,:), allErr2(2,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+% hold on;
+% plot(allX, allY2(3,:), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', green);
+% hold on;
+% errorbar(allX, allY2(3,:), allErr2(3,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+% hold on;
+% plot(allX, allY2(4,:), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', purple);
+% hold on;
+% errorbar(allX, allY2(4,:), allErr2(4,:), 'LineStyle','none', 'Color', black,'linewidth', 2);
+% title('1702 cm-1 normalized peak for all gels', 'FontSize', myTextFont);
+% xlabel('pH', 'FontSize', myTextFont); % x-axis label
+% ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+% set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
+% ylim([0. 0.11]);
+% y = 0.1; 
+% x = 6.5;
+% deltaY = 0.01;
+% text(x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
+% text(x, y, '______', 'Color', red, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
+% text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
+% text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
+% text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+% y = y - deltaY;
+% %myStr = sprintf('using %d points under the each peak',numPointsEachSide * 2 + 1);
+% %text(x, y, myStr, 'FontSize', myTextFont);
+
+for J = 1:4
+    fprintf('%.3f %.3f %.3f %.3f\n', myY1Min(J), myY1Max(J), myY1Delta(J), myY1PercentDelta(J));
+end
+for J = 1:4
+    fprintf('%.3f %.3f %.3f %.3f\n', myY2Min(J), myY2Max(J), myY2Delta(J), myY2PercentDelta(J));
 end
 
 function d = getAreaUnderCurve(xCenter, spectrum)
@@ -244,16 +436,16 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end   
 
-function g = prepPlotData(subDirStem, K)
-%     global blue
-%     global rust
-%     global gold
-%     global purple
-%     global green
-%     global ciel
-%     global cherry
-%     global red
-%     global black
+function g = prepPlotData(subDirStem, K, myColor)
+    global blue
+    global rust
+    global gold
+    global purple
+    global green
+    global ciel
+    global cherry
+    global red
+    global black
     global dirStem
     global numPoints
     global x1
@@ -387,6 +579,22 @@ function g = prepPlotData(subDirStem, K)
         %hold on
         %fprintf('%d\n', I);
         %pause(5);
+        
+        % part 1: do the 1430 cm-1 plot
+        plot(myX(K), myY1(K), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', myColor); 
+        hold on
+        errorbar(myX(K), myY1(K), myErr1(K), 'LineStyle','none', 'Color', black,'linewidth', 2);
+        xlim([4 7.5]);
+        ylim([0. 0.2]);
+        hold on
+
+        % part 2: do the 1702 cm-1 plot
+        plot(myX(K), myY2(K), '.', 'LineStyle','none', 'MarkerSize', 40, 'Color', myColor); 
+        hold on
+        errorbar(myX(K), myY2(K), myErr2(K), 'LineStyle','none', 'Color', black,'linewidth', 2);
+        xlim([4 7.5]);
+        ylim([0. 0.2]);
+        hold on
     end
     g = numberOfSpectra;
 end

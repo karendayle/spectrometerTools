@@ -7,7 +7,20 @@
 % Calculate the std dev for each point based on the set of 5 avg*.txt files
 % (which are already averages of 5 themselves) and use stddev for error bars
 % First, make plots for each of the gels (#17, 18, 19,20) made 6/3/2020
+
 % Dayle Kotturi July 2020, time of COVID
+% Modifications from JBO1 script:
+% 1. first time automating xlim, ylim and x,y position of legends from
+% range of plotted data
+% 2. change xRef, x1 and x2 global values to go back and forth between
+% plotting 1430, 1702 raw peaks, normalized peaks and plotting
+% 1072, 1582 raw, normalized peaks
+% Make a switch for JB01 (1430, 1702 pks) and JB02 (1072 and 1582 pks)
+% Figure out why/how minY can be > maxY
+% Make deltaY = factor * (max Y - min Y), instead of just max Y
+% On plots with all gel types, use unique markers per gel
+% Add tiny amount to upper ylim to allow entire marker (and not just its 
+% center to fit
 
 % Colors:
 global black;
@@ -56,7 +69,7 @@ if newGels
         "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 20\" ...
         ];
     myTitle = [ ...
-        "54nm MBA AuNPs in alginate gel#17 in static buffer for 1 hour", ...
+        "54nm MBA AuNPs in alg gel#17 in static buffer for 1 hour", ...
         "54nm MBA AuNPs in PEG gel#18 in static buffer for 1 hour", ...
         "54nm MBA AuNPs in pHEMA gel#19 in static buffer for 1 hour", ...
         "54nm MBA AuNPs in pHEMA/coAc gel#20 in static buffer for 1 hour" ...
@@ -69,7 +82,7 @@ else
         "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\" ...
         ];
     myTitle = [ ...
-        "54nm MBA AuNPs in alginate gel#12 in static buffer for 1 hour", ...
+        "54nm MBA AuNPs in alg gel#12 in static buffer for 1 hour", ...
         "54nm MBA AuNPs in PEG gel#16 in static buffer for 1 hour", ...
         "54nm MBA AuNPs in pHEMA gel#13 in static buffer for 1 hour", ...
         "54nm MBA AuNPs in pHEMA/coAc gel#14 in static buffer for 1 hour" ...
@@ -88,23 +101,35 @@ numPoints = 1024;
 global numPointsEachSide;
 numPointsEachSide = 2;
 
-% % Use the index 713 to get the intensity at the reference peak, is COO-
+global xRef;
+% Use the index 713 to get the intensity at the reference peak, COO-,
 % at 1582/cm. Note that the numPointsEachSide is used to take the area 
 % under the curve around the center point xRef
-global xRef;
+xRef = 713;
 %xRef = 715; % was 713 for all analysis prior to 7/9/2020
-xRef = 0;
+%xRef = 406; % the 1072 "ref" peak
+%xRef = 0; % setting this to zero means NO NORMALIZATION of peaks
 
-% This is the change from JB01 script. Instead of pulling out the 1430 and
-% 1702 pH sensitive peaks, pull out the 1082 "ref" peak.
-% % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
+global peakSet;
+peakSet = 2; % Change this to change which peaks are plotted
+             % Set to 1 for 1430 & 1702; set to 2 for 1072 & 1582
 global x1;
-% x1 = 614;
-% % Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
 global x2;
-% x2 = 794;
-x1 = 406;
-x2 = 715;
+switch peakSet
+    case 1
+        % JB01 case:
+        % 1) Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
+        x1 = 614;
+        % 2) Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
+        x2 = 794;
+    case 2
+        % This is the change from JB01 script:
+        % Instead of pulling out the 1430 and 1702 pH sensitive peaks, 
+        % pull out the 1072 "ref" peak.
+        % JB02 case:
+        x1 = 406; % the 1072 "ref" peak
+        x2 = 715; % the 1582 "ref" peak
+end
 
 global xMin;
 global xMax;
@@ -119,14 +144,24 @@ myTextFont = 30;
 global myDebug;
 myDebug = 0;
 
+% 7/16/2020 New for automatic sizing of axes and positioning of legend
+% Min and max values of each gel
+minX  = zeros(1, 4, 'double');
+minY1 = zeros(1, 4, 'double');
+minY2 = zeros(1, 4, 'double');
+maxX  = zeros(1, 4, 'double');
+maxY1 = zeros(1, 4, 'double');
+maxY2 = zeros(1, 4, 'double');
+
 for J=1:4
-    myX = zeros(1, 8, 'double');
-    myY1 = zeros(1, 8, 'double');
-    myY2 = zeros(1, 8, 'double');
+    myX    = zeros(1, 8, 'double');
+    myY1   = zeros(1, 8, 'double');
+    myY2   = zeros(1, 8, 'double');
     myErr1 = zeros(1, 8, 'double');
     myErr2 = zeros(1, 8, 'double'); 
     
-    figure % one plot for each gel
+    figure % Figure #1-4: one plot for each gel, showing x1 and x2, with or
+           % without norm'n (depends on xRef).
     
     if newGels 
         maxM = 5; % all punches 1-5 of new gels
@@ -152,6 +187,8 @@ for J=1:4
         % gels later
         if J == 1 && M == 1
             allX = myX; % Use the same set of x values for all gels
+            minX(J) = min(myX);
+            maxX(J) = max(myX);
         end
         
         switch J
@@ -178,7 +215,7 @@ for J=1:4
                     allPEGErr1 = [allPEGErr1; myErr1];
                     allPEGY2 = [allPEGY2; myY2];
                     allPEGErr2 = [allPEGErr2; myErr2];
-                end
+                end  
             case 3
                 if M == 1
                     allHEMAY1 = myY1; % Put the first gel's values into a row
@@ -204,13 +241,13 @@ for J=1:4
                     allHEMACoErr2 = [allHEMACoErr2; myErr2];
                 end
         end
-    
+        
         % Now for the table of values for gel comparison
         % get min, max, delta and %delta 
         switch J % fill the correct array based on the type of gel
             case 1
                 myAlgY1Min(M) = min(allAlgY1(M,:));    
-                myAlgY1Max(M) = max(allAlgY1(M,:));
+                myAlgY1Max(M) = max(allAlgY1(M,:)); % 7/16/2020 can't I just use this max?
                 myAlgY1Delta(M) = myAlgY1Max(M) - myAlgY1Min(M);
                 myAlgY1PercentDelta(M) = myAlgY1Delta(M)/myAlgY1Min(M)*100.;
                 myAlgY2Min(M) = min(allAlgY2(M,:));    
@@ -234,7 +271,7 @@ for J=1:4
                 myHEMAY2Min(M) = min(allHEMAY2(M,:));    
                 myHEMAY2Max(M) = max(allHEMAY2(M,:));
                 myHEMAY2Delta(M) = myHEMAY2Max(M) - myHEMAY2Min(M);
-                myHEMAY2PercentDelta(M) = myHEMAY2Delta(M)/myHEMAY2Min(M)*100.;        
+                myHEMAY2PercentDelta(M) = myHEMAY2Delta(M)/myHEMAY2Min(M)*100.;
             case 4
                 myHEMACoY1Min(M) = min(allHEMACoY1(M,:));    
                 myHEMACoY1Max(M) = max(allHEMACoY1(M,:));
@@ -246,18 +283,66 @@ for J=1:4
                 myHEMACoY2PercentDelta(M) = myHEMACoY2Delta(M)/myHEMACoY2Min(M)*100.;
         end
     end
+    
+    % 7/16/2020 New, for automatic plot axes sizing
+    switch J
+        case 1
+            minY1(J) = min(myAlgY1Min);
+            minY2(J) = min(myAlgY2Min);
+            maxY1(J) = max(myAlgY1Max);
+            maxY2(J) = max(myAlgY2Max);
+        case 2
+            minY1(J) = min(myPEGY1Min);
+            minY2(J) = min(myPEGY2Min);
+            maxY1(J) = max(myPEGY1Max);
+            maxY2(J) = max(myPEGY2Max);
+        case 3
+            minY1(J) = min(myHEMAY1Min);
+            minY2(J) = min(myHEMAY2Min);
+            maxY1(J) = max(myHEMAY1Max);
+            maxY2(J) = max(myHEMAY2Max);
+        case 4
+            minY1(J) = min(myHEMACoY1Min);
+            minY2(J) = min(myHEMACoY2Min);
+            maxY1(J) = max(myHEMACoY1Max);
+            maxY2(J) = max(myHEMACoY2Max);
+    end
 
     title(myTitle(J), 'FontSize', myTextFont);
-    xlabel('pH', 'FontSize', myTextFont); % x-axis label
-    ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+    % 7/16/2020 only say "normalized" when xRef ~= 0
+    if (xRef ~= 0) 
+        ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+    else
+        ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+    end
+        xlabel('pH', 'FontSize', myTextFont); % x-axis label
     set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
-    y = 0.19; 
-    x = 3.6;
-    deltaY = 0.01;
-    text(x, y, 'circles = 1430 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+
+    % 7/16/2020 New, automatic sizing
+    xlim([minX(1)-0.5 maxX(1)+0.5]);
+    ylim([0.99 * min(minY1(J),minY2(J)) 1.01 * max(maxY1(J),maxY2(J))]);
+    y = 0.95 * (max(maxY1(J), maxY2(J)) - min(minY1(J), minY2(J))) + ...
+        min(minY1(J), minY2(J));
+    deltaY = 0.1 * (max(maxY1(J), maxY2(J)) - min(minY1(J), minY2(J)));
+    x = 1.01 * (minX(1) - 0.5);
+    switch peakSet
+        case 1
+            % JB01
+            text(x, y, 'circles = 1430 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+        case 2
+            % JB02
+            text(x, y, 'circles = 1072 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+    end
     text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
-    text(x, y, 'squares = 1702 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+    switch peakSet
+        case 1
+            % JB01
+            text(x, y, 'squares = 1702 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+        case 2
+            % JB02
+            text(x, y, 'squares = 1582 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+    end
     text(x, y, '______', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
 
@@ -283,10 +368,11 @@ for J=1:4
     end
 end
 
-% New, per 6/19 MJM comments
-% 7/1 TO DO: combine the punches
-figure % Put all of the 1430/cm curves on one plot
-
+% New, per 6/19 MJM comments: combine the punches
+% TO DO use different markers for gel type
+figure % Figure #5: put all of the punches of all of the gels' x1 curves on
+       % one plot, with or without norm'n (depends on xRef).
+       
 myColor = [ red; blue; green; purple ];
 for J = 1:4
     switch J
@@ -301,7 +387,7 @@ for J = 1:4
             end
         case 2
             for M = 1:maxM
-                plot(allX, allPEGY1(M,:), '-o', 'LineStyle','none', ...
+                plot(allX, allPEGY1(M,:), '-h', 'LineStyle','none', ...
                     'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
                 hold on;
                 errorbar(allX, allPEGY1(M,:), allPEGErr1(M,:), 'LineStyle','none', ...
@@ -310,7 +396,7 @@ for J = 1:4
             end
         case 3
             for M = 1:maxM
-                plot(allX, allHEMAY1(M,:), '-o', 'LineStyle','none', ...
+                plot(allX, allHEMAY1(M,:), '-^', 'LineStyle','none', ...
                     'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
                 hold on;
                 errorbar(allX, allHEMAY1(M,:), allHEMAErr1(M,:), 'LineStyle','none', ...
@@ -319,7 +405,7 @@ for J = 1:4
             end
         case 4
             for M = 1:maxM
-                plot(allX, allHEMACoY1(M,:), '-o', 'LineStyle','none', ...
+                plot(allX, allHEMACoY1(M,:), '-s', 'LineStyle','none', ...
                     'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
                 hold on;
                 errorbar(allX, allHEMACoY1(M,:), allHEMACoErr1(M,:), 'LineStyle','none', ...
@@ -329,29 +415,62 @@ for J = 1:4
     end
 end
 
-title('1430 cm-1 normalized peak for all punches of all gels', 'FontSize', myTextFont);
-xlabel('pH', 'FontSize', myTextFont); % x-axis label
-ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
-set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
-xlim([3.5 8]);
-ylim([0. 0.25]);
-y = 0.25; 
-x = 4.1;
-deltaY = 0.02;
-text(x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '______', 'Color', red, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
-text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
-text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+switch peakSet
+    case 1
+        % JB01 case:
+        % 7/16/2020 only say "normalized" when xRef ~= 0
+        if (xRef ~= 0) 
+            title('1430 cm-1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        else
+            title('1430 cm-1 peak average for all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        end
+    case 2
+        % JB02 case:
+        % 7/16/2020 only say "normalized" when xRef ~= 0
+        if (xRef ~= 0) 
+            title('1072 cm-1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        else
+            title('1072 cm-1 peak average for all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        end
+end
 
-% 7/1 TO DO: combine the punches
-figure % Put all of the 170%2/cm curves on one plot
+xlabel('pH', 'FontSize', myTextFont); % x-axis label
+set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
+
+% 7/16/2020 New, automatic sizing
+xlim([minX(1)-0.5 maxX(1)+0.5]);
+ylim([0.99 * min(minY1) 1.01 * max(maxY1)]);
+y = 0.95 * (max(maxY1) - min(minY1)) + min(minY1);
+deltaY = 0.1 * (max(maxY1) - min(minY1));
+x = 0.9 * (maxX(1) + 0.5);
+deltaX = 0.1;
+plot(x, y, '-o', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', red, 'linewidth', 2);
+text(x + deltaX, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
+text(x + deltaX, y, '______', 'Color', red, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-h', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', blue, 'linewidth', 2);
+text(x + deltaX, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
+text(x + deltaX, y, '____', 'Color', blue, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-^', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', green, 'linewidth', 2);
+text(x + deltaX, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
+text(x + deltaX, y, '_______', 'Color', green, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-s', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', purple, 'linewidth', 2);
+text(x + deltaX, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
+text(x + deltaX, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+
+figure % Figure #6: put all of the punches of all of the gels' x2 curves on
+       % one plot, with or without norm'n (depends on xRef).
+% TO DO use different markers for gel type
 for J = 1:4
     switch J
         case 1
@@ -365,7 +484,7 @@ for J = 1:4
             end
         case 2
             for M = 1:maxM
-                plot(allX, allPEGY2(M,:), '-o', 'LineStyle','none', ...
+                plot(allX, allPEGY2(M,:), '-h', 'LineStyle','none', ...
                     'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
                 hold on;
                 errorbar(allX, allPEGY2(M,:), allPEGErr2(M,:), 'LineStyle','none', ...
@@ -374,7 +493,7 @@ for J = 1:4
             end
         case 3
             for M = 1:maxM
-                plot(allX, allHEMAY2(M,:), '-o', 'LineStyle','none', ...
+                plot(allX, allHEMAY2(M,:), '-^', 'LineStyle','none', ...
                     'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
                 hold on;
                 errorbar(allX, allHEMAY2(M,:), allHEMAErr2(M,:), 'LineStyle','none', ...
@@ -383,7 +502,7 @@ for J = 1:4
             end
         case 4
             for M = 1:maxM
-                plot(allX, allHEMACoY2(M,:), '-o', 'LineStyle','none', ...
+                plot(allX, allHEMACoY2(M,:), '-s', 'LineStyle','none', ...
                     'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
                 hold on;
                 errorbar(allX, allHEMACoY2(M,:), allHEMACoErr2(M,:), 'LineStyle','none', ...
@@ -392,28 +511,59 @@ for J = 1:4
             end
     end
 end
-
-title('1702 cm-1 normalized peak for all punches of all gels', 'FontSize', myTextFont);
+switch peakSet
+    case 1
+        % JB01 case:
+        % % 7/16/2020 only say "normalized" when xRef ~= 0
+        if (xRef ~= 0) 
+            title('1702 cm-1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        else
+            title('1702 cm-1 peak average for all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        end
+    case 2
+        % JB02 case:
+        % 7/16/2020 only say "normalized" when xRef ~= 0
+        if (xRef ~= 0) 
+            title('1582 cm-1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        else
+            title('1582 cm-1 peak average for all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        end
+end
 xlabel('pH', 'FontSize', myTextFont); % x-axis label
-ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
 set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
-xlim([3.5 8]);
-ylim([0. 0.25]);
-y = 0.2; 
-x = 6.5;
-deltaY = 0.015;
-text(x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '______', 'Color', red, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
-text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
-text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 
+% 7/16/2020 New, automatic sizing
+xlim([minX(1)-0.5 maxX(1)+0.5]);
+ylim([0.99 * min(minY2) 1.01 * max(maxY2)]);
+y = 0.95 * (max(maxY2) - min(minY2)) + min(minY2);
+deltaY = 0.1 * (max(maxY2) - min(minY2));
+x = 0.9 * (maxX(1) + 0.5);
+deltaX = 0.1;
+plot(x, y, '-o', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', red, 'linewidth', 2);
+text(x + deltaX, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
+text(x + deltaX, y, '______', 'Color', red, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-h', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', blue, 'linewidth', 2);
+text(x + deltaX, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
+text(x + deltaX, y, '____', 'Color', blue, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-^', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', green, 'linewidth', 2);
+text(x + deltaX, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
+text(x + deltaX, y, '_______', 'Color', green, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-s', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', purple, 'linewidth', 2);
+text(x + deltaX, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
+text(x + deltaX, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+
+%--------------------------------------------------------------------------
 % From this point on, condense the data for all punches down to average
 % and std dev for each gel type
 % Compute the average and std dev of the punches of each gel
@@ -463,9 +613,66 @@ for K = 1:8
     fprintf('pH(%d) pHC 1702/cm %.3f %.3f\n', K, myHEMACoY2allPunches(K), myHEMACoY2allPunchesStdDev(K));
 end
 
+fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
+sumVarAlgPk1 = 0;
+sumVarPegPk1 = 0;
+sumVarpHEPk1 = 0;
+sumVarpHCPk1 = 0;
+sumVarAlgPk2 = 0;
+sumVarPegPk2 = 0;
+sumVarpHEPk2 = 0;
+sumVarpHCPk2 = 0;
+for K = 1:8
+    %fprintf('alg 1430/cm pH(%d) %.3f %.3f\n', K, myAlgY1allPunches(K), myAlgY1allPunchesStdDev(K));
+    sumVarAlgPk1 = sumVarAlgPk1 + myAlgY1allPunchesStdDev(K);
+end        
+for K = 1:8
+    %fprintf('alg 1702/cm pH(%d) %.3f %.3f\n', K, myAlgY2allPunches(K), myAlgY2allPunchesStdDev(K));
+    sumVarAlgPk2 = sumVarAlgPk2 + myAlgY2allPunchesStdDev(K);
+end 
+for K = 1:8
+    %fprintf('peg 1430/cm pH(%d) %.3f %.3f\n', K, myPEGY1allPunches(K), myPEGY1allPunchesStdDev(K));
+    sumVarPegPk1 = sumVarPegPk1 + myPEGY1allPunchesStdDev(K);
+end 
+for K = 1:8    
+    %fprintf('peg 1702/cm pH(%d) %.3f %.3f\n', K, myPEGY2allPunches(K), myPEGY2allPunchesStdDev(K));
+    sumVarPegPk2 = sumVarPegPk2 + myPEGY2allPunchesStdDev(K);
+end
+for K = 1:8 
+    %fprintf('pHE 1430/cm pH(%d) %.3f %.3f\n', K, myHEMAY1allPunches(K), myHEMAY1allPunchesStdDev(K));
+    sumVarpHEPk1 = sumVarpHEPk1 + myHEMAY1allPunchesStdDev(K);
+end       
+for K = 1:8
+    %fprintf('pHE 1702/cm pH(%d) %.3f %.3f\n', K, myHEMAY2allPunches(K), myHEMAY2allPunchesStdDev(K));
+    sumVarpHEPk2 = sumVarpHEPk2 + myHEMAY2allPunchesStdDev(K);
+end   
+for K = 1:8
+    %fprintf('pHC 1430/cm pH(%d) %.3f %.3f\n', K, myHEMACoY1allPunches(K), myHEMACoY1allPunchesStdDev(K));
+    sumVarpHCPk1 = sumVarpHCPk1 + myHEMACoY1allPunchesStdDev(K);
+end        
+for K = 1:8
+    %fprintf('pHC 1702/cm pH(%d) %.3f %.3f\n', K, myHEMACoY2allPunches(K), myHEMACoY2allPunchesStdDev(K));
+    sumVarpHCPk2 = sumVarpHCPk2 + myHEMACoY2allPunchesStdDev(K);
+end
+
+fprintf('sum of std devs for all pH levels\n');
+switch peakSet
+    case 1
+        fprintf('alg 1430/cm %.3f 1702/cm %.3f\n', sumVarAlgPk1, sumVarAlgPk2);
+        fprintf('peg 1430/cm %.3f 1702/cm %.3f\n', sumVarPegPk1, sumVarPegPk2);
+        fprintf('pHE 1430/cm %.3f 1702/cm %.3f\n', sumVarpHEPk1, sumVarpHEPk2);
+        fprintf('pHC 1430/cm %.3f 1702/cm %.3f\n', sumVarpHCPk1, sumVarpHCPk2);
+    case 2
+        fprintf('alg 1072/cm %.3f 1582/cm %.3f\n', sumVarAlgPk1, sumVarAlgPk2);
+        fprintf('peg 1072/cm %.3f 1582/cm %.3f\n', sumVarPegPk1, sumVarPegPk2);
+        fprintf('pHE 1072/cm %.3f 1582/cm %.3f\n', sumVarpHEPk1, sumVarpHEPk2);
+        fprintf('pHC 1072/cm %.3f 1582/cm %.3f\n', sumVarpHCPk1, sumVarpHCPk2);
+end
+
 % Plot the averages of the punches with their std dev on one plot for all
 % gel types
-figure
+figure % Figure #7: put the avg of the punches of all of the gels' x1
+       % curves on one plot, with or without norm'n (depends on xRef).
 for J = 1:4
     switch J
         case 1         
@@ -476,21 +683,21 @@ for J = 1:4
                 'Color', black,'linewidth', 2);
             hold on;
         case 2
-            plot(allX, myPEGY1allPunches, '-o', 'LineStyle','none', ...
+            plot(allX, myPEGY1allPunches, '-h', 'LineStyle','none', ...
                 'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
             hold on;
             errorbar(allX, myPEGY1allPunches, myPEGY1allPunchesStdDev, 'LineStyle','none', ...
                 'Color', black,'linewidth', 2);
             hold on;        
         case 3
-            plot(allX, myHEMAY1allPunches, '-o', 'LineStyle','none', ...
+            plot(allX, myHEMAY1allPunches, '-^', 'LineStyle','none', ...
                 'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
             hold on;
             errorbar(allX, myHEMAY1allPunches, myHEMAY1allPunchesStdDev, 'LineStyle','none', ...
                 'Color', black,'linewidth', 2);
             hold on;
         case 4
-            plot(allX,  myHEMACoY1allPunches, '-o', 'LineStyle','none', ...
+            plot(allX,  myHEMACoY1allPunches, '-s', 'LineStyle','none', ...
                 'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
             hold on;
             errorbar(allX,  myHEMACoY1allPunches,  myHEMACoY1allPunchesStdDev, 'LineStyle','none', ...
@@ -498,28 +705,69 @@ for J = 1:4
             hold on;
     end 
 end
-title('1430 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont);
-xlabel('pH', 'FontSize', myTextFont); % x-axis label
-ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
-set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
-xlim([3.5 8]);
-ylim([0. 0.25]);
-y = 0.25; 
-x = 4.1;
-deltaY = 0.02;
-text(x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '______', 'Color', red, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
-text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
-text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 
-figure
+switch peakSet
+    case 1
+        % JB01:
+        % 7/16/2020 only say "normalized" when xRef ~= 0
+        if (xRef ~= 0) 
+            title('1430 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        else
+            title('1430 cm-1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        end
+    case 2
+        % JB02:
+        % 7/16/2020 only say "normalized" when xRef ~= 0
+        if (xRef ~= 0) 
+            title('1072 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        else
+            title('1072 cm-1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        end
+end
+xlabel('pH', 'FontSize', myTextFont); % x-axis label
+
+set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
+
+% 7/16/2020 New, automatic sizing
+xlim([minX(1)-0.5 maxX(1)+0.5]);
+max1 = max(maxY1);
+min1 = min(minY1);
+if (min1 > max1) % 7/20/2020 WHY IS THIS NECESSARY? 
+    ylim([0.99 * max1 1.01 * min1]);
+else
+    ylim([0.99 * min1 1.01 * max1]);
+end
+y = 0.95 * (max1 - min1) + min1;
+%y = 0.1;
+deltaY = 0.1 * (max1 - min1);
+x = 0.9 * (maxX(1) + 0.5);
+deltaX = 0.1;
+plot(x, y, '-o', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', red, 'linewidth', 2);
+text(deltaX  + x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
+text(deltaX  + x, y, '______', 'Color', red, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-h', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', blue, 'linewidth', 2);
+text(deltaX  + x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
+text(deltaX  + x, y, '____', 'Color', blue, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-^', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', green, 'linewidth', 2);
+text(deltaX  + x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
+text(deltaX  + x, y, '_______', 'Color', green, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-s', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', purple, 'linewidth', 2);
+text(deltaX  + x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
+text(deltaX  + x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+
+figure % Figure #8: put the avg of the punches of all of the gels' x2
+       % curves on one plot, with or without norm'n (depends on xRef)
 for J = 1:4
     switch J
         case 1         
@@ -530,21 +778,21 @@ for J = 1:4
                 'Color', black,'linewidth', 2);
             hold on;
         case 2
-            plot(allX, myPEGY2allPunches, '-o', 'LineStyle','none', ...
+            plot(allX, myPEGY2allPunches, '-h', 'LineStyle','none', ...
                 'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
             hold on;
             errorbar(allX, myPEGY2allPunches, myPEGY2allPunchesStdDev, 'LineStyle','none', ...
                 'Color', black,'linewidth', 2);
             hold on;        
         case 3
-            plot(allX, myHEMAY2allPunches, '-o', 'LineStyle','none', ...
+            plot(allX, myHEMAY2allPunches, '-^', 'LineStyle','none', ...
                 'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
             hold on;
             errorbar(allX, myHEMAY2allPunches, myHEMAY2allPunchesStdDev, 'LineStyle','none', ...
                 'Color', black,'linewidth', 2);
             hold on;
         case 4
-            plot(allX,  myHEMACoY2allPunches, '-o', 'LineStyle','none', ...
+            plot(allX,  myHEMACoY2allPunches, '-s', 'LineStyle','none', ...
                 'MarkerSize', 30, 'Color', myColor(J,:), 'linewidth', 2);
             hold on;
             errorbar(allX,  myHEMACoY2allPunches,  myHEMACoY2allPunchesStdDev, 'LineStyle','none', ...
@@ -552,27 +800,67 @@ for J = 1:4
             hold on;
     end 
 end
-title('1702 cm-1 normalized peak for average and std dev of all punches of all gels', 'FontSize', myTextFont);
-xlabel('pH', 'FontSize', myTextFont); % x-axis label
-ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
-set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
-xlim([3.5 8]);
-ylim([0. 0.25]);
-y = 0.2; 
-x = 6.5;
-deltaY = 0.015;
-text(x, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
-text(x, y, '______', 'Color', red, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
-text(x, y, '____', 'Color', blue, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
-text(x, y, '_______', 'Color', green, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
-text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 
+switch peakSet
+    case 1
+        % JB01:
+        % 7/16/2020 only say "normalized" when xRef ~= 0
+        if (xRef ~= 0) 
+            title('1702 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        else
+            title('1702 cm-1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        end
+    case 2
+        % JB02:
+        % 7/16/2020 only say "normalized" when xRef ~= 0
+        if (xRef ~= 0) 
+            title('1582 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        else
+            title('1582 cm-1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        end
+end
+
+xlabel('pH', 'FontSize', myTextFont); % x-axis label
+set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
+
+% 7/16/2020 New, automatic sizing
+xlim([minX(1)-0.5 maxX(1)+0.5]);
+max1 = max(maxY1);
+min1 = min(minY1);
+if (min1 > max1) % 7/20/2020 WHY IS THIS NECESSARY? 
+    ylim([0.99 * max1 1.01 * min1]); 
+else
+    ylim([0.99 * min1 1.01 * max1]); 
+end
+y = 0.95 * (max1 - min1) + min1;
+deltaY = 0.1 * (max1 - min1);
+x = 0.9 * (maxX(1) + 0.5);
+deltaX = 0.1;
+plot(x, y, '-o', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', red, 'linewidth', 2);
+text(x + deltaX, y, 'alginate', 'Color', red, 'FontSize', myTextFont);
+text(x + deltaX, y, '______', 'Color', red, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-h', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', blue, 'linewidth', 2);
+text(x + deltaX, y, 'PEG', 'Color', blue, 'FontSize', myTextFont);
+text(x + deltaX, y, '____', 'Color', blue, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-^', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', green, 'linewidth', 2);
+text(x + deltaX, y, 'pHEMA', 'Color', green, 'FontSize', myTextFont);
+text(x + deltaX, y, '_______', 'Color', green, 'FontSize', myTextFont);
+y = y - deltaY;
+plot(x, y, '-s', 'LineStyle','none', ...
+    'MarkerSize', 30, 'Color', purple, 'linewidth', 2);
+text(x + deltaX, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
+text(x + deltaX, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+
+% Figures are done. Now finish off calculating the values for the table.
 % Extract min, max and delta from the arrays of averaged values of all
 % punches. Put these values in an additional row of the matrix created 
 % for the individual punches
@@ -845,9 +1133,6 @@ function g = prepPlotData(J, subDirStem, K, myColor, M)
         myY2(K) = normalized2;
         myErr2(K) = stdDev2;
 
-        %xlim([xMin xMax]);
-        %ylim([yMin yMax]);
-        %hold on
         %fprintf('%d\n', I);
         %pause(5);
         
@@ -871,8 +1156,6 @@ function g = prepPlotData(J, subDirStem, K, myColor, M)
             'Color', black,'linewidth', 2);
         hold on
         
-        xlim([3.5 8])
-        ylim([0. max(myY1(K),0.2)]);
     end
     g = numberOfSpectra;
 end

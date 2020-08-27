@@ -2,7 +2,12 @@
 % intensity vs time by extracting it from a set of files in different directories
 % The time to use for the x axis is in the filename as
 % avg-yyyy-mm-dd-mm-ss.txt. Convert this to seconds since epoch.
-% Dayle Kotturi October 2018
+
+% Adapting this in a new way:
+% 1) to compare transition speeds based on slopes 
+% 2) extracting final value for each segment for comparison across samples,
+%    across gel types and to compare to values in static buffer
+% Dayle Kotturi August 2020
 
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
@@ -62,22 +67,42 @@ global tRef;
 %global ss; % NEW 2020/2/25
 %ss=zeros(4,3,9,2);  % keep track of last norm'd ratio for 
                     % both peaks, for all segs, for all gels
-
+global myTitleFont;
+global myLabelFont;
+global myTextFont;
 myTitleFont = 30;
 myLabelFont = 30; 
 myTextFont = 30; 
 
 global plotOption;
-%plotOption = 1; % plot y1 and y2
+plotOption = 1; % plot y1 and y2. 20200805: extract last val of each segment
 %plotOption = 2; % plot y3
 %plotOption = 3; % check pH sens
-plotOption = 4; % do curve fitting
+%plotOption = 4; % do curve fitting. Set value for lastPoints (line ~510) to
+% adjust how many points at the end of the segment are used
 
-%global gelOption; 2020/2/19 pass it instead
 global dirStem;
 
-global vals
+global vals; % a multi dimensional array to hold the curve fitting results
+global endVals; % a multi dim'l array to hold the endpts of all segments
+global speedVals; % a multi dim'l array to hold the initial slopes of 
+                  % each segment
 
+global myTitle;
+myTitle = [ ...
+    "54nm MBA AuNPs MCs alginate gel12 punch1 flowcell", ...
+    "54nm MBA AuNPs MCs alginate gel12 punch2 flowcell", ...
+    "54nm MBA AuNPs MCs alginate gel12 punch3 flowcell", ...
+    "54nm MBA AuNPs MCs PEG gel3 punch1 flowcell", ...
+    "54nm MBA AuNPs MCs PEG gel15 punch1 flowcell", ...
+    "54nm MBA AuNPs MCs PEG gel16 punch1 flowcell", ...
+    "54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell", ...
+    "54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell", ...
+    "54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell", ...
+    "54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell", ...
+    "54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell", ...
+    "54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell" ...
+    ];
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4";
 subDirStem3 = "3 pH10";
@@ -88,7 +113,8 @@ subDirStem7 = "7 pH10";
 subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
-for gelOption = 8:8 % 12 for prelim do 1, 4, 9, 12
+% Do for each dataset 1:12 or any subset
+for gelOption = 1:12
     Kmin = 1;
     Kmax = 9;
     if plotOption == 4
@@ -96,80 +122,62 @@ for gelOption = 8:8 % 12 for prelim do 1, 4, 9, 12
     else
         offset = 0;
     end
-    % Do for each dataset
+    
     figure
     set(gca,'FontSize', myTextFont); % has no effect on tick label size
     switch gelOption
       case 1 % alginate time series 1
-        % yes for prelim
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
         tRef = datenum(2019, 12, 10, 14, 1, 8);
-        % 2020/03/16 why is x scale not log?
-        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch1 flowcell';
         gel = 1; series = 1;
       case 2  % alginate time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\";
         tRef = datenum(2020, 1, 10, 13, 45, 1);
-        % 2020/03/16 why is x scale not log?
-        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch2 flowcell';
         gel = 1; series = 2;
       case 3 % alginate time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\";
         tRef = datenum(2020, 1, 12, 16, 15, 57);
-        myTitle = '54nm MBA AuNPs MCs alginate gel12 punch3 flowcell';
         gel = 1; series = 3;
         
       case 4 % PEG time series 1
-        % yes for prelim
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
         tRef = datenum(2018, 12, 28, 16, 34, 5);
-        myTitle = '54nm MBA AuNPs MCs PEG gel3 punch1 flowcell';
         gel = 2; series = 1;
       case 5 % PEG time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 15\";
         tRef = datenum(2020, 3, 14, 21, 22, 41);
-        myTitle = '54nm MBA AuNPs MCs PEG gel15 punch1 flowcell';
         gel = 2; series = 2;
       case 6 % PEG time series 3
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\punch1 flowcell all\";
         tRef = datenum(2020, 3, 17, 15, 38, 43);
-        myTitle = '54nm MBA AuNPs MCs PEG gel16 punch1 flowcell';
         gel = 2; series = 3;
         
       case 7 % pHEMA time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
         tRef = datenum(2018, 12, 30, 16, 1, 17);
-        myTitle = '54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell'; 
         gel = 3; series = 1;
       case 8 % pHEMA time series 2 -- needs special handling b/c there are
           % 2 add'l dirs for 3 pH10 and 4 pH7
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\";
         tRef = datenum(2020, 1, 25, 17, 10, 17); 
-        myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell';
         gel = 3; series = 2; 
       case 9 % pHEMA time series 3
-        % yes for prelim
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
         tRef = datenum(2020, 2, 1, 17, 54, 20);
-        myTitle = '54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell';
         gel = 3; series = 3;
         
       case 10 % pHEMA/coAc  time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\4\"; 
         tRef = datenum(2019, 01, 26, 16, 28, 6);
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell';
         gel = 4; series = 1;
         Kmax = 8; % special case b/c final pH4 is missing!
       case 11 % add pHEMA/coAc  time series 2
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
         tRef = datenum(2020, 1, 27, 12, 27, 47); 
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell';
         gel = 4; series = 2;
       case 12 % pHEMA/coAc time series 3
-          % yes for prelim
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
         tRef = datenum(2020, 2, 3, 19, 50, 17);
-        myTitle = '54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell';
         gel = 4; series = 3;
     end
     
@@ -263,7 +271,7 @@ for gelOption = 8:8 % 12 for prelim do 1, 4, 9, 12
 %     y = y - deltaY;
 %     hold off
     
-    title(myTitle, 'FontSize', myTitleFont);
+    title(myTitle(gelOption), 'FontSize', myTitleFont);
     
     myXlabel = sprintf('Time (hours)');
     xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
@@ -275,7 +283,10 @@ for gelOption = 8:8 % 12 for prelim do 1, 4, 9, 12
             'FontSize', myLabelFont); % y-axis label
     end
 end
-
+if plotOption == 1
+    plotEndVals(); % don't need another plot, but as a way to see
+    plotSpeedVals(); % don't need another plot, but as a way to see
+end
 if plotOption == 4
     plotVals();
 end
@@ -364,6 +375,8 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
     global lineThickness;
     global plotOption;
     global vals;
+    global endVals;
+    global speedVals;
     global nPoints;
     
 %     sumY1 = 0;
@@ -483,9 +496,23 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
 %     hold on;
 %     Or:
     if plotOption == 1 || plotOption == 3
-        plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
-        hold on;
-        plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+%         plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+%         hold on;
+%         plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+%         hold on;
+        
+        % 20200805 Store endpoint values of this segment for later
+        % comparison
+        % Need gel, series, segment K, y1, y2
+        endVals(gel, series, K, 1) = y1(numberOfSpectra);
+        endVals(gel, series, K, 2) = y2(numberOfSpectra);
+        
+        % 20200805 Use this as a measure to determine the gel that
+        % transitions the fastest
+        if numberOfSpectra >= 5
+            speedVals(gel, series, K, 1) = y1(5) - y1(1);
+            speedVals(gel, series, K, 2) = y2(5) - y2(1);
+        end
     else
         if plotOption == 2
             plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
@@ -501,7 +528,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                 
                 % throw away the transitioning part of the segment and just
                 % take the end of the segment when steady state occurs
-                lastPoints = 15; % CHANGE THIS NUMBER TO COMPARE THE RESULTS
+                lastPoints = 15; % CHANGE THIS NUMBER
                 nPoints = length(t)-lastPoints+1;
                 
                 % if there are enough points, take last N points instead of full set
@@ -703,6 +730,8 @@ function p = getPeak(mySubIter)
     end
 end
 
+% Plot the coefficients of the log fit. Ideally, the values
+% should be the same for the 3 segments at a single pH level.
 function q = plotVals()
     % Colors:
     global blue;
@@ -827,7 +856,7 @@ function q = plotVals()
                     errorbar(xPH10, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
                     %myTitle = sprintf('gel %d series %d', gel, series);
                     myTitle = sprintf('alginate gel12 punch1 using last %d points of each segment', nPoints);
-                    title(myTitle,'FontSize',30);
+                    title(myTitle(gelOption),'FontSize',30);
                     set(gca,'FontSize', 30); % this works
                     xlim([0 10]);
                     xlabel('pH buffer segment', 'FontSize', 30);
@@ -837,4 +866,108 @@ function q = plotVals()
         end
     end
     q = 1;
+end
+
+% Plot the last value of each segment
+function r = plotEndVals()
+    % Colors:
+    global blue;
+    global rust;
+    global gold;
+    global purple;
+    global green;
+    global ciel; 
+    global cherry;
+    global red;
+    global black;
+    global endVals;
+    global myTitle;
+    global myTitleFont;
+    global myLabelFont;
+    global myTextFont;
+    % Use the colors to match the pH values (4=red, 7=green, 10=blue)
+    myColor1 = [ green; red; blue; green; blue; red; blue; green; red ];
+    myColor2 = [ gold; cherry; ciel; gold; ciel; cherry; ciel; gold; cherry ];
+    
+    markers = ...
+        [ '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h']; 
+        % all the symbols that Matlab has
+        
+ 
+    for gel = 1:4
+        figure
+        for punch = 1:3
+            for segment = 1:9
+                plot(segment, endVals(gel, punch, segment, 1), ...
+                    markers(((gel-1)*3)+punch), 'LineStyle','none', 'MarkerSize', 30, ...
+                    'Color', myColor1(segment,:), 'linewidth', 2);
+                hold on;
+                plot(segment, endVals(gel, punch, segment, 2), ...
+                    markers(((gel-1)*3)+punch), 'LineStyle','none', 'MarkerSize', 30, ...
+                    'Color', myColor2(segment,:), 'linewidth', 2);
+                hold on;
+            end 
+
+        end
+        % title, axes labels, legend   
+        %title(myTitle(((gel-1)*3)+punch), 'FontSize', myTitleFont);
+        gelNumber = sprintf('Gel %d', gel);
+        title(gelNumber, 'FontSize', myTitleFont);
+        myXlabel = sprintf('Segment number');
+        xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
+        ylabel('Normalized Intensity', ...
+            'FontSize', myLabelFont); % y-axis label
+    end
+    r = 1;
+end
+
+% Plot the initial slope of each segment. Use it to compare gels for 
+% which one allows the fastest transitions
+function s = plotSpeedVals()
+    % Colors:
+    global blue;
+    global rust;
+    global gold;
+    global purple;
+    global green;
+    global ciel; 
+    global cherry;
+    global red;
+    global black;
+    global speedVals;
+    global myTitle;
+    global myTitleFont;
+    global myLabelFont;
+    global myTextFont;
+    % Use the colors to match the pH values (4=red, 7=green, 10=blue)
+    myColor1 = [ green; red; blue; green; blue; red; blue; green; red ];
+    myColor2 = [ gold; cherry; ciel; gold; ciel; cherry; ciel; gold; cherry ];
+    markers = ...
+        [ '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h']; 
+        % all the symbols that Matlab has
+        
+    figure
+    for gel = 1:4
+        for punch = 1:3
+            for segment = 1:9
+                plot(segment, speedVals(gel, punch, segment, 1), ...
+                    markers(((gel-1)*3)+punch), ...
+                    'LineStyle','none', 'MarkerSize', 30, ...
+                    'Color', myColor1(segment,:), 'linewidth', 2);
+                hold on;
+                plot(segment, speedVals(gel, punch, segment, 2), ...
+                    markers(((gel-1)*3)+punch), 'LineStyle','none', ...
+                    'MarkerSize', 30, ...
+                    'Color', myColor2(segment,:), 'linewidth', 2);
+                hold on;
+            end 
+        end
+    end
+    % title, axes labels, legend   
+    title(myTitle(((gel-1)*3)+punch), 'FontSize', myTitleFont);
+    myXlabel = sprintf('Segment number');
+    xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
+    ylabel('Slope of first 5 measurements in segment', ...
+        'FontSize', myLabelFont); % y-axis label
+    s = 1;
 end

@@ -417,7 +417,7 @@ text(x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 % This is only meaningful when number of punches > 1
 % As written, this std dev is ignoring the variance in the 5 averaged msmts
 % Want to plot these with err bars
-fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
+%fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
 for K = 1:8
     a = getAverageAndStdDev(allAlgY1(:,K));
     myAlgY1allPunches(K) = a(1);
@@ -427,38 +427,86 @@ for K = 1:8
     a = getAverageAndStdDev(allAlgY2(:,K));
     myAlgY2allPunches(K) = a(1);
     myAlgY2allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) alg 1702/cm %.3f %.3f\n', K, myAlgY2allPunches(K), myAlgY2allPunchesStdDev(K));
+    %fprintf('pH(%d) alg 1702/cm %.3f %.3f\n', K, myAlgY2allPunches(K), myAlgY2allPunchesStdDev(K));
     
     a = getAverageAndStdDev(allPEGY1(:,K));
     myPEGY1allPunches(K) = a(1);
     myPEGY1allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) peg 1430/cm %.3f %.3f\n', K, myPEGY1allPunches(K), myPEGY1allPunchesStdDev(K));
+    %fprintf('pH(%d) peg 1430/cm %.3f %.3f\n', K, myPEGY1allPunches(K), myPEGY1allPunchesStdDev(K));
         
     a = getAverageAndStdDev(allPEGY2(:,K));
     myPEGY2allPunches(K) = a(1);
     myPEGY2allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) peg 1702/cm %.3f %.3f\n', K, myPEGY2allPunches(K), myPEGY2allPunchesStdDev(K));
+    %fprintf('pH(%d) peg 1702/cm %.3f %.3f\n', K, myPEGY2allPunches(K), myPEGY2allPunchesStdDev(K));
     
     a = getAverageAndStdDev(allHEMAY1(:,K));
     myHEMAY1allPunches(K) = a(1);
     myHEMAY1allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) pHE 1430/cm %.3f %.3f\n', K, myHEMAY1allPunches(K), myHEMAY1allPunchesStdDev(K));
+    %fprintf('pH(%d) pHE 1430/cm %.3f %.3f\n', K, myHEMAY1allPunches(K), myHEMAY1allPunchesStdDev(K));
         
     a = getAverageAndStdDev(allHEMAY2(:,K));
     myHEMAY2allPunches(K) = a(1);
     myHEMAY2allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) pHE 1702/cm %.3f %.3f\n', K, myHEMAY2allPunches(K), myHEMAY2allPunchesStdDev(K));
+    %fprintf('pH(%d) pHE 1702/cm %.3f %.3f\n', K, myHEMAY2allPunches(K), myHEMAY2allPunchesStdDev(K));
     
     a = getAverageAndStdDev(allHEMACoY1(:,K));
     myHEMACoY1allPunches(K) = a(1);
     myHEMACoY1allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) pHC 1430/cm %.3f %.3f\n', K, myHEMACoY1allPunches(K), myHEMACoY1allPunchesStdDev(K));
+    %fprintf('pH(%d) pHC 1430/cm %.3f %.3f\n', K, myHEMACoY1allPunches(K), myHEMACoY1allPunchesStdDev(K));
         
     a = getAverageAndStdDev(allHEMACoY2(:,K));
     myHEMACoY2allPunches(K) = a(1);
     myHEMACoY2allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) pHC 1702/cm %.3f %.3f\n', K, myHEMACoY2allPunches(K), myHEMACoY2allPunchesStdDev(K));
+    %fprintf('pH(%d) pHC 1702/cm %.3f %.3f\n', K, myHEMACoY2allPunches(K), myHEMACoY2allPunchesStdDev(K));
 end
+
+fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
+sumVarAlgPk1 = 0;
+sumVarPegPk1 = 0;
+sumVarpHEPk1 = 0;
+sumVarpHCPk1 = 0;
+sumVarAlgPk2 = 0;
+sumVarPegPk2 = 0;
+sumVarpHEPk2 = 0;
+sumVarpHCPk2 = 0;
+for K = 1:8
+    fprintf('alg 1430/cm pH(%d) %.3f %.3f\n', K, myAlgY1allPunches(K), myAlgY1allPunchesStdDev(K));
+    sumVarAlgPk1 = sumVarAlgPk1 + myAlgY1allPunchesStdDev(K);
+end        
+for K = 1:8
+    fprintf('alg 1702/cm pH(%d) %.3f %.3f\n', K, myAlgY2allPunches(K), myAlgY2allPunchesStdDev(K));
+    sumVarAlgPk2 = sumVarAlgPk2 + myAlgY2allPunchesStdDev(K);
+end 
+for K = 1:8
+    fprintf('peg 1430/cm pH(%d) %.3f %.3f\n', K, myPEGY1allPunches(K), myPEGY1allPunchesStdDev(K));
+    sumVarPegPk1 = sumVarPegPk1 + myPEGY1allPunchesStdDev(K);
+end 
+for K = 1:8    
+    fprintf('peg 1702/cm pH(%d) %.3f %.3f\n', K, myPEGY2allPunches(K), myPEGY2allPunchesStdDev(K));
+    sumVarPegPk2 = sumVarPegPk2 + myPEGY2allPunchesStdDev(K);
+end
+for K = 1:8 
+    fprintf('pHE 1430/cm pH(%d) %.3f %.3f\n', K, myHEMAY1allPunches(K), myHEMAY1allPunchesStdDev(K));
+    sumVarpHEPk1 = sumVarpHEPk1 + myHEMAY1allPunchesStdDev(K);
+end       
+for K = 1:8
+    fprintf('pHE 1702/cm pH(%d) %.3f %.3f\n', K, myHEMAY2allPunches(K), myHEMAY2allPunchesStdDev(K));
+    sumVarpHEPk2 = sumVarpHEPk2 + myHEMAY2allPunchesStdDev(K);
+end   
+for K = 1:8
+    fprintf('pHC 1430/cm pH(%d) %.3f %.3f\n', K, myHEMACoY1allPunches(K), myHEMACoY1allPunchesStdDev(K));
+    sumVarpHCPk1 = sumVarpHCPk1 + myHEMACoY1allPunchesStdDev(K);
+end        
+for K = 1:8
+    fprintf('pHC 1702/cm pH(%d) %.3f %.3f\n', K, myHEMACoY2allPunches(K), myHEMACoY2allPunchesStdDev(K));
+    sumVarpHCPk2 = sumVarpHCPk2 + myHEMACoY2allPunchesStdDev(K);
+end
+
+fprintf('sum of std devs for all pH levels\n');
+fprintf('alg 1430/cm %.3f 1702/cm %.3f\n', sumVarAlgPk1, sumVarAlgPk2);
+fprintf('peg 1430/cm %.3f 1702/cm %.3f\n', sumVarPegPk1, sumVarPegPk2);
+fprintf('pHE 1430/cm %.3f 1702/cm %.3f\n', sumVarpHEPk1, sumVarpHEPk2);
+fprintf('pHC 1430/cm %.3f 1702/cm %.3f\n', sumVarpHCPk1, sumVarpHCPk2);
 
 % Plot the averages of the punches with their std dev on one plot for all
 % gel types
