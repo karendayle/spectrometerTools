@@ -58,8 +58,10 @@ global studyPath % Set in createDirAndSubDirs
 global studyName
 global subdirs;
 global subdirMax;
-subdirs = ["1 pH7", "2 pH4", "3 pH10", "4 pH7", "5 pH10", "6 pH4", ...
-    "7 pH10", "8 pH7", "9 pH4"];
+% subdirs = ["1 pH7", "2 pH4", "3 pH10", "4 pH7", "5 pH10", "6 pH4", ...
+%     "7 pH10", "8 pH7", "9 pH4"];
+subdirs = ["1", "2", "3", "4", "5", "6", ...
+    "7", "8", "9"];
 subdirMax = length(subdirs);
 global gelTypeName;
 global gelNumber;
@@ -108,7 +110,9 @@ myTextFont = 15;
 myFont = 30;
 % Statically declaring array sizes to save resources needed to do
 % dynamic allocation
-darkData = zeros(1, numPoints, 'double'); % Hmmm. Need this again 12/12/2018
+%darkData = zeros(1, numPoints, 'double'); % Hmmm. Need this again
+%12/12/2018 -- out again 6/26/2020 with new matlab, new version of dll
+global darkData; % make this global 6/26/2020
 spectrumData = zeros(1, numPoints, 'double');
 lastSpectrumData = zeros(1, numPoints, 'double');
 lastAvgData = zeros(1, numPoints, 'double');
@@ -222,10 +226,10 @@ if ((myAns1 == 1) || (myAns1 == 4))
         darkData = takeSpectrum(numPoints, spectrometer, integrationTimeMS);
         
         % check. for debugging. 1024 values are there. Just not vis in
-        % workspace ?!
-        %for i=1:numPoints
-        %    fprintf('darkData(%d)=%d\n', i, darkData(i));
-        %end
+        % workspace ?! 
+        for i=1:numPoints
+            fprintf('darkData(%d)=%d\n', i, darkData(i));
+        end
         
         % Note that where dark is subtracted, it isn't being
         % subtracted from the normalized signal, only the raw signal
@@ -304,6 +308,8 @@ if (myAns1 ~= 4)
                     % instead of taking a spectrum, we are calculating it from previous
                     for i = 1:pixels
                         spectrumData(i) = rawData(i) - darkData(i);
+                        %6/26/2020 why always negative? 
+                        %spectrumData(i) = darkData(i) - rawData(i);
                         avg(i) = avg(i) + spectrumData(i);
                     end
                     
@@ -331,9 +337,10 @@ if (myAns1 ~= 4)
                     end
                     
                     % plot this iteration: Too many plots. Just plot averages
-                    %plotStatus = plotSpectrum(firstTime, ...
-                    %    x, darkData, rawData, spectrumData, ...
-                    %    difference, denominator, 0, j);
+                    plotStatus = plotSpectrum(firstTime, ...
+                        x, ...                         %darkData, 
+                        rawData, spectrumData, ...
+                        difference, denominator, 0, j);
                     
                     % prepare for next iteration
                     for i = 1:pixels
@@ -375,11 +382,12 @@ if (myAns1 ~= 4)
                 end
                 % Too many plots
                 % Plot the average spectra of numIter acquisitions
-                if mod(counter,countBetweenPlots) == 0
+                %%if mod(counter,countBetweenPlots) == 0
                     plotStatus = plotSpectrum(firstAverage, ...
-                        x, darkData, rawData, avg, ...
+                        x, ...                        %darkData, 
+                        rawData, avg, ...
                         differenceBetweenAverages, denominator, 1, 0);
-                end
+                %%end
                 counter = counter + 1;
                 
                 % 1/26/2020 delete last figure of this type first
@@ -567,9 +575,9 @@ if (myAns1 ~= 4)
 end % if (myAns1 ~= 4)
 
 function a = takeSpectrum(numPoints, spectrometer, integrationTimeMS)
-    %spectrum = zeros(1, numPoints, 'double'); should not be necessary
     global pixels;
-    spectrum = zeros(1, numPoints, 'double'); % DK 2019/11/28 BAD? 
+    %spectrum = zeros(1, numPoints, 'double'); % DK 2019/11/28 BAD? comment
+    %out 6/26/2020
     
     % get a spectrum
     spectrometer.integrationTimeMS = integrationTimeMS;
@@ -628,9 +636,11 @@ function b = writeSpectrumToFile(myData, stem, refWaveNumber,...
 end
 
 function c = plotSpectrum(firstTime, ...
-    wavenumbers, dark, rawSpectrum, spectrum, difference, ...
+    wavenumbers, ...    %dark, 
+    rawSpectrum, spectrum, difference, ...
     denominator, isAveragedSpectrum, acq)
 global f3;
+global darkData;
 xMin = 950;
 xMax = 1800; % SP says to cutoff here 11/7/2018
 % 1/26/2020 delete last figure of this type first
@@ -703,7 +713,7 @@ end
         
         subplot(2,4,6)
         %plot(wavelengths, dark, 'black');
-        plot(wavenumbers, dark, 'black');
+        plot(wavenumbers, darkData, 'black');
         title('Dark');
         xlabel('Wavenumber (cm^-1)'); % x-axis label
         ylabel('Arbitrary Units (A.U.)'); % y-axis label
