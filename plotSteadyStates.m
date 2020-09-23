@@ -55,8 +55,21 @@ xlabel('Flow cell segment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 ssVals(1,1,1) = myAlgY1allPunches(1);
 ssVals(1,1,2) = myAlgY1allPunches(7);
-% ssVals(1,2,1) = myAlgY2allPunches(1);
-% ssVals(1,2,2) = myAlgY2allPunches(7);
+
+figure
+text(9.5,myAlgY1allPunches(8)+0.03,'Steady State', 'Color', black, ...
+    'FontSize', 20);
+for i = 1:8
+    line([3,11],[myAlgY1allPunches(i),myAlgY1allPunches(i)], ...
+        'Color', punchColor(i,:));
+    text(10.5,myAlgY1allPunches(i)+0.01,pHLabel(i,:), ...
+        'Color', punchColor(i,:), 'FontSize', 20);
+    hold on;
+end
+plotScatterOfEndValsOnSteadyState(1);
+title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+xlabel('Flow cell segment', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 
 % 2. PEG
 load('Data/myPEGY1AllPunches.mat');
@@ -73,8 +86,18 @@ xlabel('Flow cell segment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 ssVals(2,1,1) = myPEGY1allPunches(1);
 ssVals(2,1,2) = myPEGY1allPunches(7);
-% ssVals(2,2,1) = myPEGY2allPunches(1);
-% ssVals(2,2,2) = myPEGY2allPunches(7);
+
+figure
+for i = 1:8
+    line([3,11],[myPEGY1allPunches(i),myPEGY1allPunches(i)], ...
+        'Color', punchColor(i,:));
+    text(10.5,myPEGY1allPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
+    hold on;
+end
+plotScatterOfEndValsOnSteadyState(2);
+title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+xlabel('Flow cell segment', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 
 % 3. pHEMA
 load('Data/myHEMAY1AllPunches.mat');
@@ -91,8 +114,18 @@ xlabel('Flow cell segment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 ssVals(3,1,1) = myHEMAY1allPunches(1);
 ssVals(3,1,2) = myHEMAY1allPunches(7);
-% ssVals(3,2,1) = myHEMAY2allPunches(1);
-% ssVals(3,2,2) = myHEMAY2allPunches(7);
+
+figure
+for i = 1:8
+    line([3,11],[myHEMAY1allPunches(i),myHEMAY1allPunches(i)], ...
+        'Color', punchColor(i,:));
+    text(10.5,myHEMAY1allPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
+    hold on;
+end
+plotScatterOfEndValsOnSteadyState(3);
+title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+xlabel('Flow cell segment', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 
 % 4. pHEMA/coAc
 load('Data/myHEMACoY1AllPunches.mat');
@@ -109,8 +142,18 @@ xlabel('Flow cell segment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 ssVals(4,1,1) = myHEMACoY1allPunches(1);
 ssVals(4,1,2) = myHEMACoY1allPunches(7);
-% ssVals(4,2,1) = myHEMACoY2allPunches(1);
-% ssVals(4,2,2) = myHEMACoY2allPunches(7);
+
+figure
+for i = 1:8
+    line([3,11],[myHEMACoY1allPunches(i),myHEMACoY1allPunches(i)], ...
+        'Color', punchColor(i,:));
+    text(10.5,myHEMACoY1allPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
+    hold on;
+end
+plotScatterOfEndValsOnSteadyState(4);
+title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+xlabel('Flow cell segment', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 
 % 5. Calculate reversibility of all gels as the std dev of the final value
 % of all segments of the SAME pH over all punches of a gel type
@@ -216,4 +259,65 @@ function c = compareDynamicVsStaticAccuracy()
     end
     
     c = 1;
+end
+
+function d = plotScatterOfEndValsOnSteadyState(gel)
+global endVals;
+global myColor1;
+global myColor2;
+global markers;
+
+    for punch = 1:3
+        % plot all the pH4 segments: 2, 6, 9
+        pH4 = [2 6 9];
+        for segment = 1:3
+            %index = ((gel-1)*3)+punch;
+            % 1430 cm-1 peak
+            plot(4, endVals(gel, punch, pH4(segment), 1), ...
+                markers(punch,:), 'LineStyle','none', ...
+                'MarkerSize', 30, ...
+                'Color', myColor1(pH4(segment),:), 'linewidth', 2);
+            hold on;
+            % 1702 cm-1 peak
+%             plot(pH4(segment), endVals(gel, punch, pH4(segment), 2), ...
+%                 markers(punch,:), 'LineStyle','none', 'MarkerSize', 30, ...
+%                 'Color', myColor2(pH4(segment),:), 'linewidth', 2);
+%             hold on;
+        end 
+        
+        % plot all the pH7 segments: 1, 5, 8
+        pH7 = [1 4 8];
+        for segment = 1:3
+            %index = ((gel-1)*3)+punch;
+            % 1430 cm-1 peak
+            plot(7, endVals(gel, punch, pH7(segment), 1), ...
+                markers(punch,:), 'LineStyle','none', ...
+                'MarkerSize', 30, ...
+                'Color', myColor1(pH7(segment),:), 'linewidth', 2);
+            hold on;
+            % 1702 cm-1 peak
+%             plot(pH7(segment), endVals(gel, punch, pH7(segment), 2), ...
+%                 markers(punch,:), 'LineStyle','none', 'MarkerSize', 30, ...
+%                 'Color', myColor2(pH7(segment),:), 'linewidth', 2);
+%             hold on;
+        end   
+        
+        % plot all the pH10 segments: 3, 5, 7
+        pH10 = [3 5 7];
+        for segment = 1:3
+            %index = ((gel-1)*3)+punch;
+            % 1430 cm-1 peak
+            plot(10, endVals(gel, punch, pH10(segment), 1), ...
+                markers(punch,:), 'LineStyle','none', ...
+                'MarkerSize', 30, ...
+                'Color', myColor1(pH10(segment),:), 'linewidth', 2);
+            hold on;
+            % 1702 cm-1 peak
+%             plot(pH10(segment), endVals(gel, punch, pH10(segment), 2), ...
+%                 markers(punch,:), 'LineStyle','none', 'MarkerSize', 30, ...
+%                 'Color', myColor2(pH10(segment),:), 'linewidth', 2);
+%             hold on;
+        end 
+    end
+    d = 1;
 end
