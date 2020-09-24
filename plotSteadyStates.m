@@ -27,9 +27,11 @@ global myColor2;
 myColor1 = [ green; red; blue; green; blue; red; blue; green; red ];
 myColor2 = [ gold; cherry; ciel; gold; ciel; cherry; ciel; gold; cherry ];
 global markers;
+% for the 3 punches:
+markers = [ '-o'; '-^'; '-s'];
+global markersAll;
 % all the symbols that Matlab has:
-% [ '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h'];
-markers = [ '-o'; '-^'; '-s']; 
+markersAll = [ '-o'; '-p'; '-s'; '-d'; '-^'; '-v'; '->'; '-<'; '-x'; '-h'; '-+'; '-*'; '-.'];
 
 % 0. Load the final values of both peaks for each segment of all time
 % series
@@ -50,6 +52,7 @@ for i = 1:8
     hold on;
 end
 plotEndValsOnSteadyState(1);
+set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -58,11 +61,12 @@ ssVals(1,1,2) = myAlgY1allPunches(7);
 
 figure % 1.2
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(myAlgY1allPunches);
+plotSteadyStateValues(1, myAlgY1allPunches);
 % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(1);
 % make it pretty
+set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -70,11 +74,12 @@ xlim([3. 8.]);
 
 figure % 1.3
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(myAlgY1allPunches);
+plotSteadyStateValues(1, myAlgY1allPunches);
 % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(1);
 % make it pretty
+set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -98,11 +103,12 @@ ssVals(2,1,2) = myPEGY1allPunches(7);
 
 figure % 2.2
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(myPEGY1allPunches);
+plotSteadyStateValues(2, myPEGY1allPunches);
 % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(2);
 % make it pretty
+set(gca,'FontSize', 30);
 title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -110,11 +116,12 @@ xlim([3. 8.]);
 
 figure % 2.3
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(myPEGY1allPunches);
+plotSteadyStateValues(2, myPEGY1allPunches);
 % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(2);
 % make it pretty
+set(gca,'FontSize', 30);
 title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -130,6 +137,7 @@ for i = 1:8
     hold on;
 end
 plotEndValsOnSteadyState(3);
+set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -138,11 +146,12 @@ ssVals(3,1,2) = myHEMAY1allPunches(7);
 
 figure % 3.2
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(myHEMAY1allPunches);
+plotSteadyStateValues(3, myHEMAY1allPunches);
 % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(3);
 % make it pretty
+set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -150,11 +159,12 @@ xlim([3. 8.]);
 
 figure % 3.3
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(myHEMAY1allPunches);
+plotSteadyStateValues(3, myHEMAY1allPunches);
 % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(3);
 % make it pretty
+set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -170,6 +180,7 @@ for i = 1:8
     hold on;
 end
 plotEndValsOnSteadyState(4);
+set(gca,'FontSize', 30);
 title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -178,11 +189,12 @@ ssVals(4,1,2) = myHEMACoY1allPunches(7);
 
 figure % 4.2
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(myHEMACoY1allPunches);
+plotSteadyStateValues(4, myHEMACoY1allPunches);
 % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(4);
 % make it pretty
+set(gca,'FontSize', 30);
 title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -190,11 +202,12 @@ xlim([3. 8.]);
 
 figure % 4.3
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(myHEMACoY1allPunches);
+plotSteadyStateValues(4, myHEMACoY1allPunches);
 % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(4);
 % make it pretty
+set(gca,'FontSize', 30);
 title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
@@ -368,17 +381,18 @@ global markers;
     d = 1;
 end
 
-function e = plotSteadyStateValues(myY1allPunches)
+function e = plotSteadyStateValues(gel, myY1allPunches)
     global black
+    global markersAll
     
     % 20200923 plot the static pH4 value as a filled in black hexagon
-    plot(4, myY1allPunches(1), '-h', 'LineStyle','none', ...
+    plot(4, myY1allPunches(1), markersAll(gel,:), 'LineStyle','none', ...
         'MarkerSize', 30, ...
         'MarkerEdgeColor', black, ...
         'MarkerFaceColor', black);
     hold on;
     % 20200923 plot the static pH7 value as a filled in black pentagon
-    plot(7, myY1allPunches(7), '-p', 'LineStyle','none', ...
+    plot(7, myY1allPunches(7), markersAll(gel+4,:), 'LineStyle','none', ...
         'MarkerSize', 30, ...
         'MarkerEdgeColor', black, ...
         'MarkerFaceColor', black);
@@ -390,7 +404,7 @@ function f = plotScatterOfAvgs(gel)
 global endVals;
 global myColor1;
 global myColor2;
-global markers;
+global markersAll;
 
     % 1430 cm-1 peak
     A = []; % build a 1D array of values to pass to built-in functions
@@ -426,7 +440,7 @@ global markers;
     
     % plot the average with std dev error bars
     errorbar(4, avgA, stdDevA, ...
-        '-o', 'LineStyle','none', ...
+        markersAll(gel,:), 'LineStyle','none', ...
         'MarkerSize', 30, ...
         'Color', myColor1(pH4(segment),:), 'linewidth', 2);
         hold on;
@@ -445,12 +459,10 @@ global markers;
     stdDevA = std(A);
     % plot the average with std dev error bars
     errorbar(7, avgA, stdDevA, ...
-        '-s', 'LineStyle','none', ...
+        markersAll(gel+4,:), 'LineStyle','none', ...
         'MarkerSize', 30, ...
         'Color', myColor1(pH7(segment),:), 'linewidth', 2);
         hold on;
-        
-
         
     f = 1;
 end
