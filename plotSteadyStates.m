@@ -213,6 +213,12 @@ xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 xlim([3. 8.]);
 
+figure
+plotBarOfAvgs(1);
+plotBarOfAvgs(2);
+plotBarOfAvgs(3);
+plotBarOfAvgs(4);
+
 % 5. Calculate reversibility of all gels as the std dev of the final value
 % of all segments of the SAME pH over all punches of a gel type
 calcReversibility();
@@ -465,4 +471,81 @@ global markersAll;
         hold on;
         
     f = 1;
+end
+
+function g = plotBarOfAvgs(gel)
+global endVals;
+global myColor1;
+global myColor2;
+global markersAll;
+    
+    % 1430 cm-1 peak
+    A = []; % build a 1D array of values to pass to built-in functions
+    % sum over all 3 pH4 segments for all 3 punches (9 values)
+    sumPH4 = 0;
+    sumSqPH4 = 0;
+    n = 9;
+    for punch = 1:3
+        % plot all the pH4 segments: 2, 6, 9
+        pH4 = [2 6 9];
+        for segment = 1:3
+            A = [ A endVals(gel, punch, pH4(segment), 1)];
+            sumPH4 = sumPH4 + endVals(gel, punch, pH4(segment), 1);
+        end
+    end
+    myAvg = sumPH4/n;
+    for punch = 1:3
+        % plot all the pH4 segments: 2, 6, 9
+        pH4 = [2 6 9];
+        for segment = 1:3
+            term = endVals(gel, punch, pH4(segment), 1) - myAvg;
+            sumSqPH4 = sumSqPH4 + (term * term);
+        end
+    end
+    myStdDev = sqrt(sumSqPH4/(n-1));
+    
+    % Compare to built in functions
+    avgA = mean(A); 
+    stdDevA = std(A);
+    
+    % check avgA = myAvg? yes
+    % check stdDevA = myStdDev? yes
+    
+    % plot the average with std dev error bars
+%     errorbar(4, avgA, stdDevA, ...
+%         markersAll(gel,:), 'LineStyle','none', ...
+%         'MarkerSize', 30, ...
+%         'Color', myColor1(pH4(segment),:), 'linewidth', 2);
+%         hold on;
+    x = gel;
+    a = bar(x, avgA);
+    hold on;
+    b = errorbar(gel, avgA, stdDevA, stdDevA);
+    hold on;
+        
+    % Now do pH7 1430 cm-1 peak, just use built-ins for this, since 
+    % check passed
+    A = [];
+    for punch = 1:3
+        % plot all the pH7 segments: 1, 4, 8
+        pH7 = [1 4 8];
+        for segment = 1:3
+            A = [ A endVals(gel, punch, pH7(segment), 1)];
+        end
+    end
+    avgA = mean(A); 
+    stdDevA = std(A);
+    % plot the average with std dev error bars
+%     errorbar(7, avgA, stdDevA, ...
+%         markersAll(gel+4,:), 'LineStyle','none', ...
+%         'MarkerSize', 30, ...
+%         'Color', myColor1(pH7(segment),:), 'linewidth', 2);
+%         hold on;
+    x = gel+5    
+    c = bar(x, avgA);
+    hold on;
+    d = errorbar(x, avgA, stdDevA, stdDevA);
+    hold on;
+    
+    g = 1;
 end
