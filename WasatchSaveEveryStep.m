@@ -29,7 +29,7 @@ global yMax2;
 xMin = 950;
 xMax = 1800; % SP says to cutoff here 11/7/2018
 
-% There are two plots to build (or two lines on one plot).
+% There are two plots to build (or two lines on one plot).F
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
 % 11/06/2018 find the local max instead of looking at const location
 global x1Min;
@@ -619,6 +619,8 @@ end
 function c = plotSpectrum(firstTime, ...
     wavenumbers, dark, rawSpectrum, spectrum, difference, ...
     denominator, isAveragedSpectrum, acq)
+global studyPath
+global subdirs
 xMin = 950;
 xMax = 1800; % SP says to cutoff here 11/7/2018
 % local function to graph the spectrum
