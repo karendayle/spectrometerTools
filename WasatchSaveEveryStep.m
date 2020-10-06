@@ -31,13 +31,13 @@ xMax = 1800; % SP says to cutoff here 11/7/2018
 
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
-% NEW 11/06/2018 find the local max instead of looking at const location
+% 11/06/2018 find the local max instead of looking at const location
 global x1Min;
 global x1Max;
 x1Min = 591;
 x1Max = 615;
 % Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
-% NEW 11/06/2018 find the local max instead of looking at const location
+% 11/06/2018 find the local max instead of looking at const location
 global x2Min;
 global x2Max;
 x2Min = 790;
@@ -146,7 +146,7 @@ fprintf('Found %s %s with %d pixels (%.2f, %.2fnm)\n', ...
     modelName, serialNum, pixels, ...
     wavelengths(1), wavelengths(wavelengths.Length));
 
-%%% NEW: Prompt for study name, append it to path, check it doesn't
+%%% Prompt for study name, append it to path, check it doesn't
 %%% exist, then create it and its subdirs
 returnCode = createDirAndSubDirs();
 if returnCode == 1
@@ -160,7 +160,7 @@ else if returnCode == -1
     end
 end
 
-% NEW: THESE PATHS ARE NO LONGER CONSTANT. THEY NEED studyName embedded 
+% THESE PATHS ARE NO LONGER CONSTANT. THEY NEED studyName embedded 
 % AS WELL AS THE SUBDIR THAT IS CHANGING OVER TIME 
 % Initialize the stems to the first subdir
 
@@ -362,7 +362,7 @@ if (myAns1 ~= 4)
                 counter = counter + 1;
                 
                 % ---------------------------------------------------------
-                % 12/12/2018 NEW: Here is where we do what used to be the post-
+                % 12/12/2018 Here is where we do what used to be the post-
                 % processing
                 figure % Make the ratiometric average spectra plot
 
@@ -422,7 +422,7 @@ if (myAns1 ~= 4)
                 % Plot each spectrum (intensity vs wavenumber in a new color overtop
                 
                 % ---------------------------------------------------------
-                % 12/12/2018 NEW: Here is where we do what used to be the 
+                % 12/12/2018 Here is where we do what used to be the 
                 % time series post-processing
                 figure 
 
@@ -657,6 +657,19 @@ xMax = 1800; % SP says to cutoff here 11/7/2018
     end
 
     [e f] = correctBaseline(normalized');
+    
+    % NEW 20201005 save interim spectra to file
+    eStem = strcat(studyPath, '/', subdirs(1), '/e-%s.txt');
+    eFilename = writeSpectrumToFile(e, eStem,...
+        0, 0, zeros(1, 6, 'double'), 0);
+    fStem = strcat(studyPath, '/', subdirs(1), '/f-%s.txt');
+    fFilename = writeSpectrumToFile(f, fStem,...
+        0, 0, zeros(1, 6, 'double'), 0);
+    normStem = strcat(studyPath, '/', subdirs(1), '/norm-%s.txt');
+    normFilename = writeSpectrumToFile(normalized, normStem,...
+        0, 0, zeros(1, 6, 'double'), 0);
+    % NEW
+    
     subplot(2,4,3)
     plot(wavenumbers, e, 'cyan', wavenumbers, f, 'green');
     title('Baseline Corrected');
@@ -925,7 +938,7 @@ function g = plotAllSubDirs(subDirStem, myColor)
             f = f'; % FIX required so that avg doesn't end up 1024x1024       
 
             % 2. Ratiometric
-            % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+            % 10/4/18: Calculate the denominator using a window of 0 - 5 points
             % on either side of refWaveNumber. This maps to: 1 - 11 total
             % intensities used to calculate the denominator.
             if (xRef ~= 0) 
@@ -939,7 +952,7 @@ function g = plotAllSubDirs(subDirStem, myColor)
                 fprintf('denominator = %g at index: %d\n', denominator1, xRef);
             end
 
-            % 3. NEW 10/4/18: Normalize what is plotted
+            % 3. 10/4/18: Normalize what is plotted
             normalized = f/denominator1;
             
             sum = sum + normalized;
@@ -965,7 +978,7 @@ function g = plotAllSubDirs(subDirStem, myColor)
             f = f'; % FIX required so that avg doesn't end up 1024x1024  
             
             % 2. Ratiometric
-            % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+            % 10/4/18: Calculate the denominator using a window of 0 - 5 points
             % on either side of refWaveNumber. This maps to: 1 - 11 total
             % intensities used to calculate the denominator.
             if (xRef ~= 0) 
@@ -981,6 +994,7 @@ function g = plotAllSubDirs(subDirStem, myColor)
 
             % 3. Normalize what is plotted
             normalized = f/denominator1;
+            
             
             % 4. Add to the sum of the squares
             sumSq = sumSq + (normalized - avg).^2; 
@@ -1052,7 +1066,7 @@ function h = plotTimeSeries(subDirStem, myColor)
         % first pass on dataset, to get array of average spectra
         for I = 1 : numberOfSpectra
             thisfilename = fullfile(char(subDirStem), dinfo(I).name); % just the name            
-            % NEW 10/8/2018: extract time from filename
+            % 10/8/2018: extract time from filename
             S = string(thisfilename); 
             newStr1 = extractAfter(S,"avg-");
             dateWithHyphens = extractBefore(newStr1,".txt");
@@ -1080,14 +1094,14 @@ function h = plotTimeSeries(subDirStem, myColor)
                 I, myY, myMo, myD, myH, myMi, myS, t(I));
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-            % NEW 10/18 - base corr not done in 10/15/18 SR. This could explain
+            % 10/18 - base corr not done in 10/15/18 SR. This could explain
             % the lack of steady state...
             % 1. Correct the baseline BEFORE calculating denominator + normalizing
             % Returns trend as 'e' and baseline corrected signal as 'f'
             [e, f] = correctBaseline(thisdata(2,:)'); 
             % OLDER denominator = thisdata(2, xRef);
             % OLD denominator = f(xRef);
-            % NEW 10/20/2018
+            % 10/20/2018
             denominator = 1; % default
             if (xRef ~= 0) 
                 numPointsEachSide = 2; % TO DO: This could be increased
@@ -1098,7 +1112,7 @@ function h = plotTimeSeries(subDirStem, myColor)
                 fprintf('denominator = %g at index: %d\n', denominator1, xRef);
             end
 
-            % NEW 11/6/2018: since peaks at 1430 and 1702/cm red-, blueshift
+            % 11/6/2018: since peaks at 1430 and 1702/cm red-, blueshift
             % as function of pH, find the local max in the area
             f(x1Min:x1Max)
             x1LocalPeak = localPeak(f(x1Min:x1Max));
@@ -1111,7 +1125,7 @@ function h = plotTimeSeries(subDirStem, myColor)
 
             %y1(I) = thisdata(2, x1)/denominator;
             %y2(I) = thisdata(2, x2)/denominator;
-            %y3(I) = denominator; % NEW Oct. 17th to look for jumps in ref
+            %y3(I) = denominator; % Oct. 17th to look for jumps in ref
             fclose(fileID);
             sumY1 = sumY1 + y1(I);
             sumY2 = sumY2 + y2(I);
