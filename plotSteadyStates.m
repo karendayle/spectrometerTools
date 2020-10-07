@@ -41,6 +41,7 @@ global ssVals
 
 % 1. Alginate
 load('Data/myAlgY1AllPunches.mat');
+load('Data/myAlgY1AllPunchesStdDev.mat');
 figure % 1.1
 text(9.5,myAlgY1allPunches(8)+0.03,'Steady State', 'Color', black, ...
     'FontSize', 20);
@@ -61,7 +62,8 @@ ssVals(1,1,2) = myAlgY1allPunches(7);
 
 figure % 1.2
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(1, myAlgY1allPunches);
+plotSteadyStateValues(1, 4, myAlgY1allPunches);
+plotSteadyStateValues(1, 7, myAlgY1allPunches);
 % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(1);
@@ -74,7 +76,8 @@ xlim([3. 8.]);
 
 figure % 1.3
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(1, myAlgY1allPunches);
+plotSteadyStateValues(1, 4, myAlgY1allPunches);
+plotSteadyStateValues(1, 7, myAlgY1allPunches);
 % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(1);
@@ -87,6 +90,7 @@ xlim([3. 8.]);
 
 % 2. PEG
 load('Data/myPEGY1AllPunches.mat');
+load('Data/myPEGY1AllPunchesStdDev.mat');
 figure % 2.1
 for i = 1:8
     line([0,10],[myPEGY1allPunches(i),myPEGY1allPunches(i)], ...
@@ -103,7 +107,8 @@ ssVals(2,1,2) = myPEGY1allPunches(7);
 
 figure % 2.2
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(2, myPEGY1allPunches);
+plotSteadyStateValues(2, 4, myPEGY1allPunches);
+plotSteadyStateValues(2, 7, myPEGY1allPunches);
 % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(2);
@@ -116,7 +121,8 @@ xlim([3. 8.]);
 
 figure % 2.3
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(2, myPEGY1allPunches);
+plotSteadyStateValues(2, 4, myPEGY1allPunches);
+plotSteadyStateValues(2, 7, myPEGY1allPunches);
 % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(2);
@@ -129,6 +135,7 @@ xlim([3. 8.]);
 
 % 3. pHEMA
 load('Data/myHEMAY1AllPunches.mat');
+load('Data/myHEMAY1AllPunchesStdDev.mat');
 figure % 3.1
 for i = 1:8
     line([0,10],[myHEMAY1allPunches(i),myHEMAY1allPunches(i)], ...
@@ -146,7 +153,8 @@ ssVals(3,1,2) = myHEMAY1allPunches(7);
 
 figure % 3.2
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(3, myHEMAY1allPunches);
+plotSteadyStateValues(3, 4, myHEMAY1allPunches);
+plotSteadyStateValues(3, 7, myHEMAY1allPunches);
 % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(3);
@@ -159,7 +167,8 @@ xlim([3. 8.]);
 
 figure % 3.3
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(3, myHEMAY1allPunches);
+plotSteadyStateValues(3, 4, myHEMAY1allPunches);
+plotSteadyStateValues(3, 7, myHEMAY1allPunches);
 % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(3);
@@ -172,6 +181,7 @@ xlim([3. 8.]);
 
 % 4. pHEMA/coAc
 load('Data/myHEMACoY1AllPunches.mat');
+load('Data/myHEMACoY1AllPunchesStdDev.mat');
 figure % 4.1
 for i = 1:8
     line([0,10],[myHEMACoY1allPunches(i),myHEMACoY1allPunches(i)], ...
@@ -189,7 +199,8 @@ ssVals(4,1,2) = myHEMACoY1allPunches(7);
 
 figure % 4.2
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(4, myHEMACoY1allPunches);
+plotSteadyStateValues(4, 4, myHEMACoY1allPunches);
+plotSteadyStateValues(4, 7, myHEMACoY1allPunches);
 % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(4);
@@ -202,7 +213,8 @@ xlim([3. 8.]);
 
 figure % 4.3
 % 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(4, myHEMACoY1allPunches);
+plotSteadyStateValues(4, 4, myHEMACoY1allPunches);
+plotSteadyStateValues(4, 7, myHEMACoY1allPunches);
 % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(4);
@@ -214,10 +226,28 @@ ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure
-plotBarOfAvgs(1);
-plotBarOfAvgs(2);
-plotBarOfAvgs(3);
-plotBarOfAvgs(4);
+plotBarOfAvgs(1, 4, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH7 for gel 1
+plotBarOfAvgs(2, 4, myPEGY1allPunches, myPEGY1allPunchesStdDev);
+plotBarOfAvgs(3, 4, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
+plotBarOfAvgs(4, 4, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
+fname = {'A';'B';'C';'D'};
+set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
+set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
+title('Consistency of hydrogels at pH4')
+xlabel('Gel type')
+ylabel('Normalized intensity of 1430 cm-1 peak')
+
+figure
+plotBarOfAvgs(1, 7, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH4 for gel 1
+plotBarOfAvgs(2, 7, myPEGY1allPunches, myPEGY1allPunchesStdDev);
+plotBarOfAvgs(3, 7, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
+plotBarOfAvgs(4, 7, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
+fname = {'A';'B';'C';'D'};
+set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
+set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
+title('Consistency of hydrogels at pH7')
+xlabel('Gel type')
+ylabel('Normalized intensity of 1430 cm-1 peak')
 
 % 5. Calculate reversibility of all gels as the std dev of the final value
 % of all segments of the SAME pH over all punches of a gel type
@@ -387,22 +417,26 @@ global markers;
     d = 1;
 end
 
-function e = plotSteadyStateValues(gel, myY1allPunches)
+function e = plotSteadyStateValues(gel, pHlevel, myY1allPunches)
     global black
     global markersAll
     
-    % 20200923 plot the static pH4 value as a filled in black hexagon
-    plot(4, myY1allPunches(1), markersAll(gel,:), 'LineStyle','none', ...
-        'MarkerSize', 30, ...
-        'MarkerEdgeColor', black, ...
-        'MarkerFaceColor', black);
-    hold on;
-    % 20200923 plot the static pH7 value as a filled in black pentagon
-    plot(7, myY1allPunches(7), markersAll(gel+4,:), 'LineStyle','none', ...
-        'MarkerSize', 30, ...
-        'MarkerEdgeColor', black, ...
-        'MarkerFaceColor', black);
-    hold on;
+    switch pHlevel
+    case 4
+        % 20200923 plot the static pH4 value as a filled in black hexagon
+        plot(4, myY1allPunches(1), markersAll(gel,:), 'LineStyle','none', ...
+            'MarkerSize', 30, ...
+            'MarkerEdgeColor', black, ...
+            'MarkerFaceColor', black);
+        hold on;
+    case 7
+        % 20200923 plot the static pH7 value as a filled in black pentagon
+        plot(7, myY1allPunches(7), markersAll(gel+4,:), 'LineStyle','none', ...
+            'MarkerSize', 30, ...
+            'MarkerEdgeColor', black, ...
+            'MarkerFaceColor', black);
+        hold on;
+    end
     e = 1;
 end
 
@@ -473,79 +507,98 @@ global markersAll;
     f = 1;
 end
 
-function g = plotBarOfAvgs(gel)
+% new 20200930
+function g = plotBarOfAvgs(gel, pHlevel, myY1allPunches, ...
+    myY1allPunchesStdDev)
 global endVals;
 global myColor1;
 global myColor2;
 global markersAll;
     
-    % 1430 cm-1 peak
-    A = []; % build a 1D array of values to pass to built-in functions
-    % sum over all 3 pH4 segments for all 3 punches (9 values)
-    sumPH4 = 0;
-    sumSqPH4 = 0;
-    n = 9;
-    for punch = 1:3
-        % plot all the pH4 segments: 2, 6, 9
-        pH4 = [2 6 9];
-        for segment = 1:3
-            A = [ A endVals(gel, punch, pH4(segment), 1)];
-            sumPH4 = sumPH4 + endVals(gel, punch, pH4(segment), 1);
+    switch pHlevel
+    case 4
+        % 1430 cm-1 peak
+        A = []; % build a 1D array of values to pass to built-in functions
+        % sum over all 3 pH4 segments for all 3 punches (9 values)
+        sumPH4 = 0;
+        sumSqPH4 = 0;
+        n = 9;
+        for punch = 1:3
+            % plot all the pH4 segments: 2, 6, 9
+            pH4 = [2 6 9];
+            for segment = 1:3
+                A = [ A endVals(gel, punch, pH4(segment), 1)];
+                sumPH4 = sumPH4 + endVals(gel, punch, pH4(segment), 1);
+            end
         end
-    end
-    myAvg = sumPH4/n;
-    for punch = 1:3
-        % plot all the pH4 segments: 2, 6, 9
-        pH4 = [2 6 9];
-        for segment = 1:3
-            term = endVals(gel, punch, pH4(segment), 1) - myAvg;
-            sumSqPH4 = sumSqPH4 + (term * term);
+        myAvg = sumPH4/n;
+        for punch = 1:3
+            % plot all the pH4 segments: 2, 6, 9
+            pH4 = [2 6 9];
+            for segment = 1:3
+                term = endVals(gel, punch, pH4(segment), 1) - myAvg;
+                sumSqPH4 = sumSqPH4 + (term * term);
+            end
         end
-    end
-    myStdDev = sqrt(sumSqPH4/(n-1));
-    
-    % Compare to built in functions
-    avgA = mean(A); 
-    stdDevA = std(A);
-    
-    % check avgA = myAvg? yes
-    % check stdDevA = myStdDev? yes
-    
-    % plot the average with std dev error bars
-%     errorbar(4, avgA, stdDevA, ...
-%         markersAll(gel,:), 'LineStyle','none', ...
-%         'MarkerSize', 30, ...
-%         'Color', myColor1(pH4(segment),:), 'linewidth', 2);
-%         hold on;
-    x = gel;
-    a = bar(x, avgA);
-    hold on;
-    b = errorbar(gel, avgA, stdDevA, stdDevA);
-    hold on;
+        myStdDev = sqrt(sumSqPH4/(n-1));
+
+        % Compare to built in functions
+        avgA = mean(A); 
+        stdDevA = std(A);
+
+        % check avgA = myAvg? yes
+        % check stdDevA = myStdDev? yes
+
+        % plot the dyn average with std dev error bars
+        x = gel;
+        a = bar(x, avgA);
+        hold on;
+        % make error bars a bit thicker than default
+        b = errorbar(x, avgA, stdDevA, stdDevA, 'linewidth', 2);
+        b.LineStyle = ':'; % this should make error bars dotted
+        hold on;
         
-    % Now do pH7 1430 cm-1 peak, just use built-ins for this, since 
-    % check passed
-    A = [];
-    for punch = 1:3
-        % plot all the pH7 segments: 1, 4, 8
-        pH7 = [1 4 8];
-        for segment = 1:3
-            A = [ A endVals(gel, punch, pH7(segment), 1)];
+        % plot the static average with std dev error bars
+        % Draw the avg of all samples in static pH4 
+        % as a horizontal line across the bar
+        line([x-0.5 x+0.5], [myY1allPunches(1) myY1allPunches(1)], ...
+            'Color', 'm', 'LineWidth', 2);
+        bb = errorbar(x, myY1allPunches(1), myY1allPunchesStdDev(1), ...
+            myY1allPunchesStdDev(1), 'linewidth', 2);
+        bb.Color = 'm';
+        hold on;
+
+    case 7
+        % Now do pH7 1430 cm-1 peak, just use built-ins for this, since 
+        % check passed
+        A = [];
+        for punch = 1:3
+            % plot all the pH7 segments: 1, 4, 8
+            pH7 = [1 4 8];
+            for segment = 1:3
+                A = [ A endVals(gel, punch, pH7(segment), 1)];
+            end
         end
+        avgA = mean(A); 
+        stdDevA = std(A);
+
+        x = gel;   
+        c = bar(x, avgA);
+        hold on;
+        % make error bars a bit thicker than default
+        d = errorbar(x, avgA, stdDevA, stdDevA, 'linewidth', 2);
+        d.LineStyle = ':'; % this should make error bars dotted
+        hold on;
+        
+        % plot the static average with std dev error bars
+        % Draw the avg of all samples in static pH4 
+        % as a horizontal line across the bar
+        line([x-0.5 x+0.5], [myY1allPunches(7) myY1allPunches(7)], ...
+            'Color', 'm', 'LineWidth', 2);
+        dd = errorbar(x, myY1allPunches(7), myY1allPunchesStdDev(7), ...
+            myY1allPunchesStdDev(7), 'linewidth', 2);
+        dd.Color = 'm';
+        hold on;
     end
-    avgA = mean(A); 
-    stdDevA = std(A);
-    % plot the average with std dev error bars
-%     errorbar(7, avgA, stdDevA, ...
-%         markersAll(gel+4,:), 'LineStyle','none', ...
-%         'MarkerSize', 30, ...
-%         'Color', myColor1(pH7(segment),:), 'linewidth', 2);
-%         hold on;
-    x = gel+5    
-    c = bar(x, avgA);
-    hold on;
-    d = errorbar(x, avgA, stdDevA, stdDevA);
-    hold on;
-    
     g = 1;
 end
