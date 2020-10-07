@@ -111,7 +111,7 @@ xRef = 713;
 %xRef = 0; % setting this to zero means NO NORMALIZATION of peaks
 
 global peakSet;
-peakSet = 2; % Change this to change which peaks are plotted
+peakSet = 1; % CHOICE: Change this to change which peaks are plotted
              % Set to 1 for 1430 & 1702; set to 2 for 1072 & 1582
 global x1;
 global x2;
