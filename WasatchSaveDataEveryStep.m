@@ -644,9 +644,11 @@ xMax = 1800; % SP says to cutoff here 11/7/2018
     set(gca,'FontSize',16,'FontWeight','bold','box','off')
     xlim([xMin xMax]); 
     
+    [e f] = correctBaseline(spectrum'); % input was normalized'
+    
     if (denominator(3) ~= 0)
     % Plot the normalized data
-        normalized = spectrum/denominator(3);
+        normalized = f/denominator(3); % 20201007 Fixed. numerator was spectrum
         subplot(2,4,2)
         plot(wavenumbers, normalized, 'magenta');
         title('Ratiometric with N=5');
@@ -655,12 +657,13 @@ xMax = 1800; % SP says to cutoff here 11/7/2018
         set(gca,'FontSize',16,'FontWeight','bold','box','off')
         xlim([xMin xMax]);
     else
-        normalized = spectrum;
+        normalized = f; % 20201007 Fixed. numerator was spectrum
     end
-
-    [e f] = correctBaseline(normalized');
+    % 20201007 This is WRONG. Normalize AFTER baseline correction
+    % Fixed above. 
+    %[e f] = correctBaseline(normalized');
     
-    % NEW 20201005 save interim spectra to file
+    % 20201005 save interim spectra to file
     eStem = strcat(studyPath, '/', subdirs(1), '/e-%s.txt');
     eFilename = writeSpectrumToFile(e, eStem,...
         0, 0, zeros(1, 6, 'double'), 0);
@@ -670,7 +673,6 @@ xMax = 1800; % SP says to cutoff here 11/7/2018
     normStem = strcat(studyPath, '/', subdirs(1), '/norm-%s.txt');
     normFilename = writeSpectrumToFile(normalized, normStem,...
         0, 0, zeros(1, 6, 'double'), 0);
-    % NEW
     
     subplot(2,4,3)
     plot(wavenumbers, e, 'cyan', wavenumbers, f, 'green');
