@@ -56,7 +56,7 @@ plotEndValsOnSteadyState(1);
 set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 ssVals(1,1,1) = myAlgY1allPunches(1);
 ssVals(1,1,2) = myAlgY1allPunches(7);
 
@@ -71,7 +71,7 @@ plotScatterOfEndValsOnSteadyState(1);
 set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 1.3
@@ -85,7 +85,7 @@ plotScatterOfAvgs(1);
 set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 % 2. PEG
@@ -101,7 +101,7 @@ end
 plotEndValsOnSteadyState(2);
 title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 ssVals(2,1,1) = myPEGY1allPunches(1);
 ssVals(2,1,2) = myPEGY1allPunches(7);
 
@@ -116,7 +116,7 @@ plotScatterOfEndValsOnSteadyState(2);
 set(gca,'FontSize', 30);
 title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 2.3
@@ -130,7 +130,7 @@ plotScatterOfAvgs(2);
 set(gca,'FontSize', 30);
 title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 % 3. pHEMA
@@ -147,7 +147,7 @@ plotEndValsOnSteadyState(3);
 set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 ssVals(3,1,1) = myHEMAY1allPunches(1);
 ssVals(3,1,2) = myHEMAY1allPunches(7);
 
@@ -162,7 +162,7 @@ plotScatterOfEndValsOnSteadyState(3);
 set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 3.3
@@ -176,7 +176,7 @@ plotScatterOfAvgs(3);
 set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 % 4. pHEMA/coAc
@@ -193,7 +193,7 @@ plotEndValsOnSteadyState(4);
 set(gca,'FontSize', 30);
 title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 ssVals(4,1,1) = myHEMACoY1allPunches(1);
 ssVals(4,1,2) = myHEMACoY1allPunches(7);
 
@@ -208,7 +208,7 @@ plotScatterOfEndValsOnSteadyState(4);
 set(gca,'FontSize', 30);
 title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 4.3
@@ -235,7 +235,7 @@ set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
 set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
 title('Consistency of hydrogels at pH4')
 xlabel('Gel type')
-ylabel('Normalized intensity of 1430 cm-1 peak')
+ylabel('Normalized intensity of 1430 cm{-1} peak')
 
 figure
 plotBarOfAvgs(1, 7, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH4 for gel 1
@@ -247,31 +247,31 @@ set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
 set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
 title('Consistency of hydrogels at pH7')
 xlabel('Gel type')
-ylabel('Normalized intensity of 1430 cm-1 peak')
+ylabel('Normalized intensity of 1430 cm{-1} peak')
 
 figure
 plotBarOfAvgsSideBySide(1, 4, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH7 for gel 1
 plotBarOfAvgsSideBySide(2, 4, myPEGY1allPunches, myPEGY1allPunchesStdDev);
 plotBarOfAvgsSideBySide(3, 4, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
 plotBarOfAvgsSideBySide(4, 4, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
-fname = {'A';'B';'C';'D'};
-set(gca, 'XTick', 2:2:length(fname)*2,'XTickLabel',fname);
+fname = {'A1';'A2';'B1';'B2';'C1';'C2';'D1';'D2'};
+set(gca, 'XTick', 2:length(fname)*2,'XTickLabel',fname);
 set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
 title('Consistency of hydrogels at pH4')
 xlabel('Gel type')
-ylabel('Normalized intensity of 1430 cm-1 peak')
+ylabel('Normalized intensity of 1430 cm{-1} peak')
 
 figure
 plotBarOfAvgsSideBySide(1, 7, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH4 for gel 1
 plotBarOfAvgsSideBySide(2, 7, myPEGY1allPunches, myPEGY1allPunchesStdDev);
 plotBarOfAvgsSideBySide(3, 7, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
 plotBarOfAvgsSideBySide(4, 7, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
-fname = {'A';'B';'C';'D'};
-set(gca, 'XTick', 2:2:length(fname)*2,'XTickLabel',fname);
+fname = {'A1';'A2';'B1';'B2';'C1';'C2';'D1';'D2'};
+set(gca, 'XTick', 2:length(fname)*2,'XTickLabel',fname);
 set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
 title('Consistency of hydrogels at pH7')
 xlabel('Gel type')
-ylabel('Normalized intensity of 1430 cm-1 peak')
+ylabel('Normalized intensity of 1430 cm^{-1} peak')
 
 % 5. Calculate reversibility of all gels as the std dev of the final value
 % of all segments of the SAME pH over all punches of a gel type
@@ -671,7 +671,7 @@ global markersAll;
 
         % plot the dyn average with std dev error bars
         x = gel*2;
-        a = bar(x, avgA);
+        a = bar(x, avgA); % add bar color
         hold on;
         % make error bars a bit thicker than default
         b = errorbar(x, avgA, stdDevA, stdDevA, 'linewidth', 2);
@@ -682,7 +682,7 @@ global markersAll;
         % Draw the avg of all samples in static pH4 
         % as a horizontal line across the bar
         x = gel*2 + 1; % the side by side part
-        aa = bar(x, myY1allPunches(1));
+        aa = bar(x, myY1allPunches(1)); % add bar color
         bb = errorbar(x, myY1allPunches(1), myY1allPunchesStdDev(1), ...
             myY1allPunchesStdDev(1), 'linewidth', 2);
         bb.Color = 'm';
@@ -703,7 +703,7 @@ global markersAll;
         stdDevA = std(A);
 
         x = gel*2;% the side by side part
-        c = bar(x, avgA);
+        c = bar(x, avgA); % add bar color
         hold on;
         % make error bars a bit thicker than default
         d = errorbar(x, avgA, stdDevA, stdDevA, 'linewidth', 2);
@@ -714,7 +714,7 @@ global markersAll;
         % Draw the avg of all samples in static pH4 
         % as a horizontal line across the bar
         x = gel*2 + 1; % the side by side part
-        cc = bar(x, myY1allPunches(7));
+        cc = bar(x, myY1allPunches(7)); % add bar color
         dd = errorbar(x, myY1allPunches(7), myY1allPunchesStdDev(7), ...
             myY1allPunchesStdDev(7), 'linewidth', 2);
         dd.Color = 'm';
