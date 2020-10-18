@@ -226,10 +226,18 @@ ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure
-plotBarOfAvgs(1, 4, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH7 for gel 1
-plotBarOfAvgs(2, 4, myPEGY1allPunches, myPEGY1allPunchesStdDev);
-plotBarOfAvgs(3, 4, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
-plotBarOfAvgs(4, 4, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
+[yDyn(1), errDyn(1)] = buildArrayForBars(1, 4);
+[yDyn(2), errDyn(2)] = buildArrayForBars(2, 4);
+[yDyn(3), errDyn(3)] = buildArrayForBars(3, 4);
+[yDyn(4), errDyn(4)] = buildArrayForBars(4, 4);
+
+yBar = [yDyn(1) myAlgY1allPunches(4); yDyn(2) myPEGY1allPunches(4); ...
+    yDyn(3) myHEMAY1allPunches(4); yDyn(4) myHEMACoY1allPunches(4)];
+yErr = [errDyn(1) myAlgY1allPunchesStdDev(4); errDyn(2) myPEGY1allPunchesStdDev(4); ...
+    errDyn(3) myHEMAY1allPunchesStdDev(4); errDyn(4) myHEMACoY1allPunchesStdDev(4)];
+
+plotBarOfAvgsSideBySide(yBar, yErr);
+
 fname = {'A';'B';'C';'D'};
 set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
 set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
@@ -237,41 +245,19 @@ title('Consistency of hydrogels at pH4')
 xlabel('Gel type')
 ylabel('Normalized intensity of 1430 cm{-1} peak')
 
-figure
-plotBarOfAvgs(1, 7, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH4 for gel 1
-plotBarOfAvgs(2, 7, myPEGY1allPunches, myPEGY1allPunchesStdDev);
-plotBarOfAvgs(3, 7, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
-plotBarOfAvgs(4, 7, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
-fname = {'A';'B';'C';'D'};
-set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
-set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
-title('Consistency of hydrogels at pH7')
-xlabel('Gel type')
-ylabel('Normalized intensity of 1430 cm{-1} peak')
-
-figure
-plotBarOfAvgsSideBySide(1, 4, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH7 for gel 1
-plotBarOfAvgsSideBySide(2, 4, myPEGY1allPunches, myPEGY1allPunchesStdDev);
-plotBarOfAvgsSideBySide(3, 4, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
-plotBarOfAvgsSideBySide(4, 4, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
-fname = {'A1';'A2';'B1';'B2';'C1';'C2';'D1';'D2'};
-set(gca, 'XTick', 2:length(fname)*2,'XTickLabel',fname);
-set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
-title('Consistency of hydrogels at pH4')
-xlabel('Gel type')
-ylabel('Normalized intensity of 1430 cm{-1} peak')
-
-figure
-plotBarOfAvgsSideBySide(1, 7, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH4 for gel 1
-plotBarOfAvgsSideBySide(2, 7, myPEGY1allPunches, myPEGY1allPunchesStdDev);
-plotBarOfAvgsSideBySide(3, 7, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
-plotBarOfAvgsSideBySide(4, 7, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
-fname = {'A1';'A2';'B1';'B2';'C1';'C2';'D1';'D2'};
-set(gca, 'XTick', 2:length(fname)*2,'XTickLabel',fname);
-set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
-title('Consistency of hydrogels at pH7')
-xlabel('Gel type')
-ylabel('Normalized intensity of 1430 cm^{-1} peak')
+% figure
+% plotBarOfAvgsSideBySide(1, 7, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH4 for gel 1
+% plotBarOfAvgsSideBySide(2, 7, myPEGY1allPunches, myPEGY1allPunchesStdDev);
+% plotBarOfAvgsSideBySide(3, 7, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
+% plotBarOfAvgsSideBySide(4, 7, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
+% % fname = {'A1';'A2';'B1';'B2';'C1';'C2';'D1';'D2'};
+% % set(gca, 'XTick', 2:length(fname)*2,'XTickLabel',fname);
+% fname = {'A';'B';'C';'D'};
+% set(gca, 'XTick', 2:length(fname)*2,'XTickLabel',fname);
+% set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
+% title('Consistency of hydrogels at pH7')
+% xlabel('Gel type')
+% ylabel('Normalized intensity of 1430 cm^{-1} peak')
 
 % 5. Calculate reversibility of all gels as the std dev of the final value
 % of all segments of the SAME pH over all punches of a gel type
@@ -527,170 +513,53 @@ global markersAll;
         'MarkerSize', 30, ...
         'Color', myColor1(pH7(segment),:), 'linewidth', 2);
         hold on;
-        
     f = 1;
 end
 
-% new 20200930
-function g = plotBarOfAvgs(gel, pHlevel, myY1allPunches, ...
-    myY1allPunchesStdDev)
+% new 20201006
+% 20201017 add hatched fill of all bars for static values
+function h = plotBarOfAvgsSideBySide(yBar, yErr)
 global endVals;
 global myColor1;
 global myColor2;
 global markersAll;
     
-    switch pHlevel
-    case 4
-        % 1430 cm-1 peak
-        A = []; % build a 1D array of values to pass to built-in functions
-        % sum over all 3 pH4 segments for all 3 punches (9 values)
-        sumPH4 = 0;
-        sumSqPH4 = 0;
-        n = 9;
-        for punch = 1:3
-            % plot all the pH4 segments: 2, 6, 9
-            pH4 = [2 6 9];
-            for segment = 1:3
-                A = [ A endVals(gel, punch, pH4(segment), 1)];
-                sumPH4 = sumPH4 + endVals(gel, punch, pH4(segment), 1);
-            end
-        end
-        myAvg = sumPH4/n;
-        for punch = 1:3
-            % plot all the pH4 segments: 2, 6, 9
-            pH4 = [2 6 9];
-            for segment = 1:3
-                term = endVals(gel, punch, pH4(segment), 1) - myAvg;
-                sumSqPH4 = sumSqPH4 + (term * term);
-            end
-        end
-        myStdDev = sqrt(sumSqPH4/(n-1));
+    % plot the dyn average with std dev error bars
+    a = bar(yBar); % This works. See 4 groups of 2 bars each
+    % But don't have the x data, so how to plot the errorbars?
+    xd = get(a,'xdata');
+    hold on;
+    % make error bars a bit thicker than default
+    dx = 0.15;
+    b = errorbar([1-dx 1+dx; 2-dx 2+dx; 3-dx 3+dx; 4-dx 4+dx], yBar, yErr, yErr, 'linewidth', 2);
 
-        % Compare to built in functions
-        avgA = mean(A); 
-        stdDevA = std(A);
-
-        % check avgA = myAvg? yes
-        % check stdDevA = myStdDev? yes
-
-        % plot the dyn average with std dev error bars
-        x = gel;
-        a = bar(x, avgA);
-        hold on;
-        % make error bars a bit thicker than default
-        b = errorbar(x, avgA, stdDevA, stdDevA, 'linewidth', 2);
-        b.LineStyle = ':'; % this should make error bars dotted
-        hold on;
-        
-        % plot the static average with std dev error bars
-        % Draw the avg of all samples in static pH4 
-        % as a horizontal line across the bar
-        line([x-0.5 x+0.5], [myY1allPunches(1) myY1allPunches(1)], ...
-            'Color', 'm', 'LineWidth', 2);
-        bb = errorbar(x, myY1allPunches(1), myY1allPunchesStdDev(1), ...
-            myY1allPunchesStdDev(1), 'linewidth', 2);
-        bb.Color = 'm';
-        hold on;
-
-    case 7
-        % Now do pH7 1430 cm-1 peak, just use built-ins for this, since 
-        % check passed
-        A = [];
-        for punch = 1:3
-            % plot all the pH7 segments: 1, 4, 8
-            pH7 = [1 4 8];
-            for segment = 1:3
-                A = [ A endVals(gel, punch, pH7(segment), 1)];
-            end
-        end
-        avgA = mean(A); 
-        stdDevA = std(A);
-
-        x = gel;   
-        c = bar(x, avgA);
-        hold on;
-        % make error bars a bit thicker than default
-        d = errorbar(x, avgA, stdDevA, stdDevA, 'linewidth', 2);
-        d.LineStyle = ':'; % this should make error bars dotted
-        hold on;
-        
-        % plot the static average with std dev error bars
-        % Draw the avg of all samples in static pH4 
-        % as a horizontal line across the bar
-        line([x-0.5 x+0.5], [myY1allPunches(7) myY1allPunches(7)], ...
-            'Color', 'm', 'LineWidth', 2);
-        dd = errorbar(x, myY1allPunches(7), myY1allPunchesStdDev(7), ...
-            myY1allPunchesStdDev(7), 'linewidth', 2);
-        dd.Color = 'm';
-        hold on;
-    end
-    g = 1;
+    hold on;
+    h = 1;
 end
 
-% new 20201006
-function h = plotBarOfAvgsSideBySide(gel, pHlevel, myY1allPunches, ...
-    myY1allPunchesStdDev)
+function [avgA, stdDevA] = buildArrayForBars(gel, pHlevel)
 global endVals;
-global myColor1;
-global myColor2;
-global markersAll;
     
     switch pHlevel
     case 4
         % 1430 cm-1 peak
+        
         A = []; % build a 1D array of values to pass to built-in functions
         % sum over all 3 pH4 segments for all 3 punches (9 values)
-        sumPH4 = 0;
-        sumSqPH4 = 0;
         n = 9;
         for punch = 1:3
             % plot all the pH4 segments: 2, 6, 9
             pH4 = [2 6 9];
             for segment = 1:3
                 A = [ A endVals(gel, punch, pH4(segment), 1)];
-                sumPH4 = sumPH4 + endVals(gel, punch, pH4(segment), 1);
             end
         end
-        myAvg = sumPH4/n;
-        for punch = 1:3
-            % plot all the pH4 segments: 2, 6, 9
-            pH4 = [2 6 9];
-            for segment = 1:3
-                term = endVals(gel, punch, pH4(segment), 1) - myAvg;
-                sumSqPH4 = sumSqPH4 + (term * term);
-            end
-        end
-        myStdDev = sqrt(sumSqPH4/(n-1));
 
-        % Compare to built in functions
         avgA = mean(A); 
         stdDevA = std(A);
 
-        % check avgA = myAvg? yes
-        % check stdDevA = myStdDev? yes
-
-        % plot the dyn average with std dev error bars
-        x = gel*2;
-        a = bar(x, avgA); % add bar color
-        hold on;
-        % make error bars a bit thicker than default
-        b = errorbar(x, avgA, stdDevA, stdDevA, 'linewidth', 2);
-        b.LineStyle = ':'; % this should make error bars dotted
-        hold on;
-        
-        % plot the static average with std dev error bars
-        % Draw the avg of all samples in static pH4 
-        % as a horizontal line across the bar
-        x = gel*2 + 1; % the side by side part
-        aa = bar(x, myY1allPunches(1)); % add bar color
-        bb = errorbar(x, myY1allPunches(1), myY1allPunchesStdDev(1), ...
-            myY1allPunchesStdDev(1), 'linewidth', 2);
-        bb.Color = 'm';
-        hold on;
-
     case 7
-        % Now do pH7 1430 cm-1 peak, just use built-ins for this, since 
-        % check passed
+        % pH7 1430 cm-1 peak
         A = [];
         for punch = 1:3
             % plot all the pH7 segments: 1, 4, 8
@@ -701,24 +570,6 @@ global markersAll;
         end
         avgA = mean(A); 
         stdDevA = std(A);
-
-        x = gel*2;% the side by side part
-        c = bar(x, avgA); % add bar color
-        hold on;
-        % make error bars a bit thicker than default
-        d = errorbar(x, avgA, stdDevA, stdDevA, 'linewidth', 2);
-        d.LineStyle = ':'; % this should make error bars dotted
-        hold on;
-        
-        % plot the static average with std dev error bars
-        % Draw the avg of all samples in static pH4 
-        % as a horizontal line across the bar
-        x = gel*2 + 1; % the side by side part
-        cc = bar(x, myY1allPunches(7)); % add bar color
-        dd = errorbar(x, myY1allPunches(7), myY1allPunchesStdDev(7), ...
-            myY1allPunchesStdDev(7), 'linewidth', 2);
-        dd.Color = 'm';
-        hold on;
     end
-    h = 1;
+
 end
