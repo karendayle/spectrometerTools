@@ -225,6 +225,7 @@ xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 xlim([3. 8.]);
 
+% Repeat for pH4 and pH7
 for jj = 4:3:7
     figure
     [yDyn(1), errDyn(1)] = buildArrayForBars(1, jj);
@@ -510,8 +511,10 @@ function h = plotBarOfAvgsSideBySide(yBar, yErr)
     global myColor2;
     global markersAll;
     
-    % plot the dyn average with std dev error bars
-    a = bar(yBar); % This works. See 4 groups of 2 bars each
+    % Plot the dyn average on the left and the static average on the right
+    % There are 4 groups (gels) of 2 bars each
+    % Fill them with white and hatch fill the static values in later
+    a = bar(yBar, 'FaceColor','w'); % This works. See 4 groups of 2 bars each
     % But don't have the x data, so how to plot the errorbars?
     xd = get(a,'xdata');
     hold on;
