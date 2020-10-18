@@ -521,7 +521,7 @@ function h = plotBarOfAvgsSideBySide(yBar, yErr)
     % make error bars a bit thicker than default
     dx = 0.15;
     b = errorbar([1-dx 1+dx; 2-dx 2+dx; 3-dx 3+dx; 4-dx 4+dx], yBar, ...
-        yErr, yErr, 'linewidth', 2, 'LineStyle', 'none');
+        yErr, yErr, 'linewidth', 2, 'LineStyle', 'none', 'Color', 'k');
     hold on;
     h = 1;
 end
