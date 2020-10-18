@@ -225,39 +225,25 @@ xlabel('pH of flow cell environment', 'FontSize', 30);
 ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 xlim([3. 8.]);
 
-figure
-[yDyn(1), errDyn(1)] = buildArrayForBars(1, 4);
-[yDyn(2), errDyn(2)] = buildArrayForBars(2, 4);
-[yDyn(3), errDyn(3)] = buildArrayForBars(3, 4);
-[yDyn(4), errDyn(4)] = buildArrayForBars(4, 4);
-
-yBar = [yDyn(1) myAlgY1allPunches(4); yDyn(2) myPEGY1allPunches(4); ...
-    yDyn(3) myHEMAY1allPunches(4); yDyn(4) myHEMACoY1allPunches(4)];
-yErr = [errDyn(1) myAlgY1allPunchesStdDev(4); errDyn(2) myPEGY1allPunchesStdDev(4); ...
-    errDyn(3) myHEMAY1allPunchesStdDev(4); errDyn(4) myHEMACoY1allPunchesStdDev(4)];
-
-plotBarOfAvgsSideBySide(yBar, yErr);
-
-fname = {'A';'B';'C';'D'};
-set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
-set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
-title('Consistency of hydrogels at pH4')
-xlabel('Gel type')
-ylabel('Normalized intensity of 1430 cm{-1} peak')
-
-% figure
-% plotBarOfAvgsSideBySide(1, 7, myAlgY1allPunches, myAlgY1allPunchesStdDev); % plots bars of pH4 for gel 1
-% plotBarOfAvgsSideBySide(2, 7, myPEGY1allPunches, myPEGY1allPunchesStdDev);
-% plotBarOfAvgsSideBySide(3, 7, myHEMAY1allPunches, myHEMAY1allPunchesStdDev);
-% plotBarOfAvgsSideBySide(4, 7, myHEMACoY1allPunches, myHEMACoY1allPunchesStdDev);
-% % fname = {'A1';'A2';'B1';'B2';'C1';'C2';'D1';'D2'};
-% % set(gca, 'XTick', 2:length(fname)*2,'XTickLabel',fname);
-% fname = {'A';'B';'C';'D'};
-% set(gca, 'XTick', 2:length(fname)*2,'XTickLabel',fname);
-% set(gca, 'FontSize', 30,'FontWeight','bold','box','off')
-% title('Consistency of hydrogels at pH7')
-% xlabel('Gel type')
-% ylabel('Normalized intensity of 1430 cm^{-1} peak')
+for jj = 4:3:7
+    figure
+    [yDyn(1), errDyn(1)] = buildArrayForBars(1, jj);
+    [yDyn(2), errDyn(2)] = buildArrayForBars(2, jj);
+    [yDyn(3), errDyn(3)] = buildArrayForBars(3, jj);
+    [yDyn(4), errDyn(4)] = buildArrayForBars(4, jj);
+    yBar = [yDyn(1) myAlgY1allPunches(jj); yDyn(2) myPEGY1allPunches(jj); ...
+        yDyn(3) myHEMAY1allPunches(jj); yDyn(4) myHEMACoY1allPunches(jj)];
+    yErr = [errDyn(1) myAlgY1allPunchesStdDev(jj); errDyn(2) myPEGY1allPunchesStdDev(jj); ...
+        errDyn(3) myHEMAY1allPunchesStdDev(jj); errDyn(4) myHEMACoY1allPunchesStdDev(jj)];
+    plotBarOfAvgsSideBySide(yBar, yErr);
+    fname = {'A';'B';'C';'D'};
+    set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
+    set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
+    myTitle = sprintf('Consistency of hydrogels at pH%d',jj);
+    title(myTitle);
+    xlabel('Gel type')
+    ylabel('Normalized intensity of 1430 cm{-1} peak')
+end
 
 % 5. Calculate reversibility of all gels as the std dev of the final value
 % of all segments of the SAME pH over all punches of a gel type
@@ -519,10 +505,10 @@ end
 % new 20201006
 % 20201017 add hatched fill of all bars for static values
 function h = plotBarOfAvgsSideBySide(yBar, yErr)
-global endVals;
-global myColor1;
-global myColor2;
-global markersAll;
+    global endVals;
+    global myColor1;
+    global myColor2;
+    global markersAll;
     
     % plot the dyn average with std dev error bars
     a = bar(yBar); % This works. See 4 groups of 2 bars each
@@ -531,20 +517,18 @@ global markersAll;
     hold on;
     % make error bars a bit thicker than default
     dx = 0.15;
-    b = errorbar([1-dx 1+dx; 2-dx 2+dx; 3-dx 3+dx; 4-dx 4+dx], yBar, yErr, yErr, 'linewidth', 2);
-
+    b = errorbar([1-dx 1+dx; 2-dx 2+dx; 3-dx 3+dx; 4-dx 4+dx], yBar, ...
+        yErr, yErr, 'linewidth', 2, 'LineStyle', 'none');
     hold on;
     h = 1;
 end
 
 function [avgA, stdDevA] = buildArrayForBars(gel, pHlevel)
-global endVals;
-    
+    global endVals;
+    A = []; % array to build
     switch pHlevel
     case 4
         % 1430 cm-1 peak
-        
-        A = []; % build a 1D array of values to pass to built-in functions
         % sum over all 3 pH4 segments for all 3 punches (9 values)
         n = 9;
         for punch = 1:3
@@ -554,13 +538,11 @@ global endVals;
                 A = [ A endVals(gel, punch, pH4(segment), 1)];
             end
         end
-
         avgA = mean(A); 
         stdDevA = std(A);
 
     case 7
         % pH7 1430 cm-1 peak
-        A = [];
         for punch = 1:3
             % plot all the pH7 segments: 1, 4, 8
             pH7 = [1 4 8];
