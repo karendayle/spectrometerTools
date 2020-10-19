@@ -232,8 +232,14 @@ for jj = 4:3:7
     [yDyn(2), errDyn(2)] = buildArrayForBars(2, jj);
     [yDyn(3), errDyn(3)] = buildArrayForBars(3, jj);
     [yDyn(4), errDyn(4)] = buildArrayForBars(4, jj);
+    
+    % TO DO 2020/10/18: swap order if you want static vals on LHS
+
     yBar = [yDyn(1) myAlgY1allPunches(jj); yDyn(2) myPEGY1allPunches(jj); ...
         yDyn(3) myHEMAY1allPunches(jj); yDyn(4) myHEMACoY1allPunches(jj)];
+    
+    % TO DO 2020/10/18: replace StdDev with 0.95 of avg to do the CIs
+    
     yErr = [errDyn(1) myAlgY1allPunchesStdDev(jj); errDyn(2) myPEGY1allPunchesStdDev(jj); ...
         errDyn(3) myHEMAY1allPunchesStdDev(jj); errDyn(4) myHEMACoY1allPunchesStdDev(jj)];
     plotBarOfAvgsSideBySide(yBar, yErr);
