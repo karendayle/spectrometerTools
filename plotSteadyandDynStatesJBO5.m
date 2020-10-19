@@ -576,22 +576,33 @@ function k = fillBarsWithHatchedLines(B, yd)
     % Now generalize it in a loop
     [rows, cols] = size(yd);
     for i = 1:rows
-        for j = 1:cols
+        for j = 1:2:cols
             fprintf('row %d, col %d', i, j);
             % draw the slanted lines that go all the way across
             y1 = 0; 
+            y2 = 0;
             ymax = yd(i,j); 
 
             % this is the only "weakpoint". The dy depends on ymax value,
             % so the hatchline spacing will vary across bars. This could be
             % changed by using same dy for all bars, but the range of k needs
             % to change as well
-            dy = (ymax - y1)/10;
-            for k = 1:10
+            %dy = (ymax - y1)/10;
+            %fprintf('dy is %f', dy);
+            dy = 0.004; % standardize on this for all bars
+            maxK = ceil(ymax/dy); 
+            for k = 1:maxK
                 x1 = xData(i,j) - bw/2;
-                x2 = xData(i,j) + bw/2;   
+                x2 = xData(i,j) + bw/2;
+                y2 = y2 + dy;
                 % don't draw a line that exceeds ymax
-                y2 = min(y1 + dy, ymax);
+                % use eqn of a line to find a new x2
+                if (y2 > ymax)
+                    m = dy/bw;
+                    b = y1 - m*x1;
+                    y2 = ymax;
+                    x2 = (y2 - b)/m;
+                end
                 fprintf ('%d-%d.%d bw=%f x1=%f x2=%f y1=%f y2=%f\n', i, j, k, bw, x1, x2, y1, y2);
                 line([x1 x2], [y1 y2],'linewidth',1,'color','k');
                 y1 = y1 + dy;
