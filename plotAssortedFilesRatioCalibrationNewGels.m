@@ -32,7 +32,7 @@ magenta = [1.0, 0.0, 1.0];
 global dirStem
 
 global lineThickness;
-lineThickness = 2;
+lineThickness = 4; % use 4 for inset, 2 for regular
 
 global numPoints;
 numPoints = 1024;
@@ -59,19 +59,19 @@ myTextFont = 32;
 global myDebug;
 myDebug = 0;
 
-for J = 1:4
+for J = 1:1
     figure 
     switch J
         case 1
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 17\";
-            subDirStem1 = "calib pH4\1";
-            subDirStem2 = "calib pH4.5\1";
-            subDirStem3 = "calib pH5\1";
-            subDirStem4 = "calib pH5.5\1";
-            subDirStem5 = "calib pH6\1";
-            subDirStem6 = "calib pH6.5\1";
-            subDirStem7 = "calib pH7\1";
-            subDirStem8 = "calib pH7.5\1";
+            subDirStem1 = "pH4 punch1\1";
+            subDirStem2 = "pH4.5 punch1\1";
+            subDirStem3 = "pH5 punch1\1";
+            subDirStem4 = "pH5.5 punch1\1";
+            subDirStem5 = "pH6 punch1\1";
+            subDirStem6 = "pH6.5 punch1\1";
+            subDirStem7 = "pH7 punch1\1";
+            subDirStem8 = "pH7.5 punch1\1";
             for K = 1:8
                 switch K
                     case 1 % pH4
@@ -261,46 +261,53 @@ for J = 1:4
     %deltaY = 0.1; %alginate, PEG, pHEMA coAc
     %deltaY = 200; %if not normalized
     deltaX = 100;
-
+    x = 1430; y = 0.26; % for inset
     text(x, y, 'pH7.5', 'Color', ciel, 'FontSize', myTextFont);
-    text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
+    %text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
     y = y - deltaY;
-    text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
-    text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
+    x = 1430; y = 0.23; % for inset
+    text(x, y, 'pH7.0', 'Color', green, 'FontSize', myTextFont);
+    %text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
     y = y - deltaY;
+    x = 1430; y = 0.2; % for inset
     text(x, y, 'pH6.5', 'Color', gold, 'FontSize', myTextFont);
-    text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
+    %text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont); 
     y = y - deltaY;
-    text(x, y, 'pH6', 'Color', rust, 'FontSize', myTextFont);
-    text(x, y, '____', 'Color', rust, 'FontSize', myTextFont);
+    x = 1430; y = 0.17; % for inset
+    text(x, y, 'pH6.0', 'Color', rust, 'FontSize', myTextFont);
+    %text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
     y = y - deltaY;
+    x = 1430; y = 0.13834; % for inset
     text(x, y, 'pH5.5', 'Color', red, 'FontSize', myTextFont);
-    text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
+    %text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
     y = y - deltaY;
-    text(x, y, 'pH5', 'Color', cherry, 'FontSize', myTextFont);
-    text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
+    x = 1430; y = 0.10914; % for inset
+    text(x, y, 'pH5.0', 'Color', cherry, 'FontSize', myTextFont);
+    %text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
     y = y - deltaY;
+    x = 1430; y = 0.07937; % for inset
     text(x, y, 'pH4.5', 'Color', magenta, 'FontSize', myTextFont);
-    text(x, y, '_____', 'Color', magenta, 'FontSize', myTextFont);
+    %text(x, y, '_____', 'Color', magenta, 'FontSize', myTextFont);
     y = y - deltaY;
-    text(x, y, 'pH4', 'Color', black, 'FontSize', myTextFont);
-    text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
+    x = 1430; y = 0.045576; % for inset
+    text(x, y, 'pH4.0', 'Color', black, 'FontSize', myTextFont);
+    %text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
     hold off
 
-    switch J
-        case 1
-            title('56 nm spheres in microcapsules in alginate');
-        case 2
-            title('56 nm spheres in microcapsules in PEG');
-        case 3
-            title('56 nm spheres in microcapsules in pHEMA');
-        case 4
-            title('56 nm spheres in microcapsules in pHEMA coAc');
-    end
+%     switch J
+%         case 1
+%             title('56 nm spheres in microcapsules in alginate');
+%         case 2
+%             title('56 nm spheres in microcapsules in PEG');
+%         case 3
+%             title('56 nm spheres in microcapsules in pHEMA');
+%         case 4
+%             title('56 nm spheres in microcapsules in pHEMA coAc');
+%     end
 
     xlabel('Wavenumber (cm^-^1)'); % x-axis label
-    ylabel('Normalized Intensity (A.U.)'); % y-axis label
+    ylabel('Normalized Intensity'); % y-axis label
     set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
     % Plot each spectrum (intensity vs wavenumber in a new color overtop
 end

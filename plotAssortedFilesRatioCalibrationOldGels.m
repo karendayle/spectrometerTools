@@ -63,7 +63,7 @@ for J = 1:4
     figure 
     switch J
         case 1
-            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\";
+            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\calib curve study 2\";
             %subDirStem1 = "calib pH4\1";
             subDirStem1 = "calib pH4 repeat\1";
             subDirStem2 = "calib pH4.5\1";

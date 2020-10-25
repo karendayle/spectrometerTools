@@ -59,7 +59,7 @@ myTextFont = 32;
 global myDebug;
 myDebug = 0;
 
-for J = 2:2
+for J = 1:4
     figure 
     switch J
         case 1

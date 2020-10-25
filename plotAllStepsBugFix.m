@@ -1,6 +1,6 @@
 numPoints = 1024;
 
-for step = 1:9
+for step = 1:12
     switch step
         case 1
             myTitle = 'Step 1: MBA on AuNPs';
@@ -23,21 +23,6 @@ for step = 1:9
             thisfilename = dirStem + "1\avg-2020-10-05-22-10-50.txt";
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the trend
-            thisfilename = dirStem + "1\e-2020-10-05-22-10-50.txt";
-            fileID = fopen(thisfilename,'r');
-            [e] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\f-2020-10-05-22-10-51.txt";
-            fileID = fopen(thisfilename,'r');
-            [f] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\norm-2020-10-05-22-10-52.txt";
-            fileID = fopen(thisfilename,'r');
-            [normalized] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
 
         case 2
@@ -62,21 +47,6 @@ for step = 1:9
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
-            % Now get the trend
-            thisfilename = dirStem + "1\e-2020-10-05-22-19-01.txt";
-            fileID = fopen(thisfilename,'r');
-            [e] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\f-2020-10-05-22-19-02.txt";
-            fileID = fopen(thisfilename,'r');
-            [f] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the normalized 
-            thisfilename = dirStem + "1\norm-2020-10-05-22-19-02.txt";
-            fileID = fopen(thisfilename,'r');
-            [normalized] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
 
         case 3
             myTitle = 'Step 3: MBA AuNPs with NaCO3 and CaCl';
@@ -99,21 +69,6 @@ for step = 1:9
             thisfilename = dirStem + "1\avg-2020-10-05-22-24-33.txt";
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the trend
-            thisfilename = dirStem + "1\e-2020-10-05-22-24-34.txt";
-            fileID = fopen(thisfilename,'r');
-            [e] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\f-2020-10-05-22-24-34.txt";
-            fileID = fopen(thisfilename,'r');
-            [f] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\norm-2020-10-05-22-24-35.txt";
-            fileID = fopen(thisfilename,'r');
-            [normalized] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
             
         case 4
@@ -138,21 +93,6 @@ for step = 1:9
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
-            % Now get the trend
-            thisfilename = dirStem + "1\e-2020-10-05-22-38-01.txt";
-            fileID = fopen(thisfilename,'r');
-            [e] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\f-2020-10-05-22-38-02.txt";
-            fileID = fopen(thisfilename,'r');
-            [f] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\norm-2020-10-05-22-38-03.txt";
-            fileID = fopen(thisfilename,'r');
-            [normalized] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
             
         case 5
             myTitle = 'Step 5: After first bilayer PDADMAC/PSS';
@@ -175,21 +115,6 @@ for step = 1:9
             thisfilename = dirStem + "1\avg-2020-10-05-22-45-36.txt";
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the trend
-            thisfilename = dirStem + "1\e-2020-10-05-22-45-37.txt";
-            fileID = fopen(thisfilename,'r');
-            [e] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\f-2020-10-05-22-45-38.txt";
-            fileID = fopen(thisfilename,'r');
-            [f] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\norm-2020-10-05-22-45-39.txt";
-            fileID = fopen(thisfilename,'r');
-            [normalized] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
             
         case 6
@@ -214,21 +139,6 @@ for step = 1:9
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
-            % Now get the trend
-            thisfilename = dirStem + "1\e-2020-10-05-22-50-52.txt";
-            fileID = fopen(thisfilename,'r');
-            [e] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\f-2020-10-05-22-50-53.txt";
-            fileID = fopen(thisfilename,'r');
-            [f] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\norm-2020-10-05-22-50-53.txt";
-            fileID = fopen(thisfilename,'r');
-            [normalized] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
             
         case 7
             myTitle = 'Step 7: After ten bilayers';
@@ -252,21 +162,6 @@ for step = 1:9
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
-            % Now get the trend
-            thisfilename = dirStem + "1\e-2020-10-05-22-57-13.txt";
-            fileID = fopen(thisfilename,'r');
-            [e] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\f-2020-10-05-22-57-14.txt";
-            fileID = fopen(thisfilename,'r');
-            [f] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\norm-2020-10-05-22-57-15.txt";
-            fileID = fopen(thisfilename,'r');
-            [normalized] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
             
         case 8
             myTitle = 'Step 8: After first wash';
@@ -289,21 +184,6 @@ for step = 1:9
             thisfilename = dirStem + "1\avg-2020-10-05-23-02-02.txt";
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the trend
-            thisfilename = dirStem + "1\e-2020-10-05-23-02-03.txt";
-            fileID = fopen(thisfilename,'r');
-            [e] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\f-2020-10-05-23-02-04.txt";
-            fileID = fopen(thisfilename,'r');
-            [f] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);
-            % Now get the corrected 
-            thisfilename = dirStem + "1\norm-2020-10-05-23-02-05.txt";
-            fileID = fopen(thisfilename,'r');
-            [normalized] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
             
         case 9
@@ -334,7 +214,82 @@ for step = 1:9
 %             thisfilename = dirStem + "1\avg-2020-10-05-23-10-44.txt";
             fileID = fopen(thisfilename,'r');
             [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
-            fclose(fileID);    
+            fclose(fileID);
+            
+        case 10
+            myTitle = 'Step 10: In alginate gel at pH7';
+            % Two sets were acquired "third wash 1" and "third wash 2".
+            % Filenames need to match dataset
+            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\in gel 2 5000ms integ\";
+            thisfilename = dirStem + "1\dark-2020-10-14-21-31-32.txt";
+            fileID = fopen(thisfilename,'r');
+            [dark] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % There are 5 raw spectrums (to make one avg); just plot the first one
+            thisfilename = dirStem + "1\rawSpectrum-2020-10-14-21-31-43.txt";
+            fileID = fopen(thisfilename,'r');
+            [raw] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % There are 5 spectrums (to make one avg); just plot the first one
+            thisfilename = dirStem + "1\spectrum-2020-10-14-21-31-45.txt";
+            fileID = fopen(thisfilename,'r');
+            [spec] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % Now get the average
+            thisfilename = dirStem + "1\avg-2020-10-14-21-32-19.txt";
+            fileID = fopen(thisfilename,'r');
+            [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            
+        case 11
+            myTitle = 'Additional plot: with ethanol';
+            % Two sets were acquired "third wash 1" and "third wash 2".
+            % Filenames need to match dataset
+            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\ethanol 3 5000 ms integ\";
+            thisfilename = dirStem + "1\dark-2020-10-15-22-16-58.txt";
+            fileID = fopen(thisfilename,'r');
+            [dark] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % There are 5 raw spectrums (to make one avg); just plot the first one
+            thisfilename = dirStem + "1\rawSpectrum-2020-10-15-22-17-12.txt";
+            fileID = fopen(thisfilename,'r');
+            [raw] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % There are 5 spectrums (to make one avg); just plot the first one
+            thisfilename = dirStem + "1\spectrum-2020-10-15-22-17-15.txt";
+            fileID = fopen(thisfilename,'r');
+            [spec] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % Now get the average
+            thisfilename = dirStem + "1\avg-2020-10-15-22-17-50.txt";
+            fileID = fopen(thisfilename,'r');
+            [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID); 
+            
+        case 12
+            myTitle = 'Additional Plot: without ethanol';
+            % Two sets were acquired "third wash 1" and "third wash 2".
+            % Filenames need to match dataset
+            dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\no ethanol 1 5000 ms integ\";
+            thisfilename = dirStem + "1\dark-2020-10-15-22-07-26.txt";
+            fileID = fopen(thisfilename,'r');
+            [dark] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % There are 5 raw spectrums (to make one avg); just plot the first one
+            thisfilename = dirStem + "1\rawSpectrum-2020-10-15-22-07-38.txt";
+            fileID = fopen(thisfilename,'r');
+            [raw] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % There are 5 spectrums (to make one avg); just plot the first one
+            thisfilename = dirStem + "1\spectrum-2020-10-15-22-07-40.txt";
+            fileID = fopen(thisfilename,'r');
+            [spec] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % Now get the average
+            thisfilename = dirStem + "1\avg-2020-10-15-22-08-14.txt";
+            fileID = fopen(thisfilename,'r');
+            [avg] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID); 
     end
     
     % Fix the mistake that normalization was done before baseline
@@ -375,6 +330,10 @@ for step = 1:9
     else
         normalized = f; % 20201007 Fixed. numerator was spectrum
     end
+    % 20201019 Since 5 points under the curve are used for the
+    % normalization, need to normalize one more time to get vertical
+    % range = [0,1]
+    normalized = normalized/max(normalized);
     %3. Good to keep going!
 
     figure
@@ -383,11 +342,26 @@ for step = 1:9
     y=[dark(2,:); raw(2,:); spec(2,:); avg(2,:); e(1,:); f(:)'; normalized(:)';];
     h = stackedplot(dark(1,:), y', 'Title', myTitle, ...
         'DisplayLabels', newYlabels, 'FontSize', 15);
-
+    if (step < 11)
+        n(step,:) = normalized(:)';
+    end
+    
     axesProps = struct(h.AxesProperties(7));  
     axesProps.Axes.XLabel.Interpreter = 'tex';
     axesProps.Axes.YLim = [0 (max(normalized))]; % maybe round upwards?
     h.xlabel('Wavenumber cm^{-1}'); % affects the last plot, here it's #6
+end
+
+% Put the normalized plots from all steps on a single plot
+% Helpful: https://www.mathworks.com/matlabcentral/answers/486898-change-yticks-using-a-stacked-plot
+% Maybe better as subplot
+figure
+set(gca,'FontSize', 20);
+newYlabels = {'Step 1:','Step 2:','Step 3:','Step 4:','Step 5:','Step 6:', 'Step 7:','Step 8:','Step 9:','Step 10:'};
+h = stackedplot(dark(1,:)', n', 'Title', 'Normalized spectra for all steps', ...
+    'DisplayLabels', newYlabels, 'FontSize', 20); % applied to both labels and tick labels
+for i = 1:numel(handle.AxesProperties)
+    h.AxesProperties(i).YLimits = [0 1];
 end
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)

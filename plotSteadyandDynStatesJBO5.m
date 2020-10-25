@@ -233,15 +233,32 @@ for jj = 4:3:7
     [yDyn(3), errDyn(3)] = buildArrayForBars(3, jj);
     [yDyn(4), errDyn(4)] = buildArrayForBars(4, jj);
     
-    % TO DO 2020/10/18: swap order if you want static vals on LHS
-
-    yBar = [yDyn(1) myAlgY1allPunches(jj); yDyn(2) myPEGY1allPunches(jj); ...
-        yDyn(3) myHEMAY1allPunches(jj); yDyn(4) myHEMACoY1allPunches(jj)];
+    % put static vals on LHS of each pair
+    yBar = [myAlgY1allPunches(jj) yDyn(1); myPEGY1allPunches(jj) yDyn(2); ...
+        myHEMAY1allPunches(jj) yDyn(3); myHEMACoY1allPunches(jj) yDyn(4)];
     
-    % TO DO 2020/10/18: replace StdDev with 0.95 of avg to do the CIs
+    % CHOOSE ONE OF THESE two options for error bars:
+    % 1) StdDev
+    % yErr = [myAlgY1allPunchesStdDev(jj) errDyn(1); myPEGY1allPunchesStdDev(jj) errDyn(2); ...
+    %     myHEMAY1allPunchesStdDev(jj) errDyn(3); myHEMACoY1allPunchesStdDev(jj) errDyn(4)];
+    % 2) 95% CIs
+    % https://www.dummies.com/education/math/statistics/how-to-calculate-a-confidence-interval-for-a-population-mean-when-you-know-its-standard-deviation/
+    zStar = 1.96; % z Star value for 95% CI
+    nStat = 5; % should be > 30 or normal dist
+    nDyn = 9; % should be > 30 or normal dist
+    % 95% CI = avg +/ zStar * std dev/sqrt(n)
+    yErrStat1 = myAlgY1allPunches(jj) + zStar*myAlgY1allPunchesStdDev(jj)/sqrt(nStat);
+    yErrStat2 = myPEGY1allPunches(jj) + zStar*myPEGY1allPunchesStdDev(jj)/sqrt(nStat);
+    yErrStat3 = myHEMAY1allPunches(jj) + zStar*myHEMAY1allPunchesStdDev(jj)/sqrt(nStat);
+    yErrStat4 = myHEMACoY1allPunches(jj) + zStar*myHEMACoY1allPunchesStdDev(jj)/sqrt(nStat);
+    yErrDyn1 = yDyn(1) + zStar*errDyn(1)/sqrt(nDyn);
+    yErrDyn2 = yDyn(2) + zStar*errDyn(2)/sqrt(nDyn);
+    yErrDyn3 = yDyn(3) + zStar*errDyn(3)/sqrt(nDyn);
+    yErrDyn4 = yDyn(4) + zStar*errDyn(4)/sqrt(nDyn);
     
-    yErr = [errDyn(1) myAlgY1allPunchesStdDev(jj); errDyn(2) myPEGY1allPunchesStdDev(jj); ...
-        errDyn(3) myHEMAY1allPunchesStdDev(jj); errDyn(4) myHEMACoY1allPunchesStdDev(jj)];
+    yErr = [yErrStat1 yErrDyn1; yErrStat2 yErrDyn2; ...
+        yErrStat3 yErrDyn3; yErrStat4 yErrDyn4];
+    
     plotBarOfAvgsSideBySide(yBar, yErr);
     fname = {'A';'B';'C';'D'};
     set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
