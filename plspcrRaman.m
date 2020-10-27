@@ -20,6 +20,34 @@
 %   Modify to input Raman spectra to determine concentration from intensity
 %   Add figure command to avoid overwrite
 %   Read in the averaged Raman spectra from various dirs
+%   Add plot color by pH
+
+% Colors:
+global black;
+global purple;
+global blue;
+global ciel;
+global green;
+global rust;
+global gold;
+global red;
+global cherry;
+global magenta;
+
+% RGB
+blue =    [0.0000, 0.4470, 0.7410];
+rust =    [0.8500, 0.3250, 0.0980];
+gold =    [0.9290, 0.6940, 0.1250];
+purple =  [0.4940, 0.1840, 0.5560];
+green =   [0.4660, 0.6740, 0.1880];
+ciel =    [0.3010, 0.7450, 0.9330];
+cherry =  [0.6350, 0.0780, 0.1840];
+red =     [1.0, 0.0, 0.0];
+black =   [0.0, 0.0, 0.0];
+magenta = [1.0, 0.0, 1.0];
+
+%% Clear previous plots
+close all
 
 %% Loading the Data
 % Load a data set comprising spectral intensities of 60 samples of gasoline at
@@ -29,13 +57,16 @@
 % load spectra
 % whos NIR octane
 
-% kdk TO DO: load set of N Raman spectra, each 1024 values long
-%            use the averaged spectra (with dark removed, baseline
-%            corrected)
-%            normalize too
-%            store the array of 1024 wavenumbers once 
-%            replace octane with pH level (known) as a float (so sorting is
-%            poss)
+% kdk 2020/10/26, 27
+% - load set of N Raman spectra, each 1024 values long - done
+% - use the averaged spectra (with dark removed, baseline
+% - corrected) - done
+% - normalize too - done
+% - normalize again by max - done
+% - store the array of 1024 wavenumbers once - done 
+% - replace octane with pH level (known) as a float (so sorting is poss) - done
+% - figure out why each pH level shows only 1 avg, not 5 - 
+% - in the regression and PLS plots, color by original pH
 global waveNumbers;
 global ramanSpectra;
 global pH;
@@ -45,24 +76,22 @@ rc = getRamanSpectra();
 [Nspectra Npoints] = size(ramanSpectra); 
 [dummy,h] = sort(pH); % sorting actually not necess since data read in order
 oldorder = get(gcf,'DefaultAxesColorOrder');
-% figure
 set(gcf,'DefaultAxesColorOrder',jet(Nspectra));
-plot3(repmat(1:Npoints,Nspectra,1)',repmat(pH(h),1,Npoints)',ramanSpectra(h,:)');
+x1 = repmat(waveNumbers(1:Npoints),Nspectra,1)';
+y1 = repmat(pH(h),1,Npoints)';
+z1 = ramanSpectra(h,:)';
+plot3(x1, y1, z1);
 set(gcf,'DefaultAxesColorOrder',oldorder);
 xlabel('Wavenumber (cm^-^1)'); ylabel('pH'); axis('tight');
 grid on
-%%
-%Nspectra = 60; % original = 60
-% Npoints = 401; % original = 401
-%[dummy,h] = sort(octane); % dummy is the sorted octane values, 
-% h contains the location of this value in octane (unsorted)
-% oldorder = get(gcf,'DefaultAxesColorOrder');
+
+%% Check one set of spectra at pH4 (to make sure > 1 plotted per question
+% above
 % figure
-% set(gcf,'DefaultAxesColorOrder',jet(Nspectra));
-% plot3(repmat(1:Npoints,Nspectra,1)',repmat(octane(h),1,Npoints)',NIR(h,:)');
-% set(gcf,'DefaultAxesColorOrder',oldorder);
-% xlabel('Wavelength Index'); ylabel('Octane'); axis('tight');
-% grid on
+% for ii = 1:5
+%   plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
+%   hold on;
+% end
 
 %% Fitting the Data with Two Components
 % Use the |plsregress| function to fit a PLSR model with ten PLS components
@@ -74,6 +103,7 @@ y = pH;
 [n,p] = size(X);
 [Xloadings,Yloadings,Xscores,Yscores,betaPLS10,PLSPctVar] = plsregress(...
 	X,y,10);
+
 %%
 % Ten components may be more than will be needed to adequately fit the
 % data, but diagnostics from this fit can be used to make a choice of a
@@ -101,7 +131,8 @@ yfitPLS = [ones(n,1) X]*betaPLS;
 % linear regression of the response variable on those two components.  It
 % often makes sense to normalize each variable first by its standard
 % deviation when the variables have very different amounts of variability,
-% however, that is not done here.
+% however, that is not done here. (kdk: but I normalized spectra prior)
+% kdk: PCAVar are the eigenvalues. They are used to assess expected var
 [PCALoadings,PCAScores,PCAVar] = pca(X,'Economy',false);
 betaPCR = regress(y-mean(y), PCAScores(:,1:2));
 %%
@@ -115,7 +146,12 @@ yfitPCR = [ones(n,1) X]*betaPCR;
 %%
 % Plot fitted vs. observed response for the PLSR and PCR fits.
 figure
-plot(y,yfitPLS,'bo',y,yfitPCR,'r^');
+%plot(y,yfitPLS,'bo',y,yfitPCR,'r^');
+for ii = 1:Nspectra
+    plot(y(ii),yfitPLS(ii),'bo',y(ii),yfitPCR(ii),'r^', ...
+        'Color',pHColor(ii)); % original, before color
+    hold on;
+end
 xlabel('Observed Response');
 ylabel('Fitted Response');
 legend({'PLSR with 2 Components' 'PCR with 2 Components'},  ...
@@ -141,8 +177,15 @@ rsquaredPCR = 1 - RSS_PCR/TSS
 % Another way to compare the predictive power of the two models is to plot the
 % response variable against the two predictors in both cases.
 figure
-plot3(Xscores(:,1),Xscores(:,2),y-mean(y),'bo');
+% plot3(Xscores(:,1),Xscores(:,2),y-mean(y),'bo'); % original, before color
+for ii = 1:Nspectra
+    plot3(Xscores(ii,1),Xscores(ii,2),y-mean(y),'bo', 'Color', pHColor(ii));
+    hold on;
+end
 legend('PLSR');
+xlabel('X 1 score'); % kdk
+ylabel('X 2 score'); % kdk
+zlabel('Response Variable');
 grid on; view(-30,30);
 %%
 % It's a little hard to see without being able to interactively rotate the
@@ -150,8 +193,15 @@ grid on; view(-30,30);
 % On the other hand, the PCR plot below shows a cloud of points with little
 % indication of a linear relationship.
 figure
-plot3(PCAScores(:,1),PCAScores(:,2),y-mean(y),'r^');
+% plot3(PCAScores(:,1),PCAScores(:,2),y-mean(y),'r^'); % original, before color
+for ii = 1:Nspectra
+    plot3(PCAScores(ii,1),PCAScores(ii,2),y-mean(y),'r^', 'Color', pHColor(ii));
+    hold on;
+end
 legend('PCR');
+xlabel('PCA 1 score'); % kdk
+ylabel('PCA 2 score'); % kdk
+zlabel('Response');
 grid on; view(-30,30);
 
 %%
@@ -250,22 +300,52 @@ legend({'PLSR' 'PCR'},'location','NE');
 [Xl,Yl,Xs,Ys,beta,pctVar,mse,stats] = plsregress(X,y,3);
 figure
 % plot(1:Npoints,stats.W,'-'); % original
-plot(waveNumbers(1:Npoints),stats.W,'-');
+plot(waveNumbers(1:Npoints),stats.W,'-'); % kdk use wavenumbers
 xlabel('Wavenumber (cm^-^1)');
 ylabel('PLS Weight');
 legend({'1st Component' '2nd Component' '3rd Component'},  ...
 	'location','NW');
 xlim([min(waveNumbers) max(waveNumbers)]);
+
+%% kdk NEW plot the residuals in X and Y, color by pH
+figure
+for ii = 1:Nspectra
+    plot(waveNumbers(1:Npoints),stats.Xresiduals(ii,:),'-','Color',pHColor(ii));
+    hold on;
+end
+xlabel('Wavenumber (cm^-^1)');
+ylabel('PLS X residuals');
+
+figure
+for ii = 1:Nspectra
+    plot(pH(ii),stats.Yresiduals(ii),'^','Color',pHColor(ii));
+    hold on;
+end
+xlabel('pH');
+ylabel('PLS Y residuals');
+
 %%
 % Similarly, the PCA loadings describe how strongly each component in the PCR
 % depends on the original variables.
 figure
-plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-');
+plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); % kdk use wavenumbers
 xlabel('Wavenumber (cm^-^1)');
 ylabel('PCA Loading');
 legend({'1st Component' '2nd Component' '3rd Component'  ...
 	'4th Component'},'location','NW');
 xlim([min(waveNumbers) max(waveNumbers)]);
+
+%% kdk: Idea for classification (what comes next)
+% For a spectra of unknown pH, create new spectra from linear combination
+% of the first N PCs as: b(i) = PC1(i)*a(i) + PC2*a(i) + PC3(i)*a(i) + ...,
+% i = 1, Npoints
+% Then, "fit" this new spectra, b(i) against the spectra of known pH to
+% determine pH of b(i), where I am not sure what "fit" does, but ideally
+% b(i) transforms into a single point on the response curve so that pH can
+% be read off.
+% 
+% Do similar for PLSR 
+
 %%
 % For either PLSR or PCR, it may be that each component can be given a
 % physically meaningful interpretation by inspecting which variables it
@@ -491,6 +571,52 @@ function a = getRamanSpectra()
         end
     end
     a = numberOfSpectra;
+end
+
+function pHC = pHColor(i)
+% Colors:
+global black;
+global purple;
+global blue;
+global ciel;
+global green;
+global rust;
+global gold;
+global red;
+global cherry;
+global magenta;
+
+if i < 6
+    pHC = black;
+else
+    if i < 11
+        pHC = magenta;
+    else
+        if i < 16
+            pHC = cherry;
+        else
+            if i < 21
+                pHC = red;
+            else
+                if i < 26
+                    pHC = rust;
+                else
+                    if i < 31
+                        pHC = gold;
+                    else
+                        if i < 36
+                            pHC = green;
+                        else
+                            pHC = ciel;
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+            
 end
 
 
