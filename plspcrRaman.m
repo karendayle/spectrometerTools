@@ -146,10 +146,13 @@ yfitPCR = [ones(n,1) X]*betaPCR;
 %%
 % Plot fitted vs. observed response for the PLSR and PCR fits.
 figure
-%plot(y,yfitPLS,'bo',y,yfitPCR,'r^');
+%plot(y,yfitPLS,'bo',y,yfitPCR,'r^'); % original, before color
 for ii = 1:Nspectra
-    plot(y(ii),yfitPLS(ii),'bo',y(ii),yfitPCR(ii),'r^', ...
-        'Color',pHColor(ii)); % original, before color
+%     plot(y(ii),yfitPLS(ii),'o',y(ii),yfitPCR(ii),'^', ...
+%         'Color',pHColor(ii)); 
+    plot(y(ii),yfitPLS(ii),'o','Color',pHColor(ii));
+    hold on;
+    plot(y(ii),yfitPCR(ii),'^','Color',pHColor(ii));
     hold on;
 end
 xlabel('Observed Response');
@@ -342,8 +345,18 @@ xlim([min(waveNumbers) max(waveNumbers)]);
 % Then, "fit" this new spectra, b(i) against the spectra of known pH to
 % determine pH of b(i), where I am not sure what "fit" does, but ideally
 % b(i) transforms into a single point on the response curve so that pH can
-% be read off.
+% be read off. To figure this out, go back to how the PCR is done, i.e. how
+% is the "observed response" calculated to be 1 value for a spectrum?
 % 
+% Idea: test the PCA models with 2 and 10 PCs on individual Raman spectra already input
+testFitPCR2PCs = zeros(1, Nspectra, 'double');
+testFitPCR10PCs = zeros(1, Nspectra, 'double');
+for k=1:Nspectra
+    testSpectrum = ramanSpectra(k,:);
+    testFitPCR2PCs(k) = [1 testSpectrum] * betaPCR;
+    testFitPCR10PCs(k) = [1 testSpectrum] * betaPCR10;
+end
+
 % Do similar for PLSR 
 
 %%
