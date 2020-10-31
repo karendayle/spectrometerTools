@@ -22,7 +22,7 @@
 %   Read in the averaged Raman spectra from various dirs
 %   Add plot color by pH
 
-% Colors:
+% kdk: Colors:
 global black;
 global purple;
 global blue;
@@ -34,7 +34,7 @@ global red;
 global cherry;
 global magenta;
 
-% RGB
+% kdk: RGB
 blue =    [0.0000, 0.4470, 0.7410];
 rust =    [0.8500, 0.3250, 0.0980];
 gold =    [0.9290, 0.6940, 0.1250];
@@ -46,7 +46,7 @@ red =     [1.0, 0.0, 0.0];
 black =   [0.0, 0.0, 0.0];
 magenta = [1.0, 0.0, 1.0];
 
-%% Clear previous plots
+%% kdk: Clear previous plots
 close all
 
 %% Loading the Data
@@ -57,7 +57,7 @@ close all
 % load spectra
 % whos NIR octane
 
-% kdk 2020/10/26, 27
+% kdk 2020/10/26, 27 Input Raman spectra
 % - load set of N Raman spectra, each 1024 values long - done
 % - use the averaged spectra (with dark removed, baseline
 % - corrected) - done
@@ -69,20 +69,33 @@ close all
 % - in the regression and PLS plots, color by original pH
 global waveNumbers;
 global ramanSpectra;
-global pH;
+global analyte;
+global analyteName;
+global blanks;
+
 ramanSpectra = [];
-pH = [];
-rc = getRamanSpectra();
+analyte = [];
+blanks = [];
+
+% CHOOSE ONE OF THESE
+%rc = getSPIERamanSpectra();
+rc = getNIHRamanSpectra();
+
+% AND ONE OF THESE
+% analyteName = "pH";
+analyteName = "dopamine"; % TO DO add the rest
+
+% Proceed with same approach for both SPIE and NIH datasets
 [Nspectra Npoints] = size(ramanSpectra); 
-[dummy,h] = sort(pH); % sorting actually not necess since data read in order
+[dummy,h] = sort(analyte); % sorting actually not necess since data read in order
 oldorder = get(gcf,'DefaultAxesColorOrder');
 set(gcf,'DefaultAxesColorOrder',jet(Nspectra));
 x1 = repmat(waveNumbers(1:Npoints),Nspectra,1)';
-y1 = repmat(pH(h),1,Npoints)';
+y1 = repmat(analyte(h),1,Npoints)';
 z1 = ramanSpectra(h,:)';
 plot3(x1, y1, z1);
 set(gcf,'DefaultAxesColorOrder',oldorder);
-xlabel('Wavenumber (cm^-^1)'); ylabel('pH'); axis('tight');
+xlabel('Wavenumber (cm^-^1)'); ylabel(analyteName); axis('tight');
 grid on
 
 %% Check one set of spectra at pH4 (to make sure > 1 plotted per question
@@ -99,7 +112,7 @@ grid on
 % X = NIR; % original
 % y = octane; % original
 X = ramanSpectra;
-y = pH;
+y = analyte;
 [n,p] = size(X);
 [Xloadings,Yloadings,Xscores,Yscores,betaPLS10,PLSPctVar] = plsregress(...
 	X,y,10);
@@ -279,7 +292,9 @@ PCRmsep = sum(crossval(@pcrsse,X,y,'KFold',10),1) / n;
 % as good a job as possible.  On the other hand, PCR needs four components
 % to get the same prediction accuracy.
 figure
-plot(0:10,PLSmsep(2,:),'b-o',0:10,PCRmsep,'r-^');
+% plot(0:10,PLSmsep(2,:),'b-o',0:10,PCRmsep,'r-^'); kdk: MJM catches badness of
+% claiming to use 0 components, but why are there 11?
+plot(1:11,PLSmsep(2,:),'b-o',1:11,PCRmsep,'r-^');
 xlabel('Number of components');
 ylabel('Estimated Mean Squared Prediction Error');
 legend({'PLSR' 'PCR'},'location','NE');
@@ -321,10 +336,10 @@ ylabel('PLS X residuals');
 
 figure
 for ii = 1:Nspectra
-    plot(pH(ii),stats.Yresiduals(ii),'^','Color',pHColor(ii));
+    plot(analyte(ii),stats.Yresiduals(ii),'^','Color',pHColor(ii));
     hold on;
 end
-xlabel('pH');
+xlabel(analyteName);
 ylabel('PLS Y residuals');
 
 %%
@@ -351,14 +366,32 @@ xlim([min(waveNumbers) max(waveNumbers)]);
 % Idea: test the PCA models with 2 and 10 PCs on individual Raman spectra already input
 testFitPCR2PCs = zeros(1, Nspectra, 'double');
 testFitPCR10PCs = zeros(1, Nspectra, 'double');
+testFitPLS2PCs = zeros(1, Nspectra, 'double');
+testFitPLS10PCs = zeros(1, Nspectra, 'double');
 for k=1:Nspectra
     testSpectrum = ramanSpectra(k,:);
     testFitPCR2PCs(k) = [1 testSpectrum] * betaPCR;
     testFitPCR10PCs(k) = [1 testSpectrum] * betaPCR10;
+    testFitPLS2PCs(k) = [1 testSpectrum] * betaPLS;
+    testFitPLS10PCs(k) = [1 testSpectrum] * betaPLS10;
 end
-
-% Do similar for PLSR 
-
+figure
+title('Classification test');
+xlabel('Raman spectra test spectra (5 at 8 pH levels)');
+ylabel('Resultant pH classification from model');
+plot((1:Nspectra),testFitPCR2PCs, 'o');
+hold on;
+plot((1:Nspectra),testFitPCR10PCs, '^');
+hold on;
+plot((1:Nspectra),testFitPLS2PCs, 's');
+hold on;
+plot((1:Nspectra),testFitPLS10PCs, 'p');
+hold on;
+legend({'PCR 2 component model' 'PCR 10 component model' ...
+        'PLS 2 component model' 'PLS 10 component model'},'location','NW');
+title('Classification test');
+xlabel('Raman spectra test spectra (5 at 8 pH levels)');
+ylabel('Resultant pH classification from model');
 %%
 % For either PLSR or PCR, it may be that each component can be given a
 % physically meaningful interpretation by inspecting which variables it
@@ -392,6 +425,7 @@ end
 % and the PLS weights and PCA loadings seem to pick out the same variables.
 % That may not be true for other data.
 
+%% kdk: Functions for data input and processing
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug
     % use the closestRef as the x-value of the center point of the peak
@@ -452,7 +486,7 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end   
 
-function a = getRamanSpectra()
+function a = getSPIERamanSpectra()
     global numPoints;
     numPoints = 1024;
     global xRef;
@@ -473,7 +507,7 @@ function a = getRamanSpectra()
     myDebug = 0;
     global waveNumbers;
     global ramanSpectra;
-    global pH;
+    global analyte;
     
     dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 17\";
     subDirStem = ["pH4 punch1\1"; "pH4.5 punch1\1"; "pH5 punch1\1"; ...
@@ -530,7 +564,7 @@ function a = getRamanSpectra()
             end
 
             % calculate average
-            avg = sum/numberOfSpectra;
+            %avg = sum/numberOfSpectra;
 
             % second pass on dataset to get (each point - average)^2
             % for standard deviation, need 
@@ -575,7 +609,7 @@ function a = getRamanSpectra()
                 
                 waveNumbers = thisdata(1,offset:end);
                 ramanSpectra = [ramanSpectra; normalized(offset:end)];
-                pH = [pH; pHValues(J)];
+                analyte = [analyte; pHValues(J)];
                 fprintf('%d\n', I);
             end
 
@@ -632,4 +666,204 @@ end
             
 end
 
+function a = getNIHRamanSpectra()
+    global numPoints;
+    numPoints = 1024;
+    global xRef;
+    xRef = 713; % index where the reference peak is 
+                    % COO- at 1582
+                    % TO DO: read from avg*.txt file
+    global offset;
+    offset = 300;
+    global xMin;
+    global xMax;
+    global yMin;
+    global yMax;
+    xMin = 950;
+    xMax = 1800;
+    yMin = 0;
+    yMax = 20.0;
 
+    global waveNumbers;
+    global ramanSpectra;
+    global analyte;
+    global blanks;
+
+    dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\";
+    dir_to_search = char(dirStem);
+    % TO DO: Add loop for all batches
+    for J = 1:2
+        % Patterns to match
+        % 'BATCH i*.csv', i = A,B,C
+        % 'BATCH i conci*.csv, conci = 0.01, 0.1, 1, 10
+        % 'BATCH i conci analytei.csv, analytei = blank,adenosine,lactate,
+        %     glucose, glutamate, dopamine, creatinine, uric acid, urea
+        % 'BATCH i conci analytei samplei.csv, samplei = 1,..5 (missing for blank)
+        sum = zeros(1, numPoints, 'double');
+        avg = zeros(1, numPoints, 'double');
+        sumSq = zeros(1, numPoints, 'double');
+        thisdata = zeros(2, numPoints, 'double'); 
+
+        switch J
+            case 1 % blanks
+                txtpattern = fullfile(dir_to_search, 'Batch C 0.01-*blank.csv');
+                dinfo = dir(txtpattern);
+                [wn blankD01] = readCSV(strcat(dir_to_search,dinfo.name));
+                txtpattern = fullfile(dir_to_search, 'Batch C 0.1-*blank.csv');
+                dinfo = dir(txtpattern);
+                [wn blankD1] = readCSV(strcat(dir_to_search,dinfo.name));
+                txtpattern = fullfile(dir_to_search, 'Batch C 1-*blank.csv');
+                dinfo= dir(txtpattern);
+                [wn blank1] = readCSV(strcat(dir_to_search,dinfo.name));
+                txtpattern = fullfile(dir_to_search, 'Batch C 10-*blank.csv');
+                dinfo = dir(txtpattern);
+                [wn blank10] = readCSV(strcat(dir_to_search,dinfo.name));
+            case 2 % adenosine
+                % repeat for Adenosine 1-5
+                for K = 1:5
+                    filename = ['Batch C 0.01-*adenosine ', int2str(K), '.csv'];
+                    fprintf(filename);
+                    txtpattern = fullfile(dir_to_search, filename);
+                    dinfo = dir(txtpattern);            
+                    [wn aden1D01] = readCSV(strcat(dir_to_search,dinfo.name));
+                end
+                for K = 1:5
+                    filename = ['Batch C 0.1-*adenosine ', int2str(K), '.csv'];
+                    fprintf(filename);
+                    txtpattern = fullfile(dir_to_search, filename);
+                    dinfo = dir(txtpattern);            
+                    [wn aden1D1] = readCSV(strcat(dir_to_search,dinfo.name));
+                end
+                for K = 1:5
+                    filename = ['Batch C 1-*adenosine ', int2str(K), '.csv'];
+                    fprintf(filename);
+                    txtpattern = fullfile(dir_to_search, filename);
+                    dinfo = dir(txtpattern);            
+                    [wn aden1] = readCSV(strcat(dir_to_search,dinfo.name));
+                end
+                for K = 1:5
+                    filename = ['Batch C 10-*adenosine ', int2str(K), '.csv'];
+                    fprintf(filename);
+                    txtpattern = fullfile(dir_to_search, filename);
+                    dinfo = dir(txtpattern);            
+                    [wn aden10] = readCSV(strcat(dir_to_search,dinfo.name));
+                end
+            % construct ramanSpectra and analyte arrays as
+            %   conc 0: blank, set analyte to ?
+            %   conc 0.01: spectra 1-5. set analyte to adenosine
+            %   conc 0.1: spectra 1-5. set analyte to adenosine
+            %   conc 1: spectra 1-5. set analyte to adenosine
+            %   conc 10: spectra 1-5. set analyte to adenosine
+            case 3 % creatinine
+            case 4 % dopamine
+            case 5 % glucose
+            case 6 % glutamate
+            case 7 % lactate
+            case 8 % urea
+            case 9 % uric acid
+        end
+    end
+    
+    
+    
+        numberOfSpectra = length(dinfo);
+        if numberOfSpectra > 0
+            % first pass on dataset, to get array of average spectra
+            for I = 1 : numberOfSpectra
+                thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+                fileID = fopen(thisfilename,'r');
+                [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
+                fclose(fileID);
+
+                % 1. Correct the baseline BEFORE calculating denominator + normalizing
+                % Returns trend as 'e' and baseline corrected signal as 'f'
+                [e, f] = correctBaseline(thisdata(2,:)');    
+
+                % 2. Ratiometric
+                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+                % on either side of refWaveNumber. This maps to: 1 - 11 total
+                % intensities used to calculate the denominator.
+                if (xRef ~= 0) 
+                    numPointsEachSide = 2;
+                    denominator1 = getDenominator(xRef, numPointsEachSide, ...
+                        numPoints, f(:));
+                else
+                    denominator1 = 1;
+                end
+                if myDebug
+                    fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+                end
+
+                % 3. NEW 10/4/18: Normalize what is plotted
+                normalized = f/denominator1;
+
+                sum = sum + normalized;
+            end
+
+            % calculate average
+            %avg = sum/numberOfSpectra;
+
+            % second pass on dataset to get (each point - average)^2
+            % for standard deviation, need 
+            for I = 1 : numberOfSpectra
+                thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+                fileID = fopen(thisfilename,'r');
+                [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
+                fclose(fileID);
+
+                % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
+                % REFERENCE INDEX
+
+                % 1. Correct the baseline BEFORE calculating denominator + normalizing
+                % Returns trend as 'e' and baseline corrected signal as 'f'
+                [e, f] = correctBaseline(thisdata(2,:)');    
+
+                % 2. Ratiometric
+                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+                % on either side of refWaveNumber. This maps to: 1 - 11 total
+                % intensities used to calculate the denominator.
+                if (xRef ~= 0) 
+                    numPointsEachSide = 2;
+                    denominator1 = getDenominator(xRef, numPointsEachSide, ...
+                        numPoints, f(:));
+                else
+                    denominator1 = 1;
+                end
+                if myDebug
+                    fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+                end
+
+                % 3. Normalize what is plotted
+                normalized = f/denominator1;
+                % one more time to account for fact that > 1 point under
+                % curve is used
+                normalized = normalized/max(normalized);
+
+                % 4. Add to the sum of the squares
+                % sumSq = sumSq + (normalized - avg).^2; 
+                % store the corrected signal, throwing away offset points at
+                % the start
+                
+                waveNumbers = thisdata(1,offset:end);
+                ramanSpectra = [ramanSpectra; normalized(offset:end)];
+                analyte = [analyte; pHValues(J)];
+                fprintf('%d\n', I);
+            end
+
+            % 5. Compute standard deviation at each index of the averaged spectra 
+            % stdDev = sqrt(sumSq/numberOfSpectra);
+        end
+    
+    b = numberOfSpectra;
+end
+
+function [wn, rs] = readCSV(thisfilename)
+%     Tbl = readtable(thisfilename);
+%     Vars = Tbl.Properties.VariableNames;
+    
+    f = fopen(thisfilename);
+    thisdata = textscan(f, '%f %f', 'Delimiter', ',', 'HeaderLines', 34);
+    fclose(f);
+    wn = cell2mat(thisdata(1,1));
+    rs = cell2mat(thisdata(1,2));
+end
