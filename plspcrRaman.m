@@ -688,11 +688,13 @@ function a = getNIHRamanSpectra()
     global ramanSpectra;
     global analyte;
     global blanks;
+    
+    conc = [0.01; 0.1; 1; 10];
 
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\";
     dir_to_search = char(dirStem);
     % TO DO: Add loop for all batches
-    for J = 1:2
+    for I = 1:2
         % Patterns to match
         % 'BATCH i*.csv', i = A,B,C
         % 'BATCH i conci*.csv, conci = 0.01, 0.1, 1, 10
@@ -704,7 +706,7 @@ function a = getNIHRamanSpectra()
         sumSq = zeros(1, numPoints, 'double');
         thisdata = zeros(2, numPoints, 'double'); 
 
-        switch J
+        switch I
             case 1 % blanks
                 txtpattern = fullfile(dir_to_search, 'Batch C 0.01-*blank.csv');
                 dinfo = dir(txtpattern);
@@ -719,35 +721,29 @@ function a = getNIHRamanSpectra()
                 dinfo = dir(txtpattern);
                 [wn blank10] = readCSV(strcat(dir_to_search,dinfo.name));
             case 2 % adenosine
-                % repeat for Adenosine 1-5
-                for K = 1:5
-                    filename = ['Batch C 0.01-*adenosine ', int2str(K), '.csv'];
-                    fprintf(filename);
-                    txtpattern = fullfile(dir_to_search, filename);
-                    dinfo = dir(txtpattern);            
-                    [wn aden1D01] = readCSV(strcat(dir_to_search,dinfo.name));
+                for J = 1:4
+                    for K = 1:5
+                        %filename = ['Batch C 0.01-*adenosine ', int2str(K), '.csv'];
+   %START HERE          
+                        switch J
+                            case 1
+                                filename = sprintf('Batch C %0.2f-*adenosine %d.csv', conc(J),K);
+                            case 2
+                                filename = sprintf('Batch C %0.1f-*adenosine %d.csv', conc(J),K);
+                            case 3
+                                filename = sprintf('Batch C %0.0f-*adenosine %d.csv', conc(J),K);
+                            case 4
+                                filename = sprintf('Batch C %0.0f-*adenosine %d.csv', conc(J),K);
+                        end
+                        fprintf('%s\n',filename);
+                        txtpattern = fullfile(dir_to_search, filename);
+                        dinfo = dir(txtpattern);            
+                        [wn aden1D01] = readCSV(strcat(dir_to_search,dinfo.name));
+                        ramanSpectra = [ramanSpectra; aden1D01];
+                        analyte = [analyte; 0.01];
+                    end
                 end
-                for K = 1:5
-                    filename = ['Batch C 0.1-*adenosine ', int2str(K), '.csv'];
-                    fprintf(filename);
-                    txtpattern = fullfile(dir_to_search, filename);
-                    dinfo = dir(txtpattern);            
-                    [wn aden1D1] = readCSV(strcat(dir_to_search,dinfo.name));
-                end
-                for K = 1:5
-                    filename = ['Batch C 1-*adenosine ', int2str(K), '.csv'];
-                    fprintf(filename);
-                    txtpattern = fullfile(dir_to_search, filename);
-                    dinfo = dir(txtpattern);            
-                    [wn aden1] = readCSV(strcat(dir_to_search,dinfo.name));
-                end
-                for K = 1:5
-                    filename = ['Batch C 10-*adenosine ', int2str(K), '.csv'];
-                    fprintf(filename);
-                    txtpattern = fullfile(dir_to_search, filename);
-                    dinfo = dir(txtpattern);            
-                    [wn aden10] = readCSV(strcat(dir_to_search,dinfo.name));
-                end
+
             % construct ramanSpectra and analyte arrays as
             %   conc 0: blank, set analyte to ?
             %   conc 0.01: spectra 1-5. set analyte to adenosine
