@@ -77,20 +77,23 @@ ramanSpectra = [];
 analyte = [];
 blanks = [];
 
-% CHOOSE ONE OF THESE
-%rc = getSPIERamanSpectra();
-rc = getNIHRamanSpectra();
-
-% AND ONE OF THESE
-% analyteName = "pH";
-analyteName = "dopamine"; % TO DO add the rest
+analysis = 2;
+if analysis == 1
+    rc = getSPIERamanSpectra();
+    analyteName = "pH";
+else
+    [spectra analyteArr] = getNIHRamanSpectra();
+    analyteName = "adenosine"; % TO DO add the rest
+    ramanSpectra = spectra; % temporary
+    analyte = analyteArr; % temporary
+end
 
 % Proceed with same approach for both SPIE and NIH datasets
 [Nspectra Npoints] = size(ramanSpectra); 
 [dummy,h] = sort(analyte); % sorting actually not necess since data read in order
 oldorder = get(gcf,'DefaultAxesColorOrder');
 set(gcf,'DefaultAxesColorOrder',jet(Nspectra));
-x1 = repmat(waveNumbers(1:Npoints),Nspectra,1)';
+x1 = repmat(waveNumbers(1:Npoints)',Nspectra,1)';
 y1 = repmat(analyte(h),1,Npoints)';
 z1 = ramanSpectra(h,:)';
 plot3(x1, y1, z1);
@@ -666,7 +669,7 @@ end
             
 end
 
-function a = getNIHRamanSpectra()
+function [spectra analyteArr] = getNIHRamanSpectra()
     global numPoints;
     numPoints = 1024;
     global xRef;
@@ -684,173 +687,279 @@ function a = getNIHRamanSpectra()
     yMin = 0;
     yMax = 20.0;
 
-    global waveNumbers;
-    global ramanSpectra;
-    global analyte;
-    global blanks;
+    global waveNumbers
+    global ramanSpectra
+    global analyte
+    global adenosine
+    global creatinine
+    global dopamine
+    global glucose
+    global glutamate
+    global lactate
+    global urea
+    global uricAcid
+    global blanks
     
+    batch = ['A'; 'B'; 'C'];
+    analyteNames = ['adenosine', 'glucose', 'glutamate', 'lactate', 'urea', 'uric acid'];
     conc = [0.01; 0.1; 1; 10];
-
+    
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\";
     dir_to_search = char(dirStem);
-    % TO DO: Add loop for all batches
-    for I = 1:2
-        % Patterns to match
-        % 'BATCH i*.csv', i = A,B,C
-        % 'BATCH i conci*.csv, conci = 0.01, 0.1, 1, 10
-        % 'BATCH i conci analytei.csv, analytei = blank,adenosine,lactate,
-        %     glucose, glutamate, dopamine, creatinine, uric acid, urea
-        % 'BATCH i conci analytei samplei.csv, samplei = 1,..5 (missing for blank)
-        sum = zeros(1, numPoints, 'double');
-        avg = zeros(1, numPoints, 'double');
-        sumSq = zeros(1, numPoints, 'double');
-        thisdata = zeros(2, numPoints, 'double'); 
-
-        switch I
+    % loop for all batches
+    for M = 1:1
+        for I = 1:2
+            % Patterns to match
+            % 'BATCH i*.csv', i = A,B,C
+            % 'BATCH i conci*.csv, conci = 0.01, 0.1, 1, 10
+            % 'BATCH i conci analytei.csv, analytei = blank,adenosine,lactate,
+            %     glucose, glutamate, dopamine, creatinine, uric acid, urea
+            % 'BATCH i conci analytei samplei.csv, samplei = 1,..5 (missing for blank)
+            switch I
             case 1 % blanks
-                txtpattern = fullfile(dir_to_search, 'Batch C 0.01-*blank.csv');
+                filename = sprintf('Batch %s 0.01-*blank.csv', batch(M));
+                txtpattern = fullfile(dir_to_search, filename);
                 dinfo = dir(txtpattern);
-                [wn blankD01] = readCSV(strcat(dir_to_search,dinfo.name));
-                txtpattern = fullfile(dir_to_search, 'Batch C 0.1-*blank.csv');
+                [waveNumbers blankD01] = readCSV(strcat(dir_to_search,dinfo.name));
+
+                filename = sprintf('Batch %s 0.1-*blank.csv', batch(M));
+                txtpattern = fullfile(dir_to_search, filename);
                 dinfo = dir(txtpattern);
                 [wn blankD1] = readCSV(strcat(dir_to_search,dinfo.name));
-                txtpattern = fullfile(dir_to_search, 'Batch C 1-*blank.csv');
+
+                filename = sprintf('Batch %s 1-*blank.csv', batch(M));
+                txtpattern = fullfile(dir_to_search, filename);
                 dinfo= dir(txtpattern);
                 [wn blank1] = readCSV(strcat(dir_to_search,dinfo.name));
-                txtpattern = fullfile(dir_to_search, 'Batch C 10-*blank.csv');
+
+                filename = sprintf('Batch %s 10-*blank.csv', batch(M));
+                txtpattern = fullfile(dir_to_search, filename);
                 dinfo = dir(txtpattern);
                 [wn blank10] = readCSV(strcat(dir_to_search,dinfo.name));
+                
             case 2 % adenosine
-                for J = 1:4
-                    for K = 1:5
-                        %filename = ['Batch C 0.01-*adenosine ', int2str(K), '.csv'];
-   %START HERE          
-                        switch J
-                            case 1
-                                filename = sprintf('Batch C %0.2f-*adenosine %d.csv', conc(J),K);
-                            case 2
-                                filename = sprintf('Batch C %0.1f-*adenosine %d.csv', conc(J),K);
-                            case 3
-                                filename = sprintf('Batch C %0.0f-*adenosine %d.csv', conc(J),K);
-                            case 4
-                                filename = sprintf('Batch C %0.0f-*adenosine %d.csv', conc(J),K);
-                        end
-                        fprintf('%s\n',filename);
-                        txtpattern = fullfile(dir_to_search, filename);
-                        dinfo = dir(txtpattern);            
-                        [wn aden1D01] = readCSV(strcat(dir_to_search,dinfo.name));
-                        ramanSpectra = [ramanSpectra; aden1D01];
-                        analyte = [analyte; 0.01];
+                adenosine = [];
+                adenosineSpectra = [];
+                for J = 1:4 % each concentration
+                    switch J
+                        case 1
+                            adenosineSpectra = [adenosineSpectra; blankD01'];
+                            adenosine = [adenosine 0.0];
+                            for K = 1:5 % each sample
+                                filename = sprintf('Batch %s %0.2f-*adenosine %d.csv', batch(M), conc(J),K);
+                                newSpectrum = addOneSpectrum(dir_to_search, filename);
+                                adenosineSpectra = [adenosineSpectra; newSpectrum];
+                                adenosine = [adenosine; 0.01];
+                            end
+
+                        case 2
+                            adenosineSpectra = [adenosineSpectra; blankD1'];
+                            adenosine = [adenosine; 0.0];
+                            for K = 1:5 % each sample
+                                filename = sprintf('Batch %s %0.1f-*adenosine %d.csv', batch(M), conc(J),K);
+                                newSpectrum = addOneSpectrum(dir_to_search, filename);
+                                adenosineSpectra = [adenosineSpectra; newSpectrum];
+                                adenosine = [adenosine; 0.1];
+                            end
+                            
+                        case 3
+                            adenosineSpectra = [adenosineSpectra; blank1'];
+                            adenosine = [adenosine; 0.0];
+                            for K = 1:5 % each sample
+                                filename = sprintf('Batch %s %0.0f-*adenosine %d.csv', batch(M), conc(J),K);
+                                newSpectrum = addOneSpectrum(dir_to_search, filename);
+                                adenosineSpectra = [adenosineSpectra; newSpectrum];
+                                adenosine = [adenosine; 1];
+                            end
+                            
+                        case 4
+                            adenosineSpectra = [adenosineSpectra; blank10'];
+                            adenosine = [adenosine; 0.0];
+                            for K = 1:5 % each sample
+                                filename = sprintf('Batch %s %0.0f-*adenosine %d.csv', batch(M), conc(J),K);
+                                newSpectrum = addOneSpectrum(dir_to_search, filename);
+                                adenosineSpectra = [adenosineSpectra; newSpectrum];
+                                adenosine = [adenosine; 10];
+                            end
                     end
                 end
 
-            % construct ramanSpectra and analyte arrays as
-            %   conc 0: blank, set analyte to ?
-            %   conc 0.01: spectra 1-5. set analyte to adenosine
-            %   conc 0.1: spectra 1-5. set analyte to adenosine
-            %   conc 1: spectra 1-5. set analyte to adenosine
-            %   conc 10: spectra 1-5. set analyte to adenosine
-            case 3 % creatinine
-            case 4 % dopamine
-            case 5 % glucose
-            case 6 % glutamate
-            case 7 % lactate
-            case 8 % urea
-            case 9 % uric acid
-        end
+%             % construct ramanSpectra and analyte arrays as
+%             %   conc 0: blank, set analyte to ?
+%             %   conc 0.01: spectra 1-5. set analyte to adenosine
+%             %   conc 0.1: spectra 1-5. set analyte to adenosine
+%             %   conc 1: spectra 1-5. set analyte to adenosine
+%             %   conc 10: spectra 1-5. set analyte to adenosine
+%             case 3 % creatinine
+%                   for J = 1:4
+%                     for K = 1:5 
+%                         switch J
+%                             case 1
+%                                 filename = sprintf('Batch %s %0.2f-*creatinine %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.01];
+%                             case 2
+%                                 filename = sprintf('Batch %s %0.1f-*creatinine %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.1];
+%                             case 3
+%                                 filename = sprintf('Batch %s %0.0f-*creatinine %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 1];
+%                             case 4
+%                                 filename = sprintf('Batch %s %0.0f-*creatinine %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 10];
+%                         end
+%                     end
+%                 end
+% 
+%             case 4 % dopamine
+%                 for J = 1:4
+%                     for K = 1:5 
+%                         switch J
+%                             case 1
+%                                 filename = sprintf('Batch %s %0.2f-*dopamine %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.01];
+%                             case 2
+%                                 filename = sprintf('Batch %s %0.1f-*dopamine %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.1];
+%                             case 3
+%                                 filename = sprintf('Batch %s %0.0f-*dopamine %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 1];
+%                             case 4
+%                                 filename = sprintf('Batch %s %0.0f-*dopamine %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 10];
+%                         end
+%                     end
+%                 end 
+% 
+%             case 5 % glucose
+%                  for J = 1:4
+%                     for K = 1:5 
+%                         switch J
+%                             case 1
+%                                 filename = sprintf('Batch %s %0.2f-*glucose %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.01];
+%                             case 2
+%                                 filename = sprintf('Batch %s %0.1f-*glucose %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.1];
+%                             case 3
+%                                 filename = sprintf('Batch %s %0.0f-*glucose %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 1];
+%                             case 4
+%                                 filename = sprintf('Batch %s %0.0f-*glucose %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 10];
+%                         end
+%                     end
+%                 end                   
+%             case 6 % glutamate
+%                  for J = 1:4
+%                     for K = 1:5 
+%                         switch J
+%                             case 1
+%                                 filename = sprintf('Batch %s %0.2f-*glutamate %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.01];
+%                             case 2
+%                                 filename = sprintf('Batch %s %0.1f-*glutamate %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.1];
+%                             case 3
+%                                 filename = sprintf('Batch %s %0.0f-*glutamate %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 1];
+%                             case 4
+%                                 filename = sprintf('Batch %s %0.0f-*glutamate %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 10];
+%                         end
+%                     end
+%                  end
+% 
+%             case 7 % lactate
+%                 for J = 1:4
+%                     for K = 1:5 
+%                         switch J
+%                             case 1
+%                                 filename = sprintf('Batch %s %0.2f-*lactate %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.01];
+%                             case 2
+%                                 filename = sprintf('Batch %s %0.1f-*lactate %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.1];
+%                             case 3
+%                                 filename = sprintf('Batch %s %0.0f-*lactate %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 1];
+%                             case 4
+%                                 filename = sprintf('Batch %s %0.0f-*lactate %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 10];
+%                         end
+%                     end
+%                 end
+% 
+%             case 8 % urea
+%                  for J = 1:4
+%                     for K = 1:5 
+%                         switch J
+%                             case 1
+%                                 filename = sprintf('Batch %s %0.2f-*urea %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.01];
+%                             case 2
+%                                 filename = sprintf('Batch %s %0.1f-*urea %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.1];
+%                             case 3
+%                                 filename = sprintf('Batch %s %0.0f-*urea %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 1];
+%                             case 4
+%                                 filename = sprintf('Batch %s %0.0f-*urea %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 10];
+%                         end
+%                     end
+%                  end
+% 
+%             case 9 % uric acid
+%                 for J = 1:4
+%                     for K = 1:5 
+%                         switch J
+%                             case 1
+%                                 filename = sprintf('Batch %s %0.2f-*uric acid %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.01];
+%                             case 2
+%                                 filename = sprintf('Batch %s %0.1f-*uric acid %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 0.1];
+%                             case 3
+%                                 filename = sprintf('Batch %s %0.0f-*uric acid %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 1];
+%                             case 4
+%                                 filename = sprintf('Batch %s %0.0f-*uric acid %d.csv', batch(M), conc(J),K);
+%                                 addOneSpectrum(dir_to_search, filename);
+%                                 analyte = [analyte; 10];
+%                         end
+%                     end
+                end                    
+            end
     end
-    
-    
-    
-        numberOfSpectra = length(dinfo);
-        if numberOfSpectra > 0
-            % first pass on dataset, to get array of average spectra
-            for I = 1 : numberOfSpectra
-                thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-                fileID = fopen(thisfilename,'r');
-                [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-                fclose(fileID);
-
-                % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                % Returns trend as 'e' and baseline corrected signal as 'f'
-                [e, f] = correctBaseline(thisdata(2,:)');    
-
-                % 2. Ratiometric
-                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                % on either side of refWaveNumber. This maps to: 1 - 11 total
-                % intensities used to calculate the denominator.
-                if (xRef ~= 0) 
-                    numPointsEachSide = 2;
-                    denominator1 = getDenominator(xRef, numPointsEachSide, ...
-                        numPoints, f(:));
-                else
-                    denominator1 = 1;
-                end
-                if myDebug
-                    fprintf('denominator = %g at index: %d\n', denominator1, xRef);
-                end
-
-                % 3. NEW 10/4/18: Normalize what is plotted
-                normalized = f/denominator1;
-
-                sum = sum + normalized;
-            end
-
-            % calculate average
-            %avg = sum/numberOfSpectra;
-
-            % second pass on dataset to get (each point - average)^2
-            % for standard deviation, need 
-            for I = 1 : numberOfSpectra
-                thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-                fileID = fopen(thisfilename,'r');
-                [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-                fclose(fileID);
-
-                % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-                % REFERENCE INDEX
-
-                % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                % Returns trend as 'e' and baseline corrected signal as 'f'
-                [e, f] = correctBaseline(thisdata(2,:)');    
-
-                % 2. Ratiometric
-                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                % on either side of refWaveNumber. This maps to: 1 - 11 total
-                % intensities used to calculate the denominator.
-                if (xRef ~= 0) 
-                    numPointsEachSide = 2;
-                    denominator1 = getDenominator(xRef, numPointsEachSide, ...
-                        numPoints, f(:));
-                else
-                    denominator1 = 1;
-                end
-                if myDebug
-                    fprintf('denominator = %g at index: %d\n', denominator1, xRef);
-                end
-
-                % 3. Normalize what is plotted
-                normalized = f/denominator1;
-                % one more time to account for fact that > 1 point under
-                % curve is used
-                normalized = normalized/max(normalized);
-
-                % 4. Add to the sum of the squares
-                % sumSq = sumSq + (normalized - avg).^2; 
-                % store the corrected signal, throwing away offset points at
-                % the start
-                
-                waveNumbers = thisdata(1,offset:end);
-                ramanSpectra = [ramanSpectra; normalized(offset:end)];
-                analyte = [analyte; pHValues(J)];
-                fprintf('%d\n', I);
-            end
-
-            % 5. Compute standard deviation at each index of the averaged spectra 
-            % stdDev = sqrt(sumSq/numberOfSpectra);
-        end
-    
-    b = numberOfSpectra;
+    spectra = adenosineSpectra;
+    analyteArr = adenosine;
 end
 
 function [wn, rs] = readCSV(thisfilename)
@@ -862,4 +971,31 @@ function [wn, rs] = readCSV(thisfilename)
     fclose(f);
     wn = cell2mat(thisdata(1,1));
     rs = cell2mat(thisdata(1,2));
+end
+
+function b = addOneSpectrum(dir_to_search, filename)
+    global xRef
+    global numPoints;
+    
+    txtpattern = fullfile(dir_to_search, filename);
+    dinfo = dir(txtpattern);            
+    [wn an] = readCSV(strcat(dir_to_search,dinfo.name));
+    % 1. Correct the baseline BEFORE calculating denominator + normalizing
+    % Returns trend as 'e' and baseline corrected signal as 'f'
+    [e, f] = correctBaseline(an);
+    % 2. Ratiometric
+    % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+    % on either side of refWaveNumber. This maps to: 1 - 11 total
+    % intensities used to calculate the denominator.
+    if (xRef ~= 0) 
+        numPointsEachSide = 2;
+        denominator1 = getDenominator(xRef, numPointsEachSide, ...
+            numPoints, f(:));
+    else
+        denominator1 = 1;
+    end
+    normalized = f/denominator1;
+    % one more time to account for fact that > 1 point under
+    % curve is used
+    b = normalized/max(normalized);
 end
