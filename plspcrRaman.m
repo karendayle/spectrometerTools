@@ -394,7 +394,8 @@ legend({'PCR 2 component model' 'PCR 10 component model' ...
         'PLS 2 component model' 'PLS 10 component model'},'location','NW');
 title('Classification test');
 xlabel('Raman spectra test spectra (5 at 8 pH levels)');
-ylabel('Resultant pH classification from model');
+myYLabel = sprintf('Resultant %s classification from model', analyteName);
+ylabel(myYLabel);
 %%
 % For either PLSR or PCR, it may be that each component can be given a
 % physically meaningful interpretation by inspecting which variables it
