@@ -87,6 +87,7 @@ if myAnalysis == 1
 else
     for analyteChoice = analyteStart:analyteEnd
         for batchChoice = 1:3
+% THIS HAS BEEN FIXED. DELETE AFTER CONFIRMING
 %             if analyteChoice == 2 && batchChoice == 2
 %                 fprintf('skipping due to missing files for adenosine Batch B conc 0.1\n');
 %             else
@@ -106,6 +107,8 @@ else
 %             end
         end
     end
+    
+    % Tabulate correlation values for PCR and PLS
     for analyteChoice = analyteStart:analyteEnd
         fprintf('analyte: %s', analyteNames(analyteChoice));
         fprintf('PCR');
@@ -138,7 +141,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     x1 = repmat(waveNumbers(1:Npoints)',Nspectra,1)';
     y1 = repmat(analyte(h),1,Npoints)';
     z1 = ramanSpectra(h,:)';
-    plot3(x1, y1, z1);
+    plot3(x1, y1, z1); % figure 1
     set(gcf,'DefaultAxesColorOrder',oldorder);
     xlabel('Wavenumber (cm^-^1)'); ylabel(analyteNames(analyteChoice)); axis('tight');
     grid on
@@ -146,9 +149,10 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     
     %% Check one set of spectra at lowest analyte 
     % above
-    figure
+    figure % figure 2
     for ii = 1:5
       plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
+      pause(5);
       hold on;
     end
 
@@ -167,9 +171,17 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % simpler model with fewer components. For example, one quick way to choose
     % the number of components is to plot the percent of variance explained in
     % the response variable as a function of the number of components.
-    figure
-    plot(1:10,cumsum(100*PLSPctVar(2,:)),'-bo'); % kdk TO DO: save lowest
-    % number of components that explains > 90% of variance
+    figure % figure 3
+    plot(1:10,cumsum(100*PLSPctVar(2,:)),'-bo');
+    % kdk TO DO: save lowest number of components that explains > 90% of variance
+    minComponents = 0;
+    for i = 1:10
+        xx = cumsum(100*PLSPctVar(2,1:i));
+        if minComponents == 0 && xx(i) > 90
+            minComponents = i;
+        end
+    end
+    fprintf('#components explaining 90 percent of variance = %d\n', minComponents);
     xlabel('Number of PLS components');
     ylabel('Percent Variance Explained in Y');
     title(myTitle);
@@ -180,7 +192,8 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % suggests that PLSR with two components explains most of the variance in
     % the observed |y|.  Compute the fitted response values for the
     % two-component model.
-    [Xloadings,Yloadings,Xscores,Yscores,betaPLS] = plsregress(X,y,2);
+    [Xloadings,Yloadings,Xscores,Yscores,betaPLS] = plsregress(X,y,2); %kdk TO DO 
+    % optimize the number of components
     yfitPLS = [ones(n,1) X]*betaPLS;
 
     %%
@@ -204,7 +217,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
 
     %%
     % Plot fitted vs. observed response for the PLSR and PCR fits.
-    figure
+    figure % figure 4
     %plot(y,yfitPLS,'bo',y,yfitPCR,'r^'); % original, before color
     for ii = 1:Nspectra
     %     plot(y(ii),yfitPLS(ii),'o',y(ii),yfitPCR(ii),'^', ...
@@ -241,7 +254,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     %%
     % Another way to compare the predictive power of the two models is to plot the
     % response variable against the two predictors in both cases.
-    figure
+    figure % figure 5
     % plot3(Xscores(:,1),Xscores(:,2),y-mean(y),'bo'); % original, before color
     for ii = 1:Nspectra
         plot3(Xscores(ii,1),Xscores(ii,2),y-mean(y),'bo', 'Color', pHColor(ii));
@@ -259,7 +272,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % figure, but the PLSR plot above shows points closely scattered about a plane.
     % On the other hand, the PCR plot below shows a cloud of points with little
     % indication of a linear relationship.
-    figure
+    figure % figure 6
     % plot3(PCAScores(:,1),PCAScores(:,2),y-mean(y),'r^'); % original, before color
     for ii = 1:Nspectra
         plot3(PCAScores(ii,1),PCAScores(ii,2),y-mean(y),'r^', 'Color', pHColor(ii));
@@ -277,7 +290,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % the observed |y|, the following figure shows that they explain
     % somewhat less variance in the observed |X| than the first two principal
     % components used in the PCR.
-    figure
+    figure % figure 7
     plot(1:10,100*cumsum(PLSPctVar(1,:)),'b-o',1:10,  ...
         100*cumsum(PCAVar(1:10))/sum(PCAVar(1:10)),'r-^'); % kdk do I care about the percent var in x?
     xlabel('Number of Principal Components');
@@ -304,7 +317,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     betaPCR10 = PCALoadings(:,1:10)*betaPCR10;
     betaPCR10 = [mean(y) - mean(X)*betaPCR10; betaPCR10];
     yfitPCR10 = [ones(n,1) X]*betaPCR10;
-    figure
+    figure % figure 8
     plot(y,yfitPLS10,'bo',y,yfitPCR10,'r^');
     xlabel('Observed Response');
     ylabel('Fitted Response');
@@ -346,7 +359,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % The MSEP curve for PLSR indicates that two or three components does about
     % as good a job as possible.  On the other hand, PCR needs four components
     % to get the same prediction accuracy.
-    figure
+    figure % figure 9
     % plot(0:10,PLSmsep(2,:),'b-o',0:10,PCRmsep,'r-^'); kdk: MJM catches badness of
     % claiming to use 0 components, but why are there 11 anyway?
     plot(1:11,PLSmsep(2,:),'b-o',1:11,PCRmsep,'r-^');
@@ -373,7 +386,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % component in the PLSR depends on the original variables, and in what
     % direction.
     [Xl,Yl,~,Ys,beta,pctVar,mse,stats] = plsregress(X,y,3);
-    figure
+    figure % figure 10
     % plot(1:Npoints,stats.W,'-'); % original
     plot(waveNumbers(1:Npoints),stats.W,'-'); % kdk use wavenumbers
     xlabel('Wavenumber (cm^-^1)');
@@ -384,7 +397,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     title(myTitle);
     
     %% kdk NEW plot the residuals in X and Y, color by pH
-    figure
+    figure figure 11
     for ii = 1:Nspectra
         plot(waveNumbers(1:Npoints),stats.Xresiduals(ii,:),'-','Color',pHColor(ii));
         hold on;
@@ -393,7 +406,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     ylabel('PLS X residuals');
     title(myTitle);
     
-    figure
+    figure % figure 12
     for ii = 1:Nspectra
         plot(analyte(ii),stats.Yresiduals(ii),'^','Color',pHColor(ii));
         hold on;
@@ -405,7 +418,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     %%
     % Similarly, the PCA loadings describe how strongly each component in the PCR
     % depends on the original variables.
-    figure
+    figure % figure 13
     plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); % kdk use wavenumbers
     xlabel('Wavenumber (cm^-^1)');
     ylabel('PCA Loading');
@@ -436,7 +449,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         testFitPLS2PCs(k) = [1 testSpectrum] * betaPLS;
         testFitPLS10PCs(k) = [1 testSpectrum] * betaPLS10;
     end
-    figure
+    figure % figure 14
     title('Classification test');
     xlabel('Raman spectra test spectra (5 at 8 pH levels)');
     ylabel('Resultant pH classification from model');
