@@ -216,7 +216,6 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     minPCRComponents = 2; % kdk
     % kdk:replaced with optimal number of components
     % kdk: TO DO how do I get minPCRComponents by this point?
-    % kdk: Should I use minPLSComponents here?
     betaPCR = regress(y-mean(y), PCAScores(:,1:minPCRComponents)); 
     %%
     % To make the PCR results easier to interpret in terms of the original
@@ -466,11 +465,32 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % Similarly, the PCA loadings describe how strongly each component in the PCR
     % depends on the original variables.
     figure % figure 13
-    plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); % kdk use wavenumbers
+    %plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); 
+    % kdk use minPCRComponents
+    plot(waveNumbers(1:Npoints),PCALoadings(:,1:minPCRComponents),'-');
     xlabel('Wavenumber (cm^-^1)');
     ylabel('PCA Loading');
-    legend({'1st Component' '2nd Component' '3rd Component'  ...
-        '4th Component'},'location','NW');
+    switch minPCRComponents
+        case 1
+            legend({'1st Component'},  ...
+                'location','NW');
+        case 2
+            legend({'1st Component' '2nd Component'},  ...
+                'location','NW');
+        case 3
+            legend({'1st Component' '2nd Component' '3rd Component'},  ...
+                'location','NW');
+        case 4
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component'}, ...
+                'location','NW');
+        case 5
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component'}, ...
+                'location','NW');
+        otherwise
+            fprintf('unrecognized minPLSComponents %d\n', minPLSComponents);
+    end;
     xlim([min(waveNumbers) max(waveNumbers)]);
     grid on
     title(myTitle);
@@ -486,6 +506,8 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % is the "observed response" calculated to be 1 value for a spectrum?
     % 
     % Idea: test the PCA models with 2 and 10 PCs on individual Raman spectra already input
+    % kdk TO DO: decide to define these generically or maybe for all
+    % numbers?
     testFitPCR2PCs = zeros(1, Nspectra, 'double');
     testFitPCR10PCs = zeros(1, Nspectra, 'double');
     testFitPLS2PCs = zeros(1, Nspectra, 'double');
@@ -501,6 +523,8 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         
     end
     figure % figure 14
+    % kdk TO DO: instead of 2 and 10, use minPLSComponents and
+    % minPCR Components (et al?)
     title('Classification test');
     xlabel('Raman spectra test spectra (5 at 8 pH levels)');
     ylabel('Resultant pH classification from model');
