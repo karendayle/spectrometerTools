@@ -50,12 +50,16 @@ magenta = [1.0, 0.0, 1.0];
 
 global batchNames
 batchNames = ['A'; 'B'; 'C'];
+global conc
+conc = [0.01; 0.1; 1; 10];
 global rsquaredPCRTable
 global rsquaredPLSTable
 rsquaredPCRTable = [];
 rsquaredPLSTable = [];
 analyteStart = 7;
 analyteEnd = 7;
+global useBlanks
+useBlanks = 0;
 
 %% kdk: Clear previous plots
 
@@ -79,7 +83,6 @@ close all
 % - replace octane with pH level (known) as a float (so sorting is poss) - done
 % - figure out why each pH level shows only 1 avg, not 5 - 
 % - in the regression and PLS plots, color by original pH
-
 myAnalysis = 2;
 if myAnalysis == 1
     [waveNumbers, spectra analyteArr] = getSPIERamanSpectra();
@@ -87,24 +90,10 @@ if myAnalysis == 1
 else
     for analyteChoice = analyteStart:analyteEnd
         for batchChoice = 1:3
-% THIS HAS BEEN FIXED. DELETE AFTER CONFIRMING
-%             if analyteChoice == 2 && batchChoice == 2
-%                 fprintf('skipping due to missing files for adenosine Batch B conc 0.1\n');
-%             else
-%                 if analyteChoice == 5 && batchChoice == 3
-%                     fprintf('skipping due to missing files for glucose Batch C conc 1\n');
-%                 
-%                 else
-%                     if analyteChoice == 6 && batchChoice == 3
-%                         fprintf('skipping due to missing files for glutamate Batch C conc 1\n');
-%                     else
-                    [waveNumbers, spectra analyteArr] = getNIHRamanSpectra(...
-                        analyteChoice, batchChoice);
-                    analysis(waveNumbers, spectra, analyteArr, analyteChoice, ...
-                        batchChoice);
-%                     end
-%                 end
-%             end
+            [waveNumbers, spectra analyteArr] = getNIHRamanSpectra(...
+                analyteChoice, batchChoice);
+            analysis(waveNumbers, spectra, analyteArr, analyteChoice, ...
+                batchChoice);
         end
     end
     
@@ -130,6 +119,8 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     global batchNames
     global rsquaredPCRTable
     global rsquaredPLSTable
+    global useBlanks
+    global conc
     
     myTitle = sprintf('%s Batch %s', analyteNames(analyteChoice), batchNames(batchChoice));
     fprintf('%s\n', myTitle);
@@ -143,18 +134,30 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     z1 = ramanSpectra(h,:)';
     plot3(x1, y1, z1); % figure 1
     set(gcf,'DefaultAxesColorOrder',oldorder);
-    xlabel('Wavenumber (cm^-^1)'); ylabel(analyteNames(analyteChoice)); axis('tight');
+    xlabel('Wavenumber (cm^-^1)'); 
+    ylabel(analyteNames(analyteChoice)); axis('tight');
     grid on
     title(myTitle);
     
-    %% Check one set of spectra at lowest analyte 
-    % above
+    %% Check the first set of spectra at lowest analyte above
     figure % figure 2
-    for ii = 1:5
-      plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
-      pause(5);
-      hold on;
+    if useBlanks == 1
+        iiStart = 2;
+        iiEnd = 6;
+    else
+        iiStart = 1;
+        iiEnd = 5;
     end
+    for ii = iiStart:iiEnd % important, the blanks are left out because out of scale
+        plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
+        hold on;
+    end
+    set(gcf,'DefaultAxesColorOrder',oldorder);
+    xlabel('Wavenumber (cm^-^1)'); 
+    myYlabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs',conc(mod(iiStart,5)));
+    ylabel(myYlabel); axis('tight');
+    grid on
+    title(myTitle);
 
     %% Fitting the Data with Ten and then Two Components
     % Use the |plsregress| function to fit a PLSR model with ten PLS components
@@ -162,6 +165,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     X = ramanSpectra;
     y = analyte;
     [n,p] = size(X);
+    % kdk: prior to choosing the optimal, take a look at up to 10 components
     [Xloadings,Yloadings,Xscores,Yscores,betaPLS10,PLSPctVar] = plsregress(...
         X,y,10);
 
@@ -173,17 +177,18 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % the response variable as a function of the number of components.
     figure % figure 3
     plot(1:10,cumsum(100*PLSPctVar(2,:)),'-bo');
-    % kdk TO DO: save lowest number of components that explains > 90% of variance
-    minComponents = 0;
+    % kdk: save lowest number of components that explains > 90% of variance
+    minPLSComponents = 0;
     for i = 1:10
         xx = cumsum(100*PLSPctVar(2,1:i));
-        if minComponents == 0 && xx(i) > 90
-            minComponents = i;
+        if minPLSComponents == 0 && xx(i) > 90
+            minPLSComponents = i; % # components needed to explain 90%
         end
     end
-    fprintf('#components explaining 90 percent of variance = %d\n', minComponents);
+    fprintf('#components explaining 90 percent of variance = %d\n', minPLSComponents);
     xlabel('Number of PLS components');
     ylabel('Percent Variance Explained in Y');
+    grid on
     title(myTitle);
     %%
     % In practice, more care would probably be advisable in choosing the number
@@ -192,8 +197,9 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % suggests that PLSR with two components explains most of the variance in
     % the observed |y|.  Compute the fitted response values for the
     % two-component model.
-    [Xloadings,Yloadings,Xscores,Yscores,betaPLS] = plsregress(X,y,2); %kdk TO DO 
-    % optimize the number of components
+    %[Xloadings,Yloadings,Xscores,Yscores,betaPLS] = plsregress(X,y,2); 
+    %kdk: change from 2 to use the optimized number of components
+    [Xloadings,Yloadings,Xscores,Yscores,betaPLS] = plsregress(X,y,minPLSComponents);
     yfitPLS = [ones(n,1) X]*betaPLS;
 
     %%
@@ -206,12 +212,19 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % however, that is not done here. (kdk: but I normalized spectra prior)
     % kdk: PCAVar are the eigenvalues. They are used to assess expected var
     [PCALoadings,PCAScores,PCAVar] = pca(X,'Economy',false);
-    betaPCR = regress(y-mean(y), PCAScores(:,1:2)); % kdk TO DO replace with optimal 
+    %betaPCR = regress(y-mean(y), PCAScores(:,1:2));
+    minPCRComponents = 2; % kdk
+    % kdk:replaced with optimal number of components
+    % kdk: TO DO how do I get minPCRComponents by this point?
+    % kdk: Should I use minPLSComponents here?
+    betaPCR = regress(y-mean(y), PCAScores(:,1:minPCRComponents)); 
     %%
     % To make the PCR results easier to interpret in terms of the original
     % spectral data, transform to regression coefficients for the original,
     % uncentered variables.
-    betaPCR = PCALoadings(:,1:2)*betaPCR;
+    %betaPCR = PCALoadings(:,1:2)*betaPCR;
+    % kdk:replaced with optimal number of components
+    betaPCR = PCALoadings(:,1:minPCRComponents)*betaPCR;
     betaPCR = [mean(y) - mean(X)*betaPCR; betaPCR];
     yfitPCR = [ones(n,1) X]*betaPCR;
 
@@ -220,8 +233,9 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     figure % figure 4
     %plot(y,yfitPLS,'bo',y,yfitPCR,'r^'); % original, before color
     for ii = 1:Nspectra
-    %     plot(y(ii),yfitPLS(ii),'o',y(ii),yfitPCR(ii),'^', ...
-    %         'Color',pHColor(ii)); 
+        % plot(y(ii),yfitPLS(ii),'o',y(ii),yfitPCR(ii),'^', ...
+        %     'Color',pHColor(ii)); 
+        % kdk TO DO: are these colors good for all analytes?
         plot(y(ii),yfitPLS(ii),'o','Color',pHColor(ii));
         hold on;
         plot(y(ii),yfitPCR(ii),'^','Color',pHColor(ii));
@@ -229,8 +243,10 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     end
     xlabel('Observed Response');
     ylabel('Fitted Response');
-    legend({'PLSR with 2 Components' 'PCR with 2 Components'},  ...
-        'location','NW');
+    plsLegend = sprintf('PLSR with %d Components', minPLSComponents);
+    pcrLegend = sprintf('PCR with %d Components', minPCRComponents);
+    legend({plsLegend pcrLegend}, 'location','NW');
+    grid on
     title(myTitle);
         
     %%
@@ -273,9 +289,11 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % On the other hand, the PCR plot below shows a cloud of points with little
     % indication of a linear relationship.
     figure % figure 6
-    % plot3(PCAScores(:,1),PCAScores(:,2),y-mean(y),'r^'); % original, before color
+    % plot3(PCAScores(:,1),PCAScores(:,2),y-mean(y),'r^'); % original, ...
+    % before color
     for ii = 1:Nspectra
-        plot3(PCAScores(ii,1),PCAScores(ii,2),y-mean(y),'r^', 'Color', pHColor(ii));
+        plot3(PCAScores(ii,1),PCAScores(ii,2),y-mean(y),'r^', 'Color', ...
+            pHColor(ii));
         hold on;
     end
     legend('PCR');
@@ -292,7 +310,8 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % components used in the PCR.
     figure % figure 7
     plot(1:10,100*cumsum(PLSPctVar(1,:)),'b-o',1:10,  ...
-        100*cumsum(PCAVar(1:10))/sum(PCAVar(1:10)),'r-^'); % kdk do I care about the percent var in x?
+        100*cumsum(PCAVar(1:10))/sum(PCAVar(1:10)),'r-^'); 
+    % kdk TO DO do I care about the percent var in x?
     xlabel('Number of Principal Components');
     ylabel('Percent Variance Explained in X');
     legend({'PLSR' 'PCR'},'location','SE');
@@ -313,16 +332,19 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % difference in residuals for the two methods is much less dramatic when
     % using ten components than it was for two components.
     yfitPLS10 = [ones(n,1) X]*betaPLS10;
+    
     betaPCR10 = regress(y-mean(y), PCAScores(:,1:10));
     betaPCR10 = PCALoadings(:,1:10)*betaPCR10;
     betaPCR10 = [mean(y) - mean(X)*betaPCR10; betaPCR10];
     yfitPCR10 = [ones(n,1) X]*betaPCR10;
+    
     figure % figure 8
     plot(y,yfitPLS10,'bo',y,yfitPCR10,'r^');
     xlabel('Observed Response');
     ylabel('Fitted Response');
     legend({'PLSR with 10 components' 'PCR with 10 Components'},  ...
         'location','NW');
+    grid on
     title(myTitle);
     
     %%
@@ -366,6 +388,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     xlabel('Number of components');
     ylabel('Estimated Mean Squared Prediction Error');
     legend({'PLSR' 'PCR'},'location','NE');
+    grid on
     title(myTitle);
    
     %%
@@ -385,25 +408,48 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % that define the PLS components, i.e., they describe how strongly each
     % component in the PLSR depends on the original variables, and in what
     % direction.
-    [Xl,Yl,~,Ys,beta,pctVar,mse,stats] = plsregress(X,y,3);
+    %[Xl,Yl,~,Ys,beta,pctVar,mse,stats] = plsregress(X,y,3);
+    % kdk: use minPLSComponents here
+    [Xl,Yl,~,Ys,beta,pctVar,mse,stats] = plsregress(X,y,minPLSComponents);
     figure % figure 10
     % plot(1:Npoints,stats.W,'-'); % original
     plot(waveNumbers(1:Npoints),stats.W,'-'); % kdk use wavenumbers
     xlabel('Wavenumber (cm^-^1)');
     ylabel('PLS Weight');
-    legend({'1st Component' '2nd Component' '3rd Component'},  ...
-        'location','NW');
+    switch minPLSComponents
+        case 1
+            legend({'1st Component'},  ...
+                'location','NW');
+        case 2
+            legend({'1st Component' '2nd Component'},  ...
+                'location','NW');
+        case 3
+            legend({'1st Component' '2nd Component' '3rd Component'},  ...
+                'location','NW');
+        case 4
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component'}, ...
+                'location','NW');
+        case 5
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component'}, ...
+                'location','NW');
+        otherwise
+            fprintf('unrecognized minPLSComponents %d\n', minPLSComponents);
+    end
     xlim([min(waveNumbers) max(waveNumbers)]);
+    grid on
     title(myTitle);
     
     %% kdk NEW plot the residuals in X and Y, color by pH
-    figure figure 11
+    figure % figure 11
     for ii = 1:Nspectra
         plot(waveNumbers(1:Npoints),stats.Xresiduals(ii,:),'-','Color',pHColor(ii));
         hold on;
     end
     xlabel('Wavenumber (cm^-^1)');
     ylabel('PLS X residuals');
+    grid on
     title(myTitle);
     
     figure % figure 12
@@ -413,6 +459,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     end
     xlabel(analyteNames(analyteChoice));
     ylabel('PLS Y residuals');
+    grid on
     title(myTitle);
     
     %%
@@ -425,6 +472,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     legend({'1st Component' '2nd Component' '3rd Component'  ...
         '4th Component'},'location','NW');
     xlim([min(waveNumbers) max(waveNumbers)]);
+    grid on
     title(myTitle);
     
     %% kdk: Idea for classification (what comes next)
@@ -444,10 +492,13 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     testFitPLS10PCs = zeros(1, Nspectra, 'double');
     for k=1:Nspectra
         testSpectrum = ramanSpectra(k,:);
+        
         testFitPCR2PCs(k) = [1 testSpectrum] * betaPCR;
         testFitPCR10PCs(k) = [1 testSpectrum] * betaPCR10;
+        
         testFitPLS2PCs(k) = [1 testSpectrum] * betaPLS;
         testFitPLS10PCs(k) = [1 testSpectrum] * betaPLS10;
+        
     end
     figure % figure 14
     title('Classification test');
@@ -468,6 +519,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     myYLabel = sprintf('Resultant %s classification from model', ...
         analyteNames(analyteChoice));
     ylabel(myYLabel);
+    grid on
     title(myTitle);
     
     %%
@@ -765,9 +817,11 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
     yMin = 0;
     yMax = 20.0;
     global batchNames
-    conc = [0.01; 0.1; 1; 10];
+    
+    global conc
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\";
     dir_to_search = char(dirStem);
+    global useBlanks
 
     % Patterns to match
     % 'BATCH i*.csv', i = A,B,C
@@ -817,8 +871,10 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
     for J = 1:4 % each concentration
         switch J
             case 1
-                spectra = [spectra; blankD01'];
-                analyteArr = [analyteArr 0.0];
+                if useBlanks == 1
+                    spectra = [spectra; blankD01'];
+                    analyteArr = [analyteArr 0.0];
+                end
                 for K = Kstart:Kend % each sample
                     filename = sprintf(...
                         'Batch %s %0.2f-*%s %d.csv', ...
@@ -831,8 +887,10 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
                 end
 
             case 2
-                spectra = [spectra; blankD1'];
-                analyteArr = [analyteArr; 0.0];
+                if useBlanks == 1
+                    spectra = [spectra; blankD1'];
+                    analyteArr = [analyteArr; 0.0];
+                end
                 for K = Kstart:Kend % each sample
                     filename = sprintf(...
                         'Batch %s %0.1f-*%s %d.csv', ...
@@ -845,8 +903,10 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
                 end
 
             case 3
-                spectra = [spectra; blank1'];
-                analyteArr = [analyteArr; 0.0];
+                if useBlanks == 1
+                    spectra = [spectra; blank1'];
+                    analyteArr = [analyteArr; 0.0];
+                end
                 for K = Kstart:Kend % each sample
                     filename = sprintf(...
                         'Batch %s %0.0f-*%s %d.csv', ...
@@ -859,8 +919,10 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
                 end
 
             case 4
-                spectra = [spectra; blank10'];
-                analyteArr = [analyteArr; 0.0];
+                if useBlanks == 1
+                    spectra = [spectra; blank10'];
+                    analyteArr = [analyteArr; 0.0];
+                end
                 for K = Kstart:Kend % each sample
                     filename = sprintf(...
                         'Batch %s %0.0f-*%s %d.csv', ...
