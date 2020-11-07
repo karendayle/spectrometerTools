@@ -1,28 +1,39 @@
 %% Partial Least Squares Regression and Principal Components Regression
-% This example shows how to apply Partial Least Squares Regression (PLSR)
-% and Principal Components Regression (PCR), and discusses the
-% effectiveness of the two methods.  PLSR and PCR are both methods to model
-% a response variable when there are a large number of predictor variables,
-% and those predictors are highly correlated or even collinear.  Both
-% methods construct new predictor variables, known as components, as linear
-% combinations of the original predictor variables, but they construct
-% those components in different ways.  PCR creates components to explain
-% the observed variability in the predictor variables, without considering
-% the response variable at all. On the other hand, PLSR does take the
-% response variable into account, and therefore often leads to models that
-% are able to fit the response variable with fewer components.  Whether or
-% not that ultimately translates into a more parsimonious model, in terms
-% of its practical use, depends on the context.
+% This program applies Partial Least Squares Regression (PLSR) and
+% Principal Components Regression (PCR) to a set of Raman spectra
+% of a set of concentrations of an analyte, and discusses the effectiveness
+% of the two methods.  
 %
-%   Copyright 2008 The MathWorks, Inc.
+% PLSR and PCR are both methods to model a response variable when there are
+% a large number of predictor variables, and those predictors are highly 
+% correlated or even collinear.  Both methods construct new predictor 
+% variables, known as components, as linear combinations of the original 
+% predictor variables, but they construct those components in different
+% ways:
+%
+% 1) PCR creates components to explain the observed variability in the 
+% predictor variables, without considering the response variable at all. 
+%
+% 2) On the other hand, PLSR takes the response variable into account, and
+% therefore often leads to models that are able to fit the response 
+% variable with fewer components.  Whether or not that ultimately 
+% translates into a more parsimonious model, in terms of its practical use,
+% depends on the context.
+%
+%   Based on material from Copyright 2008 The MathWorks, Inc.
 
 %   Dayle Kotturi 10/26/2020
+%   Change list:
 %   Modify to input Raman spectra to determine concentration from intensity
 %   Add figure command to avoid overwrite
 %   Read in the averaged Raman spectra from various dirs
 %   Add plot color by pH
-%   Adapt for multianalytes, change pH to be generic concentration of 
-%   any of the nine analytes. Use "blank" to indicate analyte conc = 0.
+%   Adapt for multianalytes, and multiple batches of each
+%   Change pH to be generic concentration of any of the 10 analytes.
+%   Use "blank" to indicate analyte conc = 0.
+%   Make the choice of how many components to use data driven by extracting
+%   out the number for a specific level of explained variance, error
+%   Add figures of every step and save them as both .fig and .png
 
 % kdk: Colors:
 global black;
@@ -60,20 +71,23 @@ analyteStart = 7;
 analyteEnd = 7;
 global useBlanks
 useBlanks = 0;
+global figureNumber
+figureNumber = 0;
+global PCRthreshold
+PCRthreshold = 0.9;
+global PLSthreshold
+PLSthreshold = 90;
+PLS = [];
+PCR = [];
 
 %% kdk: Clear previous plots
 
 close all
 
-%% Loading the Data
-% Load a data set comprising spectral intensities of 60 samples of gasoline at
-% 401 wavelengths, and their octane ratings.  These data are described in
-% Kalivas, John H., "Two Data Sets of Near Infrared Spectra," Chemometrics and
-% Intelligent Laboratory Systems, v.37 (1997) pp.255-259.
-% load spectra
-% whos NIR octane
+%% Load the Data and Do the Analysis
 
-% kdk 2020/10/26, 27 Input Raman spectra
+% kdk 2020/10/26, Change to input Raman spectra
+% First, for myAnalysis = 1 case:
 % - load set of N Raman spectra, each 1024 values long - done
 % - use the averaged spectra (with dark removed, baseline
 % - corrected) - done
@@ -83,31 +97,41 @@ close all
 % - replace octane with pH level (known) as a float (so sorting is poss) - done
 % - figure out why each pH level shows only 1 avg, not 5 - 
 % - in the regression and PLS plots, color by original pH
+% kdk 2020/11/1, 
+% Second, for myAnalysis = 2 case:
+% - adapt for NIH Direct Sensing Expt 1.1 dataset
 myAnalysis = 2;
 if myAnalysis == 1
+    % Load the data
     [waveNumbers, spectra analyteArr] = getSPIERamanSpectra();
+    % Do the analysis
     analysis(waveNumbers, spectra, analyteArr, 1, 1);
 else
     for analyteChoice = analyteStart:analyteEnd
         for batchChoice = 1:3
+            % Load the data
             [waveNumbers, spectra analyteArr] = getNIHRamanSpectra(...
                 analyteChoice, batchChoice);
+            % Do the analysis
             analysis(waveNumbers, spectra, analyteArr, analyteChoice, ...
                 batchChoice);
         end
     end
     
-    % Tabulate correlation values for PCR and PLS
+    % kdk: Add tabulation of correlation values for PCR and PLS
+    % kfk: Add numbers of components for the desired explained var (PLS)
+    % and % coverage by the PCR
     for analyteChoice = analyteStart:analyteEnd
-        fprintf('analyte: %s', analyteNames(analyteChoice));
-        fprintf('PCR');
+        fprintf('analyte: %s batches: %s, %s, %s\n', analyteNames(analyteChoice), ...
+            batchNames(1), batchNames(2), batchNames(3));
+        fprintf('PCR rsquared using %d PCs', PCR((analyteChoice, batchChoice));
         for batchChoice = 1:3
-            fprintf('%f', rsquaredPCRTable(analyteChoice, batchChoice));
+            fprintf('%f ', rsquaredPCRTable(analyteChoice, batchChoice));
         end
         fprintf('\n');
-        fprintf('PLS');
+        fprintf('PLS rsquared using %d PCs', PLS((analyteChoice, batchChoice)');
         for batchChoice = 1:3
-            fprintf('%f', rsquaredPLSTable(analyteChoice, batchChoice));
+            fprintf('%f ', rsquaredPLSTable(analyteChoice, batchChoice));
         end
         fprintf('\n');
     end
@@ -121,10 +145,13 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     global rsquaredPLSTable
     global useBlanks
     global conc
+    global figureNumber
+    global PCRthreshold
+    global PLSthreshold
     
     myTitle = sprintf('%s Batch %s', analyteNames(analyteChoice), batchNames(batchChoice));
     fprintf('%s\n', myTitle);
-    % Proceed with same approach for both SPIE and NIH datasets
+    % kdk: use same approach for both SPIE and NIH datasets
     [Nspectra Npoints] = size(ramanSpectra); 
     [dummy,h] = sort(analyte); % sorting actually not necess since data read in order
     oldorder = get(gcf,'DefaultAxesColorOrder');
@@ -134,32 +161,53 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     z1 = ramanSpectra(h,:)';
     plot3(x1, y1, z1); % figure 1
     set(gcf,'DefaultAxesColorOrder',oldorder);
+    % kdk: given concs are multiples of 10, semilogy is better
+    set(gca,'YScale','log')
     xlabel('Wavenumber (cm^-^1)'); 
     ylabel(analyteNames(analyteChoice)); axis('tight');
     grid on
     title(myTitle);
-    
-    %% Check the first set of spectra at lowest analyte above
-    figure % figure 2
+    saveMyPlot(gcf, myTitle, 'all spectra');
+    %% kdk: Draw the sets of spectra at each conc'n on their own plot
     if useBlanks == 1
         iiStart = 2;
-        iiEnd = 6;
     else
         iiStart = 1;
-        iiEnd = 5;
     end
-    for ii = iiStart:iiEnd % important, the blanks are left out because out of scale
-        plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
-        hold on;
+    offset = 0;
+    for jj = 1:4 % all concs
+        figure % figure 2,3,4,5
+        for ii = iiStart:iiStart+4 % important, the blanks are left out because out of scale
+            plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
+            pause(1);
+            hold on;
+        end
+        
+        set(gcf,'DefaultAxesColorOrder',oldorder);
+        xlabel('Wavenumber (cm^-^1)'); 
+        myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(jj));
+        ylabel(myYLabel); axis('tight');
+        grid on
+        title(myTitle);
+        iiStart = iiStart + 4;
+        % kdk: save figure
+        % ugh, if I use the label containing a '.', saveas interprets this
+        % as file type delimiter, so change from using the actual conc
+        % values to using 'D' for decimal point.
+        switch jj
+            case 1
+                myYLabel = 'conc D01nm AuNPs';
+            case 2
+                myYLabel = 'conc D1nm AuNPs';
+            case 3
+                myYLabel = 'conc 1nm AuNPs';
+            case 4
+                myYLabel = 'conc 10nm AuNPs';
+        end
+        saveMyPlot(gcf, myTitle, myYLabel);
     end
-    set(gcf,'DefaultAxesColorOrder',oldorder);
-    xlabel('Wavenumber (cm^-^1)'); 
-    myYlabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs',conc(mod(iiStart,5)));
-    ylabel(myYlabel); axis('tight');
-    grid on
-    title(myTitle);
-
-    %% Fitting the Data with Ten and then Two Components
+    
+    %% Fitting the Data with Ten and then a data driven number of PLS Components
     % Use the |plsregress| function to fit a PLSR model with ten PLS components
     % and one response.
     X = ramanSpectra;
@@ -175,47 +223,80 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % simpler model with fewer components. For example, one quick way to choose
     % the number of components is to plot the percent of variance explained in
     % the response variable as a function of the number of components.
-    figure % figure 3
+    figure % figure 6
     plot(1:10,cumsum(100*PLSPctVar(2,:)),'-bo');
-    % kdk: save lowest number of components that explains > 90% of variance
+    % kdk: save lowest number of components that explains > 90% of
+    % variance, or any desired percentage
     minPLSComponents = 0;
     for i = 1:10
         xx = cumsum(100*PLSPctVar(2,1:i));
-        if minPLSComponents == 0 && xx(i) > 90
+        if minPLSComponents == 0 && xx(i) > PLSthreshold
             minPLSComponents = i; % # components needed to explain 90%
         end
     end
-    fprintf('#components explaining 90 percent of variance = %d\n', minPLSComponents);
+    fprintf('#PLS components explaining 90 percent of variance = %d\n', minPLSComponents);
     xlabel('Number of PLS components');
-    ylabel('Percent Variance Explained in Y');
+    myYLabel = 'Percent Variance Explained in Y';
+    ylabel(myYLabel);
     grid on
     title(myTitle);
+    saveMyPlot(gcf, myTitle, myYLabel);
     %%
-    % In practice, more care would probably be advisable in choosing the number
+    % Original: In practice, more care would probably be advisable in choosing the number
     % of components.  Cross-validation, for instance, is a widely-used method
     % that will be illustrated later in this example.  For now, the above plot
     % suggests that PLSR with two components explains most of the variance in
     % the observed |y|.  Compute the fitted response values for the
     % two-component model.
     %[Xloadings,Yloadings,Xscores,Yscores,betaPLS] = plsregress(X,y,2); 
-    %kdk: change from 2 to use the optimized number of components
+    
+    % kdk: change from 2 to use a number of components that explains
+    % desired percentage of the variance
     [Xloadings,Yloadings,Xscores,Yscores,betaPLS] = plsregress(X,y,minPLSComponents);
     yfitPLS = [ones(n,1) X]*betaPLS;
 
     %%
-    % Next, fit a PCR model with two principal components.  The first step is
-    % to perform Principal Components Analysis on |X|, using the |pca|
-    % function, and retaining two principal components. PCR is then just a
-    % linear regression of the response variable on those two components.  It
-    % often makes sense to normalize each variable first by its standard
+    % kdk: TO DO START HERE can I make a loop around this and draw figs for
+    % range of PCs?
+    
+    % Original: Next, fit a PCR model with two principal components.
+    % kdk: actually the model is fit without setting 2 PCs, this number
+    % is selected after.
+    
+    % The first step is to perform Principal Components Analysis on |X|,
+    % using the |pca| function, and retaining two principal components. 
+    
+    % PCR is then just a linear regression of the response variable on 
+    % those two components.
+    
+    % It often makes sense to normalize each variable first by its standard
     % deviation when the variables have very different amounts of variability,
-    % however, that is not done here. (kdk: but I normalized spectra prior)
+    % however, that is not done here. 
+    % Modification by kdk: I normalized spectra prior (although did not
+    % divide by std dev) 
     % kdk: PCAVar are the eigenvalues. They are used to assess expected var
     [PCALoadings,PCAScores,PCAVar] = pca(X,'Economy',false);
     %betaPCR = regress(y-mean(y), PCAScores(:,1:2));
-    minPCRComponents = 2; % kdk
+    
+    % kdk: NEW
     % kdk:replaced with optimal number of components
     % kdk: TO DO how do I get minPCRComponents by this point?
+    % kdk: Answer is by summing PCAVar and calculating fraction that each
+    % eigenvalue is and then choosing the number based on desired percent
+    sumEigenValues = sum(PCAVar);
+    fractionEigenValues = PCAVar/sumEigenValues;
+    ii = 1;
+    sumSoFar = 0;
+    minPCRComponents = 0;
+
+    while PCAVar(ii) ~= 0 && minPCRComponents == 0
+        sumSoFar = sumSoFar + fractionEigenValues(ii);
+        if sumSoFar > PCRthreshold
+            minPCRComponents = ii;
+        end
+        ii = ii + 1;
+    end
+    fprintf('#PCR components explaining 90 percent of variance = %d\n', minPCRComponents);
     betaPCR = regress(y-mean(y), PCAScores(:,1:minPCRComponents)); 
     %%
     % To make the PCR results easier to interpret in terms of the original
@@ -229,7 +310,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
 
     %%
     % Plot fitted vs. observed response for the PLSR and PCR fits.
-    figure % figure 4
+    figure % figure 7
     %plot(y,yfitPLS,'bo',y,yfitPCR,'r^'); % original, before color
     for ii = 1:Nspectra
         % plot(y(ii),yfitPLS(ii),'o',y(ii),yfitPCR(ii),'^', ...
@@ -241,13 +322,16 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         hold on;
     end
     xlabel('Observed Response');
-    ylabel('Fitted Response');
+    myYLabel = 'Fitted Response';
+    ylabel(myYLabel);
     plsLegend = sprintf('PLSR with %d Components', minPLSComponents);
     pcrLegend = sprintf('PCR with %d Components', minPCRComponents);
     legend({plsLegend pcrLegend}, 'location','NW');
     grid on
     title(myTitle);
-        
+    saveMyPlot(gcf, myTitle, myYLabel);  
+    PLS(analyteChoice, batchChoice) = minPLSComponents;
+    PCR(analyteChoice, batchChoice) = minPCRComponents;
     %%
     % In a sense, the comparison in the plot above is not a fair one -- the
     % number of components (two) was chosen by looking at how well a
@@ -269,7 +353,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     %%
     % Another way to compare the predictive power of the two models is to plot the
     % response variable against the two predictors in both cases.
-    figure % figure 5
+    figure % figure 8
     % plot3(Xscores(:,1),Xscores(:,2),y-mean(y),'bo'); % original, before color
     for ii = 1:Nspectra
         plot3(Xscores(ii,1),Xscores(ii,2),y-mean(y),'bo', 'Color', pHColor(ii));
@@ -281,13 +365,13 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     zlabel('Response Variable');
     grid on; view(-30,30);
     title(myTitle);
-     
+    saveMyPlot(gcf, myTitle, 'PLS Response');
     %%
     % It's a little hard to see without being able to interactively rotate the
     % figure, but the PLSR plot above shows points closely scattered about a plane.
     % On the other hand, the PCR plot below shows a cloud of points with little
     % indication of a linear relationship.
-    figure % figure 6
+    figure % figure 9
     % plot3(PCAScores(:,1),PCAScores(:,2),y-mean(y),'r^'); % original, ...
     % before color
     for ii = 1:Nspectra
@@ -301,20 +385,22 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     zlabel('Response');
     grid on; view(-30,30);
     title(myTitle);
-
+    saveMyPlot(gcf, myTitle, 'PCA Response');
     %%
     % Notice that while the two PLS components are much better predictors of
     % the observed |y|, the following figure shows that they explain
     % somewhat less variance in the observed |X| than the first two principal
     % components used in the PCR.
-    figure % figure 7
+    figure % figure 10
     plot(1:10,100*cumsum(PLSPctVar(1,:)),'b-o',1:10,  ...
         100*cumsum(PCAVar(1:10))/sum(PCAVar(1:10)),'r-^'); 
     % kdk TO DO do I care about the percent var in x?
     xlabel('Number of Principal Components');
-    ylabel('Percent Variance Explained in X');
+    myYLabel = 'Percent Variance Explained in X';
+    ylabel(myYLabel);
     legend({'PLSR' 'PCR'},'location','SE');
     title(myTitle);
+    saveMyPlot(gcf, myTitle, myYLabel);
     %%
     % The fact that the PCR curve is uniformly higher suggests why PCR with two
     % components does such a poor job, relative to PLSR, in fitting |y|.  PCR
@@ -322,14 +408,14 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % two components ignore the information in the data that is important in
     % fitting the observed |y|.
 
-
     %% Fitting with More Components
-    % As more components are added in PCR, it will necessarily do a better job
+    % Orginal: As more components are added in PCR, it will necessarily do a better job
     % of fitting the original data |y|, simply because at some point most of the
     % important predictive information in |X| will be present in the principal
     % components.  For example, the following figure shows that the
     % difference in residuals for the two methods is much less dramatic when
     % using ten components than it was for two components.
+    % kdk: START HERE change this so that any number of components from 2 to 10 works
     yfitPLS10 = [ones(n,1) X]*betaPLS10;
     
     betaPCR10 = regress(y-mean(y), PCAScores(:,1:10));
@@ -337,7 +423,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     betaPCR10 = [mean(y) - mean(X)*betaPCR10; betaPCR10];
     yfitPCR10 = [ones(n,1) X]*betaPCR10;
     
-    figure % figure 8
+    figure % figure 11
     plot(y,yfitPLS10,'bo',y,yfitPCR10,'r^');
     xlabel('Observed Response');
     ylabel('Fitted Response');
@@ -345,7 +431,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         'location','NW');
     grid on
     title(myTitle);
-    
+    saveMyPlot(gcf, myTitle, 'PLS and PCR response');
     %%
     % Both models fit |y| fairly accurately, although PLSR still makes a
     % slightly more accurate fit.  However, ten components is still an
@@ -370,6 +456,8 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % |plsregress| has an option to estimate the mean squared prediction error
     % (MSEP) by cross-validation, in this case using 10-fold C-V.
     [Xl,Yl,Xs,Ys,beta,pctVar,PLSmsep] = plsregress(X,y,10,'CV',10);
+    % kdk second time calling plsregress, this time for the
+    % cross-validation
     %%
     % For PCR, |crossval| combined with a simple function to compute the sum of
     % squared errors for PCR, can estimate the MSEP, again using 10-fold
@@ -377,19 +465,22 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     PCRmsep = sum(crossval(@pcrsse,X,y,'KFold',10),1) / n;
 
     %%
-    % The MSEP curve for PLSR indicates that two or three components does about
+    % Original: The MSEP curve for PLSR indicates that two or three components does about
     % as good a job as possible.  On the other hand, PCR needs four components
     % to get the same prediction accuracy.
-    figure % figure 9
+    % kdk: TO DO START HERE need a way to choose the number of components, based on 
+    % fraction of full range
+    figure % figure 12
     % plot(0:10,PLSmsep(2,:),'b-o',0:10,PCRmsep,'r-^'); kdk: MJM catches badness of
     % claiming to use 0 components, but why are there 11 anyway?
     plot(1:11,PLSmsep(2,:),'b-o',1:11,PCRmsep,'r-^');
     xlabel('Number of components');
-    ylabel('Estimated Mean Squared Prediction Error');
+    myYLabel = 'Estimated Mean Squared Prediction Error';
+    ylabel(myYLabel);
     legend({'PLSR' 'PCR'},'location','NE');
     grid on
     title(myTitle);
-   
+    saveMyPlot(gcf, myTitle, myYLabel);
     %%
     % In fact, the second component in PCR _increases_ the prediction error
     % of the model, suggesting that the combination of predictor variables
@@ -408,13 +499,16 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % component in the PLSR depends on the original variables, and in what
     % direction.
     %[Xl,Yl,~,Ys,beta,pctVar,mse,stats] = plsregress(X,y,3);
-    % kdk: use minPLSComponents here
+    % kdk: Hmm, okay, but variance in X is not important for spectra
+    % at fixed wavenumbers, right?
+    % kdk: use minPLSComponents here instead of hardcoded value
     [Xl,Yl,~,Ys,beta,pctVar,mse,stats] = plsregress(X,y,minPLSComponents);
-    figure % figure 10
+    figure % figure 13
     % plot(1:Npoints,stats.W,'-'); % original
     plot(waveNumbers(1:Npoints),stats.W,'-'); % kdk use wavenumbers
     xlabel('Wavenumber (cm^-^1)');
-    ylabel('PLS Weight');
+    myYLabel = 'PLS Weight';
+    ylabel(myYLabel);
     switch minPLSComponents
         case 1
             legend({'1st Component'},  ...
@@ -433,15 +527,35 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
             legend({'1st Component' '2nd Component' '3rd Component' ...
                 '4th Component' '5th Component'}, ...
                 'location','NW');
+        case 6
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component' '6th Component'}, ...
+                'location','NW');
+        case 7
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component' '6th Component' ...
+                '7th Component'}, ...
+                'location','NW');
+        case 8
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component' '6th Component' ...
+                '7th Component' '8th Component'}, ....
+                'location','NW');
+        case 9
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component' '6th Component' ...
+                '7th Component' '8th Component' '9th Component'}, ....
+                'location','NW');
         otherwise
+            % kdk: TO DO START HERE: how can this be printed when val is 9?
             fprintf('unrecognized minPLSComponents %d\n', minPLSComponents);
     end
     xlim([min(waveNumbers) max(waveNumbers)]);
     grid on
     title(myTitle);
-    
+    saveMyPlot(gcf, myTitle, myYLabel);
     %% kdk NEW plot the residuals in X and Y, color by pH
-    figure % figure 11
+    figure % figure 14
     for ii = 1:Nspectra
         plot(waveNumbers(1:Npoints),stats.Xresiduals(ii,:),'-','Color',pHColor(ii));
         hold on;
@@ -451,7 +565,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     grid on
     title(myTitle);
     
-    figure % figure 12
+    figure % figure 15
     for ii = 1:Nspectra
         plot(analyte(ii),stats.Yresiduals(ii),'^','Color',pHColor(ii));
         hold on;
@@ -460,11 +574,11 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     ylabel('PLS Y residuals');
     grid on
     title(myTitle);
-    
+    saveMyPlot(gcf, myTitle, myYLabel);
     %%
     % Similarly, the PCA loadings describe how strongly each component in the PCR
     % depends on the original variables.
-    figure % figure 13
+    figure % figure 16
     %plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); 
     % kdk use minPCRComponents
     plot(waveNumbers(1:Npoints),PCALoadings(:,1:minPCRComponents),'-');
@@ -488,14 +602,34 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
             legend({'1st Component' '2nd Component' '3rd Component' ...
                 '4th Component' '5th Component'}, ...
                 'location','NW');
+        case 6
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component' '6th Component'}, ...
+                'location','NW');
+        case 7
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component' '6th Component' ...
+                '7th Component'}, ...
+                'location','NW');
+        case 8
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component' '6th Component' ...
+                '7th Component' '8th Component'}, ....
+                'location','NW');
+        case 9
+            legend({'1st Component' '2nd Component' '3rd Component' ...
+                '4th Component' '5th Component' '6th Component' ...
+                '7th Component' '8th Component' '9th Component'}, ....
+                'location','NW');
         otherwise
-            fprintf('unrecognized minPLSComponents %d\n', minPLSComponents);
-    end;
+            fprintf('unrecognized minPCRComponents %d\n', minPCRComponents);
+    end
     xlim([min(waveNumbers) max(waveNumbers)]);
     grid on
     title(myTitle);
-    
-    %% kdk: Idea for classification (what comes next)
+    saveMyPlot(gcf, myTitle, myYLabel);
+    %% kdk: Test the models 
+    % with single points: classification and detection of overfitting
     % For a spectra of unknown pH, create new spectra from linear combination
     % of the first N PCs as: b(i) = PC1(i)*a(i) + PC2*a(i) + PC3(i)*a(i) + ...,
     % i = 1, Npoints
@@ -519,15 +653,15 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         testFitPCR10PCs(k) = [1 testSpectrum] * betaPCR10;
         
         testFitPLS2PCs(k) = [1 testSpectrum] * betaPLS;
-        testFitPLS10PCs(k) = [1 testSpectrum] * betaPLS10;
-        
+        testFitPLS10PCs(k) = [1 testSpectrum] * betaPLS10;    
     end
-    figure % figure 14
+    figure % figure 17
     % kdk TO DO: instead of 2 and 10, use minPLSComponents and
     % minPCR Components (et al?)
     title('Classification test');
-    xlabel('Raman spectra test spectra (5 at 8 pH levels)');
-    ylabel('Resultant pH classification from model');
+    % kdk TO DO: fix these labels
+%     xlabel('Raman spectra test spectra (5 at 8 pH levels)');
+%     ylabel('Resultant pH classification from model');
     plot((1:Nspectra),testFitPCR2PCs, 'o');
     hold on;
     plot((1:Nspectra),testFitPCR10PCs, '^');
@@ -536,16 +670,15 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     hold on;
     plot((1:Nspectra),testFitPLS10PCs, 'p');
     hold on;
+    % kdk: do I want to plot these or just the min components?
     legend({'PCR 2 component model' 'PCR 10 component model' ...
             'PLS 2 component model' 'PLS 10 component model'},'location','NW');
-    title('Classification test');
-    xlabel('Raman spectra test spectra (5 at 8 pH levels)');
-    myYLabel = sprintf('Resultant %s classification from model', ...
-        analyteNames(analyteChoice));
+    xlabel('Raman spectra test spectra (5 at 8 pH levels)'); % kdk TO DO fix
+    myYLabel = sprintf('Resultant classification from model');
     ylabel(myYLabel);
     grid on
     title(myTitle);
-    
+    saveMyPlot(gcf, myTitle, myYLabel);
     %%
     % For either PLSR or PCR, it may be that each component can be given a
     % physically meaningful interpretation by inspecting which variables it
@@ -1025,4 +1158,15 @@ function d = analyteNames(analyteChoice)
             fprintf('Error analyteChoice %d out of range', analyteChoice);
             d = 'unrecognized';
     end
+end
+
+function g = saveMyPlot(gcf, myTitle, myYLabel)
+    global figureNumber
+    figureNumber = figureNumber + 1;
+    plotDirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\Plots\";
+    myPlot = sprintf('%s%s %s fig%d', plotDirStem, myTitle, myYLabel, figureNumber);
+    saveas(gcf, myPlot);
+    myPlot = sprintf('%s%s %s fig%d.png', plotDirStem, myTitle, myYLabel, figureNumber);
+    saveas(gcf, myPlot);
+    g = 1;
 end
