@@ -1,4 +1,6 @@
 %% Partial Least Squares Regression and Principal Components Regression
+% kdk: search for CHOOSE to see setpoints you can change
+
 % This program applies Partial Least Squares Regression (PLSR) and
 % Principal Components Regression (PCR) to a set of Raman spectra
 % of a set of concentrations of an analyte, and discusses the effectiveness
@@ -35,17 +37,22 @@
 %   out the number for a specific level of explained variance, error
 %   Add figures of every step and save them as both .fig and .png
 
+%   TO DO: 
+%   Add option to use 1, 2 or 3 batches of an analyte to make the model
+%   Also, why does using blanks cause the scale to be off? Aren't I
+%   normalizing them all?
+
 % kdk: Colors:
-global black;
-global purple;
-global blue;
-global ciel;
-global green;
-global rust;
-global gold;
-global red;
-global cherry;
-global magenta;
+global black
+global purple
+global blue
+global ciel
+global green
+global rust
+global gold
+global red
+global cherry
+global magenta
 
 % kdk: RGB
 blue =    [0.0000, 0.4470, 0.7410];
@@ -70,16 +77,21 @@ rsquaredPLSTable = [];
 analyteStart = 7;
 analyteEnd = 7;
 global useBlanks
-useBlanks = 0;
+% CHOOSE: set useBlanks to 1 if you want the spectra of AuNPs alone used in
+% the analysis; set useBlanks to 0 if you want to exclude it.
+useBlanks = 1;
 global figureNumber
 figureNumber = 0;
 global PCRthreshold
 PCRthreshold = 0.9;
 global PLSthreshold
 PLSthreshold = 90;
-PLS = [];
-PCR = [];
-
+global myPCR
+global myPLS
+myPLS = [];
+myPCR = [];
+global firstTime
+firstTime = 1;
 %% kdk: Clear previous plots
 
 close all
@@ -119,19 +131,19 @@ else
     end
     
     % kdk: Add tabulation of correlation values for PCR and PLS
-    % kfk: Add numbers of components for the desired explained var (PLS)
+    % kdk: Add numbers of components for the desired explained var (PLS)
     % and % coverage by the PCR
     for analyteChoice = analyteStart:analyteEnd
         fprintf('analyte: %s batches: %s, %s, %s\n', analyteNames(analyteChoice), ...
             batchNames(1), batchNames(2), batchNames(3));
-        fprintf('PCR rsquared using %d PCs', PCR((analyteChoice, batchChoice));
-        for batchChoice = 1:3
-            fprintf('%f ', rsquaredPCRTable(analyteChoice, batchChoice));
-        end
-        fprintf('\n');
-        fprintf('PLS rsquared using %d PCs', PLS((analyteChoice, batchChoice)');
+        fprintf('PLS rsquared using %d PCs ', PLS(analyteChoice, batchChoice));
         for batchChoice = 1:3
             fprintf('%f ', rsquaredPLSTable(analyteChoice, batchChoice));
+        end
+        fprintf('\n');
+        fprintf('PCR rsquared using %d PCs ', PCR(analyteChoice, batchChoice));
+        for batchChoice = 1:3
+            fprintf('%f ', rsquaredPCRTable(analyteChoice, batchChoice));
         end
         fprintf('\n');
     end
@@ -140,6 +152,8 @@ end
 % end of main
 
 function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchChoice)
+    global myPCR
+    global myPLS
     global batchNames
     global rsquaredPCRTable
     global rsquaredPLSTable
@@ -148,7 +162,40 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     global figureNumber
     global PCRthreshold
     global PLSthreshold
+    global firstTime
+    global blankD01
+    global blankD1
+    global blank1
+    global blank10
     
+    figure % figure 1 (kdk not needed the first time this is called, but 
+           % needed in subsequent calls to avoid continuing on prev plot
+    
+    if firstTime == 1
+        % plot the blanks (the same blanks are used for all analytes, so
+        % just do this once
+        
+        plot(waveNumbers(1:size(blankD01))',blankD01);
+        hold on;
+        plot(waveNumbers(1:size(blankD01))',blankD1);
+        hold on;
+        plot(waveNumbers(1:size(blankD01))',blank1);
+        hold on;
+        plot(waveNumbers(1:size(blankD01))',blank10);
+        hold on;
+        
+        xlabel('Wavenumber (cm^-^1)'); 
+        myYLabel = sprintf('Intensity (A.U.)');
+        ylabel(myYLabel); axis('tight');
+        grid on
+        myTitle = sprintf('Blanks for all concentrations of AuNPs');
+        title(myTitle);
+        legend({'0.01 nM' '0.1 nM' '1 nM' '10 nM'}, 'location','SW');
+        saveMyPlot(gcf, myTitle, 'all blanks');
+        firstTime = 0;
+    end
+    
+    figure
     myTitle = sprintf('%s Batch %s', analyteNames(analyteChoice), batchNames(batchChoice));
     fprintf('%s\n', myTitle);
     % kdk: use same approach for both SPIE and NIH datasets
@@ -162,19 +209,26 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     plot3(x1, y1, z1); % figure 1
     set(gcf,'DefaultAxesColorOrder',oldorder);
     % kdk: given concs are multiples of 10, semilogy is better
-    set(gca,'YScale','log')
+    set(gca,'YScale','log');
     xlabel('Wavenumber (cm^-^1)'); 
-    ylabel(analyteNames(analyteChoice)); axis('tight');
+    ylabel(analyteNames(analyteChoice)); axis('tight'); % kdk TO DO what is 'tight'?
+    zlabel('Intensity (A.U.)');
     grid on
     title(myTitle);
-    saveMyPlot(gcf, myTitle, 'all spectra');
+    saveMyPlot(gcf, myTitle, 'all spectra including blanks 3D');
+    
     %% kdk: Draw the sets of spectra at each conc'n on their own plot
-    if useBlanks == 1
-        iiStart = 2;
-    else
+    % I think next lines are wrong. Array of spectra only includes blanks
+    % if useBlanks is 1, so no need to skip over them for the plots
+%     if useBlanks == 1
         iiStart = 1;
-    end
-    offset = 0;
+%     else
+%         if useBlanks == 0
+%             iiStart = 2;
+%         end
+%     end
+    
+    offset = 0; % Indicates low end of the wavenumbers to be discarded
     for jj = 1:4 % all concs
         figure % figure 2,3,4,5
         for ii = iiStart:iiStart+4 % important, the blanks are left out because out of scale
@@ -330,8 +384,8 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     grid on
     title(myTitle);
     saveMyPlot(gcf, myTitle, myYLabel);  
-    PLS(analyteChoice, batchChoice) = minPLSComponents;
-    PCR(analyteChoice, batchChoice) = minPCRComponents;
+    myPLS(analyteChoice, batchChoice) = minPLSComponents;
+    myPCR(analyteChoice, batchChoice) = minPCRComponents;
     %%
     % In a sense, the comparison in the plot above is not a fair one -- the
     % number of components (two) was chosen by looking at how well a
@@ -639,44 +693,43 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     % be read off. To figure this out, go back to how the PCR is done, i.e. how
     % is the "observed response" calculated to be 1 value for a spectrum?
     % 
-    % Idea: test the PCA models with 2 and 10 PCs on individual Raman spectra already input
-    % kdk TO DO: decide to define these generically or maybe for all
-    % numbers?
-    testFitPCR2PCs = zeros(1, Nspectra, 'double');
+    % Idea: test the PCA models with "min" and 10 PCs on individual Raman spectra already input
+    % kdk decide to define "min" generically 
+    testFitPCRminPCs = zeros(1, Nspectra, 'double');
     testFitPCR10PCs = zeros(1, Nspectra, 'double');
-    testFitPLS2PCs = zeros(1, Nspectra, 'double');
+    testFitPLSminPCs = zeros(1, Nspectra, 'double');
     testFitPLS10PCs = zeros(1, Nspectra, 'double');
     for k=1:Nspectra
         testSpectrum = ramanSpectra(k,:);
         
-        testFitPCR2PCs(k) = [1 testSpectrum] * betaPCR;
+        testFitPCRminPCs(k) = [1 testSpectrum] * betaPCR;
         testFitPCR10PCs(k) = [1 testSpectrum] * betaPCR10;
         
-        testFitPLS2PCs(k) = [1 testSpectrum] * betaPLS;
+        testFitPLSminPCs(k) = [1 testSpectrum] * betaPLS;
         testFitPLS10PCs(k) = [1 testSpectrum] * betaPLS10;    
     end
     figure % figure 17
-    % kdk TO DO: instead of 2 and 10, use minPLSComponents and
-    % minPCR Components (et al?)
-    title('Classification test');
-    % kdk TO DO: fix these labels
-%     xlabel('Raman spectra test spectra (5 at 8 pH levels)');
-%     ylabel('Resultant pH classification from model');
-    plot((1:Nspectra),testFitPCR2PCs, 'o');
+    % kdk use minPLSComponents and minPCR Components 
+    plot((1:Nspectra),testFitPCRminPCs, 'o');
     hold on;
     plot((1:Nspectra),testFitPCR10PCs, '^');
     hold on;
-    plot((1:Nspectra),testFitPLS2PCs, 's');
+    plot((1:Nspectra),testFitPLSminPCs, 's');
     hold on;
     plot((1:Nspectra),testFitPLS10PCs, 'p');
     hold on;
-    % kdk: do I want to plot these or just the min components?
-    legend({'PCR 2 component model' 'PCR 10 component model' ...
-            'PLS 2 component model' 'PLS 10 component model'},'location','NW');
-    xlabel('Raman spectra test spectra (5 at 8 pH levels)'); % kdk TO DO fix
+    % kdk: plot the models using the min and 10 components
+    myLegend1 = sprintf('PCR %d component model', minPCRComponents);
+    myLegend2 = sprintf('PLS %d component model', minPLSComponents);
+    legend({myLegend1 'PCR 10 component model' ...
+            myLegend2 'PLS 10 component model'},'location','NW');
+    % kdk TO DO: START HERE why are there a whole bunch more items in
+    % legend?
+    xlabel('Raman test spectra for range of analyte concentrations');
     myYLabel = sprintf('Resultant classification from model');
     ylabel(myYLabel);
     grid on
+    myTitle = sprintf('%s Batch %s Classification test', analyteNames(analyteChoice), batchNames(batchChoice));
     title(myTitle);
     saveMyPlot(gcf, myTitle, myYLabel);
     %%
@@ -778,9 +831,9 @@ function a = getSPIERamanSpectra()
     global numPoints;
     numPoints = 1024;
     global xRef;
-    xRef = 713; % index where the reference peak is 
-                    % COO- at 1582
-                    % TO DO: read from avg*.txt file
+    % CHOOSE: index where the MBA reference peak is COO- at 1582
+    xRef = 713; % 
+    % xRef = 0; % index to use if no normalization is desired
     global offset;
     offset = 300;
     global xMin;
@@ -956,13 +1009,12 @@ end
 
 function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
     analyteChoice, batchChoice)  
-
     global numPoints
     numPoints = 1024;
     global xRef
-    xRef = 713; % index where the reference peak is 
-                % COO- at 1582
-                % TO DO: read from avg*.txt file
+    % CHOOSE THE RIGHT PEAK FOR NORMALIZATION
+    % xRef = 713; % MBA ONLY: reference peak is COO- at 1582
+    xRef = 0;
     global offset
     offset = 300;
     global xMin
@@ -986,12 +1038,21 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
     % 'BATCH i conci analytei.csv, analytei = blank,adenosine,lactate,
     %     glucose, glutamate, dopamine, creatinine, uric acid, urea
     % 'BATCH i conci analytei samplei.csv, samplei = 1,..5 (missing for blank)
-
-    % deal with blanks
+    
+    % Make these global so they can be plotted indep of analyte spectra
+    global blankD01
+    global blankD1
+    global blank1
+    global blank10
+    
+    % set up the blanks (which show that AuNPs alone don't have a signal)
+    % Do this regardless of whether blanks are being used in the analysis
+    % or not
     blankD01 = [];
     blankD1 = [];
     blank1 = [];
     blank10 = [];
+    
     filename = sprintf('Batch %s 0.01-*blank.csv', batchNames(batchChoice));
     txtpattern = fullfile(dir_to_search, filename);
     dinfo = dir(txtpattern);
@@ -1029,15 +1090,18 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
         switch J
             case 1
                 if useBlanks == 1
-                    spectra = [spectra; blankD01'];
+                    %spectra = [spectra; blankD01']; WRONG! missing
+                    %baseline correction, normalization
+                    filename = sprintf('Batch %s 0.01-*blank.csv', batchNames(batchChoice));
+                    newSpectrum = addOneSpectrum(dir_to_search, filename);
+                    spectra = [spectra; newSpectrum];
                     analyteArr = [analyteArr 0.0];
                 end
                 for K = Kstart:Kend % each sample
                     filename = sprintf(...
                         'Batch %s %0.2f-*%s %d.csv', ...
                         batchNames(batchChoice), conc(J), ...
-                        analyteNames(analyteChoice), ...
-                        K);
+                        analyteNames(analyteChoice), K);
                     newSpectrum = addOneSpectrum(dir_to_search, filename);
                     spectra = [spectra; newSpectrum];
                     analyteArr = [analyteArr; 0.01];
@@ -1045,15 +1109,18 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
 
             case 2
                 if useBlanks == 1
-                    spectra = [spectra; blankD1'];
+                    %spectra = [spectra; blankD1']; WRONG! missing
+                    %baseline correction, normalization
+                    filename = sprintf('Batch %s 1-*blank.csv', batchNames(batchChoice));
+                    newSpectrum = addOneSpectrum(dir_to_search, filename);
+                    spectra = [spectra; newSpectrum];
                     analyteArr = [analyteArr; 0.0];
                 end
                 for K = Kstart:Kend % each sample
                     filename = sprintf(...
                         'Batch %s %0.1f-*%s %d.csv', ...
                         batchNames(batchChoice), conc(J), ...
-                        analyteNames(analyteChoice), ...
-                        K);
+                        analyteNames(analyteChoice), K);
                     newSpectrum = addOneSpectrum(dir_to_search, filename);
                     spectra = [spectra; newSpectrum];
                     analyteArr = [analyteArr; 0.1];
@@ -1061,15 +1128,18 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
 
             case 3
                 if useBlanks == 1
-                    spectra = [spectra; blank1'];
+                    %spectra = [spectra; blank1']; WRONG! missing
+                    %baseline correction, normalization
+                    filename = sprintf('Batch %s 1-*blank.csv', batchNames(batchChoice));
+                    newSpectrum = addOneSpectrum(dir_to_search, filename);
+                    spectra = [spectra; newSpectrum];
                     analyteArr = [analyteArr; 0.0];
                 end
                 for K = Kstart:Kend % each sample
                     filename = sprintf(...
                         'Batch %s %0.0f-*%s %d.csv', ...
                         batchNames(batchChoice), conc(J), ...
-                        analyteNames(analyteChoice), ...
-                        K);
+                        analyteNames(analyteChoice), K);
                     newSpectrum = addOneSpectrum(dir_to_search, filename);
                     spectra = [spectra; newSpectrum];
                     analyteArr = [analyteArr; 1];
@@ -1077,15 +1147,18 @@ function [waveNumbers spectra analyteArr] = getNIHRamanSpectra(...
 
             case 4
                 if useBlanks == 1
-                    spectra = [spectra; blank10'];
+                    %spectra = [spectra; blank10']; WRONG! missing
+                    %baseline correction, normalization
+                    filename = sprintf('Batch %s 10-*blank.csv', batchNames(batchChoice));
+                    newSpectrum = addOneSpectrum(dir_to_search, filename);
+                    spectra = [spectra; newSpectrum];
                     analyteArr = [analyteArr; 0.0];
                 end
                 for K = Kstart:Kend % each sample
                     filename = sprintf(...
                         'Batch %s %0.0f-*%s %d.csv', ...
                         batchNames(batchChoice), conc(J), ...
-                        analyteNames(analyteChoice), ...
-                        K);
+                        analyteNames(analyteChoice), K);
                     newSpectrum = addOneSpectrum(dir_to_search, filename);
                     spectra = [spectra; newSpectrum];
                     analyteArr = [analyteArr; 10];
@@ -1123,13 +1196,15 @@ function b = addOneSpectrum(dir_to_search, filename)
         numPointsEachSide = 2;
         denominator1 = getDenominator(xRef, numPointsEachSide, ...
             numPoints, f(:));
+        normalized = f/denominator1;
+        % one more time to account for fact that > 1 point under
+        % curve is used
+        b = normalized/max(normalized);
     else
-        denominator1 = 1;
+        b = f; % just pass back the baseline corrected spectra
+               % OPTION=useful for comparing across analytes,
+               % change this to b = f/max(f);
     end
-    normalized = f/denominator1;
-    % one more time to account for fact that > 1 point under
-    % curve is used
-    b = normalized/max(normalized);
 end
 
 function d = analyteNames(analyteChoice)
