@@ -80,9 +80,11 @@ rsquaredPCRTable = [];
 rsquaredPLSTable = [];
 % global analyteStart
 % global analyteEnd
-% CHOOSE how many analytes from 1 to 9 (get names from "analyteNames" fn)
-analyteStart = 1;
-analyteEnd = 1;
+% CHOOSE analytes to use
+% if myAnalysis == 1 CHOOSE 1 (pH)
+% if myAnalysis == 2 CHOOSE from 2 to 10 (get names from "analyteNames" fn)
+analyteStart = 10;
+analyteEnd = 10;
 % global batchStart
 % global batchEnd
 % CHOOSE how many batches from 1 to 3
@@ -129,7 +131,7 @@ close all
 % - in the regression and PLS plots, color by original pH
 % kdk 2020/11/1: adapt for NIH Direct Sensing Expt 1.1 dataset
 global myAnalysis
-myAnalysis = 1; % CHOOSE 1 for SPIE dataset, CHOOSE 2 for NIH dataset
+myAnalysis = 2; % CHOOSE 1 for SPIE dataset, CHOOSE 2 for NIH dataset
 if myAnalysis == 1
     % Load the data
     [waveNumbers, spectra, analyteArr] = getSPIERamanSpectra();
@@ -230,7 +232,11 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     [~, h] = sort(analyte); % actually not necess since data read in order
     oldorder = get(gcf,'DefaultAxesColorOrder');
     set(gcf,'DefaultAxesColorOrder',jet(Nspectra));
-    x1 = repmat(waveNumbers(1:Npoints),Nspectra,1)';
+    if myAnalysis == 1 % kdk: TO DO why needed?
+        x1 = repmat(waveNumbers(1:Npoints),Nspectra,1)';
+    else
+        x1 = repmat(waveNumbers(1:Npoints)',Nspectra,1)';
+    end
     y1 = repmat(analyte(h),1,Npoints)';
     z1 = ramanSpectra(h,:)';
     plot3(x1, y1, z1); % figure 1
@@ -254,47 +260,53 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         end
 
     %     offset = 0; % Indicates low end of the wavenumbers to be discarded
-        for jj = 1:4 % all concs
-            figure % figure 2,3,4,5
-            for ii = iiStart:iiStart + iiEnd 
-                plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
-                pause(1);
-                hold on;
-            end
+        if myAnalysis == 2    
+            for jj = 1:4 % all concs
+                figure % figure 2,3,4,5
+                for ii = iiStart:iiStart + iiEnd 
+                    plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
+                    pause(1);
+                    hold on;
+                end
 
-            set(gcf,'DefaultAxesColorOrder',oldorder);
-            xlabel('Wavenumber (cm^-^1)'); 
-            myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(jj));
-            ylabel(myYLabel); axis('tight');
-            grid on
-            title(myTitle);
-            if useBlanks == 1
-                hleg = legend({'0' '1' '2' '3' '4' '5'}, 'location','NE');
-            else
-                hleg = legend({'1' '2' '3' '4' '5'}, 'location','NE');
-            end
-            htitle = get(hleg,'Title');
-            set(htitle,'String','Analyte concentration')
+                set(gcf,'DefaultAxesColorOrder',oldorder);
+                xlabel('Wavenumber (cm^-^1)'); 
+                myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(jj));
+                ylabel(myYLabel); axis('tight');
+                grid on
+                title(myTitle);
+                if myAnalysis == 2 && useBlanks == 1
+                    hleg = legend({'0' '1' '2' '3' '4' '5'}, 'location','NE');
+                else
+                    if myAnalysis == 2 && useBlanks == 0
+                        hleg = legend({'1' '2' '3' '4' '5'}, 'location','NE');
+                    end
+                end
+                if myAnalysis == 2
+                    htitle = get(hleg,'Title');
+                    set(htitle,'String','Analyte concentration')
+                end
 
-            % kdk: save figure
-            % ugh, if I use the label containing a '.', saveas interprets this
-            % as file type delimiter, so change from using the actual conc
-            % values to using 'D' for decimal point.
-            switch jj
-                case 1
-                    myYLabel = 'conc D01nm AuNPs';
-                case 2
-                    myYLabel = 'conc D1nm AuNPs';
-                case 3
-                    myYLabel = 'conc 1nm AuNPs';
-                case 4
-                    myYLabel = 'conc 10nm AuNPs';
-            end
-            saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
+                % kdk: save figure
+                % ugh, if I use the label containing a '.', saveas interprets this
+                % as file type delimiter, so change from using the actual conc
+                % values to using 'D' for decimal point.
+                switch jj
+                    case 1
+                        myYLabel = 'conc D01nm AuNPs';
+                    case 2
+                        myYLabel = 'conc D1nm AuNPs';
+                    case 3
+                        myYLabel = 'conc 1nm AuNPs';
+                    case 4
+                        myYLabel = 'conc 10nm AuNPs';
+                end
+                saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
 
-            iiStart = iiStart + 4;
+                iiStart = iiStart + 4;
+            end
         end
-
+        
         %% Fitting the Data with Ten and then a data driven number of PLS Components
         % Use the |plsregress| function to fit a PLSR model with ten PLS components
         % and one response.
@@ -304,7 +316,6 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         % kdk: prior to choosing the optimal, take a look at up to 10 components
         [Xloadings,Yloadings,Xscores,Yscores,betaPLS10,PLSPctVar] = plsregress(...
             X,y,10);
-
         %%
         % Ten components may be more than will be needed to adequately fit the
         % data, but diagnostics from this fit can be used to make a choice of a
