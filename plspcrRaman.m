@@ -262,8 +262,10 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     %     offset = 0; % Indicates low end of the wavenumbers to be discarded
         if myAnalysis == 2    
             for jj = 1:4 % all concs
+                fprintf('Loop for conc %d start = %d, end = %d\n', ...
+                    jj, iiStart, iiEnd);
                 figure % figure 2,3,4,5
-                for ii = iiStart:iiStart + iiEnd 
+                for ii = iiStart:iiEnd 
                     plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
                     pause(1);
                     hold on;
@@ -303,7 +305,13 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
                 end
                 saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
 
-                iiStart = iiStart + 4;
+        if useBlanks == 1
+            iiStart = iiStart + 5;
+            iiEnd = iiEnd + 5;
+        else
+            iiStart = iiStart + 4;
+            iiEnd = iiEnd + 4;
+        end
             end
         end
         
@@ -602,6 +610,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         % kdk: Hmm, okay, but variance in X is not important for spectra
         % at fixed wavenumbers, right?
         % kdk: use minPLSComponents here instead of hardcoded value
+        minPLSComponents = 5; % 2020/11/13 - just to plot them all
         [Xl,Yl,~,Ys,beta,pctVar,mse,stats] = plsregress(X,y,minPLSComponents);
         figure % figure 13
         % plot(1:Npoints,stats.W,'-'); % original
@@ -609,24 +618,22 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         xlabel('Wavenumber (cm^-^1)');
         myYLabel = 'PLS Weight';
         ylabel(myYLabel);
+
         switch minPLSComponents
             case 1
                 legend({'1st Component'},  ...
                     'location','NW');
             case 2
-                legend({'1st Component' '2nd Component'},  ...
-                    'location','NW');
+                legend({'1st Component' '2nd Component'}, 'location','NW');
             case 3
-                legend({'1st Component' '2nd Component' '3rd Component'},  ...
+                legend({'1st Component' '2nd Component' '3rd Component'}, ...
                     'location','NW');
             case 4
                 legend({'1st Component' '2nd Component' '3rd Component' ...
-                    '4th Component'}, ...
-                    'location','NW');
+                    '4th Component'}, 'location','NW');
             case 5
                 legend({'1st Component' '2nd Component' '3rd Component' ...
-                    '4th Component' '5th Component'}, ...
-                    'location','NW');
+                    '4th Component' '5th Component'}, 'location','NW');
             case 6
                 legend({'1st Component' '2nd Component' '3rd Component' ...
                     '4th Component' '5th Component' '6th Component'}, ...
@@ -634,20 +641,22 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
             case 7
                 legend({'1st Component' '2nd Component' '3rd Component' ...
                     '4th Component' '5th Component' '6th Component' ...
-                    '7th Component'}, ...
-                    'location','NW');
+                    '7th Component'}, 'location','NW');
             case 8
                 legend({'1st Component' '2nd Component' '3rd Component' ...
                     '4th Component' '5th Component' '6th Component' ...
-                    '7th Component' '8th Component'}, ....
-                    'location','NW');
+                    '7th Component' '8th Component'}, 'location','NW');
             case 9
                 legend({'1st Component' '2nd Component' '3rd Component' ...
                     '4th Component' '5th Component' '6th Component' ...
                     '7th Component' '8th Component' '9th Component'}, ....
                     'location','NW');
+            case 10
+                legend({'1st Component' '2nd Component' '3rd Component' ...
+                    '4th Component' '5th Component' '6th Component' ...
+                    '7th Component' '8th Component' '9th Component' ...
+                    '10th Component'}, 'location','NW');
             otherwise
-                % kdk: TO DO START HERE: how can this be printed when val is 9?
                 fprintf('unrecognized minPLSComponents %d\n', minPLSComponents);
         end
         xlim([min(waveNumbers) max(waveNumbers)]);
@@ -655,7 +664,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
 
-    % kdk 11/9/2020 remove excess plots
+    % kdk 11/9/2020 removed excess plots
     %     %% kdk NEW plot the residuals in X and Y, color by pH
     %     figure % figure 14
     %     for ii = 1:Nspectra
@@ -683,6 +692,7 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
         figure % figure 16
         %plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); 
         % kdk use minPCRComponents
+        minPCRComponents = 5; % 2020/11/13 - just to plot them all
         plot(waveNumbers(1:Npoints),PCALoadings(:,1:minPCRComponents),'-');
         xlabel('Wavenumber (cm^-^1)');
         ylabel('PCA Loading');
@@ -691,19 +701,16 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
                 legend({'1st Component'},  ...
                     'location','NW');
             case 2
-                legend({'1st Component' '2nd Component'},  ...
-                    'location','NW');
+                legend({'1st Component' '2nd Component'}, 'location','NW');
             case 3
-                legend({'1st Component' '2nd Component' '3rd Component'},  ...
+                legend({'1st Component' '2nd Component' '3rd Component'}, ...
                     'location','NW');
             case 4
                 legend({'1st Component' '2nd Component' '3rd Component' ...
-                    '4th Component'}, ...
-                    'location','NW');
+                    '4th Component'}, 'location','NW');
             case 5
                 legend({'1st Component' '2nd Component' '3rd Component' ...
-                    '4th Component' '5th Component'}, ...
-                    'location','NW');
+                    '4th Component' '5th Component'}, 'location','NW');
             case 6
                 legend({'1st Component' '2nd Component' '3rd Component' ...
                     '4th Component' '5th Component' '6th Component'}, ...
@@ -711,18 +718,21 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
             case 7
                 legend({'1st Component' '2nd Component' '3rd Component' ...
                     '4th Component' '5th Component' '6th Component' ...
-                    '7th Component'}, ...
-                    'location','NW');
+                    '7th Component'}, 'location','NW');
             case 8
                 legend({'1st Component' '2nd Component' '3rd Component' ...
                     '4th Component' '5th Component' '6th Component' ...
-                    '7th Component' '8th Component'}, ....
-                    'location','NW');
+                    '7th Component' '8th Component'}, 'location','NW');
             case 9
                 legend({'1st Component' '2nd Component' '3rd Component' ...
                     '4th Component' '5th Component' '6th Component' ...
                     '7th Component' '8th Component' '9th Component'}, ....
                     'location','NW');
+            case 10
+                legend({'1st Component' '2nd Component' '3rd Component' ...
+                    '4th Component' '5th Component' '6th Component' ...
+                    '7th Component' '8th Component' '9th Component' ...
+                    '10th Component'}, 'location','NW');
             otherwise
                 fprintf('unrecognized minPCRComponents %d\n', minPCRComponents);
         end
