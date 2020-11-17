@@ -83,13 +83,13 @@ rsquaredPLSTable = [];
 % CHOOSE analytes to use
 % if myAnalysis == 1 CHOOSE 1 (pH)
 % if myAnalysis == 2 CHOOSE from 2 to 10 (get names from "analyteNames" fn)
-analyteStart = 10;
+analyteStart = 2;
 analyteEnd = 10;
 % global batchStart
 % global batchEnd
 % CHOOSE how many batches from 1 to 3
 batchStart = 1;
-batchEnd = 1;
+batchEnd = 3;
 global useBlanks
 % CHOOSE: set useBlanks to 1 if you want the spectra of AuNPs alone used in
 % the analysis; set useBlanks to 0 if you want to exclude it.
@@ -111,7 +111,7 @@ firstTime = 1;
 
 global fullAnalysis
 %CHOOSE 0 to just draw all the 3d plots, CHOOSE 1 to run the analysis
-fullAnalysis = 1;
+fullAnalysis = 0;
 %% kdk: Clear previous plots
 
 close all
@@ -250,6 +250,27 @@ function c = analysis(waveNumbers, ramanSpectra, analyte, analyteChoice, batchCh
     title(myTitle);
     saveMyPlot(analyteChoice, gcf, myTitle, 'all spectra w blanks 3D');
 
+    %% kdk NEW: let's zoom in on just the 10 nM conc of NPs
+    % and spread out the concs of analytes, instead of plotting them
+    % at the same y value
+    if myAnalysis == 2    
+        % kdk: NEW brought from above
+        figure
+        x1 = repmat(waveNumbers(1:Npoints)',6,1)';
+        y1 = repmat((0:5)',1,Npoints)'; % use LUT to get actual analyte conc
+        z1 = ramanSpectra(19:24,:)';
+        plot3(x1, y1, z1); % figure 1
+        set(gcf,'DefaultAxesColorOrder',oldorder);
+        xlabel('Wavenumber (cm^-^1)'); 
+        ylabel('concentration of analyte'); axis('tight'); % kdk TO DO what is 'tight'?
+        zlabel('Intensity (A.U.)');
+        grid on
+        myTitle2 = sprintf('%s Batch %s with blank for [AuNP]=10nM', ...
+        analyteNames(analyteChoice), batchNames(batchChoice));
+        title(myTitle2);
+        saveMyPlot(analyteChoice, gcf, myTitle, 'all spectra at 10 nM AuNPs 3D');
+    end
+    
     if fullAnalysis == 1
         %% kdk: Draw the sets of spectra at each conc'n on their own plot
         iiStart = 1;
