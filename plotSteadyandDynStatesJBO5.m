@@ -33,6 +33,8 @@ global markersAll;
 % all the symbols that Matlab has:
 markersAll = [ '-o'; '-p'; '-s'; '-d'; '-^'; '-v'; '->'; '-<'; '-x'; '-h'; '-+'; '-*'; '-.'];
 
+close all; % close all plots from previous runs
+
 % 0. Load the final values of both peaks for each segment of all time
 % series
 load('Data/endVals.mat');
@@ -227,7 +229,11 @@ xlim([3. 8.]);
 
 % Repeat for pH4 and pH7
 for jj = 4:3:7
-    figure
+    % 2020/11/25 kdk this is the magic needed to be able to save a 
+    % figure that needs full screen to display correctly.
+    % Without this, what gets saved to file (later in saveMyPlot) is
+    % the collapsed version which cannot be expanded later when it's a png.
+    FigH = figure('Position', get(0, 'Screensize'));
     [yDyn(1), errDyn(1)] = buildArrayForBars(1, jj);
     [yDyn(2), errDyn(2)] = buildArrayForBars(2, jj);
     [yDyn(3), errDyn(3)] = buildArrayForBars(3, jj);
@@ -238,35 +244,45 @@ for jj = 4:3:7
         myHEMAY1allPunches(jj) yDyn(3); myHEMACoY1allPunches(jj) yDyn(4)];
     
     % CHOOSE ONE OF THESE two options for error bars:
-    % 1) StdDev
-    % yErr = [myAlgY1allPunchesStdDev(jj) errDyn(1); myPEGY1allPunchesStdDev(jj) errDyn(2); ...
-    %     myHEMAY1allPunchesStdDev(jj) errDyn(3); myHEMACoY1allPunchesStdDev(jj) errDyn(4)];
-    % 2) 95% CIs
-    % https://www.dummies.com/education/math/statistics/how-to-calculate-a-confidence-interval-for-a-population-mean-when-you-know-its-standard-deviation/
-    zStar = 1.96; % z Star value for 95% CI
-    nStat = 5; % should be > 30 or normal dist
-    nDyn = 9; % should be > 30 or normal dist
-    % 95% CI = avg +/ zStar * std dev/sqrt(n)
-    yErrStat1 = myAlgY1allPunches(jj) + zStar*myAlgY1allPunchesStdDev(jj)/sqrt(nStat);
-    yErrStat2 = myPEGY1allPunches(jj) + zStar*myPEGY1allPunchesStdDev(jj)/sqrt(nStat);
-    yErrStat3 = myHEMAY1allPunches(jj) + zStar*myHEMAY1allPunchesStdDev(jj)/sqrt(nStat);
-    yErrStat4 = myHEMACoY1allPunches(jj) + zStar*myHEMACoY1allPunchesStdDev(jj)/sqrt(nStat);
-    yErrDyn1 = yDyn(1) + zStar*errDyn(1)/sqrt(nDyn);
-    yErrDyn2 = yDyn(2) + zStar*errDyn(2)/sqrt(nDyn);
-    yErrDyn3 = yDyn(3) + zStar*errDyn(3)/sqrt(nDyn);
-    yErrDyn4 = yDyn(4) + zStar*errDyn(4)/sqrt(nDyn);
-    
-    yErr = [yErrStat1 yErrDyn1; yErrStat2 yErrDyn2; ...
-        yErrStat3 yErrDyn3; yErrStat4 yErrDyn4];
+    myErrorBars = 1;
+    if myErrorBars == 1
+        % 1) StdDev
+        yErr = [myAlgY1allPunchesStdDev(jj) errDyn(1); myPEGY1allPunchesStdDev(jj) errDyn(2); ...
+            myHEMAY1allPunchesStdDev(jj) errDyn(3); myHEMACoY1allPunchesStdDev(jj) errDyn(4)];
+    else
+        if myErrorBars == 2
+            % 2) 95% CIs
+            % https://www.dummies.com/education/math/statistics/how-to-calculate-a-confidence-interval-for-a-population-mean-when-you-know-its-standard-deviation/
+            zStar = 1.96; % z Star value for 95% CI
+            nStat = 5; % should be > 30 or normal dist
+            nDyn = 9; % should be > 30 or normal dist
+            % 95% CI = avg +/ zStar * std dev/sqrt(n)
+            yErrStat1 = myAlgY1allPunches(jj) + zStar*myAlgY1allPunchesStdDev(jj)/sqrt(nStat);
+            yErrStat2 = myPEGY1allPunches(jj) + zStar*myPEGY1allPunchesStdDev(jj)/sqrt(nStat);
+            yErrStat3 = myHEMAY1allPunches(jj) + zStar*myHEMAY1allPunchesStdDev(jj)/sqrt(nStat);
+            yErrStat4 = myHEMACoY1allPunches(jj) + zStar*myHEMACoY1allPunchesStdDev(jj)/sqrt(nStat);
+            yErrDyn1 = yDyn(1) + zStar*errDyn(1)/sqrt(nDyn);
+            yErrDyn2 = yDyn(2) + zStar*errDyn(2)/sqrt(nDyn);
+            yErrDyn3 = yDyn(3) + zStar*errDyn(3)/sqrt(nDyn);
+            yErrDyn4 = yDyn(4) + zStar*errDyn(4)/sqrt(nDyn);
+
+            yErr = [yErrStat1 yErrDyn1; yErrStat2 yErrDyn2; ...
+                yErrStat3 yErrDyn3; yErrStat4 yErrDyn4];
+        end
+    end
     
     plotBarOfAvgsSideBySide(yBar, yErr);
-    fname = {'A';'B';'C';'D'};
+    %fname = {'A';'B';'C';'D'};
+    %fname = {'Alg';'PEG';'Phe';'Phc'};
+    %fname = {'Alginate';'  PEG   ';' pHEMA  ';'pHEMA-co'};
+    fname = {'Alginate';'PEG';'pHEMA';'pHEMA-coA'};
     set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
     set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
     myTitle = sprintf('Consistency of hydrogels at pH%d',jj);
     title(myTitle);
     xlabel('Gel type')
     ylabel('Normalized intensity of 1430 cm{-1} peak')
+    saveMyPlot(FigH, myTitle);
 end
 
 % 5. Calculate reversibility of all gels as the std dev of the final value
@@ -599,20 +615,21 @@ function k = fillBarsWithHatchedLines(B, yd)
     % Now generalize it in a loop
     [rows, cols] = size(yd);
     for i = 1:rows
+        
         for j = 1:2:cols
-            fprintf('row %d, col %d', i, j);
             % draw the slanted lines that go all the way across
             y1 = 0; 
             y2 = 0;
             ymax = yd(i,j); 
-
+            fprintf('row %d, col %d: %f', i, j, ymax);
             % this is the only "weakpoint". The dy depends on ymax value,
             % so the hatchline spacing will vary across bars. This could be
             % changed by using same dy for all bars, but the range of k needs
             % to change as well
             %dy = (ymax - y1)/10;
             %fprintf('dy is %f', dy);
-            dy = 0.004; % standardize on this for all bars
+            %dy = 0.004; % standardize on this for all bars
+            dy = 0.05 * max(yd(:,j)); % standardize on this for all bars based on max
             maxK = ceil(ymax/dy); 
             for k = 1:maxK
                 x1 = xData(i,j) - bw/2;
@@ -633,4 +650,13 @@ function k = fillBarsWithHatchedLines(B, yd)
         end
     end
     k = 1;
+end
+
+function g = saveMyPlot(FigH, myTitle)
+    dirStem = "C:\Users\karen\Documents\Data\";
+    subDir = "Plots\";
+    plotDirStem = sprintf("%s%s", dirStem, subDir);
+    myPlot = sprintf('%s%s', plotDirStem, myTitle);
+    saveas(FigH, myPlot, 'png');
+    g = 1;
 end
