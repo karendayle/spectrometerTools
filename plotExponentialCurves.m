@@ -1,3 +1,5 @@
+    global figNumber;
+    figNumber = 1;
     close all;
     
     % plot exponential: y = a*exp(b*x)
@@ -86,25 +88,34 @@
         cherry =  [0.6350, 0.0780, 0.1840];
         red =     [1.0, 0.0, 0.0];
         black =   [0.0, 0.0, 0.0];
+        global figNumber;
         
-        figure
-        % semilogx(x, y1,'-o', 'Color', red);
-        % hold on;
-        
+        FigH = figure('Position', get(0, 'Screensize'));
         myColor = getPH(segment);
         plot(x, y,'-o', 'Color', myColor);
+        ax = gca;
+        ax.YAxis.FontSize = 30; %for y-axis 
         if gel > 0
             myTitle = sprintf(...
                 'gel%d series%d seg%d peak%d: y = %.2f * exp(%.2f * x), x = %.1f:%.1f:%.1f', ...
                 gel, series, segment, peak, a, b, xstart, xinc, xend);
+            myFileTitle = sprintf('gel%d series%d seg%d peak%d', ...
+                gel, series, segment, peak);
         else
             myTitle  = sprintf(...
                 'example: y = %.2f * exp(%.2f * x), x = %.1f:%.1f:%.1f', ...
                 a, b, xstart, xinc, xend);
+            myFileTitle = sprintf('example %d', figNumber);
+            figNumber = figNumber + 1;
         end
-        title(myTitle);
-        yLabel = 'y';
-        xLabel = 'x';
+        title(myTitle, 'FontSize', 30);
+        xlabel('x', 'FontSize', 30); % x-axis label
+        ylabel('y', 'FontSize', 30); % y-axis label
+        ax = gca; % these 2 lines work IFF you put them here, instead
+                  % of earlier, when the figure is assigned
+        ax.XAxis.FontSize = 30; %for x-axis 
+        ax.YAxis.FontSize = 30; %for y-axis 
+        saveMyPlot(FigH, myFileTitle);
         a = 1;
     end
     
@@ -123,4 +134,13 @@ function m = getPH(iter)
         case {3, 5, 7}
             m = blue;
     end
+end
+
+function g = saveMyPlot(FigH, myTitle)
+    dirStem = "C:\Users\karen\Documents\Data\";
+    subDir = "Plots\";
+    plotDirStem = sprintf("%s%s", dirStem, subDir);
+    myPlotName = sprintf('%s%s', plotDirStem, myTitle);
+    saveas(FigH, myPlotName, 'png');
+    g = 1;
 end
