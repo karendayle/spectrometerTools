@@ -6,14 +6,14 @@
     % First, a demo
     % use a =  1, b = -1 for approaching steady state from above
     % use a = -1, b = -1 for approaching steady state from below
-    a = [1 -1];
-    b = [-1 -1];
+    a = [1 -1 1 -1 0.5 -0.5];
+    b = [-1 -1 1 1 -0.5 -0.5];
     
     xstart = 0.1;
     xinc = 0.1;
     xend = 10;
     x = xstart:xinc:xend;
-    for i = 1:2
+    for i = 1:6
         y = a(i) * exp(b(i) * x);
         plotExponentialCurve(a(i), b(i), x, y, xstart, xinc, xend, 0, 0, 0, i);
     end
