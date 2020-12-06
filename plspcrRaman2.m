@@ -1138,7 +1138,7 @@ function [spectra, analyteArr] = getNIHRamanSpectra(...
                 if useBlanks == 1
                     filename = sprintf('Batch %s 10-*blank.csv', batchNames(batchChoice));
                     newSpectrum = addOneSpectrum(dir_to_search, filename);
-                    spectra = [spectra; newSpectrum];
+                    spectra = [spectra; newSpectrum'];
                     analyteArr = [analyteArr; 0];
                 end
                 for K = Kstart:Kend % each sample
@@ -1147,7 +1147,7 @@ function [spectra, analyteArr] = getNIHRamanSpectra(...
                         batchNames(batchChoice), conc(J), ...
                         analyteNames(analyteChoice), K);
                     newSpectrum = addOneSpectrum(dir_to_search, filename);
-                    spectra = [spectra; newSpectrum];
+                    spectra = [spectra; newSpectrum'];
                     analyteArr = [analyteArr; K];
                 end
         end
