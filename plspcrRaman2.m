@@ -57,6 +57,7 @@ global gold
 global red
 global cherry
 global magenta
+global colors
 
 % kdk: RGB
 blue =    [0.0000, 0.4470, 0.7410];
@@ -69,6 +70,7 @@ cherry =  [0.6350, 0.0780, 0.1840];
 red =     [1.0, 0.0, 0.0];
 black =   [0.0, 0.0, 0.0];
 magenta = [1.0, 0.0, 1.0];
+colors = [black; magenta; red; gold; green; ciel; blue; purple];
 
 global batchNames
 batchNames = ['A'; 'B'; 'C'; 'D'; 'E'; 'F'];
@@ -145,15 +147,14 @@ else
     blanksAllBatches = getNIHRamanSpectraBlanks(batchStart, batchEnd); % read blanks for each batch
     % 2020/12/5 TO DO: pass in blanks for batchChoice
     for analyteChoice = analyteStart:analyteEnd
-        for batchChoice = batchStart:batchEnd % CHOOSE UP TO 6
-            % Load the data
-            [spectra, analyteArr] = getNIHRamanSpectra(...
-                analyteChoice, batchChoice);
-            % Do the analysis TO DO: clarify naming isn't full analysis
-            % here?
-            analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, spectra, analyteArr, analyteChoice, ...
-                batchChoice);
-        end
+        % 2020/12/5 TO DO: I want to use multiple batches in the model
+        % Load the data
+        [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
+            batchStart, batchEnd);
+        % Do the analysis TO DO: clarify naming isn't full analysis
+        % here?
+        analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
+            spectra, analyteArr, analyteChoice, batchStart, batchEnd);
     end
     
     if fullAnalysis == 1
@@ -163,15 +164,15 @@ else
         for analyteChoice = analyteStart:analyteEnd
             fprintf('analyte: %s batches: %s, %s, %s\n', analyteNames(analyteChoice), ...
                 batchNames(1), batchNames(2), batchNames(3));
-            fprintf('PLS rsquared using %d PCs ', myPLS(analyteChoice, batchChoice));
-            for batchChoice = batchStart:batchEnd
-                fprintf('%f ', rsquaredPLSTable(analyteChoice, batchChoice));
-            end
+            fprintf('PLS rsquared using %d PCs ', myPLS(analyteChoice));
+%             for batchChoice = batchStart:batchEnd
+                fprintf('%f ', rsquaredPLSTable(analyteChoice));
+%             end
             fprintf('\n');
-            fprintf('PCR rsquared using %d PCs ', myPCR(analyteChoice, batchChoice));
-            for batchChoice = batchStart:batchEnd
-                fprintf('%f ', rsquaredPCRTable(analyteChoice, batchChoice));
-            end
+            fprintf('PCR rsquared using %d PCs ', myPCR(analyteChoice));
+%             for batchChoice = batchStart:batchEnd
+                fprintf('%f ', rsquaredPCRTable(analyteChoice));
+%            end
             fprintf('\n');
         end
     end
@@ -179,7 +180,8 @@ end
 
 % end of main
 
-function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanSpectra, analyte, analyteChoice, batchChoice)
+function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
+    ramanSpectra, analyte, analyteChoice, batchStart, batchEnd)
     global myPCR
     global myPLS
     global batchNames
@@ -193,6 +195,7 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
     global fullAnalysis
     global myAnalysis
     global waveNumbers
+    global colors
     
     if myAnalysis == 2 && firstTime == 1 % this is only relevant for NIH data
         % plot the blanks for all batches
@@ -254,15 +257,21 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
         figure
         x1 = repmat(waveNumbers(1:Npoints)',6,1)';
         y1 = repmat((0:5)',1,Npoints)'; % use LUT to get actual analyte conc
-        z1 = ramanSpectra(1:6,:)'; % 2020/12/04 TO DO what should this be?
-        plot3(x1, y1, z1); % figure 1
+        for i = batchStart:batchEnd
+            first = (i-1)*5 + 1;
+            last = first + 5;
+            z1 = ramanSpectra(first:last,:)'; 
+            plot3(x1, y1, z1, 'Color', colors(i,:)); % figure 1
+            pause(1);
+            hold on;
+        end
         set(gcf,'DefaultAxesColorOrder',oldorder);
         xlabel('Wavenumber (cm^-^1)'); 
         ylabel('concentration of analyte'); axis('tight'); % kdk TO DO what is 'tight'?
         zlabel('Intensity (A.U.)');
         grid on
-        myTitle = sprintf('%s Batch %s with blank for 10nM AuNPs', ...
-        analyteNames(analyteChoice), batchNames(batchChoice));
+        myTitle = sprintf('%s all batches with blank for 10nM AuNPs', ...
+        analyteNames(analyteChoice));
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, 'all spectra at 10 nM AuNPs 3D');
     end
@@ -276,23 +285,25 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
             iiEnd = iiStart + 4;
         end
 
-    %     offset = 0; % Indicates low end of the wavenumbers to be discarded
-        if myAnalysis == 2    
-            for jj = 1:1 % all concs
-                fprintf('Loop for conc %d start = %d, end = %d\n', ...
-                    jj, iiStart, iiEnd);
-                figure % figure 2,3,4,5
-                for ii = iiStart:iiEnd 
-                    plot(waveNumbers(1:Npoints)',ramanSpectra(ii,:)');
-                    pause(1);
+        if myAnalysis == 2
+            % plot each batch alone
+            for i = batchStart:batchEnd
+                figure
+                first = (i-1)*5 + 1;
+                last = first + 5;
+                for j = first:last
+                    plot(waveNumbers(1:Npoints)',ramanSpectra(j,:)');
                     hold on;
                 end
+                pause(1);
 
                 set(gcf,'DefaultAxesColorOrder',oldorder);
                 xlabel('Wavenumber (cm^-^1)'); 
-                myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(jj));
+                myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(1));
                 ylabel(myYLabel); axis('tight');
                 grid on
+                myTitle = sprintf('%s batch %s with blank for 10nM AuNPs', ...
+                    analyteNames(analyteChoice), batchNames(i));
                 title(myTitle);
                 if myAnalysis == 2 && useBlanks == 1
                     hleg = legend({'0' '1' '2' '3' '4' '5'}, 'location','NE');
@@ -310,19 +321,16 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
                 % ugh, if I use the label containing a '.', saveas interprets this
                 % as file type delimiter, so change from using the actual conc
                 % values to using 'D' for decimal point.
-                switch jj
-                    case 1
-                        myYLabel = 'conc 10nm AuNPs';
-                end
+                myYLabel = 'conc 10nm AuNPs';
                 saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
 
-        if useBlanks == 1
-            iiStart = iiStart + 5;
-            iiEnd = iiEnd + 5;
-        else
-            iiStart = iiStart + 4;
-            iiEnd = iiEnd + 4;
-        end
+                if useBlanks == 1
+                    iiStart = iiStart + 5;
+                    iiEnd = iiEnd + 5;
+                else
+                    iiStart = iiStart + 4;
+                    iiEnd = iiEnd + 4;
+                end
             end
         end
         
@@ -358,6 +366,8 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
         myYLabel = 'Percent Variance Explained in Y';
         ylabel(myYLabel);
         grid on
+        myTitle = sprintf('%s all batches with blank for 10nM AuNPs', ...
+        analyteNames(analyteChoice));
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
         %%
@@ -446,8 +456,8 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
         grid on
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);  
-        myPLS(analyteChoice, batchChoice) = minPLSComponents;
-        myPCR(analyteChoice, batchChoice) = minPCRComponents;
+        myPLS(analyteChoice) = minPLSComponents; % 2020/12/5 now all batches
+        myPCR(analyteChoice) = minPCRComponents;
         %%
         % Orginal: In a sense, the comparison in the plot above is not a fair one -- the
         % number of components (two) was chosen by looking at how well a
@@ -462,11 +472,11 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
         TSS = sum((y-mean(y)).^2);
         RSS_PLS = sum((y-yfitPLS).^2);
         rsquaredPLS = 1 - RSS_PLS/TSS; % kdk TO DO: save this to an array for tabulating
-        rsquaredPLSTable(analyteChoice, batchChoice) = rsquaredPLS;
+        rsquaredPLSTable(analyteChoice) = rsquaredPLS;
         %%
         RSS_PCR = sum((y-yfitPCR).^2);
         rsquaredPCR = 1 - RSS_PCR/TSS; % kdk TO DO: save this to an array for tabulating
-        rsquaredPCRTable(analyteChoice, batchChoice) = rsquaredPCR;
+        rsquaredPCRTable(analyteChoice) = rsquaredPCR;
         %%
         % Another way to compare the predictive power of the two models is to plot the
         % response variable against the two predictors in both cases.
@@ -633,8 +643,7 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
 
         switch minPLSComponents
             case 1
-                legend({'1st Component'},  ...
-                    'location','NW');
+                legend({'1st Component'}, 'location','NW');
             case 2
                 legend({'1st Component' '2nd Component'}, 'location','NW');
             case 3
@@ -707,7 +716,9 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
         minPCRComponents = 5; % 2020/11/13 - just to plot them all
         plot(waveNumbers(1:Npoints),PCALoadings(:,1:minPCRComponents),'-');
         xlabel('Wavenumber (cm^-^1)');
-        ylabel('PCA Loading');
+        myYLabel = 'PCA Loading';
+        ylabel(myYLabel);
+
         switch minPCRComponents
             case 1
                 legend({'1st Component'},  ...
@@ -803,7 +814,7 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ramanS
         myYLabel = sprintf('Resultant classification from model');
         ylabel(myYLabel);
         grid on
-        myTitle = sprintf('%s Batch %s Classification test', analyteNames(analyteChoice), batchNames(batchChoice));
+        myTitle = sprintf('%s Classification test', analyteNames(analyteChoice));
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
         %%
@@ -1054,21 +1065,21 @@ function pHC = pHColor(i)
             pHC = magenta;
         else
             if i < 16
-                pHC = cherry;
+                pHC = red;
             else
                 if i < 21
-                    pHC = red;
+                    pHC = gold;
                 else
                     if i < 26
-                        pHC = rust;
+                        pHC = green;
                     else
                         if i < 31
-                            pHC = gold;
+                            pHC = ciel;
                         else
                             if i < 36
-                                pHC = green;
+                                pHC = blue;
                             else
-                                pHC = ciel;
+                                pHC = purple;
                             end
                         end
                     end
@@ -1078,8 +1089,8 @@ function pHC = pHColor(i)
     end         
 end
 
-function [spectra, analyteArr] = getNIHRamanSpectra(...
-    analyteChoice, batchChoice)  
+function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
+    batchStart, batchEnd)  
     global numPoints
     numPoints = 1024;
     global xRef
@@ -1131,27 +1142,26 @@ function [spectra, analyteArr] = getNIHRamanSpectra(...
     % Also, the conc of analyte is different per each analyte, so a 
     % table is needed. See slide 8 of 
     % https://docs.google.com/presentation/d/1yiE2rx4PP9cGM8Y6xsBAFFPp3OfbRk-D1p_wl8mfYzY/edit?usp=sharing
-    
-    for J = 1:1 % only 10 nM conc now
-        switch J
-            case 1
-                if useBlanks == 1
-                    filename = sprintf('Batch %s 10-*blank.csv', batchNames(batchChoice));
-                    newSpectrum = addOneSpectrum(dir_to_search, filename);
-                    spectra = [spectra; newSpectrum'];
-                    analyteArr = [analyteArr; 0];
-                end
-                for K = Kstart:Kend % each sample
-                    filename = sprintf(...
-                        'Batch %s %0.0f-*%s %d.csv', ...
-                        batchNames(batchChoice), conc(J), ...
-                        analyteNames(analyteChoice), K);
-                    newSpectrum = addOneSpectrum(dir_to_search, filename);
-                    spectra = [spectra; newSpectrum'];
-                    analyteArr = [analyteArr; K];
-                end
+
+
+    for J = batchStart:batchEnd %2020/12/5 NEW: combine batches
+        if useBlanks == 1
+            filename = sprintf('Batch %s 10-*blank.csv', batchNames(J));
+            [~, newSpectrum] = addOneSpectrum(dir_to_search, filename);
+            spectra = [spectra; newSpectrum];
+            analyteArr = [analyteArr; 0];
         end
-    end               
+        for K = Kstart:Kend % each sample
+            filename = sprintf(...
+                'Batch %s 10-*%s %d.csv', ...
+                batchNames(J), ...
+                analyteNames(analyteChoice), K);
+            [~, newSpectrum] = addOneSpectrum(dir_to_search, filename);
+            spectra = [spectra; newSpectrum];
+            analyteArr = [analyteArr; K];  % 2020/12/05 this needs to be 
+                                           % actual analyte conc
+        end
+    end
 end
 
 function blanksAllBatches = getNIHRamanSpectraBlanks(batchStart, batchEnd)
@@ -1281,9 +1291,9 @@ function g = saveMyPlot(analyteChoice, gcf, myTitle, myYLabel)
     end
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\Plots\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);
-    myPlot = sprintf('%s%s %s fig%d', plotDirStem, myTitle, myYLabel, figureNumber);
+    myPlot = sprintf('%s%s %s', plotDirStem, myTitle, myYLabel);
     saveas(gcf, myPlot);
-    myPlot = sprintf('%s%s %s fig%d.png', plotDirStem, myTitle, myYLabel, figureNumber);
+    myPlot = sprintf('%s%s %s.png', plotDirStem, myTitle, myYLabel);
     saveas(gcf, myPlot);
     g = 1;
 end
