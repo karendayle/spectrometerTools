@@ -151,9 +151,9 @@ else
         % Load the data
         [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
             batchStart, batchEnd);
-        % Do the analysis TO DO: clarify naming isn't full analysis
-        % here?
-        analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
+        
+        % Process a single analyte
+        processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
             spectra, analyteArr, analyteChoice, batchStart, batchEnd);
     end
     
@@ -180,7 +180,7 @@ end
 
 % end of main
 
-function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
+function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
     ramanSpectra, analyte, analyteChoice, batchStart, batchEnd)
     global myPCR
     global myPLS
@@ -258,10 +258,13 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         x1 = repmat(waveNumbers(1:Npoints)',6,1)';
         y1 = repmat((0:5)',1,Npoints)'; % use LUT to get actual analyte conc
         for i = batchStart:batchEnd
+            
+            % set up the offset to batch i, allowing for 6 concentrations
             first = (i-1)*5 + 1;
             last = first + 5;
+            
             z1 = ramanSpectra(first:last,:)'; 
-            plot3(x1, y1, z1, 'Color', colors(i,:)); % figure 1
+            plot3(x1, y1, z1, 'Color', colors(i,:));
             pause(1);
             hold on;
         end
@@ -276,64 +279,66 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         saveMyPlot(analyteChoice, gcf, myTitle, 'all spectra at 10 nM AuNPs 3D');
     end
     
-    if fullAnalysis == 1
-        %% kdk: Draw the sets of spectra at each conc'n on their own plot
-        iiStart = 1;
-        if useBlanks == 1
-            iiEnd = iiStart + 5;
-        else
-            iiEnd = iiStart + 4;
-        end
 
-        if myAnalysis == 2
-            % plot each batch alone
-            for i = batchStart:batchEnd
-                figure
-                first = (i-1)*5 + 1;
-                last = first + 5;
-                for j = first:last
-                    plot(waveNumbers(1:Npoints)',ramanSpectra(j,:)');
-                    hold on;
-                end
+    %% kdk: Draw the sets of spectra at each conc'n on their own plot
+    iiStart = 1;
+    if useBlanks == 1
+        iiEnd = iiStart + 5;
+    else
+        iiEnd = iiStart + 4;
+    end
+
+    if myAnalysis == 2
+        % plot each batch alone
+        for i = batchStart:batchEnd
+            figure
+            myColor = 3; % choose a different color set than the 3D plots
+                         % b/c those colors represent batches and here,
+                         % the analyte conc'ns are being distinguished
+            % set up the offset to batch i, allowing for 6 concentrations
+            first = (i-1)*6 + 1; % 6 is for the six concentrations of
+                                 % this batch. Use 5 if blanks not used
+            last = first + 5;
+            for j = first:last
+                plot(waveNumbers(1:Npoints)',ramanSpectra(j,:)', 'Color', colors(myColor,:));
+                hold on;
                 pause(1);
 
-                set(gcf,'DefaultAxesColorOrder',oldorder);
-                xlabel('Wavenumber (cm^-^1)'); 
-                myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(1));
-                ylabel(myYLabel); axis('tight');
-                grid on
-                myTitle = sprintf('%s batch %s with blank for 10nM AuNPs', ...
-                    analyteNames(analyteChoice), batchNames(i));
-                title(myTitle);
-                if myAnalysis == 2 && useBlanks == 1
-                    hleg = legend({'0' '1' '2' '3' '4' '5'}, 'location','NE');
-                else
-                    if myAnalysis == 2 && useBlanks == 0
-                        hleg = legend({'1' '2' '3' '4' '5'}, 'location','NE');
-                    end
-                end
-                if myAnalysis == 2
-                    htitle = get(hleg,'Title');
-                    set(htitle,'String','Analyte concentration')
-                end
+                % Print for debugging to check what is being accessed
+                fprintf('%s:%s index %d color %d\n', analyteNames(analyteChoice), ...
+                    batchNames(i), j, myColor);
+                
+                % for next time
+                myColor = myColor + 1;
+            end
 
-                % kdk: save figure
-                % ugh, if I use the label containing a '.', saveas interprets this
-                % as file type delimiter, so change from using the actual conc
-                % values to using 'D' for decimal point.
-                myYLabel = 'conc 10nm AuNPs';
-                saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
+%                 set(gcf,'DefaultAxesColorOrder',oldorder); rm 2020/12/10
+            xlabel('Wavenumber (cm^-^1)'); 
+            myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(1));
+            ylabel(myYLabel); axis('tight');
+            grid on
+            myTitle = sprintf('%s batch %s with blank', ...
+                analyteNames(analyteChoice), batchNames(i));
+            title(myTitle);
 
-                if useBlanks == 1
-                    iiStart = iiStart + 5;
-                    iiEnd = iiEnd + 5;
-                else
-                    iiStart = iiStart + 4;
-                    iiEnd = iiEnd + 4;
-                end
+            % kdk: save figure
+            % ugh, if I use the label containing a '.', saveas interprets this
+            % as file type delimiter, so change from using the actual conc
+            % values to using 'D' for decimal point.
+            myYLabel = 'conc 10nm AuNPs';
+            saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
+
+            if useBlanks == 1
+                iiStart = iiStart + 5;
+                iiEnd = iiEnd + 5;
+            else
+                iiStart = iiStart + 4;
+                iiEnd = iiEnd + 4;
             end
         end
+    end
         
+    if fullAnalysis == 1
         %% Fitting the Data with Ten and then a data driven number of PLS Components
         % Use the |plsregress| function to fit a PLSR model with ten PLS components
         % and one response.
@@ -361,7 +366,8 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
                 minPLSComponents = i; % # components needed to explain 90%
             end
         end
-        fprintf('#PLS components explaining 90 percent of variance = %d\n', minPLSComponents);
+        fprintf('#PLS components explaining %f percent of variance = %d\n', ...
+            PLSthreshold, minPLSComponents);
         xlabel('Number of PLS components');
         myYLabel = 'Percent Variance Explained in Y';
         ylabel(myYLabel);
@@ -417,16 +423,33 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         ii = 1;
         sumSoFar = 0;
         minPCRComponents = 0;
-
-        while PCAVar(ii) ~= 0 && minPCRComponents == 0
-            sumSoFar = sumSoFar + fractionEigenValues(ii);
-            if sumSoFar > PCRthreshold
+        % only look at 100 largest eigenvalues
+        cumulativeEigenValues = zeros(1, 100, 'double');
+        
+        while PCAVar(ii) ~= 0 && minPCRComponents == 0 && ii < 101    
+            cumulativeEigenValues(ii) = sum(fractionEigenValues(1:ii));
+            if cumulativeEigenValues(ii) > PCRthreshold
                 minPCRComponents = ii;
             end
             ii = ii + 1;
+            if ii == 101
+                fprintf('100 eigenvalues are insufficient to meet threshold');
+            end
         end
-        fprintf('#PCR components explaining 90 percent of variance = %d\n', minPCRComponents);
+        fprintf('#PCR components explaining %f percent of variance = %d\n', ...
+            PCRthreshold*100., minPCRComponents);
         betaPCR = regress(y-mean(y), PCAScores(:,1:minPCRComponents)); 
+        
+        % New 2020/12/11 plot the 10 largest eigenvalues for the record
+        figure
+        plot(cumulativeEigenValues(1:ii-1));
+        xlabel('Eigenvalue index');
+        myYLabel = 'Normalized Eigenvalue';
+        ylabel(myYLabel);
+        title(myTitle);
+        grid on;
+        saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
+        
         %%
         % To make the PCR results easier to interpret in terms of the original
         % spectral data, transform to regression coefficients for the original,
@@ -438,7 +461,7 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         yfitPCR = [ones(n,1) X]*betaPCR;
 
         %%
-        % Plot fitted vs. observed response for the PLSR and PCR fits.
+        % Plot fitted vs. observed response for the PLS and PCR fits.
         figure % figure 7
         for ii = 1:Nspectra
             % kdk TO DO: are these colors good for all analytes?
@@ -453,7 +476,7 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         plsLegend = sprintf('PLSR with %d Components', minPLSComponents);
         pcrLegend = sprintf('PCR with %d Components', minPCRComponents);
         legend({plsLegend pcrLegend}, 'location','NW');
-        grid on
+        grid on;
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);  
         myPLS(analyteChoice) = minPLSComponents; % 2020/12/5 now all batches
@@ -554,14 +577,21 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         yfitPCR10 = [ones(n,1) X]*betaPCR10;
 
         figure % figure 11
-        plot(y,yfitPLS10,'bo',y,yfitPCR10,'r^');
+%         plot(y,yfitPLS10,'bo',y,yfitPCR10,'r^'); 2020/12/10 match colors
+          % to plot with optimized num of components
+        for ii = 1:Nspectra
+            plot(y(ii),yfitPLS10(ii),'o','Color',pHColor(ii));
+            hold on;
+            plot(y(ii),yfitPCR10(ii),'^','Color',pHColor(ii));
+            hold on;
+        end
         xlabel('Observed Response');
         ylabel('Fitted Response');
         legend({'PLSR with 10 components' 'PCR with 10 Components'},  ...
             'location','NW');
         grid on
         title(myTitle);
-        saveMyPlot(analyteChoice, gcf, myTitle, 'PLS and PCR response');
+        saveMyPlot(analyteChoice, gcf, myTitle, 'PLSR and PCR response');
         %%
         % Both models fit |y| fairly accurately, although PLSR still makes a
         % slightly more accurate fit.  However, ten components is still an
@@ -598,8 +628,7 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         % Original: The MSEP curve for PLSR indicates that two or three components does about
         % as good a job as possible.  On the other hand, PCR needs four components
         % to get the same prediction accuracy.
-        % kdk: TO DO START HERE need a way to choose the number of components, based on 
-        % fraction of full range
+
         figure % figure 12
         % plot(0:10,PLSmsep(2,:),'b-o',0:10,PCRmsep,'r-^'); kdk: MJM catches badness of
         % claiming to use 0 components, but why are there 11 anyway?
@@ -713,7 +742,6 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         figure % figure 16
         %plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); 
         % kdk use minPCRComponents
-        minPCRComponents = 5; % 2020/11/13 - just to plot them all
         plot(waveNumbers(1:Npoints),PCALoadings(:,1:minPCRComponents),'-');
         xlabel('Wavenumber (cm^-^1)');
         myYLabel = 'PCA Loading';
@@ -804,8 +832,6 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         myLegend2 = sprintf('PLS %d component model', minPLSComponents);
         legend({myLegend1 'PCR 10 component model' ...
                 myLegend2 'PLS 10 component model'},'location','NW');
-        % kdk TO DO: START HERE why are there a whole bunch more items in
-        % legend?
         if myAnalysis == 2 
             xlabel('Raman test spectra by number for range of [AuNPs] and [analyte]');
         else
@@ -814,7 +840,34 @@ function c = analysis(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
         myYLabel = sprintf('Resultant classification from model');
         ylabel(myYLabel);
         grid on
-        myTitle = sprintf('%s Classification test', analyteNames(analyteChoice));
+        myTitle = sprintf('%s Classification test results 1', analyteNames(analyteChoice));
+        title(myTitle);
+        saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
+        
+        % Now plot same results again but this time vs analyte conc
+        figure
+        plot(analyte,testFitPCRminPCs, 'o');
+        hold on;
+        plot(analyte,testFitPCR10PCs, '^');
+        hold on;
+        plot(analyte,testFitPLSminPCs, 's');
+        hold on;
+        plot(analyte,testFitPLS10PCs, 'p');
+        hold on;
+        % kdk: plot the models using the min and 10 components
+        myLegend1 = sprintf('PCR %d component model', minPCRComponents);
+        myLegend2 = sprintf('PLS %d component model', minPLSComponents);
+        legend({myLegend1 'PCR 10 component model' ...
+                myLegend2 'PLS 10 component model'},'location','NW');
+        if myAnalysis == 2 
+            xlabel('Raman test spectra for range of [analyte]');
+        else
+            xlabel('Raman test spectra by index, five spectra per pH');
+        end
+        myYLabel = sprintf('Resultant classification from model');
+        ylabel(myYLabel);
+        grid on
+        myTitle = sprintf('%s Classification test results 2', analyteNames(analyteChoice));
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
         %%
@@ -916,10 +969,10 @@ end
 function [waveNumbers, ramanSpectra, analyte] = getSPIERamanSpectra()
     global numPoints;
     numPoints = 1024;
-    global xRef;
-    % CHOOSE: index where the MBA reference peak is COO- at 1582
-    xRef = 713; % 
-    % xRef = 0; % index to use if no normalization is desired
+%     global xRef;
+    % Use: index where the MBA reference peak is COO- at 1582
+    xRef = analyteMaxPeakLocation(1);
+    % xRef = 0; % override index if no normalization is desired
     global offset;
     offset = 300;
     global xMin;
@@ -1093,10 +1146,14 @@ function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
     batchStart, batchEnd)  
     global numPoints
     numPoints = 1024;
-    global xRef
-    % CHOOSE THE RIGHT PEAK FOR NORMALIZATION
-    % xRef = 713; % MBA ONLY: reference peak is COO- at 1582
+
+    % New 2020/12/11 USE THE RIGHT PEAK FOR NORMALIZATION, THIS IS 0 FOR ANALYTES W/O
+    % SIGNAL > PLATE. This is actually not so useful, since normalization 
+    % boosts the signal of the blank 
+    xRef = analyteMaxPeakLocation(analyteChoice);
+    % Revert back
     xRef = 0;
+    
     global offset
     offset = 300;
     global xMin
@@ -1143,11 +1200,10 @@ function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
     % table is needed. See slide 8 of 
     % https://docs.google.com/presentation/d/1yiE2rx4PP9cGM8Y6xsBAFFPp3OfbRk-D1p_wl8mfYzY/edit?usp=sharing
 
-
     for J = batchStart:batchEnd %2020/12/5 NEW: combine batches
         if useBlanks == 1
             filename = sprintf('Batch %s 10-*blank.csv', batchNames(J));
-            [~, newSpectrum] = addOneSpectrum(dir_to_search, filename);
+            [~, newSpectrum] = addOneSpectrum(dir_to_search, filename, xRef);
             spectra = [spectra; newSpectrum];
             analyteArr = [analyteArr; 0];
         end
@@ -1156,10 +1212,18 @@ function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
                 'Batch %s 10-*%s %d.csv', ...
                 batchNames(J), ...
                 analyteNames(analyteChoice), K);
-            [~, newSpectrum] = addOneSpectrum(dir_to_search, filename);
+            [~, newSpectrum] = addOneSpectrum(dir_to_search, filename, xRef);
             spectra = [spectra; newSpectrum];
-            analyteArr = [analyteArr; K];  % 2020/12/05 this needs to be 
-                                           % actual analyte conc
+            
+            % 2020/12/10 there is an error here for case of analyteChoice
+            % #10, R6G. Using K is 1 too many. Fix with special handling
+            if (analyteChoice == 10)
+                analyteArr = [analyteArr; K-1]; 
+            else
+                analyteArr = [analyteArr; K];  % 2020/12/05 TO DO this needs to be 
+                                           % actual analyte conc instead of
+                                           % just the index of the conc
+            end
         end
     end
 end
@@ -1171,10 +1235,11 @@ function blanksAllBatches = getNIHRamanSpectraBlanks(batchStart, batchEnd)
     dir_to_search = char(dirStem);
     blank = [];
     blanksAllBatches = [];
+    xRef = 0;
     
     for batchChoice = batchStart:batchEnd
         filename = sprintf('Batch %s 10-*blank.csv', batchNames(batchChoice));
-        [wn blank] = addOneSpectrum(dir_to_search, filename); % does baseline corr
+        [wn blank] = addOneSpectrum(dir_to_search, filename, xRef); % does baseline corr
         waveNumbers = wn;
         blanksAllBatches = [blanksAllBatches; blank];
     end             
@@ -1183,7 +1248,8 @@ end
 function allBlackPlates = getNIHRamanSpectraBlackPlates()
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\";
     dir_to_search = char(dirStem);
- 
+    xRef = 0;
+    
     % set up the blanks (which show that AuNPs alone don't have a signal)
     % Do this regardless of whether blanks are being used in the analysis
     % or not
@@ -1192,7 +1258,7 @@ function allBlackPlates = getNIHRamanSpectraBlackPlates()
     
     for i = 1:3
         filename = sprintf('black plate%d*.csv', i);
-        [~, plate] = addOneSpectrum(dir_to_search, filename); % does baseline corr
+        [~, plate] = addOneSpectrum(dir_to_search, filename, xRef); % does baseline corr
         allBlackPlates = [allBlackPlates; plate];
     end
 end
@@ -1200,14 +1266,15 @@ end
 function allBlackPlatesAndWater = getNIHRamanSpectraBlackPlatesAndWater()
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\";
     dir_to_search = char(dirStem);
-
+    xRef = 0;
+    
     % set up the blanks (which show that AuNPs alone don't have a signal)
     % Do this regardless of whether blanks are being used in the analysis
     % or not
     water = [];
     allBlackPlatesAndWater = [];
     filename = 'water*.csv';
-    [~, water] = addOneSpectrum(dir_to_search, filename); % does baseline corr
+    [~, water] = addOneSpectrum(dir_to_search, filename, xRef); % does baseline corr
     allBlackPlatesAndWater = [allBlackPlatesAndWater; water];            
 end
 
@@ -1222,8 +1289,8 @@ function [wn, rs] = readCSV(thisfilename)
     rs = cell2mat(thisdata(1,2));
 end
 
-function [wn b] = addOneSpectrum(dir_to_search, filename)
-    global xRef
+function [wn b] = addOneSpectrum(dir_to_search, filename, xRef)
+
     global numPoints
     
     txtpattern = fullfile(dir_to_search, filename);
@@ -1248,6 +1315,44 @@ function [wn b] = addOneSpectrum(dir_to_search, filename)
         b = f; % just pass back the baseline corrected spectra
                % OPTION=useful for comparing across analytes,
                % change this to b = f/max(f);
+    end
+end
+
+function c = analyteMaxPeakLocation(analyteChoice)
+    switch analyteChoice
+        case 1
+            % pH
+            c = 713;
+        case 2
+            % adenosine
+            c = 0;
+        case 3
+            % creatinine
+            c = 612;
+        case 4
+            % dopamine
+            c = 521;
+        case 5
+            % glucose
+            c = 0;
+        case 6
+            % glutamate
+            c = 0;
+        case 7
+            % lactate
+            c = 581;
+        case 8
+            % urea
+            c = 0;
+        case 9
+            % uric acid
+            c = 0;
+        case 10
+            % R6G
+            c = 570;
+        otherwise
+            fprintf('Error analyteChoice %d out of range', analyteChoice);
+            c = 0;
     end
 end
 
@@ -1291,9 +1396,11 @@ function g = saveMyPlot(analyteChoice, gcf, myTitle, myYLabel)
     end
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\Plots\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);
-    myPlot = sprintf('%s%s %s', plotDirStem, myTitle, myYLabel);
+    myPlot = sprintf('%s%s %s %d', plotDirStem, myTitle, myYLabel, ...
+        figureNumber);
     saveas(gcf, myPlot);
-    myPlot = sprintf('%s%s %s.png', plotDirStem, myTitle, myYLabel);
+    myPlot = sprintf('%s%s %s %d.png', plotDirStem, myTitle, myYLabel, ...
+        figureNumber);
     saveas(gcf, myPlot);
     g = 1;
 end
