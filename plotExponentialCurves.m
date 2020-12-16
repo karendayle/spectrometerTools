@@ -2,7 +2,12 @@
     figNumber = 1;
     close all;
     
-    % plot exponential: y = a*exp(b*x)
+    % plot exponential: y = a*exp(b*x) and also log: ln y = ln a + bx
+    % 12/15/2020 New: plot 2nd exponential:
+    % y = a(1 - exp(b*x)) and also log:
+    % ln y = ln a - ln a - bx 
+    %      = -bx
+    
     % First, a demo
     % use a =  1, b = -1 for approaching steady state from above
     % use a = -1, b = -1 for approaching steady state from below
@@ -13,9 +18,20 @@
     xinc = 0.1;
     xend = 10;
     x = xstart:xinc:xend;
-    for i = 1:6
-        y = a(i) * exp(b(i) * x);
-        plotExponentialCurve(a(i), b(i), x, y, xstart, xinc, xend, 0, 0, 0, i);
+    for i = 1:4 % up to 6
+        for myPlotType = 1:8
+            switch myPlotType
+                case 1
+                    y = a(i) * exp(b(i) * x);
+                case {2, 3, 4}
+                    y = log(a(i)) + b(i) * x;
+                case 5
+                    y = a(i)*(1 - exp(b(i) * x));
+                case {6, 7, 8}
+                    y = -1 * b(i) * x;
+            end
+            plotCurve(myPlotType, a(i), b(i), x, y, xstart, xinc, xend, 0, 0, 0, i);
+        end
     end
     
     % Second, show the results for 4 gels, 3 series, ...
@@ -46,17 +62,31 @@
                         sumPH10a = sumPH10a + a;
                         sumPH10b = sumPH10b + b;
                 end
-                y = a * exp(b * x);
-                n = n + 1;
-                plotExponentialCurve(a, b, x, y, xstart, xinc, xend, i, j, k, 1430);
                 
-%                 % 1702 cm-1 peak
-%                 a = vals(i, j, k, 2, 1);
-%                 b = vals(i, j, k, 2, 2);
-%                 y = a * exp(b * x);
-%                 plotExponentialCurve(a, b, x, y, xstart, xinc, xend, i, j, k, 1702);            
-            end
+                for myPlotType = 1:8
+                    switch myPlotType
+                        case 1
+                            y = a * exp(b*x);
+                        case {2, 3, 4}
+                            y = log(a) + b*x;
+                        case 5
+                            y = a*(1 - exp(b*x));
+                        case {6, 7, 8}
+                            y = -1 * b*x;
+                    end
+                    plotCurve(myPlotType, a, b, x, y, xstart, xinc, xend, i, j, k, 1430);
+                
+%                   TO DO later if needed
+%                   1702 cm-1 peak
+%                   a = vals(i, j, k, 2, 1);
+%                   b = vals(i, j, k, 2, 2);
+%                   y = a * exp(b * x);
+%                   plotCurve(plotType, a, b, x, y, xstart, xinc, xend, i, j, k, 1702);
+                end
+                n = n + 1;
+                end
             pause(1);
+            
         end
         n = 9; % fix
         avgPH4a = sumPH4a/n;
@@ -66,14 +96,14 @@
         avgPH10a = sumPH10a/n;
         avgPH10b = sumPH10b/n;
         y = avgPH4a * exp(avgPH4b * x);
-        plotExponentialCurve(avgPH4a, avgPH4b, x, y, xstart, xinc, xend, i, 0, 0, 1430);
+        plotCurve(1, avgPH4a, avgPH4b, x, y, xstart, xinc, xend, i, 0, 0, 1430);
         y = avgPH7a * exp(avgPH7b * x);
-        plotExponentialCurve(avgPH7a, avgPH7b, x, y, xstart, xinc, xend, i, 0, 0, 1430);
+        plotCurve(1, avgPH7a, avgPH7b, x, y, xstart, xinc, xend, i, 0, 0, 1430);
         y = avgPH10a * exp(avgPH10b * x);
-        plotExponentialCurve(avgPH10a, avgPH10b, x, y, xstart, xinc, xend, i, 0, 0, 1430);
+        plotCurve(1, avgPH10a, avgPH10b, x, y, xstart, xinc, xend, i, 0, 0, 1430);
     end
     
-    function a = plotExponentialCurve(a, b, x, y, xstart, xinc, xend, ...
+    function a = plotCurve(myPlotType, a, b, x, y, xstart, xinc, xend, ...
         gel, series, segment, peak)
         global blue
         global red
@@ -90,27 +120,82 @@
         black =   [0.0, 0.0, 0.0];
         global figNumber;
         
-        FigH = figure('Position', get(0, 'Screensize'));
         myColor = getPH(segment);
-        plot(x, y,'-o', 'Color', myColor);
-        ax = gca;
-        ax.YAxis.FontSize = 30; %for y-axis 
+        FigH = figure('Position', get(0, 'Screensize'));
+        myTitle = "";
+        myFileTitle = "";
+        
+        switch myPlotType
+            case {1,5}
+                plot(x, y,'-o', 'Color', myColor);
+                xlabel('x', 'FontSize', 30); % x-axis label
+                ylabel('y', 'FontSize', 30); % y-axis label
+            case {2,6} %options: CHOOSE ONE (actually do all 3)
+                loglog(x, y,'-o', 'Color', myColor);
+                xlabel('log x', 'FontSize', 30); % x-axis label
+                ylabel('log y', 'FontSize', 30); % y-axis label
+            case {3,7}
+                semilogy(x, y,'-o', 'Color', myColor);
+                xlabel('x', 'FontSize', 30); % x-axis label
+                ylabel('log y', 'FontSize', 30); % y-axis label
+            case {4,8}
+                semilogx(x, y,'-o', 'Color', myColor);
+                xlabel('log x', 'FontSize', 30); % x-axis label
+                ylabel('y', 'FontSize', 30); % y-axis label
+        end
+
         if gel > 0
-            myTitle = sprintf(...
-                'gel%d series%d seg%d peak%d: y = %.2f * exp(%.2f * x), x = %.1f:%.1f:%.1f', ...
-                gel, series, segment, peak, a, b, xstart, xinc, xend);
-            myFileTitle = sprintf('gel%d series%d seg%d peak%d', ...
-                gel, series, segment, peak);
+            switch myPlotType
+                case 1
+                    myTitle = sprintf(...
+                        'gel%d series%d seg%d peak%d: y = %.2f * exp(%.2f * x), x = %.1f:%.1f:%.1f', ...
+                        gel, series, segment, peak, a, b, xstart, xinc, xend);
+                    myFileTitle = sprintf('gel%d series%d seg%d peak%d', ...
+                        gel, series, segment, peak);
+                case 2
+                    myTitle = sprintf(...
+                        'gel%d series%d seg%d peak%d: ln(y) = ln(%.2f) + %.2f * x, x = %.1f:%.1f:%.1f', ...
+                        gel, series, segment, peak, a, b, xstart, xinc, xend);
+                    myFileTitle = sprintf('gel%d series%d seg%d peak%d', ...
+                        gel, series, segment, peak);
+                case 3
+                    myTitle = sprintf(...
+                        'gel%d series%d seg%d peak%d: y = %.2f(1 - exp(%.2f * x)), x = %.1f:%.1f:%.1f', ...
+                        gel, series, segment, peak, a, b, xstart, xinc, xend);
+                    myFileTitle = sprintf('gel%d series%d seg%d peak%d', ...
+                        gel, series, segment, peak);
+                case 4
+                    myTitle = sprintf(...
+                        'gel%d series%d seg%d peak%d: ln(y) = %.2f * x, x = %.1f:%.1f:%.1f', ...
+                        gel, series, segment, peak, a, b, xstart, xinc, xend);
+                    myFileTitle = sprintf('gel%d series%d seg%d peak%d', ...
+                        gel, series, segment, peak);
+            end
         else
-            myTitle  = sprintf(...
-                'example: y = %.2f * exp(%.2f * x), x = %.1f:%.1f:%.1f', ...
-                a, b, xstart, xinc, xend);
-            myFileTitle = sprintf('example %d', figNumber);
-            figNumber = figNumber + 1;
+            switch myPlotType
+                case 1
+                    myTitle  = sprintf(...
+                        'example %d: y = %.2f * exp(%.2f * x), x = %.1f:%.1f:%.1f', ...
+                        figNumber, a, b, xstart, xinc, xend);
+                case {2, 3, 4}
+                    myTitle  = sprintf(...
+                        'example %d: ln(y) = ln(%.2f) + %.2f * x, x = %.1f:%.1f:%.1f', ...
+                        figNumber, a, b, xstart, xinc, xend);
+                case 5
+                    myTitle  = sprintf(...
+                        'example %d: y = %.2f * (1 - exp(%.2f * x)), x = %.1f:%.1f:%.1f', ...
+                        figNumber, a, b, xstart, xinc, xend);
+                case {6, 7, 8}
+                    myTitle  = sprintf(...
+                        'example %d: ln(y) = %.2f * x, x = %.1f:%.1f:%.1f', ...
+                        figNumber, b, xstart, xinc, xend);
+            end
+
         end
         title(myTitle, 'FontSize', 30);
-        xlabel('x', 'FontSize', 30); % x-axis label
-        ylabel('y', 'FontSize', 30); % y-axis label
+        myFileTitle = sprintf('example %d', figNumber);
+        figNumber = figNumber + 1;
+        
         ax = gca; % these 2 lines work IFF you put them here, instead
                   % of earlier, when the figure is assigned
         ax.XAxis.FontSize = 30; %for x-axis 
