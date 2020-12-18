@@ -12,33 +12,34 @@
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
 % NEW 11/06/2018 find the local max instead of looking at const location
-global x1Min;
-global x1Max;
+global x1Min
+global x1Max
 x1Min = 591;
 x1Max = 615;
 % Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
 % NEW 11/06/2018 find the local max instead of looking at const location
-global x2Min;
-global x2Max;
+global x2Min
+global x2Max
 x2Min = 790;
 x2Max = 797;
 
 % IMPORTANT: This is index to reference peak. 
 % No, it is not only this value that is used. Rather it is an integration
 % around this point that is used for the denominator that normalizes
-global xRef;
+global xRef
 xRef = 713; % COO- at 1582
             % TO DO: read from avg*.txt file
 % Colors:
-global blue;
-global rust;
-global gold;
-global purple;
-global green;
-global ciel; 
-global cherry;
-global red;
-global black;
+global blue
+global rust
+global gold
+global purple
+global green
+global ciel
+global cherry
+global red
+global black
+global magenta
 blue =    [0.0000, 0.4470, 0.7410];
 rust =    [0.8500, 0.3250, 0.0980];
 gold =    [0.9290, 0.6940, 0.1250];
@@ -48,6 +49,7 @@ ciel =    [0.3010, 0.7450, 0.9330];
 cherry =  [0.6350, 0.0780, 0.1840];
 red =     [1.0, 0.0, 0.0];
 black =   [0.0, 0.0, 0.0];
+magenta = [1.0, 0.0, 1.0];
 pHcolor = [0.0, 0.0, 0.0];
 
 global numPoints;
@@ -75,10 +77,10 @@ myLabelFont = 30;
 myTextFont = 30; 
 
 global plotOption;
-plotOption = 1; % plot y1 and y2. 20200805: extract last val of each segment
+%plotOption = 1; % plot y1 and y2. 20200805: extract last val of each segment
 %plotOption = 2; % plot y3
 %plotOption = 3; % check pH sens
-%plotOption = 4; % do curve fitting. Set value for lastPoints (line ~510) to
+plotOption = 4; % do curve fitting. Set value for lastPoints (line ~510) to
 % adjust how many points at the end of the segment are used
 
 global dirStem;
@@ -87,6 +89,8 @@ global vals; % a multi dimensional array to hold the curve fitting results
 global endVals; % a multi dim'l array to hold the endpts of all segments
 global speedVals; % a multi dim'l array to hold the initial slopes of 
                   % each segment
+global myXValues;
+myXValues = [];
 
 global myTitle;
 myTitle = [ ...
@@ -288,7 +292,9 @@ if plotOption == 1
     plotSpeedVals(); % don't need another plot, but as a way to see
 end
 if plotOption == 4
-    plotVals();
+    save('XValues.mat', 'myXValues');
+    plotVals(); % can only call this if loop runs for all 12 geloptions
+    % 2020/12/20 save these so that plotExponentialCurves can use them
 end
 %end main portion
 
@@ -378,6 +384,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
     global endVals;
     global speedVals;
     global nPoints;
+    global myXValues;
     
 %     sumY1 = 0;
 %     sumY2 = 0;
@@ -495,64 +502,94 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
 %     errorbar(t, avgArrayY2, stdDevArrayY2, '-*', 'Color', purple);
 %     hold on;
 %     Or:
-    if plotOption == 1 || plotOption == 3
-%         plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
-%         hold on;
-%         plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-%         hold on;
-        
-        % 20200805 Store endpoint values of this segment for later
-        % comparison
-        % Need gel, series, segment K, y1, y2
-        endVals(gel, series, K, 1) = y1(numberOfSpectra);
-        endVals(gel, series, K, 2) = y2(numberOfSpectra);
-        
-        % 20200805 Use this as a measure to determine the gel that
-        % transitions the fastest
-        if numberOfSpectra >= 5
-            speedVals(gel, series, K, 1) = y1(5) - y1(1);
-            speedVals(gel, series, K, 2) = y2(5) - y2(1);
-        end
-    else
-        if plotOption == 2
-            plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
-        else
-            if plotOption == 4 % do curve fitting
-                semilogx(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness); % new
-                %ylim([0. 0.3]);
-                hold on;
-            
-                semilogx(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-                ylim([0. 0.3]);
-                hold on;
-                
-                % throw away the transitioning part of the segment and just
-                % take the end of the segment when steady state occurs
-                lastPoints = 15; % CHANGE THIS NUMBER
-                nPoints = length(t)-lastPoints+1;
-                
-                % if there are enough points, take last N points instead of full set
-                if nPoints > 0
-                    xSubset = t(nPoints:end); 
-                    y1 = y1(nPoints:end);
-                    % fit exponential curve to y1 and plot it
-                    result = curveFitting(xSubset, offset, y1, myColor, K, 1);
-                    rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
-                    ylim([0. 0.3]);
-                    hold on;   
-                    
-                    % take last N points instead of full segment
-                    y2 = y2(end-lastPoints+1:end);          
+    switch plotOption
+        case {1,3}
+            % plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+            % hold on;
+            % plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+            % hold on;
 
-                    % fit exponential curve to y2 and plot it
-                    result = curveFitting(xSubset, offset, y2, myColor, K, 2);
-                    rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
-                    ylim([0. 0.3]);
-                    hold on;
-                end
+            % 20200805 Store endpoint values of this segment for later
+            % comparison
+            % Need gel, series, segment K, y1, y2
+            endVals(gel, series, K, 1) = y1(numberOfSpectra);
+            endVals(gel, series, K, 2) = y2(numberOfSpectra);
+
+            % 20200805 Use this as a measure to determine the gel that
+            % transitions the fastest
+            if numberOfSpectra >= 5
+                speedVals(gel, series, K, 1) = y1(5) - y1(1);
+                speedVals(gel, series, K, 2) = y2(5) - y2(1);
             end
-        end
-    end
+        case 2
+            plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
+        case 4
+            % 2020/12/17 Bring this back
+            % First plot the actual data
+            % Plot the 1430 cm-1 normalized peak
+            plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness); % new
+            %ylim([0. 0.3]);
+            hold on;
+            % Plot the 1702 cm-1 normalized peak
+            plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+            ylim([0. 0.3]);
+            hold on;
+
+            % Then do the curve fitting and overlay the result
+            % throw away the transitioning part of the segment and just
+            % take the end of the segment when steady state occurs
+            lastPoints = 15; % CHANGE THIS NUMBER
+            nPoints = length(t)-lastPoints+1;
+
+            % if there are enough points, take last N points instead of full set
+            if nPoints > 0
+                xSubset = t(nPoints:end); 
+                
+                y1 = y1(nPoints:end);
+                % redraw the portion of the curve that is used to build
+                % the model in black 
+                result = curveFitting(xSubset, offset, y1, black, K, 1);
+                rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
+%                ylim([0. 0.3]);
+                hold on;   
+
+                % take last N points instead of full segment
+                y2 = y2(end-lastPoints+1:end);          
+                % redraw the portion of the curve that is used to build
+                % the model in black 
+                result = curveFitting(xSubset, offset, y2, black, K, 2);
+                rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
+%                ylim([0. 0.3]);
+                hold on;
+
+%             % 2020/12/16 PREP FOR NEW WAY:
+%             % This part is only needed if matrix of x values needs to be
+%             % stored for use by other pgms
+%             % Save the arrays of x values to file for all 12 plots,
+%             % then read them into plotExponentialCurves.m
+%             % Note: if any segment has > 60 points, take the final 60
+%             % to preserve array dims (and not cause an error)
+%             [~, cols] = size(t)
+%             if cols > 60
+%                 xValues = t(1,cols-59:cols);
+%             else
+%                 if cols == 60
+%                     xValues = t(1,:);    
+%                 else
+%                     % dataset is missing 1+ points, 
+%                     % add a buffer just to preserve array shape
+%                     % Note: ignore buffer values in follow on parsing
+%                     xValues = t(1,:);
+%                     for ii = cols+1:60
+%                         xValues(ii) = -999;
+%                     end
+%                 end
+%             end
+%             myXValues = [ myXValues; xValues ];
+%             counter = (gel - 1) * 3 + series;
+%             fprintf('gelOption%d, seg:%d: %f\n', counter, K, xValues(1));
+            end
+    end       
     hold on;
     g = 1;
 end
@@ -562,36 +599,38 @@ function h = localPeak(range)
 end
 
 function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
-
+global magenta
 % To avoid this error: "NaN computed by model function, fitting cannot continue.
 % Try using or tightening upper and lower bounds on coefficients.", do not set
 % start point to 0. 
 % Ref=https://www.mathworks.com/matlabcentral/answers/132082-curve-fitting-toolbox-error
     % fit exponential curve to y1
     %curveFit(t-offset,y,myColor);
-%     if (mySubIter == 1) 
-%         % for 1430 peak time series
-%         switch myIter
-%             case {1,2,4,6,8,9}
-%                 % when pH goes from H to L, it's like discharging capacitor
-%                 g = fittype('a*exp(-1*x/b)');
-%             case {3,5,7}
-%                 % when pH goes from L to H, it's like charging capacitor
-%                 g = fittype('1 - a*exp(-1*x/b)');
-%         end
-%     else
-%         if (mySubIter == 2)
-%             % for 1702 peak time series
-%             switch myIter
-%                 case {1,2,4,6,8,9}
-%                     % when pH goes from L to H, it's like charging capacitor
-%                     g = fittype('1 - a*exp(-1*x/b)');
-%                 case {3,5,7}
-%                     % when pH goes from H to L, it's like discharging capacitor
-%                     g = fittype('a*exp(-1*x/b)');
-%             end       
-%         end
-%     end
+    if (mySubIter == 1) 
+        % for 1430 peak time series
+        switch myIter
+            case {1,2,4,6,8,9}
+                % when pH goes from H to L, it's like discharging capacitor
+                % 2020/12/17 remove -1* from the exponent
+                g = fittype('a*exp(x/b)');
+            case {3,5,7}
+                % when pH goes from L to H, it's like charging capacitor
+                % 2020/12/17 remove -1* from the exponent
+                g = fittype('a*(1 - exp(x/b))');
+        end
+    else
+        if (mySubIter == 2)
+            % for 1702 peak time series
+            switch myIter
+                case {1,2,4,6,8,9}
+                    % when pH goes from L to H, it's like charging capacitor
+                    g = fittype('a*(1 - exp(-1*x/b))');
+                case {3,5,7}
+                    % when pH goes from H to L, it's like discharging capacitor
+                    g = fittype('a*exp(-1*x/b)');
+            end       
+        end
+    end
     
     % don't allow exact zeros
     xStart = (t(1)-offset);
@@ -607,23 +646,62 @@ function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
     yCurve = y';
     % xCurve and yCurve are both nx1 row-column form 
     % StartPoint wants 2 points for this type of fit
-    %OLD f0 = fit(xCurve,yCurve,g,'StartPoint',startPoint);
+    f0 = fit(xCurve,yCurve,g,'StartPoint',startPoint);
     
-    %NEW -- this model works when data is curve like charging cap
+    y1Model = [];
+    y2Model = [];
+    % Now plot the modeled data as an overlay
+    if (mySubIter == 1) 
+        % for 1430 peak time series
+        switch myIter
+            case {1,2,4,6,8,9}
+                % when pH goes from H to L, it's like discharging capacitor
+                % 2020/12/17 remove -1* from the exponent
+                y1Model = f0.a*exp(xCurve/f0.b);
+            case {3,5,7}
+                % when pH goes from L to H, it's like charging capacitor
+                % 2020/12/17 remove -1* from the exponent
+                y1Model = f0.a*(1 - exp(xCurve/f0.b));
+        end
+        plot(xCurve, y1Model, '-s', 'Color', magenta);
+        hold on;
+    else
+        if (mySubIter == 2)
+            % for 1702 peak time series
+            switch myIter
+                case {1,2,4,6,8,9}
+                    % when pH goes from L to H, it's like charging capacitor
+                    % 2020/12/17 remove -1* from the exponent
+                    y2Model = f0.a*(1 - exp(xCurve/f0.b));
+                case {3,5,7}
+                    % when pH goes from H to L, it's like discharging capacitor
+                    % 2020/12/17 remove -1* from the exponent
+                    y2Model = f0.a*exp(xCurve/f0.b);
+            end
+            plot(xCurve, y2Model, '-s', 'Color', magenta);
+            hold on;
+        end
+    end
+    
+    %ALTERNATE: LOGARITHMIC MODEL
+    % -- this model works when data is curve like charging cap
     %    but it does not plot as straight line
     %    -- this fails for the first pH7 segment
-    myfittype=fittype('a + b*log(x)',...
-    'dependent', {'y'}, 'independent',{'x'},...
-    'coefficients', {'a','b'});
-    f0=fit(xCurve,yCurve,myfittype,'StartPoint',startPoint);
-    %END NEW
+    %myfittype=fittype('a + b*log(x)',...
+    %'dependent', {'y'}, 'independent',{'x'},...
+    %'coefficients', {'a','b'});
+    %f0=fit(xCurve,yCurve,myfittype,'StartPoint',startPoint);
+    %END
     
-    % set the range to draw the exponential curve
+    % draw the portion of the actual data that is used by the model in
+    % black
     numRows = size(xCurve,1);
     startXX = xCurve(1) - 10.;
     finishXX = xCurve(numRows) + 10;
     xx = linspace(startXX, finishXX, numRows);
-    semilogx(xCurve,yCurve,'o',xx,f0(xx), 'Color', myColor);
+    plot(xCurve,yCurve,'o',xx,f0(xx), 'Color', myColor);
+    hold on;
+    
     j = f0;
 end
 
@@ -856,7 +934,7 @@ function q = plotVals()
                     errorbar(xPH10, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
                     %myTitle = sprintf('gel %d series %d', gel, series);
                     myTitle = sprintf('alginate gel12 punch1 using last %d points of each segment', nPoints);
-                    title(myTitle(gelOption),'FontSize',30);
+                    title(myTitle((gel - 1) * 3 + series),'FontSize',30);
                     set(gca,'FontSize', 30); % this works
                     xlim([0 10]);
                     xlabel('pH buffer segment', 'FontSize', 30);
