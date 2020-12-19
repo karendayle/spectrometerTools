@@ -118,7 +118,7 @@ subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
 % Do for each dataset 1:12 or any subset
-for gelOption = 1:12
+for gelOption = 2:2
     Kmin = 1;
     Kmax = 9;
     if plotOption == 4
@@ -538,7 +538,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
             % Then do the curve fitting and overlay the result
             % throw away the transitioning part of the segment and just
             % take the end of the segment when steady state occurs
-            lastPoints = 15; % CHANGE THIS NUMBER
+            lastPoints = 10; % CHANGE THIS NUMBER
             nPoints = length(t)-lastPoints+1;
 
             % if there are enough points, take last N points instead of full set
@@ -612,11 +612,27 @@ global magenta
             case {1,2,4,6,8,9}
                 % when pH goes from H to L, it's like discharging capacitor
                 % 2020/12/17 remove -1* from the exponent
-                g = fittype('a*exp(x/b)');
+%                 g = fittype('a*exp(x/b)', ...
+%                     'dependent',{'y'},'independent',{'x'}, ...
+%                     'coefficients',{'a','b'});
+                g = fittype('a*exp(b*x)', ...
+                    'dependent',{'y'},'independent',{'x'}, ...
+                    'coefficients',{'a','b'});
+%                 g = fittype('a*exp(-1. * b*x)', ...
+%                     'dependent',{'y'},'independent',{'x'}, ...
+%                     'coefficients',{'a','b'});
             case {3,5,7}
                 % when pH goes from L to H, it's like charging capacitor
                 % 2020/12/17 remove -1* from the exponent
-                g = fittype('a*(1 - exp(x/b))');
+%                 g = fittype('a*(1 - exp(x/b))', ...
+%                     'dependent',{'y'},'independent',{'x'}, ...
+%                     'coefficients',{'a','b'});
+                g = fittype('a*(1 - exp(b*x))', ...
+                    'dependent',{'y'},'independent',{'x'}, ...
+                    'coefficients',{'a','b'});
+%                 g = fittype('a*(1 - exp(-1. * b*x))', ...
+%                     'dependent',{'y'},'independent',{'x'}, ...
+%                     'coefficients',{'a','b'});
         end
     else
         if (mySubIter == 2)
@@ -624,10 +640,26 @@ global magenta
             switch myIter
                 case {1,2,4,6,8,9}
                     % when pH goes from L to H, it's like charging capacitor
-                    g = fittype('a*(1 - exp(-1*x/b))');
+%                     g = fittype('a*(1 - exp(x/b))', ...
+%                         'dependent',{'y'},'independent',{'x'}, ...
+%                         'coefficients',{'a','b'});
+                    g = fittype('a*(1 - exp(b*x))', ...
+                        'dependent',{'y'},'independent',{'x'}, ...
+                        'coefficients',{'a','b'});
+%                     g = fittype('a*(1 - exp(-1. * b*x))', ...
+%                         'dependent',{'y'},'independent',{'x'}, ...
+%                         'coefficients',{'a','b'});
                 case {3,5,7}
                     % when pH goes from H to L, it's like discharging capacitor
-                    g = fittype('a*exp(-1*x/b)');
+%                     g = fittype('a*exp(x/b)', ...
+%                         'dependent',{'y'},'independent',{'x'},...
+%                         'coefficients',{'a','b'});
+                    g = fittype('a*exp(b*x)', ...
+                        'dependent',{'y'},'independent',{'x'},...
+                        'coefficients',{'a','b'});
+%                     g = fittype('a*exp(-1. * b*x)', ...
+%                         'dependent',{'y'},'independent',{'x'},...
+%                         'coefficients',{'a','b'});
             end       
         end
     end
@@ -657,11 +689,15 @@ global magenta
             case {1,2,4,6,8,9}
                 % when pH goes from H to L, it's like discharging capacitor
                 % 2020/12/17 remove -1* from the exponent
-                y1Model = f0.a*exp(xCurve/f0.b);
+                % y1Model = f0.a*exp(xCurve/f0.b);
+                y1Model = f0.a*exp(f0.b * xCurve);
+                %y1Model = f0.a*exp(-1. * f0.b * xCurve);
             case {3,5,7}
                 % when pH goes from L to H, it's like charging capacitor
                 % 2020/12/17 remove -1* from the exponent
-                y1Model = f0.a*(1 - exp(xCurve/f0.b));
+                %y1Model = f0.a*(1 - exp(xCurve/f0.b));
+                y1Model = f0.a*(1 - exp(f0.b * xCurve));
+                % y1Model = f0.a*(1 - exp(-1 * f0.b * xCurve));
         end
         plot(xCurve, y1Model, '-s', 'Color', magenta);
         hold on;
@@ -671,12 +707,15 @@ global magenta
             switch myIter
                 case {1,2,4,6,8,9}
                     % when pH goes from L to H, it's like charging capacitor
-                    % 2020/12/17 remove -1* from the exponent
-                    y2Model = f0.a*(1 - exp(xCurve/f0.b));
+                    %y2Model = f0.a*(1 - exp(xCurve/f0.b));
+                    y2Model = f0.a*(1 - exp(f0.b * xCurve));
+                    % y2Model = f0.a*(1 - exp(-1 * f0.b * xCurve));
                 case {3,5,7}
                     % when pH goes from H to L, it's like discharging capacitor
                     % 2020/12/17 remove -1* from the exponent
-                    y2Model = f0.a*exp(xCurve/f0.b);
+                    % y2Model = f0.a*exp(xCurve/f0.b);
+                    y2Model = f0.a*exp(f0.b * xCurve);
+                    %y2Model = f0.a*exp(-1. * f0.b * xCurve);
             end
             plot(xCurve, y2Model, '-s', 'Color', magenta);
             hold on;
@@ -695,12 +734,13 @@ global magenta
     
     % draw the portion of the actual data that is used by the model in
     % black
-    numRows = size(xCurve,1);
-    startXX = xCurve(1) - 10.;
-    finishXX = xCurve(numRows) + 10;
-    xx = linspace(startXX, finishXX, numRows);
-    plot(xCurve,yCurve,'o',xx,f0(xx), 'Color', myColor);
-    hold on;
+    % 2020/12/18 this is wrong
+%     numRows = size(xCurve,1);
+%     startXX = xCurve(1) - 10.;
+%     finishXX = xCurve(numRows) + 10;
+%     xx = linspace(startXX, finishXX, numRows);
+%     plot(xCurve,yCurve,'o',xx,f0(xx), 'Color', myColor);
+%     hold on;
     
     j = f0;
 end
