@@ -118,7 +118,7 @@ subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
 % Do for each dataset 1:12 or any subset
-for gelOption = 2:2
+for gelOption = 1:12
     Kmin = 1;
     Kmax = 9;
     if plotOption == 4
@@ -127,7 +127,8 @@ for gelOption = 2:2
         offset = 0;
     end
     
-    figure
+    % figure
+    FigH = figure('Position', get(0, 'Screensize'));
     set(gca,'FontSize', myTextFont); % has no effect on tick label size
     switch gelOption
       case 1 % alginate time series 1
@@ -286,6 +287,7 @@ for gelOption = 2:2
         ylabel('Intensity at 1430cm^-^1(A.U.)/Intensity at 1702cm^-^1(A.U.)', ...
             'FontSize', myLabelFont); % y-axis label
     end
+    saveMyPlot(FigH, myTitle(gelOption));
 end
 if plotOption == 1
     plotEndVals(); % don't need another plot, but as a way to see
@@ -678,7 +680,33 @@ global magenta
     yCurve = y';
     % xCurve and yCurve are both nx1 row-column form 
     % StartPoint wants 2 points for this type of fit
-    f0 = fit(xCurve,yCurve,g,'StartPoint',startPoint);
+    % 2020/12/24: old: f0 = fit(xCurve,yCurve,g,'StartPoint',startPoint);
+    
+    % 2020/12/24: new: put startPoint in fitOptions, 
+    % https://www.mathworks.com/help/curvefit/fitoptions.html
+    options = fitoptions(g);
+    % 2020/12/28: actually startPoint is only for NonlinearLeastSquares
+    % method, so get rid of it... not quite. Doc'n must be wrong b/c
+    % it says that startPoint is missing, so it's creating an arbitrary
+    % one 
+
+
+    
+    % this says 'Too many input arguments'
+    %f0 = fit(xCurve, yCurve, g, 'StartPoint', startPoint, options);
+    % This is back to where I started (works but limits are unset)
+    % and options are unused
+    %f0 = fit(xCurve, yCurve, g, 'StartPoint', startPoint);
+    
+    % 2020/12/28: this works, but these vals are arbitrarily chosen
+    % Can I narrow them to +/- 1000?
+    %      Lower     - A vector of lower bounds on the coefficients to be fitted
+    %                  [{[]} | vector of length the number of coefficients]
+    lower = [-5000. -5000. ];
+    %      Upper     - A vector of upper bounds on the coefficients to be fitted
+    %                  [{[]} | vector of length the number of coefficients]
+    upper = [5000. 5000. ];
+    f0 = fit(xCurve, yCurve, g, 'StartPoint', startPoint, 'Lower', lower, 'Upper', upper);
     
     y1Model = [];
     y2Model = [];
@@ -867,7 +895,8 @@ function q = plotVals()
     % compare all the pH 4  values: these are in pH= 2, 6, 9
     for peak = 1:2
         for coeff = 1:3:6
-            figure
+            % figure
+            FigH = figure('Position', get(0, 'Screensize'));
             switch peak
                 case 1
                     mySgTitle = sprintf('1430 cm-1 pk ');
@@ -1013,7 +1042,8 @@ function r = plotEndVals()
         
  
     for gel = 1:4
-        figure
+        %figure
+        FigH = figure('Position', get(0, 'Screensize'));
         for punch = 1:3
             for segment = 1:9
                 plot(segment, endVals(gel, punch, segment, 1), ...
@@ -1064,7 +1094,8 @@ function s = plotSpeedVals()
         [ '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h']; 
         % all the symbols that Matlab has
         
-    figure
+    %figure
+    FigH = figure('Position', get(0, 'Screensize'));
     for gel = 1:4
         for punch = 1:3
             for segment = 1:9
@@ -1088,4 +1119,13 @@ function s = plotSpeedVals()
     ylabel('Slope of first 5 measurements in segment', ...
         'FontSize', myLabelFont); % y-axis label
     s = 1;
+end
+
+function g = saveMyPlot(FigH, myTitle)
+    dirStem = "C:\Users\karen\Documents\Data\";
+    subDir = "Plots\";
+    plotDirStem = sprintf("%s%s", dirStem, subDir);
+    myPlotName = sprintf('%s%s', plotDirStem, myTitle);
+    saveas(FigH, myPlotName, 'png');
+    g = 1;
 end
