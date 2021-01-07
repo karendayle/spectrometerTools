@@ -118,11 +118,12 @@ subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
 % Do for each dataset 1:12 or any subset
-for gelOption = 1:12
+for gelOption = 1:12 % 20210106
     Kmin = 1;
-    Kmax = 9;
+    Kmax = 9; %20210106
     if plotOption == 4
-        offset = -24; % 2020/3/16 new
+%         offset = -24; % 2020/3/16 new
+        offset = 0; % 20210106
     else
         offset = 0;
     end
@@ -540,7 +541,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
             % Then do the curve fitting and overlay the result
             % throw away the transitioning part of the segment and just
             % take the end of the segment when steady state occurs
-            lastPoints = 10; % CHANGE THIS NUMBER
+            lastPoints = 15; % CHANGE THIS NUMBER
             nPoints = length(t)-lastPoints+1;
 
             % if there are enough points, take last N points instead of full set
@@ -617,24 +618,32 @@ global magenta
 %                 g = fittype('a*exp(x/b)', ...
 %                     'dependent',{'y'},'independent',{'x'}, ...
 %                     'coefficients',{'a','b'});
-                g = fittype('a*exp(b*x)', ...
-                    'dependent',{'y'},'independent',{'x'}, ...
-                    'coefficients',{'a','b'});
+%                 g = fittype('a*exp(b*x)', ...
+%                     'dependent',{'y'},'independent',{'x'}, ...
+%                     'coefficients',{'a','b'});
 %                 g = fittype('a*exp(-1. * b*x)', ...
 %                     'dependent',{'y'},'independent',{'x'}, ...
 %                     'coefficients',{'a','b'});
+                % 2020/12/30 new
+                g = fittype('a*exp(b*x)+c', ...
+                        'dependent',{'y'},'independent',{'x'},...
+                        'coefficients',{'a','b','c'});
             case {3,5,7}
                 % when pH goes from L to H, it's like charging capacitor
                 % 2020/12/17 remove -1* from the exponent
 %                 g = fittype('a*(1 - exp(x/b))', ...
 %                     'dependent',{'y'},'independent',{'x'}, ...
 %                     'coefficients',{'a','b'});
-                g = fittype('a*(1 - exp(b*x))', ...
-                    'dependent',{'y'},'independent',{'x'}, ...
-                    'coefficients',{'a','b'});
+%                 g = fittype('a*(1 - exp(b*x))', ...
+%                     'dependent',{'y'},'independent',{'x'}, ...
+%                     'coefficients',{'a','b'});
 %                 g = fittype('a*(1 - exp(-1. * b*x))', ...
 %                     'dependent',{'y'},'independent',{'x'}, ...
 %                     'coefficients',{'a','b'});
+                  % 2020/12/30 new
+                  g = fittype('a*(1 - exp(b*x))+c', ...
+                        'dependent',{'y'},'independent',{'x'},...
+                        'coefficients',{'a','b','c'});
         end
     else
         if (mySubIter == 2)
@@ -645,23 +654,31 @@ global magenta
 %                     g = fittype('a*(1 - exp(x/b))', ...
 %                         'dependent',{'y'},'independent',{'x'}, ...
 %                         'coefficients',{'a','b'});
-                    g = fittype('a*(1 - exp(b*x))', ...
-                        'dependent',{'y'},'independent',{'x'}, ...
-                        'coefficients',{'a','b'});
+%                     g = fittype('a*(1 - exp(b*x))', ...
+%                         'dependent',{'y'},'independent',{'x'}, ...
+%                         'coefficients',{'a','b'});
 %                     g = fittype('a*(1 - exp(-1. * b*x))', ...
 %                         'dependent',{'y'},'independent',{'x'}, ...
 %                         'coefficients',{'a','b'});
+                    % 2020/12/30 new
+                    g = fittype('a*(1 - exp(b*x))+c', ...
+                        'dependent',{'y'},'independent',{'x'},...
+                        'coefficients',{'a','b','c'});
                 case {3,5,7}
                     % when pH goes from H to L, it's like discharging capacitor
 %                     g = fittype('a*exp(x/b)', ...
 %                         'dependent',{'y'},'independent',{'x'},...
 %                         'coefficients',{'a','b'});
-                    g = fittype('a*exp(b*x)', ...
-                        'dependent',{'y'},'independent',{'x'},...
-                        'coefficients',{'a','b'});
+%                     g = fittype('a*exp(b*x)', ...
+%                         'dependent',{'y'},'independent',{'x'},...
+%                         'coefficients',{'a','b'});
 %                     g = fittype('a*exp(-1. * b*x)', ...
 %                         'dependent',{'y'},'independent',{'x'},...
 %                         'coefficients',{'a','b'});
+                    % 2020/12/30 new
+                    g = fittype('a*exp(b*x)+c', ...
+                        'dependent',{'y'},'independent',{'x'},...
+                        'coefficients',{'a','b','c'});
             end       
         end
     end
@@ -675,7 +692,7 @@ global magenta
     if yStart == 0.
         yStart = 0.01;
     end
-    startPoint = [xStart yStart];
+    startPoint = [xStart yStart 0];
     xCurve = (t-offset)';
     yCurve = y';
     % xCurve and yCurve are both nx1 row-column form 
@@ -684,15 +701,13 @@ global magenta
     
     % 2020/12/24: new: put startPoint in fitOptions, 
     % https://www.mathworks.com/help/curvefit/fitoptions.html
-    options = fitoptions(g);
+    % options = fitoptions(g);
     % 2020/12/28: actually startPoint is only for NonlinearLeastSquares
     % method, so get rid of it... not quite. Doc'n must be wrong b/c
     % it says that startPoint is missing, so it's creating an arbitrary
     % one 
 
-
-    
-    % this says 'Too many input arguments'
+    % this says 'Too many input arguments', so need to find another way...
     %f0 = fit(xCurve, yCurve, g, 'StartPoint', startPoint, options);
     % This is back to where I started (works but limits are unset)
     % and options are unused
@@ -702,32 +717,44 @@ global magenta
     % Can I narrow them to +/- 1000?
     %      Lower     - A vector of lower bounds on the coefficients to be fitted
     %                  [{[]} | vector of length the number of coefficients]
-    lower = [-5000. -5000. ];
+    lower = [-inf -inf -inf ]; % 2020/12/30 new add 3rd value for 'c'
     %      Upper     - A vector of upper bounds on the coefficients to be fitted
     %                  [{[]} | vector of length the number of coefficients]
-    upper = [5000. 5000. ];
+    upper = [inf inf inf]; % 2020/12/30 new add 3rd value for 'c'
+    % 2020/12/30 new error re: # start points, try without it
     f0 = fit(xCurve, yCurve, g, 'StartPoint', startPoint, 'Lower', lower, 'Upper', upper);
-    
+    % this runs but without start point, it chooses an arbitray one
+    % and no model values get drawn
+    % f0 = fit(xCurve, yCurve, g, 'Lower', lower, 'Upper', upper);
+
     y1Model = [];
     y2Model = [];
     % Now plot the modeled data as an overlay
-    if (mySubIter == 1) 
+    if (mySubIter == 1)
+        xCurve
         % for 1430 peak time series
         switch myIter
             case {1,2,4,6,8,9}
                 % when pH goes from H to L, it's like discharging capacitor
                 % 2020/12/17 remove -1* from the exponent
                 % y1Model = f0.a*exp(xCurve/f0.b);
-                y1Model = f0.a*exp(f0.b * xCurve);
-                %y1Model = f0.a*exp(-1. * f0.b * xCurve);
+                % y1Model = f0.a*exp(f0.b * xCurve);
+                % y1Model = f0.a*exp(-1. * f0.b * xCurve);
+                % 2020/12/30 new
+                %y1Model = f0.a*exp(xCurve/f0.b) + f0.c;
+                y1Model = f0.a*exp(f0.b*xCurve) + f0.c;
             case {3,5,7}
                 % when pH goes from L to H, it's like charging capacitor
                 % 2020/12/17 remove -1* from the exponent
-                %y1Model = f0.a*(1 - exp(xCurve/f0.b));
-                y1Model = f0.a*(1 - exp(f0.b * xCurve));
+                % y1Model = f0.a*(1 - exp(xCurve/f0.b));
+                % y1Model = f0.a*(1 - exp(f0.b * xCurve));
                 % y1Model = f0.a*(1 - exp(-1 * f0.b * xCurve));
+                % 2020/12/30 new
+                %y1Model = f0.a*(1 - exp(xCurve/f0.b)) + f0.c;
+                y1Model = f0.a*(1 - exp(f0.b*xCurve)) + f0.c;
         end
         plot(xCurve, y1Model, '-s', 'Color', magenta);
+        y1Model
         hold on;
     else
         if (mySubIter == 2)
@@ -735,17 +762,24 @@ global magenta
             switch myIter
                 case {1,2,4,6,8,9}
                     % when pH goes from L to H, it's like charging capacitor
-                    %y2Model = f0.a*(1 - exp(xCurve/f0.b));
-                    y2Model = f0.a*(1 - exp(f0.b * xCurve));
+                    % y2Model = f0.a*(1 - exp(xCurve/f0.b));
+                    % y2Model = f0.a*(1 - exp(f0.b * xCurve));
                     % y2Model = f0.a*(1 - exp(-1 * f0.b * xCurve));
+                    % 2020/12/30 new
+                    % y2Model = f0.a*(1 - exp(xCurve/f0.b)) + f0.c;
+                    y2Model = f0.a*(1 - exp(f0.b*xCurve)) + f0.c;
                 case {3,5,7}
                     % when pH goes from H to L, it's like discharging capacitor
                     % 2020/12/17 remove -1* from the exponent
                     % y2Model = f0.a*exp(xCurve/f0.b);
-                    y2Model = f0.a*exp(f0.b * xCurve);
-                    %y2Model = f0.a*exp(-1. * f0.b * xCurve);
+                    % y2Model = f0.a*exp(f0.b * xCurve);
+                    % y2Model = f0.a*exp(-1. * f0.b * xCurve);
+                    % 2020/12/30 new
+                    % y2Model = f0.a*exp(xCurve/f0.b) + f0.c;
+                    y2Model = f0.a*exp(f0.b*xCurve) + f0.c;
             end
             plot(xCurve, y2Model, '-s', 'Color', magenta);
+            y2Model
             hold on;
         end
     end
@@ -824,8 +858,8 @@ function k = parseCurveFittingObject(gelOption, gel, series, pH, peak, f0)
     pHStr = getPH(pH);
     gelStr = getGel(gelOption);
     peakVal = getPeak(peak);
-    fprintf('%s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, pH, pHStr, peakVal, ...
-        f0.a, aLow, aHigh, f0.b, bLow, bHigh);
+    fprintf('%s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f) c = %f\n', gelStr, pH, pHStr, peakVal, ...
+        f0.a, aLow, aHigh, f0.b, bLow, bHigh, f0.c);
     
     vals(gel, series, pH, peak, 1) = f0.a;
     vals(gel, series, pH, peak, 2) = aLow;
