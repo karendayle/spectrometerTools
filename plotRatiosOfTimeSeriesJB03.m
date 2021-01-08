@@ -541,7 +541,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
             % Then do the curve fitting and overlay the result
             % throw away the transitioning part of the segment and just
             % take the end of the segment when steady state occurs
-            lastPoints = 15; % CHANGE THIS NUMBER
+            lastPoints = 20; % CHANGE THIS NUMBER
             nPoints = length(t)-lastPoints+1;
 
             % if there are enough points, take last N points instead of full set
@@ -602,7 +602,7 @@ function h = localPeak(range)
 end
 
 function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
-global magenta
+global black
 % To avoid this error: "NaN computed by model function, fitting cannot continue.
 % Try using or tightening upper and lower bounds on coefficients.", do not set
 % start point to 0. 
@@ -625,7 +625,7 @@ global magenta
 %                     'dependent',{'y'},'independent',{'x'}, ...
 %                     'coefficients',{'a','b'});
                 % 2020/12/30 new
-                g = fittype('a*exp(b*x)+c', ...
+                g = fittype('a*exp(-b*x)+c', ...
                         'dependent',{'y'},'independent',{'x'},...
                         'coefficients',{'a','b','c'});
             case {3,5,7}
@@ -641,7 +641,7 @@ global magenta
 %                     'dependent',{'y'},'independent',{'x'}, ...
 %                     'coefficients',{'a','b'});
                   % 2020/12/30 new
-                  g = fittype('a*(1 - exp(b*x))+c', ...
+                  g = fittype('a*(1 - exp(-b*x))+c', ...
                         'dependent',{'y'},'independent',{'x'},...
                         'coefficients',{'a','b','c'});
         end
@@ -661,7 +661,7 @@ global magenta
 %                         'dependent',{'y'},'independent',{'x'}, ...
 %                         'coefficients',{'a','b'});
                     % 2020/12/30 new
-                    g = fittype('a*(1 - exp(b*x))+c', ...
+                    g = fittype('a*(1 - exp(-b*x))+c', ...
                         'dependent',{'y'},'independent',{'x'},...
                         'coefficients',{'a','b','c'});
                 case {3,5,7}
@@ -676,7 +676,7 @@ global magenta
 %                         'dependent',{'y'},'independent',{'x'},...
 %                         'coefficients',{'a','b'});
                     % 2020/12/30 new
-                    g = fittype('a*exp(b*x)+c', ...
+                    g = fittype('a*exp(-b*x)+c', ...
                         'dependent',{'y'},'independent',{'x'},...
                         'coefficients',{'a','b','c'});
             end       
@@ -717,10 +717,12 @@ global magenta
     % Can I narrow them to +/- 1000?
     %      Lower     - A vector of lower bounds on the coefficients to be fitted
     %                  [{[]} | vector of length the number of coefficients]
-    lower = [-inf -inf -inf ]; % 2020/12/30 new add 3rd value for 'c'
+    % lower = [-inf -inf -inf ]; % 2020/12/30 new add 3rd value for 'c'
+    lower = [-5000 -5000 -5000 ]; %2021/1/7 to fix pb with pHEMA3-5-1702
     %      Upper     - A vector of upper bounds on the coefficients to be fitted
     %                  [{[]} | vector of length the number of coefficients]
-    upper = [inf inf inf]; % 2020/12/30 new add 3rd value for 'c'
+    % upper = [inf inf inf]; % 2020/12/30 new add 3rd value for 'c'
+    upper = [5000 5000 5000 ]; %2021/1/7 to fix pb with pHEMA3-5-1702
     % 2020/12/30 new error re: # start points, try without it
     f0 = fit(xCurve, yCurve, g, 'StartPoint', startPoint, 'Lower', lower, 'Upper', upper);
     % this runs but without start point, it chooses an arbitray one
@@ -731,7 +733,7 @@ global magenta
     y2Model = [];
     % Now plot the modeled data as an overlay
     if (mySubIter == 1)
-        xCurve
+        % xCurve
         % for 1430 peak time series
         switch myIter
             case {1,2,4,6,8,9}
@@ -742,7 +744,7 @@ global magenta
                 % y1Model = f0.a*exp(-1. * f0.b * xCurve);
                 % 2020/12/30 new
                 %y1Model = f0.a*exp(xCurve/f0.b) + f0.c;
-                y1Model = f0.a*exp(f0.b*xCurve) + f0.c;
+                y1Model = f0.a*exp(-1.*f0.b*xCurve) + f0.c;
             case {3,5,7}
                 % when pH goes from L to H, it's like charging capacitor
                 % 2020/12/17 remove -1* from the exponent
@@ -751,10 +753,10 @@ global magenta
                 % y1Model = f0.a*(1 - exp(-1 * f0.b * xCurve));
                 % 2020/12/30 new
                 %y1Model = f0.a*(1 - exp(xCurve/f0.b)) + f0.c;
-                y1Model = f0.a*(1 - exp(f0.b*xCurve)) + f0.c;
+                y1Model = f0.a*(1 - exp(-1.*f0.b*xCurve)) + f0.c;
         end
-        plot(xCurve, y1Model, '-s', 'Color', magenta);
-        y1Model
+        plot(xCurve, y1Model, '-s', 'Color', black);
+        % y1Model
         hold on;
     else
         if (mySubIter == 2)
@@ -767,7 +769,7 @@ global magenta
                     % y2Model = f0.a*(1 - exp(-1 * f0.b * xCurve));
                     % 2020/12/30 new
                     % y2Model = f0.a*(1 - exp(xCurve/f0.b)) + f0.c;
-                    y2Model = f0.a*(1 - exp(f0.b*xCurve)) + f0.c;
+                    y2Model = f0.a*(1 - exp(-1.*f0.b*xCurve)) + f0.c;
                 case {3,5,7}
                     % when pH goes from H to L, it's like discharging capacitor
                     % 2020/12/17 remove -1* from the exponent
@@ -776,10 +778,10 @@ global magenta
                     % y2Model = f0.a*exp(-1. * f0.b * xCurve);
                     % 2020/12/30 new
                     % y2Model = f0.a*exp(xCurve/f0.b) + f0.c;
-                    y2Model = f0.a*exp(f0.b*xCurve) + f0.c;
+                    y2Model = f0.a*exp(-1.*f0.b*xCurve) + f0.c;
             end
-            plot(xCurve, y2Model, '-s', 'Color', magenta);
-            y2Model
+            plot(xCurve, y2Model, '-s', 'Color', black);
+            % y2Model
             hold on;
         end
     end
