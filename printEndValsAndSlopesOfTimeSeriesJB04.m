@@ -1,12 +1,16 @@
-% Plot the intensity at a single wavenumber normalized by the reference 
+% Initial version: Plot the intensity at a single wavenumber normalized by the reference 
 % intensity vs time by extracting it from a set of files in different directories
 % The time to use for the x axis is in the filename as
 % avg-yyyy-mm-dd-mm-ss.txt. Convert this to seconds since epoch.
 
-% Adapting this in a new way:
-% 1) to compare transition speeds based on slopes 
-% 2) extracting final value for each segment for comparison across samples,
+% Modified version:
+% 1) compare transition speeds based on slopes 
+% 2) extract final value for each segment for comparison across samples,
 %    across gel types and to compare to values in static buffer
+% 3) MJM doesn't like slope value as measure of transition speed, he wants
+%    time constants. Also, no need to distinguish the between the 3 time series 
+%    for each samples gel type. Combine them and plot all gel types on same plot.
+
 % Dayle Kotturi August 2020
 
 % There are two plots to build (or two lines on one plot).
@@ -54,6 +58,7 @@ global numPoints;
 numPoints = 1024;
 
 global nPoints;
+global lastPoints;
 
 global lineThickness;
 lineThickness = 2;
@@ -75,10 +80,10 @@ myLabelFont = 30;
 myTextFont = 30; 
 
 global plotOption;
-plotOption = 1; % plot y1 and y2. 20200805: extract last val of each segment
+%plotOption = 1; % plot y1 and y2. 20200805: extract last val of each segment
 %plotOption = 2; % plot y3
 %plotOption = 3; % check pH sens
-%plotOption = 4; % do curve fitting. Set value for lastPoints (line ~510) to
+plotOption = 4; % do curve fitting. Set value for lastPoints (line ~510) to
 % adjust how many points at the end of the segment are used
 
 global dirStem;
@@ -113,6 +118,10 @@ subDirStem7 = "7 pH10";
 subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
+%% kdk: Clear previous plots
+
+close all
+
 % Do for each dataset 1:12 or any subset
 for gelOption = 1:12
     Kmin = 1;
@@ -123,8 +132,7 @@ for gelOption = 1:12
         offset = 0;
     end
     
-%     figure
-%     set(gca,'FontSize', myTextFont); % has no effect on tick label size
+    FigH = figure('Position', get(0, 'Screensize'));
     switch gelOption
       case 1 % alginate time series 1
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
@@ -271,17 +279,20 @@ for gelOption = 1:12
 %     y = y - deltaY;
 %     hold off
     
-%     title(myTitle(gelOption), 'FontSize', myTitleFont);
-%     
-%     myXlabel = sprintf('Time (hours)');
-%     xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
-%     if plotOption == 1 || plotOption == 4
-%         ylabel('Normalized Intensity', ...
-%             'FontSize', myLabelFont); % y-axis label
-%     else
-%         ylabel('Intensity at 1430cm^-^1(A.U.)/Intensity at 1702cm^-^1(A.U.)', ...
-%             'FontSize', myLabelFont); % y-axis label
-%     end
+    title(myTitle(gelOption), 'FontSize', myTitleFont);
+    
+    myXlabel = sprintf('Time (hours)');
+    xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
+    if plotOption == 1 || plotOption == 4
+        ylabel('Normalized Intensity', ...
+            'FontSize', myLabelFont); % y-axis label
+    else
+        ylabel('Intensity at 1430cm^-^1(A.U.)/Intensity at 1702cm^-^1(A.U.)', ...
+            'FontSize', myLabelFont); % y-axis label
+    end
+
+    % 20201201 New
+    saveMyPlot(FigH, myTitle(gelOption));
 end
 if plotOption == 1
     printEndVals(); % don't need another plot, but as a way to see
@@ -378,6 +389,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
     global endVals;
     global speedVals;
     global nPoints;
+    global lastPoints;
     
 %     sumY1 = 0;
 %     sumY2 = 0;
@@ -532,14 +544,14 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                 
                 % throw away the transitioning part of the segment and just
                 % take the end of the segment when steady state occurs
-                lastPoints = 15; % CHANGE THIS NUMBER
+                lastPoints = 15; % CHOOSE THIS NUMBER
                 nPoints = length(t)-lastPoints+1;
                 
                 % if there are enough points, take last N points instead of full set
                 if nPoints > 0
                     xSubset = t(nPoints:end); 
                     y1 = y1(nPoints:end);
-                    % fit exponential curve to y1 and plot it
+                    % fit exponential curve to y1, the 1430 cm-1 peak, and plot it
                     result = curveFitting(xSubset, offset, y1, myColor, K, 1);
                     rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
                     ylim([0. 0.3]);
@@ -548,7 +560,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                     % take last N points instead of full segment
                     y2 = y2(end-lastPoints+1:end);          
 
-                    % fit exponential curve to y2 and plot it
+                    % fit exponential curve to y2, the 1702 cm-1 peak, and plot it
                     result = curveFitting(xSubset, offset, y2, myColor, K, 2);
                     rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
                     ylim([0. 0.3]);
@@ -631,7 +643,7 @@ function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
     j = f0;
 end
 
-function k = parseCurveFittingObject(gelOption, gel, series, pH, peak, f0)
+function k = parseCurveFittingObject(gelOption, gel, series, seg, peak, f0)
     global vals
     % 2020/2/8 since confidence intervals are inaccessible as fields, convert val to 
     % string and parse them out
@@ -679,18 +691,34 @@ function k = parseCurveFittingObject(gelOption, gel, series, pH, peak, f0)
         bLow = 0;
         bHigh = 0;
     end
-    pHStr = getPH(pH);
+    pHStr = getPH(seg);
     gelStr = getGel(gelOption);
     peakVal = getPeak(peak);
-    fprintf('%s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', gelStr, pH, pHStr, peakVal, ...
+    
+    % 2020/12/03 New: prepend with exponential model number
+    if f0.b < 0 
+        if f0.a > 0
+           modelNumber = 1;
+        else 
+           modelNumber = 2;
+        end
+    else
+        if f0.a > 0
+           modelNumber = 3;
+        else 
+           modelNumber = 4;
+        end
+    end
+    
+    fprintf('%d %s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f)\n', modelNumber, gelStr, seg, pHStr, peakVal, ...
         f0.a, aLow, aHigh, f0.b, bLow, bHigh);
     
-    vals(gel, series, pH, peak, 1) = f0.a;
-    vals(gel, series, pH, peak, 2) = aLow;
-    vals(gel, series, pH, peak, 3) = aHigh;
-    vals(gel, series, pH, peak, 4) = f0.b;
-    vals(gel, series, pH, peak, 5) = bLow;
-    vals(gel, series, pH, peak, 6) = bHigh;
+    vals(gel, series, seg, peak, 1) = f0.a; % 2020/12/02 why no segment dimension?
+    vals(gel, series, seg, peak, 2) = aLow;
+    vals(gel, series, seg, peak, 3) = aHigh;
+    vals(gel, series, seg, peak, 4) = f0.b;
+    vals(gel, series, seg, peak, 5) = bLow;
+    vals(gel, series, seg, peak, 6) = bHigh;
     
     k = 1;
 end
@@ -749,11 +777,12 @@ function q = plotVals()
     global black;
     global vals
     global nPoints;
+    global lastPoints;
 
     % compare all the pH 4  values: these are in pH= 2, 6, 9
     for peak = 1:2
         for coeff = 1:3:6
-            figure
+            FigH = figure('Position', get(0, 'Screensize'));
             switch peak
                 case 1
                     mySgTitle = sprintf('1430 cm-1 pk ');
@@ -772,7 +801,7 @@ function q = plotVals()
 %             for gel = 1:4
 %                 for series = 1:3
             for gel = 1:1 % for prelim
-                for series = 1:1 % for prelim
+                for series = 1:3 % for prelim
                     set(gca,'FontSize', 30); % this doesn't work
                     %subplot(4,3,(gel-1)*3 + series); not for prelim
 
@@ -781,6 +810,8 @@ function q = plotVals()
                     yPH4 = [vals(gel, series, 2, peak, coeff) ...
                         vals(gel, series, 6, peak, coeff) ...
                         vals(gel, series, 9, peak, coeff)];
+                    % 2020/12/01 New: average the pH4 values
+                    avgPH4(series) = mean(yPH4, 'all');
                     % error bars are relative to data point, not absolute,
                     % so need to convert them from absolute
                     negErr1 = vals(gel, series, 2, peak, coeff) - ...
@@ -804,11 +835,23 @@ function q = plotVals()
                     errorbar(xPH4, yPH4, negErrPH4, posErrPH4, '-o', 'Color', red);
                     hold on;
                     
+                    % New 2020/12/1 label the series and the average 
+                    myLabel = sprintf ("%d", series);
+                    text(xPH4(3)+0.1, yPH4(3), myLabel, 'Color', red, 'FontSize', 20);
+                    hold on;
+                    plot(9., avgPH4(series), '-o', 'Color', red);
+                    hold on;
+                    myLabel = sprintf("avg %d", series);
+                    text(9.1, avgPH4(series), myLabel, 'Color', red, 'FontSize', 20);
+                    hold on;
+                    
                     % pH 7
                     xPH7 = [ 1 4 8 ];
                     yPH7 = [vals(gel, series, 1, peak, coeff) ...
                         vals(gel, series, 4, peak, coeff) ...
                         vals(gel, series, 8, peak, coeff)];
+                    % 2020/12/01 New: average the pH7 values
+                    avgPH7(series) = mean(yPH7, 'all');
                     % error bars are relative to data point, not absolute,
                     % so need to convert them from absolute
                     negErr1 = vals(gel, series, 1, peak, coeff) - ...
@@ -832,11 +875,23 @@ function q = plotVals()
                     errorbar(xPH7, yPH7, negErrPH7, posErrPH7, '-o', 'Color', green);
                     hold on;
                     
+                    % New 2020/12/1 label the series
+                    myLabel = sprintf("avg %d", series);
+                    text(xPH7(3)+0.1, yPH7(3), myLabel, 'Color', green, 'FontSize', 20);
+                    hold on;
+                    plot(0., avgPH7(series), '-o', 'Color', green);
+                    hold on;
+                    myLabel = sprintf ("avg");
+                    text(9.1, avgPH7(series), myLabel, 'Color', green, 'FontSize', 20);
+                    hold on;
+                    
                     % pH 10
                     xPH10 = [ 3 5 7 ];
                     yPH10 = [vals(gel, series, 3, peak, coeff) ...
                         vals(gel, series, 5, peak, coeff) ...
                         vals(gel, series, 7, peak, coeff)];
+                    % 2020/12/01 New: average the pH10 values
+                    avgPH10(series) = mean(yPH10, 'all');
                     % error bars are relative to data point, not absolute,
                     % so need to convert them from absolute
                     negErr1 = vals(gel, series, 3, peak, coeff) - ...
@@ -858,16 +913,71 @@ function q = plotVals()
                     posErrPH10 = [posErr1 posErr2 posErr3];
                     %plot(xAllPH, yPH4, '-o');
                     errorbar(xPH10, yPH10, negErrPH10, posErrPH10, '-o', 'Color', blue);
-                    %myTitle = sprintf('gel %d series %d', gel, series);
-                    myTitle = sprintf('alginate gel12 punch1 using last %d points of each segment', nPoints);
-                    title(myTitle(gelOption),'FontSize',30);
+                    
+                    % New 2020/12/1 label the series
+                    myLabel = sprintf("avg %d", series);
+                    text(xPH10(3)+0.1, yPH10(3), myLabel, 'Color', blue, 'FontSize', 20);
+                    hold on;
+                    plot(9., avgPH10(series), '-o', 'Color', blue);
+                    hold on;
+                    myLabel = sprintf ("avg");
+                    text(9.1, avgPH10(series), myLabel, 'Color', blue, 'FontSize', 20);
+                    hold on;
+                    
+                    myTitle = sprintf('gel %d all series using last %d points of each segment', gel, lastPoints);
+                    %myTitle = sprintf('alginate gel12 punch1 using last %d points of each segment', lastPoints);
+                    title(myTitle,'FontSize',30);
                     set(gca,'FontSize', 30); % this works
                     xlim([0 10]);
                     xlabel('pH buffer segment', 'FontSize', 30);
                     ylabel(mySgTitle, 'FontSize', 30);
                 end
+                % 2020/12/01 New: average over all series
+                overallAvgPH4(gel, peak, coeff) = mean(avgPH4, 'all');
+                overallAvgPH7(gel, peak, coeff) = mean(avgPH7, 'all');
+                overallAvgPH10(gel, peak, coeff) = mean(avgPH10, 'all');
+                plot(10., overallAvgPH4(gel, coeff), '-o', 'Color', red);
+                hold on;
+                myLabel = sprintf ("AVG");
+                text(10.1, overallAvgPH4(gel, peak, coeff), myLabel, 'Color', red, 'FontSize', 20);
+                hold on;
+                plot(10., overallAvgPH7(gel, peak, coeff), '-o', 'Color', green);
+                hold on;
+                myLabel = sprintf ("AVG");
+                text(10.1, overallAvgPH7(gel, peak, coeff), myLabel, 'Color', green, 'FontSize', 20);
+                hold on;
+                plot(10., overallAvgPH10(gel, peak, coeff), '-o', 'Color', blue);
+                hold on;
+                myLabel = sprintf ("AVG");
+                text(10.1, overallAvgPH10(gel, peak, coeff), myLabel, 'Color', blue, 'FontSize', 20);
+                hold on;
+                
+                % 2020/12/01 New: save to file
+                saveMyPlot(FigH, myTitle);
             end
         end
+        % 2020/12/02 New: draw the logarithmic curve using the 
+        % overall average values, eg. y = a + b*log(x) 
+        FigH = figure('Position', get(0, 'Screensize'));
+        % do I need to set x array?
+        x = logspace(-1,2);
+
+        y1 = overallAvgPH4(1, peak, 1) + overallAvgPH4(1, peak, 4) * x;
+        y2 = overallAvgPH7(1, peak, 1) + overallAvgPH7(1, peak, 4) * x;
+        y3 = overallAvgPH10(1, peak, 1) + overallAvgPH10(1, peak, 4) * x;
+        lineThickness = 2;
+        if peak == 1
+            title('1430 cm-1 peak');
+        else
+            title('1702 cm-1 peak');
+        end
+        semilogx(x, y1,'-o', 'Color', red, 'LineWidth', lineThickness);
+        hold on;
+        semilogx(x, y2,'-o', 'Color', green, 'LineWidth', lineThickness);
+        hold on;
+        semilogx(x, y3,'-o', 'Color', blue, 'LineWidth', lineThickness);
+        hold on;
+        saveMyPlot(FigH, myTitle);
     end
     q = 1;
 end
@@ -911,4 +1021,13 @@ function s = printSpeedVals()
         end
     end
    s = 1;
+end
+
+function g = saveMyPlot(FigH, myTitle)
+    dirStem = "C:\Users\karen\Documents\Data\";
+    subDir = "Plots\";
+    plotDirStem = sprintf("%s%s", dirStem, subDir);
+    myPlotName = sprintf('%s%s', plotDirStem, myTitle);
+    saveas(FigH, myPlotName, 'png');
+    g = 1;
 end
