@@ -153,7 +153,7 @@ for gelOption = 1:12 % 20210106
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 15\";
         tRef = datenum(2020, 3, 14, 21, 22, 41);
         gel = 2; series = 2;
-      case 6 % PEG time series 3
+      case 6 % PEG time series 3 20210107 errors with 20 pts, +/-1000
         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\punch1 flowcell all\";
         tRef = datenum(2020, 3, 17, 15, 38, 43);
         gel = 2; series = 3;
@@ -541,7 +541,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
             % Then do the curve fitting and overlay the result
             % throw away the transitioning part of the segment and just
             % take the end of the segment when steady state occurs
-            lastPoints = 20; % CHANGE THIS NUMBER
+            lastPoints = 29; % CHANGE THIS NUMBER
             nPoints = length(t)-lastPoints+1;
 
             % if there are enough points, take last N points instead of full set
@@ -551,7 +551,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                 y1 = y1(nPoints:end);
                 % redraw the portion of the curve that is used to build
                 % the model in black 
-                result = curveFitting(xSubset, offset, y1, black, K, 1);
+                result = curveFitting(xSubset, offset, y1, black, gel, series, K, 1);
                 rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
 %                ylim([0. 0.3]);
                 hold on;   
@@ -560,7 +560,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                 y2 = y2(end-lastPoints+1:end);          
                 % redraw the portion of the curve that is used to build
                 % the model in black 
-                result = curveFitting(xSubset, offset, y2, black, K, 2);
+                result = curveFitting(xSubset, offset, y2, black, gel, series, K, 2);
                 rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
 %                ylim([0. 0.3]);
                 hold on;
@@ -601,7 +601,7 @@ function h = localPeak(range)
     h = max(range);
 end
 
-function j = curveFitting(t, offset, y, myColor, myIter, mySubIter)
+function j = curveFitting(t, offset, y, myColor, gel, series, myIter, mySubIter)
 global black
 % To avoid this error: "NaN computed by model function, fitting cannot continue.
 % Try using or tightening upper and lower bounds on coefficients.", do not set
@@ -717,12 +717,22 @@ global black
     % Can I narrow them to +/- 1000?
     %      Lower     - A vector of lower bounds on the coefficients to be fitted
     %                  [{[]} | vector of length the number of coefficients]
-    % lower = [-inf -inf -inf ]; % 2020/12/30 new add 3rd value for 'c'
-    lower = [-5000 -5000 -5000 ]; %2021/1/7 to fix pb with pHEMA3-5-1702
     %      Upper     - A vector of upper bounds on the coefficients to be fitted
     %                  [{[]} | vector of length the number of coefficients]
-    % upper = [inf inf inf]; % 2020/12/30 new add 3rd value for 'c'
-    upper = [5000 5000 5000 ]; %2021/1/7 to fix pb with pHEMA3-5-1702
+    if gel == 4 && series == 3
+        % Use +/-inf for pHEMA series 3
+        lower = [-inf -inf -inf ]; % 2020/12/30 new add 3rd value for 'c'
+        upper = [inf inf inf]; % 2020/12/30 new add 3rd value for 'c'
+    else
+        if gel == 2 && series == 3
+            lower = [-10000 -10000 -10000 ];
+            upper = [10000 10000 10000 ];      
+        else
+            % Use +/-1000 for all the rest
+            lower = [-1000 -1000 -1000 ]; %2021/1/7 to fix pb with pHEMA3-5-1702
+            upper = [1000 1000 1000 ];    %2021/1/7 to fix pb with pHEMA3-5-1702
+        end
+    end
     % 2020/12/30 new error re: # start points, try without it
     f0 = fit(xCurve, yCurve, g, 'StartPoint', startPoint, 'Lower', lower, 'Upper', upper);
     % this runs but without start point, it chooses an arbitray one
@@ -825,43 +835,98 @@ function k = parseCurveFittingObject(gelOption, gel, series, pH, peak, f0)
     end
     
     % For case of fittype e^-t/RC ONLY,
-    % confidence intervals are in segments(5) and (6)
-    if length(segments) == 6
-        remain = segments(5);
-        [aLow,remain] = strtok(remain, ',');
-        % remain contains the ',' and a space and THEN value we want
-        [comma,remain] = strtok(remain);
-        [aHigh,remain] = strtok(remain, ')');
-        % now aLow and aHigh are correct, but string type
-        aLow = double(aLow);
-        aHigh = double(aHigh);
-    
-        remain = segments(6);
-        [bLow,remain] = strtok(remain, ',');
-    	% remain contains the ',' and a space and THEN value we want
-        [comma,remain] = strtok(remain);
-        [bHigh,remain] = strtok(remain, ')');
-        % now bLow and bHigh are correct, but string type
-        aLow = double(aLow);
-        aHigh = double(aHigh);
-        bLow = double(bLow);
-        bHigh = double(bHigh);
+    % a's confidence intervals are in segments(5)
+    % b's confidence intervals are in segments(6)
+    % c's confidence intervals are in segments(7)
+    switch length(segments)
+        case 5
+            fprintf('5');
+            aLow = 0;
+            aHigh = 0;
+            bLow = 0;
+            bHigh = 0;
+            remain = segments(5);
+            [cLow,remain] = strtok(remain, ',');
+            % remain contains the ',' and a space and THEN value we want
+            [comma,remain] = strtok(remain);
+            [cHigh,remain] = strtok(remain, ')');
+            % now cLow and cHigh are correct, but string type
+            cLow = double(cLow);
+            cHigh = double(cHigh);
+        case 6
+            fprintf('6');
+            aLow = 0;
+            aHigh = 0;
+            bLow = 0;
+            bHigh = 0;
+            cLow = 0;
+            cHigh = 0;
+        case 7
+            remain = segments(5);
+            [aLow,remain] = strtok(remain, ',');
+            % remain contains the ',' and a space and THEN value we want
+            [comma,remain] = strtok(remain);
+            [aHigh,remain] = strtok(remain, ')');
+            % now aLow and aHigh are correct, but string type
+            aLow = double(aLow);
+            aHigh = double(aHigh);
+
+            remain = segments(6);
+            [bLow,remain] = strtok(remain, ',');
+            % remain contains the ',' and a space and THEN value we want
+            [comma,remain] = strtok(remain);
+            [bHigh,remain] = strtok(remain, ')');
+            % now bLow and bHigh are correct, but string type
+            bLow = double(bLow);
+            bHigh = double(bHigh);
+
+            remain = segments(7);
+            [cLow,remain] = strtok(remain, ',');
+            % remain contains the ',' and a space and THEN value we want
+            [comma,remain] = strtok(remain);
+            [cHigh,remain] = strtok(remain, ')');
+            % now cLow and cHigh are correct, but string type
+            cLow = double(cLow);
+            cHigh = double(cHigh);
+        case 8
+            % For case of fittype 1-e^-t/RC,
+            % confidence intervals are NOT in segments(5) and (6)
+            % and segments array only has 4 elements
+            % 20210108 this is not true. fix it and add c's high and low
+            remain = segments(6);
+            [aLow,remain] = strtok(remain, ',');
+            % remain contains the ',' and a space and THEN value we want
+            [comma,remain] = strtok(remain);
+            [aHigh,remain] = strtok(remain, ')');
+            % now aLow and aHigh are correct, but string type
+            aLow = double(aLow);
+            aHigh = double(aHigh);
+
+            remain = segments(7);
+            [bLow,remain] = strtok(remain, ',');
+            % remain contains the ',' and a space and THEN value we want
+            [comma,remain] = strtok(remain);
+            [bHigh,remain] = strtok(remain, ')');
+            % now bLow and bHigh are correct, but string type
+            bLow = double(bLow);
+            bHigh = double(bHigh);
+
+            remain = segments(8);
+            [cLow,remain] = strtok(remain, ',');
+            % remain contains the ',' and a space and THEN value we want
+            [comma,remain] = strtok(remain);
+            [cHigh,remain] = strtok(remain, ')');
+            % now cLow and cHigh are correct, but string type
+            cLow = double(cLow);
+            cHigh = double(cHigh);   
         
-        % 2020/2/27 need to check these for invalid CI
-    else
-        % For case of fittype 1-e^-t/RC,
-        % confidence intervals are NOT in segments(5) and (6)
-        % and segments array only has 4 elements
-        aLow = 0;
-        aHigh = 0;
-        bLow = 0;
-        bHigh = 0;
     end
     pHStr = getPH(pH);
     gelStr = getGel(gelOption);
     peakVal = getPeak(peak);
-    fprintf('%s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f) c = %f\n', gelStr, pH, pHStr, peakVal, ...
-        f0.a, aLow, aHigh, f0.b, bLow, bHigh, f0.c);
+    fprintf('%s-%d-%s-%d: a=%f (%f, %f), b=%f (%f, %f) tau = %f, c = %f (%f, %f)\n', ...
+        gelStr, pH, pHStr, peakVal,f0.a, aLow, aHigh, ...
+        f0.b, bLow, bHigh, (1.0/f0.b), f0.c, cLow, cHigh);
     
     vals(gel, series, pH, peak, 1) = f0.a;
     vals(gel, series, pH, peak, 2) = aLow;
@@ -869,7 +934,9 @@ function k = parseCurveFittingObject(gelOption, gel, series, pH, peak, f0)
     vals(gel, series, pH, peak, 4) = f0.b;
     vals(gel, series, pH, peak, 5) = bLow;
     vals(gel, series, pH, peak, 6) = bHigh;
-    
+    vals(gel, series, pH, peak, 7) = f0.c;
+    vals(gel, series, pH, peak, 8) = cLow;
+    vals(gel, series, pH, peak, 9) = cHigh;
     k = 1;
 end
 
@@ -948,10 +1015,8 @@ function q = plotVals()
             
             % sgtitle(mySgTitle); not for prelim
 
-%             for gel = 1:4
-%                 for series = 1:3
-            for gel = 1:1 % for prelim
-                for series = 1:1 % for prelim
+            for gel = 1:4
+                for series = 1:3
                     set(gca,'FontSize', 30); % this doesn't work
                     %subplot(4,3,(gel-1)*3 + series); not for prelim
 
