@@ -1,59 +1,128 @@
 % Dayle Kotturi January 2021
 
-    %% kdk: Clear previous plots
+%% kdk: Clear previous plots
 
-    close all
+close all
 
-    taus1430 = [];
-    taus1702 = [];
-    global tally;
-    % 0-1, 1-10, 10-100, 100-1000, >1000
-    tally = [0, 0, 0, 0, 0, 0; ... 
-             0, 0, 0, 0, 0, 0]; 
-    
-    for gel = 1:4 % all gel types
-        for series = 1:3 % all series for each gel
-            for K = 1:9 % all pH segments in each series
-                tau1430 = 1.0/(vals(gel, series, K, 1, 4));
-                addToTally(tau1430, 1);
-                taus1430 = [taus1430; tau1430];
-                
-                tau1702 = 1/(vals(gel, series, K, 2, 4));
-                taus1702 = [taus1702; tau1702];
-                addToTally(tau1702, 2);
+taus1430 = [];
+taus1702 = [];
+global tally
+global tallyByGel
+
+% 0-1, 1-10, 10-100, 100-1000, >1000
+tally = [0, 0, 0, 0, 0, 0; ... 
+         0, 0, 0, 0, 0, 0]; 
+
+for gel = 1:4 % all gel types
+    for series = 1:3 % all series for each gel
+        for K = 1:9 % all pH segments in each series
+            tau1430 = 1.0/(vals(gel, series, K, 1, 4));
+            addToTally(tau1430, 1);
+            taus1430 = [taus1430; tau1430];
+
+            tau1702 = 1/(vals(gel, series, K, 2, 4));
+            taus1702 = [taus1702; tau1702];
+            addToTally(tau1702, 2);
+        end
+    end
+end
+
+FigH = figure('Position', get(0, 'Screensize'));
+histogram(abs(taus1430), 1000);
+title('Distribution of tau over gels, series and segments', 'FontSize', myTitleFont);
+xlabel('Time (hours)', 'FontSize', myLabelFont); % x-axis label
+ylabel('Number of time constants for 1430 cm-1 peak', 'FontSize', myLabelFont); % y-axis label
+saveMyPlot(FigH, 'taus for 1430 peak');
+
+FigH = figure('Position', get(0, 'Screensize'));
+histogram(abs(taus1702), 1000);
+title('Distribution of tau over gels, series and segments', 'FontSize', myTitleFont);
+xlabel('Time (hours)', 'FontSize', myLabelFont); % x-axis label
+ylabel('Number of time constants for 1702 cm-1 peak', 'FontSize', myLabelFont); % y-axis label
+saveMyPlot(FigH, 'taus for 1702 peak');
+
+FigH = figure('Position', get(0, 'Screensize'));
+tallyGroups = [tally(1,1), tally(2,1); tally(1,2), tally(2,2); ...
+    tally(1,3), tally(2,3); tally(1,4), tally(2,4); tally(1,5), ...
+    tally(2,5); tally(1,6), tally(2,6);];
+a = bar(tallyGroups, 'FaceColor','w');
+fillBarsWithHatchedLines(a, tallyGroups);
+
+title('Distribution of tau over gels, series and segments', 'FontSize', myTitleFont);
+xlabel('Value of Tau (hr)', 'FontSize', myLabelFont); % x-axis label
+ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
+fname = {'<1';'<10';'<100';'<1000';'<10000';'>=10000'};
+set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
+set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
+saveMyPlot(FigH, 'distribution of combined taus');
+
+taus1 = [];
+taus2 = [];
+taus3 = [];
+taus4 = [];
+% 0-1, 1-10, 10-100, 100-1000, >1000
+tallyByGel = [0, 0, 0, 0, 0, 0; ... 
+         0, 0, 0, 0, 0, 0; ...
+         0, 0, 0, 0, 0, 0; ... 
+         0, 0, 0, 0, 0, 0]; 
+for gel = 1:4 % one gel at a time, the 1430 peak only
+    for series = 1:3 % all series for each gel
+        for K = 1:9 % all pH segments in each series
+            switch gel
+                case 1
+                    tau = 1.0/(vals(gel, series, K, 1, 4));
+                    addToTallyByGel(tau, gel, 1);
+                    tau = 1.0/(vals(gel, series, K, 2, 4));
+                    addToTallyByGel(tau, gel, 2);
+%                     taus1 = [taus1; tau];
+                case 2
+                    tau = 1.0/(vals(gel, series, K, 1, 4));
+                    addToTallyByGel(tau, gel, 1);
+%                     taus2 = [taus2; tau];
+                    tau = 1.0/(vals(gel, series, K, 2, 4));
+                    addToTallyByGel(tau, gel, 2);
+                case 3
+                    tau = 1.0/(vals(gel, series, K, 1, 4));
+                    addToTallyByGel(tau, gel, 1);
+%                     taus3 = [taus3; tau];
+                    tau = 1.0/(vals(gel, series, K, 2, 4));
+                    addToTallyByGel(tau, gel, 2);
+                case 4
+                    tau = 1.0/(vals(gel, series, K, 1, 4));
+                    addToTallyByGel(tau, gel, 1);
+%                     taus4 = [taus4; tau];
+                    tau = 1.0/(vals(gel, series, K, 2, 4));
+                    addToTallyByGel(tau, gel, 2);
             end
         end
     end
     
     FigH = figure('Position', get(0, 'Screensize'));
-    histogram(abs(taus1430), 1000);
-    title('Distribution of tau over gels, series and segments', 'FontSize', myTitleFont);
-    xlabel('Time (hours)', 'FontSize', myLabelFont); % x-axis label
-    ylabel('Number of time constants for 1430 cm-1 peak', 'FontSize', myLabelFont); % y-axis label
-    saveMyPlot(FigH, 'taus for 1430 peak');
-    
-    FigH = figure('Position', get(0, 'Screensize'));
-    histogram(abs(taus1702), 1000);
-    title('Distribution of tau over gels, series and segments', 'FontSize', myTitleFont);
-    xlabel('Time (hours)', 'FontSize', myLabelFont); % x-axis label
-    ylabel('Number of time constants for 1702 cm-1 peak', 'FontSize', myLabelFont); % y-axis label
-    saveMyPlot(FigH, 'taus for 1702 peak');
-    
-    FigH = figure('Position', get(0, 'Screensize'));
-    tallyGroups = [tally(1,1), tally(2,1); tally(1,2), tally(2,2); ...
-        tally(1,3), tally(2,3); tally(1,4), tally(2,4); tally(1,5), ...
-        tally(2,5); tally(1,6), tally(2,6);];
-    a = bar(tallyGroups, 'FaceColor','w');
-    fillBarsWithHatchedLines(a, tallyGroups);
-
-    title('Distribution of tau over gels, series and segments', 'FontSize', myTitleFont);
+    switch gel
+        case 1
+            a = bar(tallyByGel(1,:,:), 'FaceColor','w');
+            fillBarsWithHatchedLines(a, tallyByGel(1,:));
+            title('Alginate: distribution of tau over series and segments', 'FontSize', myTitleFont);
+        case 2
+            a = bar(tallyByGel(2,:,:), 'FaceColor','w');
+            fillBarsWithHatchedLines(a, tallyByGel(2,:));
+            title('PEG: distribution of tau over series and segments', 'FontSize', myTitleFont);
+        case 3
+            a = bar(tallyByGel(3,:,:), 'FaceColor','w');
+            fillBarsWithHatchedLines(a, tallyByGel(3,:));
+            title('pHEMA: distribution of tau over series and segments', 'FontSize', myTitleFont);
+        case 4
+            a = bar(tallyByGel(4,:,:), 'FaceColor','w');
+            fillBarsWithHatchedLines(a, tallyByGel(4,:));
+            title('pHEMA/coA: distribution of tau over series and segments', 'FontSize', myTitleFont);
+    end
     xlabel('Value of Tau (hr)', 'FontSize', myLabelFont); % x-axis label
     ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
-    saveMyPlot(FigH, 'taus for 1702 peak');
     fname = {'<1';'<10';'<100';'<1000';'<10000';'>=10000'};
     set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
     set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
     saveMyPlot(FigH, 'distribution of combined taus');
+end
 %end main portion
 
 function a = addToTally(tau, row)
@@ -70,7 +139,38 @@ global tally;
                 if tau < 1000.0
                     tally(row, 4) = tally(row, 4) + 1;
                 else
-                    tally(row, 6) = tally(row, 5) + 1;
+                    if tau < 10000.0
+                        tally(row, 5) = tally(row, 5) + 1;
+                    else
+                        tally(row, 6) = tally(row, 6) + 1;
+                    end
+                end
+            end
+        end
+    end                 
+    a = 1;
+end
+
+function a = addToTallyByGel(tau, gel, peak)
+global tallyByGel
+
+    if tau < 1.0
+        tallyByGel(gel, 1, peak) = tallyByGel(gel, 1, peak) + 1;
+    else 
+        if tau < 10.0
+            tallyByGel(gel, 2, peak) = tallyByGel(gel, 2, peak) + 1;
+        else
+            if tau < 100.0
+                tallyByGel(gel, 3, peak) = tallyByGel(gel, 3, peak) + 1;
+            else
+                if tau < 1000.0
+                    tallyByGel(gel, 4, peak) = tallyByGel(gel, 4, peak) + 1;
+                else
+                    if tau < 10000.0
+                        tallyByGel(gel, 5, peak) = tallyByGel(gel, 5, peak) + 1;
+                    else
+                        tallyByGel(gel, 6, peak) = tallyByGel(gel, 6, peak) + 1;
+                    end
                 end
             end
         end
