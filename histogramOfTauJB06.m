@@ -61,7 +61,11 @@ taus2 = [];
 taus3 = [];
 taus4 = [];
 % 0-1, 1-10, 10-100, 100-1000, >1000
-tallyByGel = [0, 0, 0, 0, 0, 0; ... 
+tallyByGel(:,:,1) = [0, 0, 0, 0, 0, 0; ... 
+         0, 0, 0, 0, 0, 0; ...
+         0, 0, 0, 0, 0, 0; ... 
+         0, 0, 0, 0, 0, 0]; 
+tallyByGel(:,:,2) = [0, 0, 0, 0, 0, 0; ... 
          0, 0, 0, 0, 0, 0; ...
          0, 0, 0, 0, 0, 0; ... 
          0, 0, 0, 0, 0, 0]; 
@@ -100,20 +104,28 @@ for gel = 1:4 % one gel at a time, the 1430 peak only
     FigH = figure('Position', get(0, 'Screensize'));
     switch gel
         case 1
-            a = bar(tallyByGel(1,:,:), 'FaceColor','w');
-            fillBarsWithHatchedLines(a, tallyByGel(1,:));
+            myArray = tallyByGel(1,:,:);
+            myArray = reshape(myArray,6,2);
+            a = bar(myArray, 'FaceColor','w');
+            fillBarsWithHatchedLines(a, myArray);
             title('Alginate: distribution of tau over series and segments', 'FontSize', myTitleFont);
         case 2
-            a = bar(tallyByGel(2,:,:), 'FaceColor','w');
-            fillBarsWithHatchedLines(a, tallyByGel(2,:));
+            myArray = tallyByGel(2,:,:);
+            myArray = reshape(myArray,6,2);
+            a = bar(myArray, 'FaceColor','w');
+            fillBarsWithHatchedLines(a, myArray);
             title('PEG: distribution of tau over series and segments', 'FontSize', myTitleFont);
         case 3
-            a = bar(tallyByGel(3,:,:), 'FaceColor','w');
-            fillBarsWithHatchedLines(a, tallyByGel(3,:));
+            myArray = tallyByGel(3,:,:);
+            myArray = reshape(myArray,6,2);
+            a = bar(myArray, 'FaceColor','w');
+            fillBarsWithHatchedLines(a, myArray);
             title('pHEMA: distribution of tau over series and segments', 'FontSize', myTitleFont);
         case 4
-            a = bar(tallyByGel(4,:,:), 'FaceColor','w');
-            fillBarsWithHatchedLines(a, tallyByGel(4,:));
+            myArray = tallyByGel(4,:,:);
+            myArray = reshape(myArray,6,2);
+            a = bar(myArray, 'FaceColor','w');
+            fillBarsWithHatchedLines(a, myArray);
             title('pHEMA/coA: distribution of tau over series and segments', 'FontSize', myTitleFont);
     end
     xlabel('Value of Tau (hr)', 'FontSize', myLabelFont); % x-axis label
