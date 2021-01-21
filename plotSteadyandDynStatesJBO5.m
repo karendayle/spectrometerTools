@@ -1,3 +1,5 @@
+% CHOOSE ONE OF THESE two options for error bars (near line 250)
+
 % RGB
 global blue;
 global rust;
@@ -228,7 +230,15 @@ ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 % Repeat for pH4 and pH7
-for jj = 4:3:7
+for pHLoop = 1:2
+    switch pHLoop
+        case 1 % pH 4
+            jj = 4; % used to retrieve the dynamic pH4 values
+            index = 1; % used to index into the static pH4 values
+        case 2 % pH 7
+            jj = 7; % used to retrieve the dynamic pH7 values
+            index = 7; % used to index into the static pH7 values
+    end
     % 2020/11/25 kdk this is the magic needed to be able to save a 
     % figure that needs full screen to display correctly.
     % Without this, what gets saved to file (later in saveMyPlot) is
@@ -240,15 +250,15 @@ for jj = 4:3:7
     [yDyn(4), errDyn(4)] = buildArrayForBars(4, jj);
     
     % put static vals on LHS of each pair
-    yBar = [myAlgY1allPunches(jj) yDyn(1); myPEGY1allPunches(jj) yDyn(2); ...
-        myHEMAY1allPunches(jj) yDyn(3); myHEMACoY1allPunches(jj) yDyn(4)];
+    yBar = [myAlgY1allPunches(index) yDyn(1); myPEGY1allPunches(index) yDyn(2); ...
+        myHEMAY1allPunches(index) yDyn(3); myHEMACoY1allPunches(index) yDyn(4)];
     
     % CHOOSE ONE OF THESE two options for error bars:
     myErrorBars = 1;
     if myErrorBars == 1
         % 1) StdDev
-        yErr = [myAlgY1allPunchesStdDev(jj) errDyn(1); myPEGY1allPunchesStdDev(jj) errDyn(2); ...
-            myHEMAY1allPunchesStdDev(jj) errDyn(3); myHEMACoY1allPunchesStdDev(jj) errDyn(4)];
+        yErr = [myAlgY1allPunchesStdDev(index) errDyn(1); myPEGY1allPunchesStdDev(index) errDyn(2); ...
+            myHEMAY1allPunchesStdDev(index) errDyn(3); myHEMACoY1allPunchesStdDev(index) errDyn(4)];
     else
         if myErrorBars == 2
             % 2) 95% CIs
@@ -257,10 +267,14 @@ for jj = 4:3:7
             nStat = 5; % should be > 30 or normal dist
             nDyn = 9; % should be > 30 or normal dist
             % 95% CI = avg +/ zStar * std dev/sqrt(n)
-            yErrStat1 = myAlgY1allPunches(jj) + zStar*myAlgY1allPunchesStdDev(jj)/sqrt(nStat);
-            yErrStat2 = myPEGY1allPunches(jj) + zStar*myPEGY1allPunchesStdDev(jj)/sqrt(nStat);
-            yErrStat3 = myHEMAY1allPunches(jj) + zStar*myHEMAY1allPunchesStdDev(jj)/sqrt(nStat);
-            yErrStat4 = myHEMACoY1allPunches(jj) + zStar*myHEMACoY1allPunchesStdDev(jj)/sqrt(nStat);
+            yErrStat1 = myAlgY1allPunches(index) + ... 
+                zStar*myAlgY1allPunchesStdDev(index)/sqrt(nStat);
+            yErrStat2 = myPEGY1allPunches(index) + ...
+                zStar*myPEGY1allPunchesStdDev(index)/sqrt(nStat);
+            yErrStat3 = myHEMAY1allPunches(index) + ...
+                zStar*myHEMAY1allPunchesStdDev(index)/sqrt(nStat);
+            yErrStat4 = myHEMACoY1allPunches(index) + ...
+                zStar*myHEMACoY1allPunchesStdDev(index)/sqrt(nStat);
             yErrDyn1 = yDyn(1) + zStar*errDyn(1)/sqrt(nDyn);
             yErrDyn2 = yDyn(2) + zStar*errDyn(2)/sqrt(nDyn);
             yErrDyn3 = yDyn(3) + zStar*errDyn(3)/sqrt(nDyn);
