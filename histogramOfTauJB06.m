@@ -8,6 +8,8 @@ taus1430 = [];
 taus1702 = [];
 global tally
 global tallyByGel
+global autoSave
+autosave = 0; % 1 to save plots to files, 0 to do this manually
 
 % 0-1, 1-10, 10-100, 100-1000, >1000
 tally = [0, 0, 0, 0, 0, 0; ... 
@@ -27,21 +29,37 @@ for gel = 1:4 % all gel types
     end
 end
 
-FigH = figure('Position', get(0, 'Screensize'));
+if autoSave
+    FigH = figure('Position', get(0, 'Screensize'));
+else
+    figure
+end
 histogram(abs(taus1430), 1000);
 title('Distribution of tau over gels, series and segments', 'FontSize', myTitleFont);
 xlabel('Time (hours)', 'FontSize', myLabelFont); % x-axis label
 ylabel('Number of time constants for 1430 cm-1 peak', 'FontSize', myLabelFont); % y-axis label
-saveMyPlot(FigH, 'taus for 1430 peak');
+if autoSave
+    saveMyPlot(FigH, 'taus for 1430 peak');
+end
 
-FigH = figure('Position', get(0, 'Screensize'));
+if autoSave
+    FigH = figure('Position', get(0, 'Screensize'));
+else
+    figure
+end
 histogram(abs(taus1702), 1000);
 title('Distribution of tau over gels, series and segments', 'FontSize', myTitleFont);
 xlabel('Time (hours)', 'FontSize', myLabelFont); % x-axis label
 ylabel('Number of time constants for 1702 cm-1 peak', 'FontSize', myLabelFont); % y-axis label
-saveMyPlot(FigH, 'taus for 1702 peak');
+if autoSave
+    saveMyPlot(FigH, 'taus for 1702 peak');
+end
 
-FigH = figure('Position', get(0, 'Screensize'));
+if autoSave
+    FigH = figure('Position', get(0, 'Screensize'));
+else
+    figure
+end
 tallyGroups = [tally(1,1), tally(2,1); tally(1,2), tally(2,2); ...
     tally(1,3), tally(2,3); tally(1,4), tally(2,4); tally(1,5), ...
     tally(2,5); tally(1,6), tally(2,6);];
@@ -54,7 +72,9 @@ ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
 fname = {'<1';'<10';'<100';'<1000';'<10000';'>=10000'};
 set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
 set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
-saveMyPlot(FigH, 'distribution of combined taus');
+if autoSave
+    saveMyPlot(FigH, 'distribution of combined taus');
+end
 
 taus1 = [];
 taus2 = [];
@@ -101,7 +121,11 @@ for gel = 1:4 % one gel at a time, the 1430 peak only
         end
     end
     
-    FigH = figure('Position', get(0, 'Screensize'));
+    if autoSave
+        FigH = figure('Position', get(0, 'Screensize'));
+    else
+        figure
+    end
     switch gel
         case 1
             myArray = tallyByGel(1,:,:);
@@ -133,7 +157,10 @@ for gel = 1:4 % one gel at a time, the 1430 peak only
     fname = {'<1';'<10';'<100';'<1000';'<10000';'>=10000'};
     set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
     set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
-    saveMyPlot(FigH, 'distribution of combined taus');
+    myTitle = sprintf('taus for gel %d', gel);
+    if autoSave
+        saveMyPlot(FigH, myTitle);
+    end
 end
 %end main portion
 
@@ -245,6 +272,6 @@ function g = saveMyPlot(FigH, myTitle)
     subDir = "Plots\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);
     myPlotName = sprintf('%s%s', plotDirStem, myTitle);
-    saveas(FigH, myPlotName, 'png');
+    saveas(FigH, myPlotName, 'jpg');
     g = 1;
 end
