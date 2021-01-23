@@ -72,13 +72,21 @@ subDirStem = [ ...
     "pH7 punch", "pH7.5 punch" ...
     ];
 
-figure
+
 for gel = 1:4
+    FigH = figure('Position', get(0, 'Screensize'));
     for pHLevel = 1:8
         % read the dark and 25 raw spectra
         myColor = red;
-        prepPlotData(gel, pHLevel, myColor);
+        totalNum = prepPlotData(gel, pHLevel, myColor);
+        fprintf('gel%d, pH%f: avg and std dev calculated from %d spectra\n', ...
+            gel, pH(pHLevel), totalNum);
     end
+    xlabel('pH level'); % x-axis label
+    ylabel('Normalized Intensity (A.U.)'); % y-axis label
+    set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
+    myTitle = sprintf('gel%d', gel);
+    saveMyPlot(FigH, myTitle);
 end
 % TO DO: add title, labels
 
@@ -113,7 +121,9 @@ function g = prepPlotData(J, K, myColor)
     sumSq1 = 0;
     sumSq2 = 0;
     thisdata = zeros(2, numPoints, 'double');
+    numberOfSpectraAllPunches = 0;
     
+    % Important: this avg and std dev calculation is over all 5 punches,
     for punch = 1:5
         subDir = sprintf('%s%d/1/', subDirStem(K), punch);
         dir_to_search = dirStem(J) + subDir; % this seems to work in 2019
@@ -122,6 +132,10 @@ function g = prepPlotData(J, K, myColor)
 
         numberOfSpectra = length(dinfo);
         if numberOfSpectra > 0
+            if numberOfSpectra > 25
+                fprintf('punch%d has %d spectra\n', punch, numberOfSpectra);
+            end
+            numberOfSpectraAllPunches = numberOfSpectraAllPunches + numberOfSpectra;
             % first pass on dataset, to get array of average spectra
             for I = 1 : numberOfSpectra
                 thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
@@ -160,93 +174,96 @@ function g = prepPlotData(J, K, myColor)
                 sum1 = sum1 + normalized1;
                 sum2 = sum2 + normalized2;
             end
-
-            % calculate average
-            avg1 = sum1/numberOfSpectra;
-            avg2 = sum2/numberOfSpectra;
-
-            % second pass on dataset to get (each point - average)^2
-            % for standard deviation, need 
-            for I = 1 : numberOfSpectra
-                thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-                fileID = fopen(thisfilename,'r');
-                [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
-                fclose(fileID);
-
-                % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
-                % REFERENCE INDEX
-
-                % 1. Correct the baseline BEFORE calculating denominator + normalizing
-                % Returns trend as 'e' and baseline corrected signal as 'f'
-                [e, f] = correctBaseline(thisdata(2,:)');  
-
-                % 1.5 Only consider a narrow band of the spectrum 
-                numerator1 = getAreaUnderCurve(x1, f(:));
-                numerator2 = getAreaUnderCurve(x2, f(:));   
-                % 2. Ratiometric
-                % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
-                % on either side of refWaveNumber. This maps to: 1 - 11 total
-                % intensities used to calculate the denominator.
-                if (xRef ~= 0) 
-                    denominator = getAreaUnderCurve(xRef, f(:));
-                else
-                    denominator = 1;
-                end
-                if myDebug
-                    fprintf('denominator = %g at index: %d\n', denominator1, xRef);
-                end
-
-                % 3. Normalize what is plotted
-                normalized1 = numerator1/denominator;
-                normalized2 = numerator2/denominator;
-
-                % 4. Add to the sum of the squares
-                sumSq1 = sumSq1 + (normalized1 - avg1).^2; 
-                sumSq2 = sumSq2 + (normalized2 - avg2).^2; 
-            end
         end
+    end % first pass for all five punches
         
-        % 5. Compute standard deviation at each index of the averaged spectra 
-        stdDev1 = sqrt(sumSq1/numberOfSpectra);
-        stdDev2 = sqrt(sumSq2/numberOfSpectra);
+    % calculate average
+    avg1 = sum1/numberOfSpectraAllPunches;
+    avg2 = sum2/numberOfSpectraAllPunches;
 
-        % Build up arrays to plot later
-        global myX
-        global myY1
-        global myY2
-        global myErr1
-        global myErr2
+    for punch = 1:5
+        % second pass on dataset to get (each point - average)^2
+        % for standard deviation, need 
+        for I = 1 : numberOfSpectra
+            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+            fileID = fopen(thisfilename,'r');
+            [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
 
-        myX(K) = pH(K);
-        myY1(K) = normalized1;
-        myErr1(K) = stdDev1;
-        myY2(K) = normalized2;
-        myErr2(K) = stdDev2;
+            % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
+            % REFERENCE INDEX
 
-        %fprintf('%d\n', I);
-        %pause(5);
+            % 1. Correct the baseline BEFORE calculating denominator + normalizing
+            % Returns trend as 'e' and baseline corrected signal as 'f'
+            [e, f] = correctBaseline(thisdata(2,:)');  
 
-        % part 1: do the 1430 cm-1 plot 6/30/2020: don't color based on
-        % 'K'. Color based on punch number.
-        plot(myX(K), myY1(K), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', myColor, 'linewidth', 2); 
-        hold on
-        % https://blogs.mathworks.com/pick/2017/10/13/labeling-data-points/
-        %labelpoints(myX(K), myY1(K), labels(M),'SE',0.2,1)
-        %hold on
-        errorbar(myX(K), myY1(K), myErr1(K), 'LineStyle','none', ...
-            'Color', black, 'linewidth', 2);
-        hold on
+            % 1.5 Only consider a narrow band of the spectrum 
+            numerator1 = getAreaUnderCurve(x1, f(:));
+            numerator2 = getAreaUnderCurve(x2, f(:));   
+            % 2. Ratiometric
+            % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
+            % on either side of refWaveNumber. This maps to: 1 - 11 total
+            % intensities used to calculate the denominator.
+            if (xRef ~= 0) 
+                denominator = getAreaUnderCurve(xRef, f(:));
+            else
+                denominator = 1;
+            end
+            if myDebug
+                fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+            end
 
-        % part 2: do the 1702 cm-1 plot
-        plot(myX(K), myY2(K), '-s', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', myColor, 'linewidth', 2); 
-        hold on
-        errorbar(myX(K), myY2(K), myErr2(K), 'LineStyle','none', ...
-            'Color', black,'linewidth', 2);
-        hold on
+            % 3. Normalize what is plotted
+            normalized1 = numerator1/denominator;
+            normalized2 = numerator2/denominator;
+
+            % 4. Add to the sum of the squares
+            sumSq1 = sumSq1 + (normalized1 - avg1).^2; 
+            sumSq2 = sumSq2 + (normalized2 - avg2).^2; 
+        end
     end
-    g = numberOfSpectra;
+        
+    % 5. Compute standard deviation at each index of the averaged spectra 
+    stdDev1 = sqrt(sumSq1/numberOfSpectraAllPunches);
+    stdDev2 = sqrt(sumSq2/numberOfSpectraAllPunches);
+
+    % Build up arrays to plot later
+    global myX
+    global myY1
+    global myY2
+    global myErr1
+    global myErr2
+
+    myX(K) = pH(K);
+    myY1(K) = normalized1;
+    myErr1(K) = stdDev1;
+    myY2(K) = normalized2;
+    myErr2(K) = stdDev2;
+
+    %fprintf('%d\n', I);
+    %pause(5);
+
+    % part 1: do the 1430 cm-1 plot 6/30/2020: don't color based on
+    % 'K'. Color based on punch number.
+    plot(myX(K), myY1(K), '-o', 'LineStyle','none', 'MarkerSize', ...
+        30, 'Color', myColor, 'linewidth', 2); 
+    hold on
+    % https://blogs.mathworks.com/pick/2017/10/13/labeling-data-points/
+    %labelpoints(myX(K), myY1(K), labels(M),'SE',0.2,1)
+    %hold on
+    errorbar(myX(K), myY1(K), myErr1(K), 'LineStyle','none', ...
+        'Color', black, 'linewidth', 2);
+    hold on
+
+    % part 2: do the 1702 cm-1 plot
+    plot(myX(K), myY2(K), '-s', 'LineStyle','none', 'MarkerSize', ...
+        30, 'Color', myColor, 'linewidth', 2); 
+    hold on
+    errorbar(myX(K), myY2(K), myErr2(K), 'LineStyle','none', ...
+        'Color', black,'linewidth', 2);
+    hold on
+    
+    g = numberOfSpectraAllPunches;
 end
 
 function d = getAreaUnderCurve(xCenter, spectrum)
@@ -318,4 +335,13 @@ function [e f] = correctBaseline(tics)
     modified=tics(:)-temp_tic(:);
     e = trend;
     f = modified';
+end
+
+function g = saveMyPlot(FigH, myTitle)
+    dirStem = "C:\Users\karen\Documents\Data\";
+    subDir = "Plots\";
+    plotDirStem = sprintf("%s%s", dirStem, subDir);
+    myPlot = sprintf('%s%s', plotDirStem, myTitle);
+    saveas(FigH, myPlot, 'png');
+    g = 1;
 end
