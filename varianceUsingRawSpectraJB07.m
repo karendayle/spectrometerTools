@@ -24,6 +24,7 @@ global ciel
 global cherry
 global red
 global black
+global magenta
 global dirStem
 global subDirStem
 global numPoints
@@ -48,6 +49,8 @@ ciel =    [0.3010, 0.7450, 0.9330];
 cherry =  [0.6350, 0.0780, 0.1840];
 red =     [1.0, 0.0, 0.0];
 black =   [0., 0.0, 0.0];
+magenta = [1.0, 0.0, 1.0];
+
 pH = [ 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5 ];
 numPoints = 1024;
 numPointsEachSide = 2;
@@ -72,15 +75,15 @@ subDirStem = [ ...
     "pH7 punch", "pH7.5 punch" ...
     ];
 
-
-for gel = 1:4
+for peak = 1:2
     FigH = figure('Position', get(0, 'Screensize'));
-    for pHLevel = 1:8
-        % read the dark and 25 raw spectra
-        myColor = red;
-        totalNum = prepPlotData(gel, pHLevel, myColor);
-        fprintf('gel%d, pH%f: avg and std dev calculated from %d spectra\n', ...
-            gel, pH(pHLevel), totalNum);
+    for gel = 1:4
+        for pHLevel = 1:8
+            % read the dark and 25 raw spectra
+            totalNum = prepPlotData(gel, pHLevel, peak);
+            fprintf('gel%d, pH%f: avg and std dev calculated from %d spectra\n', ...
+                gel, pH(pHLevel), totalNum);
+        end
     end
     xlabel('pH level'); % x-axis label
     ylabel('Normalized Intensity (A.U.)'); % y-axis label
@@ -88,9 +91,8 @@ for gel = 1:4
     myTitle = sprintf('gel%d', gel);
     saveMyPlot(FigH, myTitle);
 end
-% TO DO: add title, labels
 
-function g = prepPlotData(J, K, myColor)
+function g = prepPlotData(J, K, peak)
     global blue
     global rust
     global gold
@@ -233,7 +235,8 @@ function g = prepPlotData(J, K, myColor)
     global myY2
     global myErr1
     global myErr2
-
+    punchColor = [ red;  blue; green; purple ];
+    markersAll = [ '-o'; '-s';  '-^'; '-p'];
     myX(K) = pH(K);
     myY1(K) = normalized1;
     myErr1(K) = stdDev1;
@@ -243,26 +246,29 @@ function g = prepPlotData(J, K, myColor)
     %fprintf('%d\n', I);
     %pause(5);
 
-    % part 1: do the 1430 cm-1 plot 6/30/2020: don't color based on
-    % 'K'. Color based on punch number.
-    plot(myX(K), myY1(K), '-o', 'LineStyle','none', 'MarkerSize', ...
-        30, 'Color', myColor, 'linewidth', 2); 
-    hold on
-    % https://blogs.mathworks.com/pick/2017/10/13/labeling-data-points/
-    %labelpoints(myX(K), myY1(K), labels(M),'SE',0.2,1)
-    %hold on
-    errorbar(myX(K), myY1(K), myErr1(K), 'LineStyle','none', ...
+    switch peak
+        case 1
+        % part 1: do the 1430 cm-1 plot 6/30/2020: don't color based on
+        % 'K'. Color based on punch number.
+        plot(myX(K), myY1(K), markersAll(J,:), 'LineStyle','none', 'MarkerSize', ...
+        30, 'Color', punchColor(J,:), 'linewidth', 2); 
+        hold on
+        % https://blogs.mathworks.com/pick/2017/10/13/labeling-data-points/
+        %labelpoints(myX(K), myY1(K), labels(M),'SE',0.2,1)
+        %hold on
+        errorbar(myX(K), myY1(K), myErr1(K), 'LineStyle','none', ...
         'Color', black, 'linewidth', 2);
-    hold on
-
-    % part 2: do the 1702 cm-1 plot
-    plot(myX(K), myY2(K), '-s', 'LineStyle','none', 'MarkerSize', ...
-        30, 'Color', myColor, 'linewidth', 2); 
-    hold on
-    errorbar(myX(K), myY2(K), myErr2(K), 'LineStyle','none', ...
-        'Color', black,'linewidth', 2);
-    hold on
+        hold on
     
+        case 2
+        % part 2: do the 1702 cm-1 plot
+        plot(myX(K), myY2(K), markersAll(J,:), 'LineStyle','none', 'MarkerSize', ...
+            30, 'Color', punchColor(J,:), 'linewidth', 2); 
+        hold on
+        errorbar(myX(K), myY2(K), myErr2(K), 'LineStyle','none', ...
+            'Color', black,'linewidth', 2);
+        hold on
+    end
     g = numberOfSpectraAllPunches;
 end
 
