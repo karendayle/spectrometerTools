@@ -3,9 +3,11 @@
 %% kdk: Clear previous plots
 close all
 
+% get the input
 load ('Data\vals.mat');
 
 global tallyByGel
+
 global autoSave
 autosave = 0; % CHOOSE 1 to save plots to files, 0 to do this manually
 
@@ -21,14 +23,15 @@ tallyByGel = [ ...
          0, 0, 0, 0, ... % all gels for bin #2
          0, 0, 0, 0, ... % all gels for bin #3
          0, 0, 0, 0];    % all gels for bin #4
-     
+ 
+% set up the one and only plot
 if autoSave
     FigH = figure('Position', get(0, 'Screensize'));
 else
     figure
 end
 
-for gel = 1:1 % one gel at a time
+for gel = 1:4 % one gel at a time
     for series = 1:3 % all series for each gel
         for segment = 1:9 % all pH segments in each series
             tau = 1.0/(vals(gel, series, segment, 1, 4)); % 1430 peak
@@ -37,40 +40,22 @@ for gel = 1:1 % one gel at a time
             addToTallyByGel(tau, gel, 2);
         end
     end
-    
-    switch gel
-        case 1
-            myArray = tallyByGel(1,:,:); 
-            myArray = reshape(myArray,4,4);
-            a = bar(myArray, 'FaceColor','w');
-            fillBarsWithHatchedLines(a, myArray);
-            title('Alginate: distribution of tau over series and segments', 'FontSize', myTitleFont);
-        case 2
-            myArray = tallyByGel(2,:,:);
-            myArray = reshape(myArray,4,4);
-            a = bar(myArray, 'FaceColor','w');
-            fillBarsWithHatchedLines(a, myArray);
-            title('PEG: distribution of tau over series and segments', 'FontSize', myTitleFont);
-        case 3
-            myArray = tallyByGel(3,:,:);
-            myArray = reshape(myArray,4,4);
-            a = bar(myArray, 'FaceColor','w');
-            fillBarsWithHatchedLines(a, myArray);
-            title('pHEMA: distribution of tau over series and segments', 'FontSize', myTitleFont);
-        case 4
-            myArray = tallyByGel(4,:,:);
-            myArray = reshape(myArray,4,4);
-            a = bar(myArray, 'FaceColor','w');
-            fillBarsWithHatchedLines(a, myArray);
-            title('pHEMA/coA: distribution of tau over series and segments', 'FontSize', myTitleFont);
-    end
-    xlabel('Value of Tau (hr)', 'FontSize', myLabelFont); % x-axis label
-    ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
-    fname = {'<1';'<10';'<100';'<1000';'<10000';'>=10000'};
-    set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
-    set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
-    myTitle = sprintf('taus for gel %d', gel);
 end
+
+% just the 1430 peaks for now
+myArray = tallyByGel(1,:);
+myArray = reshape(myArray,4,4);
+a = bar(myArray, 'FaceColor','w');
+fillBarsWithHatchedLines(a, myArray);
+
+myLabelFont = 30;
+xlabel('Value of Tau (hr)', 'FontSize', myLabelFont); % x-axis label
+ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
+fname = {'<10m';'<1h';'<1d';'>1d'};
+set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
+set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
+myTitle = sprintf('taus for gel %d', gel);
+
 
 if autoSave
     saveMyPlot(FigH, myTitle);
