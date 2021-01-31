@@ -23,13 +23,6 @@ tallyByGel = [ ...
          0, 0, 0, 0, ... % all gels for bin #2
          0, 0, 0, 0, ... % all gels for bin #3
          0, 0, 0, 0];    % all gels for bin #4
- 
-% set up the one and only plot
-if autoSave
-    FigH = figure('Position', get(0, 'Screensize'));
-else
-    figure
-end
 
 for gel = 1:4 % one gel at a time
     for series = 1:3 % all series for each gel
@@ -42,23 +35,30 @@ for gel = 1:4 % one gel at a time
     end
 end
 
-% just the 1430 peaks for now
-myArray = tallyByGel(1,:);
-myArray = reshape(myArray,4,4);
-a = bar(myArray, 'FaceColor','w');
-fillBarsWithHatchedLines(a, myArray);
+for ii = 1:2
+    % set up one plot
+    if autoSave
+        FigH = figure('Position', get(0, 'Screensize'));
+    else
+        figure
+    end
 
-myLabelFont = 30;
-xlabel('Value of Tau (hr)', 'FontSize', myLabelFont); % x-axis label
-ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
-fname = {'<10m';'<1h';'<1d';'>1d'};
-set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
-set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
-myTitle = sprintf('taus for gel %d', gel);
+    myArray = tallyByGel(ii,:);
+    myArray = reshape(myArray,4,4);
+    a = bar(myArray, 'FaceColor','w');
+    fillBarsWithHatchedLines(a, myArray);
 
+    myLabelFont = 30;
+    xlabel('Value of Tau (hr)', 'FontSize', myLabelFont); % x-axis label
+    ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
+    fname = {'<10m';'<1h';'<1d';'>1d'};
+    set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
+    set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
+    myTitle = sprintf('taus for peak %d', ii);
 
-if autoSave
-    saveMyPlot(FigH, myTitle);
+    if autoSave
+        saveMyPlot(FigH, myTitle);
+    end
 end
 %end main portion
 
@@ -67,32 +67,26 @@ function a = addToTallyByGel(tau, gel, peak)
     
     if tau < (1.0/6.0)
         bin = 1;
-        offset = gel + (bin - 1) * 4; 
-        tallyByGel(peak, offset) = tallyByGel(peak, offset) + 1;
     else 
         if tau < 1.0
             bin = 2;
-            offset = gel + (bin - 1) * 4;
-            tallyByGel(peak, offset) = tallyByGel(peak, offset) + 1;
         else
             if tau < 24.0
                 bin = 3;
-                offset = gel + (bin - 1) * 4;
-                tallyByGel(peak, offset) = tallyByGel(peak, offset) + 1;
             else
                 bin = 4;
-                offset = gel + (bin - 1) * 4;
-                tallyByGel(peak, offset) = tallyByGel(peak, offset) + 1;
             end
         end
     end 
-    fprintf('peak%d bin%d gel%d gets added to tally(%d,%d)\n', ...
-    peak, bin, gel, peak, offset);
+    offset = gel + (bin - 1) * 4; 
+    tallyByGel(peak, offset) = tallyByGel(peak, offset) + 1;
+    fprintf('peak%d bin%d gel%d tau=%f gets added to tally(%d,%d)\n', ...
+    peak, bin, gel, tau, peak, offset);
     a = 1;
 end
 
 function k = fillBarsWithHatchedLines(B, yd)
-    bw = 0.23; % deduce by trial and error plotting over actual drawn bar
+    bw = 0.15; % deduce by trial and error plotting over actual drawn bar
 
     % helpful: https://www.mathworks.com/matlabcentral/answers/203782-how-to-determine-the-x-axis-positions-of-the-bars-in-a-grouped-bar-chart
     for ib = 1:numel(B)
