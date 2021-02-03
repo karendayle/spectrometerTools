@@ -2,8 +2,9 @@
 % Dayle Kotturi Jan 2021
 
 % For the intensity vs pH plots of 4 types of gels in static solution,
-% let's see what the 95% Confidence Intervals look like when variance is
-% calculated using the raw spectra.
+% let's see how small the std dev is when calculated using the full set
+% of raw spectra. Note: there may be some confusion around this but here
+% there is nothing re: 95% CI being used for the error bars. 
 
 % 1. Repeat for all gel types
 % 2.    At each pH level
@@ -11,9 +12,7 @@
 % 4.        For each of 5 punches
 % 5.            Read in all spectra (25), "spectrum = raw - dark"
 % 6.            Add spectrum to running sum
-% 7.            Add spectrum^2 to running sum of sqs -- could these squares
-% cause overflow?
-
+% 7.            Add spectrum^2 to running sum of sqs
 % 8.      Calculate std dev from sum, sum of sqs and N=125
 global blue
 global rust
@@ -75,14 +74,13 @@ subDirStem = [ ...
     "pH7 punch", "pH7.5 punch" ...
     ];
 
-for peak = 1:2
+for peak = 1:2 % this is outer loop in order to make 1 figure for each pk
     FigH = figure('Position', get(0, 'Screensize'));
     for gel = 1:4
         for pHLevel = 1:8
-            % read the dark and 25 raw spectra
+            % read 25 spectra, the full set used to create 5 avgs
+            % note 1 spectrum = raw - dark
             totalNum = prepPlotData(gel, pHLevel, peak);
-            fprintf('gel%d, pH%f: avg and std dev calculated from %d spectra\n', ...
-                gel, pH(pHLevel), totalNum);
         end
     end
     xlabel('pH level'); % x-axis label
@@ -197,7 +195,7 @@ function g = prepPlotData(J, K, peak)
 
             % 1. Correct the baseline BEFORE calculating denominator + normalizing
             % Returns trend as 'e' and baseline corrected signal as 'f'
-            [e, f] = correctBaseline(thisdata(2,:)');  
+            [~, f] = correctBaseline(thisdata(2,:)');  
 
             % 1.5 Only consider a narrow band of the spectrum 
             numerator1 = getAreaUnderCurve(x1, f(:));
@@ -229,12 +227,6 @@ function g = prepPlotData(J, K, peak)
     stdDev1 = sqrt(sumSq1/numberOfSpectraAllPunches);
     stdDev2 = sqrt(sumSq2/numberOfSpectraAllPunches);
 
-    % Build up arrays to plot later
-    global myX
-    global myY1
-    global myY2
-    global myErr1
-    global myErr2
     punchColor = [ red;  blue; green; purple ];
     markersAll = [ '-o'; '-s';  '-^'; '-p'];
     myX(K) = pH(K);
@@ -243,31 +235,37 @@ function g = prepPlotData(J, K, peak)
     myY2(K) = normalized2;
     myErr2(K) = stdDev2;
 
-    %fprintf('%d\n', I);
-    %pause(5);
-
     switch peak
         case 1
-        % part 1: do the 1430 cm-1 plot 6/30/2020: don't color based on
-        % 'K'. Color based on punch number.
-        plot(myX(K), myY1(K), markersAll(J,:), 'LineStyle','none', 'MarkerSize', ...
-        30, 'Color', punchColor(J,:), 'linewidth', 2); 
-        hold on
-        % https://blogs.mathworks.com/pick/2017/10/13/labeling-data-points/
-        %labelpoints(myX(K), myY1(K), labels(M),'SE',0.2,1)
-        %hold on
-        errorbar(myX(K), myY1(K), myErr1(K), 'LineStyle','none', ...
-        'Color', black, 'linewidth', 2);
-        hold on
+            % part 1: do the 1430 cm-1 plot 6/30/2020: don't color based on
+            % 'K'. Color based on punch number.
+            plot(myX(K), myY1(K), markersAll(J,:), 'LineStyle','none', 'MarkerSize', ...
+            30, 'Color', punchColor(J,:), 'linewidth', 2); 
+            hold on
+            % https://blogs.mathworks.com/pick/2017/10/13/labeling-data-points/
+            %labelpoints(myX(K), myY1(K), labels(M),'SE',0.2,1)
+            %hold on
+            errorbar(myX(K), myY1(K), myErr1(K), 'LineStyle','none', ...
+            'Color', black, 'linewidth', 2);
+            hold on
     
         case 2
-        % part 2: do the 1702 cm-1 plot
-        plot(myX(K), myY2(K), markersAll(J,:), 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', punchColor(J,:), 'linewidth', 2); 
-        hold on
-        errorbar(myX(K), myY2(K), myErr2(K), 'LineStyle','none', ...
-            'Color', black,'linewidth', 2);
-        hold on
+            % part 2: do the 1702 cm-1 plot
+            plot(myX(K), myY2(K), markersAll(J,:), 'LineStyle','none', 'MarkerSize', ...
+                30, 'Color', punchColor(J,:), 'linewidth', 2); 
+            hold on
+            errorbar(myX(K), myY2(K), myErr2(K), 'LineStyle','none', ...
+                'Color', black,'linewidth', 2);
+            hold on
+    end
+    
+    switch peak
+        case 1
+            fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
+                J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
+        case 2
+            fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
+                J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K));  
     end
     g = numberOfSpectraAllPunches;
 end

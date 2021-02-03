@@ -295,9 +295,11 @@ if plotOption == 1
     plotSpeedVals(); % don't need another plot, but as a way to see
 end
 if plotOption == 4
-    save('XValues.mat', 'myXValues');
+    % 20210129 save vals so that histogramOfTauJB06 can use them
+    save('Data\vals.mat', 'vals'); 
+    % 2020/12/20 save myXValues so that plotExponentialCurves can use them
+    save('Data\XValues.mat', 'myXValues');
     plotVals(); % can only call this if loop runs for all 12 geloptions
-    % 2020/12/20 save these so that plotExponentialCurves can use them
 end
 %end main portion
 
