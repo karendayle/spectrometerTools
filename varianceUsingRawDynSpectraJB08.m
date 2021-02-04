@@ -20,21 +20,12 @@ global cherry
 global red
 global black
 global magenta
-global dirStem
-global subDirStem
 global numPoints
 global x1
 global x2
 global xRef
-global tRef
-global xMin
-global xMax
-global yMin
-global yMax
-global myDebug
-global lineThickness
 global numPointsEachSide
-global pH
+
 blue =    [0.0000, 0.4470, 0.7410];
 rust =    [0.8500, 0.3250, 0.0980];
 gold =    [0.9290, 0.6940, 0.1250];
@@ -46,7 +37,6 @@ red =     [1.0, 0.0, 0.0];
 black =   [0., 0.0, 0.0];
 magenta = [1.0, 0.0, 1.0];
 
-pH = [ 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5 ];
 numPoints = 1024;
 numPointsEachSide = 2;
 xRef = 713; % COO- at 1582
@@ -75,12 +65,24 @@ myTitle = [ ...
     "54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell" ...
     ];
 
+global dirStem
+dirStem = [ ...
+    "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 15\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\punch1 flowcell all\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\4\", ... 
+    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\", ...
+    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\" ];
+
 global subDir
 subDir = [ "1 pH7", "2 pH4", "3 pH10", "4 pH7", "5 pH10","6 pH4", ...
     "7 pH10", "8 pH7", "9 pH4" ];
-
-% TO DO: MORE HERE. Get the end point values for each segment. Instead of 1 single
-% value for 1430 and 1702, read in all 5 spectra.
 
 % Use JB07 as skeleton but needs modifying. Instead of 4 gels, 5
 % punches, 2 peaks, now there are 4 gels, 3 series, 3 pH levels, 3 segments
@@ -112,115 +114,63 @@ function g = prepPlotData(gel, pHLevel, peak)
     global red
     global black
     global dirStem
-    global subDirStem
     global numPoints
     global x1
     global x2
     global xRef
-    global tRef
-    global xMin
-    global xMax
-    global yMin
-    global yMax
     global myDebug
-    global lineThickness
-    global numPointsEachSide
-    global pH
     global subDir
+    
+    fprintf('top: gel%d, pHLevel%d, peak%d\n', gel, pHLevel, peak);
     
     % Use pHLevel to get actual segment number from segment
     switch pHLevel
-        case 1                 % pH 4
+        case 1 % pH 4
             pHValue = 4;
-            pH = [ 2 6 9 ];
-        case 2                 % pH 7
+            pHSegments = [ 2 6 9 ];
+        case 2 % pH 7
             pHValue = 7;
-            pH = [ 1 4 8 ];
-        case 3                 % pH 10
+            pHSegments = [ 1 4 8 ];
+        case 3 % pH 10
             pHValue = 10;
-            pH = [ 3 5 7 ];
+            pHSegments = [ 3 5 7 ];
     end
     
+    sum1 = 0;
+    sum2 = 0;
+    sumSq1 = 0;
+    sumSq2 = 0;
+    thisdata = zeros(2, numPoints, 'double');
+    numberOfSpectraAllSegments = 0;
+    fprintf('RESET numberOfSpectraAllSeqments = %d\n', ...
+        numberOfSpectraAllSegments);
+    
     % Important: this avg and std dev calculation is over all 3 segments
+    % first pass
     for series = 1:3
-        switch gel
-            case 1 % alginate
-                switch series
-                    case 1 % alginate time series 1
-                        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch1 flowcell all\";
-                        tRef = datenum(2019, 12, 10, 14, 1, 8);
-                    case 2  % alginate time series 2
-                        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch2 flowcell1 1000ms integ\";
-                        tRef = datenum(2020, 1, 10, 13, 45, 1);
-                    case 3 % alginate time series 3
-                        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\punch3 flowcell1\";
-                        tRef = datenum(2020, 1, 12, 16, 15, 57);
-                end
-                  
-              case 2 % PEG
-                  switch series
-                      case 1 % PEG time series 1
-                          dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\1\";
-                          tRef = datenum(2018, 12, 28, 16, 34, 5);
-                      case 2 % PEG time series 2
-                          dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 15\";
-                            tRef = datenum(2020, 3, 14, 21, 22, 41);
-                      case 3 % PEG time series 3
-                          dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\punch1 flowcell all\";
-                          tRef = datenum(2020, 3, 17, 15, 38, 43);
-                  end
-                  
-            case 3 % pHEMA
-                switch series
-                    case 1 % pHEMA time series 1
-                        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\2\";
-                        tRef = datenum(2018, 12, 30, 16, 1, 17);
-                    case 2 % pHEMA time series 2 -- needs special handling b/c there are
-                         % 2 add'l dirs for 3 pH10 and 4 pH7
-                         dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch1 flowcell1\";
-                         tRef = datenum(2020, 1, 25, 17, 10, 17); 
-                    case 3 % pHEMA time series 3
-                        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\punch2 flowcell1 300ms\";
-                        tRef = datenum(2020, 2, 1, 17, 54, 20);
-                end
-                
-            case 4 % pHEMA/coA
-                switch series
-                    case 1 % pHEMA/coAc  time series 1
-                        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 3\4\"; 
-                        tRef = datenum(2019, 01, 26, 16, 28, 6);
-                        Kmax = 8; % special case b/c final pH4 is missing!
-                    case 2 % add pHEMA/coAc  time series 2
-                        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch1 flowcell1\";
-                        tRef = datenum(2020, 1, 27, 12, 27, 47); 
-                    case 3 % pHEMA/coAc time series 3
-                        dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\punch2 flowcell1\";
-                        tRef = datenum(2020, 2, 3, 19, 50, 17);
-                end
-        end
-
-        sum1 = 0;
-        sum2 = 0;
-        sumSq1 = 0;
-        sumSq2 = 0;
-        thisdata = zeros(2, numPoints, 'double');
-        numberOfSpectraAllSegments = 0;
-
+        fprintf('series%d pass1\n', series);
+        
         for segment = 1:3
+            offset = (gel - 1) * 3 + series;
+            fprintf('\tsegment%d\n', segment);
             % read the last 5 spectra taken for this segment
-            dir_to_search = dirStem + subDir(pH(segment));
+            dir_to_search = dirStem(offset) + subDir(pHSegments(segment));
             txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
             dinfo = dir(txtpattern); % why is this null array?
 
             numberOfSpectra = length(dinfo);
             if numberOfSpectra > 0
-                % Take only the last 5
+                % Take only the last 5 values for each segment. 
+                % Instead of 1 single value for 1430 and 1702, 
+                % read in all 5 spectra.
                 startAtNumber = numberOfSpectra - 4;
                 if startAtNumber < 0
                     fprintf('Error: fewer than 5 files found');
                 else
                     numberOfSpectraAllSegments = ...
                         numberOfSpectraAllSegments + 5;
+                    fprintf('\t\tnumberOfSpectraAllSeqments = %d\n', ...
+                        numberOfSpectraAllSegments);
                     % first pass on dataset, to get array of average spectra
                     for I = 1 : numberOfSpectra          
                         if I >= startAtNumber
@@ -272,7 +222,9 @@ function g = prepPlotData(gel, pHLevel, peak)
 
     % second pass on dataset to get (each point - average)^2
     for series = 1:3
+        fprintf('series%d pass2\n', series);
         for segment = 1:3 
+            fprintf('\tsegment%d\n', segment);
             for I = 1 : numberOfSpectra
                 % Take only the last 5
                 if I >= startAtNumber
@@ -314,15 +266,16 @@ function g = prepPlotData(gel, pHLevel, peak)
                 end
             end
         end
-    end
+    end % second pass
         
     % 5. Compute standard deviation at each index of the averaged spectra 
     stdDev1 = sqrt(sumSq1/numberOfSpectraAllSegments);
     stdDev2 = sqrt(sumSq2/numberOfSpectraAllSegments);
 
+    % 6. Plot results for this gel, pH level and peak
     punchColor = [ red;  blue; green; purple ]; % %TO DO: NOT punches
     markersAll = [ '-o'; '-s';  '-^'; '-p'];
-    myX(pHLevel) = pH(segment); % TO DO - sth wrong here. this s/n be pHLevel, but?
+    myX(pHLevel) = pHValue; % TO DO - sth wrong here. this s/n be pHLevel, but?
     myY1(pHLevel) = normalized1;
     myErr1(pHLevel) = stdDev1;
     myY2(pHLevel) = normalized2;
@@ -330,8 +283,7 @@ function g = prepPlotData(gel, pHLevel, peak)
 
     switch peak
         case 1
-            % part 1: do the 1430 cm-1 plot 6/30/2020: don't color based on
-            % 'K'. Color based on punch number.
+            % 1430 cm-1
             plot(myX(pHLevel), myY1(pHLevel), markersAll(gel,:), 'LineStyle','none', 'MarkerSize', ...
             30, 'Color', punchColor(gel,:), 'linewidth', 2); 
             hold on
@@ -343,7 +295,7 @@ function g = prepPlotData(gel, pHLevel, peak)
             hold on
     
         case 2
-            % part 2: do the 1702 cm-1 plot
+            % 1702 cm-1
             plot(myX(pHLevel), myY2(pHLevel), markersAll(gel,:), 'LineStyle','none', 'MarkerSize', ...
                 30, 'Color', punchColor(gel,:), 'linewidth', 2); 
             hold on
@@ -354,11 +306,11 @@ function g = prepPlotData(gel, pHLevel, peak)
     
     switch peak
         case 1
-            fprintf('gel%d: seg%d: pk:1430 N=%d avg=%f stddev=%f\n', ...
-                gel, pHValue, numberOfSpectraAllSegments, myY1(pHLevel), myErr1(pHLevel));
+            fprintf('gel%d: pHLevel%d: pk:1430 N=%d avg=%f stddev=%f\n', ...
+                gel, pHLevel, numberOfSpectraAllSegments, myY1(pHLevel), myErr1(pHLevel));
         case 2
-            fprintf('gel%d: seg%d: pk:1702 N=%d avg=%f stddev=%f\n', ...
-                gel, pHValue, numberOfSpectraAllSegments, myY2(pHLevel), myErr2(pHLevel));  
+            fprintf('gel%d: pHLevel%d: pk:1702 N=%d avg=%f stddev=%f\n', ...
+                gel, pHLevel, numberOfSpectraAllSegments, myY2(pHLevel), myErr2(pHLevel));  
     end
     g = numberOfSpectraAllSegments;
 end
