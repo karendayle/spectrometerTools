@@ -1,3 +1,6 @@
+% plotRatiosOfTimeSeriesJB03.m
+% This script makes the time series plots for the 4 gel types (3 series)
+
 % Plot the intensity at a single wavenumber normalized by the reference 
 % intensity vs time by extracting it from a set of files in different directories
 % The time to use for the x axis is in the filename as
@@ -11,13 +14,13 @@
 
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
-% NEW 11/06/2018 find the local max instead of looking at const location
+% Find the local max instead of looking at const location
 global x1Min
 global x1Max
 x1Min = 591;
 x1Max = 615;
 % Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
-% NEW 11/06/2018 find the local max instead of looking at const location
+% Find the local max instead of looking at const location
 global x2Min
 global x2Max
 x2Min = 790;

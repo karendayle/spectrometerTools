@@ -25,6 +25,7 @@ global x1
 global x2
 global xRef
 global numPointsEachSide
+global endVals
 
 blue =    [0.0000, 0.4470, 0.7410];
 rust =    [0.8500, 0.3250, 0.0980];
@@ -101,6 +102,7 @@ for peak = 1:2 % this is outer loop in order to make 1 figure for each pk
     set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
     myTitle = sprintf('gel%d', gel);
     saveMyPlot(FigH, myTitle);
+    save('endVals.mat', endVals);
 end
 
 function g = prepPlotData(gel, pHLevel, peak)
@@ -120,6 +122,7 @@ function g = prepPlotData(gel, pHLevel, peak)
     global xRef
     global myDebug
     global subDir
+    global endVals
     
     fprintf('top: gel%d, pHLevel%d, peak%d\n', gel, pHLevel, peak);
     
@@ -306,12 +309,23 @@ function g = prepPlotData(gel, pHLevel, peak)
     
     switch peak
         case 1
+            % NEW 2021/02/03  
+            endVals(gel, pHLevel, peak, 1) = myY1(pHLevel);
+            endVals(gel, pHLevel, peak, 2) = myErr1(pHLevel);
+            endVals(gel, pHLevel, peak, 3) = numberOfSpectraAllSegments;
             fprintf('gel%d: pHLevel%d: pk:1430 N=%d avg=%f stddev=%f\n', ...
                 gel, pHLevel, numberOfSpectraAllSegments, myY1(pHLevel), myErr1(pHLevel));
         case 2
+            % NEW 2021/02/03  
+            endVals(gel, pHLevel, peak) = myY2(pHLevel);
+            endVals(gel, pHLevel, peak, 2) = myErr2(pHLevel);
+            endVals(gel, pHLevel, peak, 3) = numberOfSpectraAllSegments;
             fprintf('gel%d: pHLevel%d: pk:1702 N=%d avg=%f stddev=%f\n', ...
                 gel, pHLevel, numberOfSpectraAllSegments, myY2(pHLevel), myErr2(pHLevel));  
     end
+    
+
+    
     g = numberOfSpectraAllSegments;
 end
 
