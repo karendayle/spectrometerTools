@@ -36,8 +36,10 @@ for gel = 1:4 % one gel at a time
         for segment = 1:9 % all pH segments in each series
             tau = 1.0/(vals(gel, series, segment, 1, 4)); % 1430 peak
             addToTallyByGel(tau, gel, 1);
+            addToTallyByPH(tau, gel, getPHValue(segment), 1);
             tau = 1.0/(vals(gel, series, segment, 2, 4)); % 1702 peak
             addToTallyByGel(tau, gel, 2);
+            addToTallyByPH(tau, gel, getPHValue(segment), 2);
         end
     end
 end
@@ -108,6 +110,23 @@ function a = addToTallyByGel(tau, gel, peak)
     fprintf('bin%d gel%d peak%d tau=%f gets added to tally(%d,%d)\n', ...
     bin, gel, peak, tau, bin, offset);
     a = 1;
+end
+
+function b = getPHValue(segment)
+    switch segment
+        case { 2, 6, 9 }
+            pHValue = 4;
+        case { 1, 4, 8 }
+            pHValue = 7;
+        case { 3, 5, 7 }
+            pHValue = 10;
+    end
+    b = pHValue;
+end
+
+function c = addToTallyByPH(tau, gel, pHValue, peak)
+% START HERE
+    c = 1;
 end
 
 function k = fillBarsWithHatchedLines(B, yd)
