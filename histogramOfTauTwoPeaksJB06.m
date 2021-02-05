@@ -23,7 +23,7 @@ global tallyByGel
 global tallyByPH
 
 global autoSave
-autoSave = 1; % CHOOSE 1 to save plots to files, 0 to do this manually
+autoSave = 0; % CHOOSE 1 to save plots to files, 0 to do this manually
 
 % Bins are: 0-10m, 10m-1h, 1h-1d, >1d
 tallyByGel = [ ...
@@ -52,16 +52,24 @@ tallyByPH(:,:,3) = [ ...
     0, 0, 0, 0, 0, 0, 0, 0;
     0, 0, 0, 0, 0, 0, 0, 0 ];
 
+fprintf('Table of taus (hr)\n');
+fprintf('for all segments 1..9\n');
+fprintf('at pH levels:7 4 10 7 10 4 10 74\n');
+fprintf('pairs for 1430 cm-1 and 1702 cm-1 peaks\n');
 for gel = 1:4 % one gel at a time
     for series = 1:3 % all series for each gel
+        fprintf('gel%d ser%d: ', gel, series);        
         for segment = 1:9 % all pH segments in each series
             tau = 1.0/(vals(gel, series, segment, 1, 4)); % 1430 peak
-            % addToTallyByGel(tau, gel, 1);
+            fprintf('%.1f ', tau);
+            % addToTallyByGel(tau, gel, 1); previous version 
             addToTallyByPH(tau, gel, getPHValue(segment), 1);
             tau = 1.0/(vals(gel, series, segment, 2, 4)); % 1702 peak
-            % addToTallyByGel(tau, gel, 2);
+            fprintf('%.1f ', tau);
+            % addToTallyByGel(tau, gel, 2); previous version
             addToTallyByPH(tau, gel, getPHValue(segment), 2);
         end
+        fprintf('\n');
     end
 end
 
@@ -107,7 +115,10 @@ end
 
 % NEW 2021/02/04 show dist'n of tau over pH levels 4, 7, 10
 % set up rest of the plots
-
+% These are okay at showing the break down of the first figure by pH level,
+% however, they do not show whether the pH level was approached from above
+% or below (although this is only relevant for the pH7 case). It seems like
+% a table could show this better. 
 for ii = 1:3
     if autoSave
         FigH = figure('Position', get(0, 'Screensize'));
@@ -171,8 +182,8 @@ function a = addToTallyByGel(tau, gel, peak)
     end 
     offset = (gel - 1) * 2 + peak; 
     tallyByGel(bin, offset) = tallyByGel(bin, offset) + 1;
-    fprintf('addToTallyByGel: bin%d gel%d peak%d tau=%f gets added to tally(%d,%d)\n', ...
-    bin, gel, peak, tau, bin, offset);
+    % fprintf('addToTallyByGel: bin%d gel%d peak%d tau=%f gets added to tally(%d,%d)\n', ...
+    % bin, gel, peak, tau, bin, offset);
     a = 1;
 end
 
@@ -208,8 +219,8 @@ function c = addToTallyByPH(tau, gel, pHValue, peak)
 
     offset = (gel - 1) * 2 + peak; 
     tallyByGel(bin, offset) = tallyByGel(bin, offset) + 1;
-    fprintf('addToTallyByGel: bin%d gel%d peak%d tau=%f gets added to tallyByGel(%d,%d)\n', ...
-    bin, gel, peak, tau, bin, offset);
+    % fprintf('addToTallyByGel: bin%d gel%d peak%d tau=%f gets added to tallyByGel(%d,%d)\n', ...
+    % bin, gel, peak, tau, bin, offset);
 
     % Additional for pHIndexing
     switch pHValue
@@ -223,8 +234,8 @@ function c = addToTallyByPH(tau, gel, pHValue, peak)
     tallyByPH(bin, offset, pHIndex) = ...
         tallyByPH(bin, offset, pHIndex) + 1;
     
-    fprintf('addToTallyByPH: bin%d gel%d peak%d pH%d tau=%f gets added to tallyByPH(%d,%d)\n', ...
-    bin, gel, peak, pHValue, tau, bin, offset);
+    % fprintf('addToTallyByPH: bin%d gel%d peak%d pH%d tau=%f gets added to tallyByPH(%d,%d)\n', ...
+    % bin, gel, peak, pHValue, tau, bin, offset);
     c = 1;
 end
 
