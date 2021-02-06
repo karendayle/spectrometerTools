@@ -1,4 +1,7 @@
 % CHOOSE ONE OF THESE two options for error bars (near line 250)
+%if myErrorBars == 1, use   StdDev
+%if myErrorBars == 2  use 95% CIs
+myErrorBars = 1;
 
 % RGB
 global blue;
@@ -38,11 +41,15 @@ markersAll = [ '-o'; '-p'; '-s'; '-d'; '-^'; '-v'; '->'; '-<'; '-x'; '-h'; '-+';
 close all; % close all plots from previous runs
 
 % 0. Load the final values of both peaks for each segment of all time
-% series
-load('Data/endVals.mat');
+% series. These are the "dynamic values", so called because sensors
+% are in flow cell and buffer, of various pH, is being pumped through
+%load('Data/endValsUsingAveragedSpectra.mat'); % from 2020/08/06
+load('Data/endVals.mat'); % 2021/02/05 using all the raw spectra to increase N
 global endVals
 global ssVals
 
+% These are the "static values", so called because sensors are on 
+% quartz slides in a 30 uL droplet of buffer of one single pH
 % 1. Alginate
 load('Data/myAlgY1AllPunches.mat');
 load('Data/myAlgY1AllPunchesStdDev.mat');
@@ -110,10 +117,10 @@ ssVals(2,1,1) = myPEGY1allPunches(1);
 ssVals(2,1,2) = myPEGY1allPunches(7);
 
 figure % 2.2
-% 20200923 plot the static pH4 and pH7 values as a filled in markers
+% 2020/09/23 plot the static pH4 and pH7 values as a filled in markers
 plotSteadyStateValues(2, 4, myPEGY1allPunches);
 plotSteadyStateValues(2, 7, myPEGY1allPunches);
-% 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
+% 2020/09/22 plot the end-of-segment value of pH4 and pH7 for all segments
 % for all punches
 plotScatterOfEndValsOnSteadyState(2);
 % make it pretty
@@ -124,10 +131,10 @@ ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 2.3
-% 20200923 plot the static pH4 and pH7 values as a filled in markers
+% 2020/09/23 plot the static pH4 and pH7 values as a filled in markers
 plotSteadyStateValues(2, 4, myPEGY1allPunches);
 plotSteadyStateValues(2, 7, myPEGY1allPunches);
-% 20200923 plot the average of all end-of-segment values of pH4 and pH7 
+% 2020/09/23 plot the average of all end-of-segment values of pH4 and pH7 
 % with std dev error bars for all segments, for all punches 
 plotScatterOfAvgs(2);
 % make it pretty
@@ -253,8 +260,7 @@ for pHLoop = 1:2
     yBar = [myAlgY1allPunches(index) yDyn(1); myPEGY1allPunches(index) yDyn(2); ...
         myHEMAY1allPunches(index) yDyn(3); myHEMACoY1allPunches(index) yDyn(4)];
     
-    % CHOOSE ONE OF THESE two options for error bars:
-    myErrorBars = 1;
+    % At the top, CHOOSE ONE OF THESE two options for error bars:
     if myErrorBars == 1
         % 1) StdDev
         yErr = [myAlgY1allPunchesStdDev(index) errDyn(1); myPEGY1allPunchesStdDev(index) errDyn(2); ...
@@ -314,6 +320,11 @@ global myColor1;
 global myColor2;
 global markers;
 
+    % 2021/02/05 THIS LOOKS WRONG. Look at how endVals is laid out
+    % see JB08 lines 313-315
+    % endVals(gel, pHLevel, peak, 1) = myY1(pHLevel);
+    % endVals(gel, pHLevel, peak, 2) = myErr1(pHLevel);
+    % endVals(gel, pHLevel, peak, 3) = numberOfSpectraAllSegments;
     for punch = 1:3
         for segment = 1:9
             %index = ((gel-1)*3)+punch;
@@ -411,6 +422,11 @@ global myColor1;
 global myColor2;
 global markers;
 
+    % 2021/02/05 THIS LOOKS WRONG. Look at how endVals is laid out
+    % see JB08 lines 313-315
+    % endVals(gel, pHLevel, peak, 1) = myY1(pHLevel);
+    % endVals(gel, pHLevel, peak, 2) = myErr1(pHLevel);
+    % endVals(gel, pHLevel, peak, 3) = numberOfSpectraAllSegments;
     for punch = 1:3
         % plot all the pH4 segments: 2, 6, 9
         pH4 = [2 6 9];
@@ -584,7 +600,7 @@ function h = plotBarOfAvgsSideBySide(yBar, yErr)
     h = 1;
 end
 
-function [avgA, stdDevA] = buildArrayForBars(gel, pHlevel)
+function [avgA, stdDevA] = OLDbuildArrayForBars(gel, pHlevel)
     global endVals;
     A = []; % array to build
     switch pHlevel
@@ -613,6 +629,29 @@ function [avgA, stdDevA] = buildArrayForBars(gel, pHlevel)
         end
         avgA = mean(A); 
         stdDevA = std(A);
+    end
+end
+
+% 2021/02/05 REDO THIS based on how endVals is laid out
+% see JB08 lines 313-315
+% endVals(gel, pHLevel, peak, 1) = myY1(pHLevel);
+% endVals(gel, pHLevel, peak, 2) = myErr1(pHLevel);
+% endVals(gel, pHLevel, peak, 3) = numberOfSpectraAllSegments;
+
+% Could pass in peak to extract 1702 pk values from endVals
+function [avgA, stdDevA] = buildArrayForBars(gel, pHValue)
+    global endVals;
+
+    switch pHValue
+    case 4
+        % 1430 cm-1 peak
+        avgA = endVals(gel, 1, 1, 1);
+        stdDevA = endVals(gel, 1, 1, 2);
+
+    case 7
+        % pH7 1430 cm-1 peak
+        avgA = endVals(gel, 2, 1, 1);
+        stdDevA = endVals(gel, 2, 1, 2);
     end
 end
 
