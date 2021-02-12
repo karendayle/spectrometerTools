@@ -39,6 +39,26 @@ global myDebug
 global lineThickness
 global numPointsEachSide
 global pH
+% 2021/02/12 NEW save the arrays of averages and standard devs
+% for all gel types, J, so that plotSteadyandDynStatesJB05 
+% can read these values in
+global myAlgY1AllPunches
+global myAlgY1AllPunchesStdDev
+global myAlgY2AllPunches
+global myAlgY2AllPunchesStdDev
+global myPEGY1AllPunches
+global myPEGY1AllPunchesStdDev
+global myPEGY2AllPunches
+global myPEGY2AllPunchesStdDev
+global myHEMAY1AllPunches
+global myHEMAY1AllPunchesStdDev
+global myHEMAY2AllPunches
+global myHEMAY2AllPunchesStdDev
+global myHEMACoY1AllPunches
+global myHEMACoY1AllPunchesStdDev
+global myHEMACoY2AllPunches
+global myHEMACoY2AllPunchesStdDev
+
 blue =    [0.0000, 0.4470, 0.7410];
 rust =    [0.8500, 0.3250, 0.0980];
 gold =    [0.9290, 0.6940, 0.1250];
@@ -89,6 +109,11 @@ for peak = 1:2 % this is outer loop in order to make 1 figure for each pk
     myTitle = sprintf('gel%d', gel);
     saveMyPlot(FigH, myTitle);
 end
+
+% 2021/02/12 NEW save the arrays of averages and standard devs
+% for all gel types, J, so that plotSteadyandDynStatesJB05 
+% can read these values in
+saveMyData();
 
 function g = prepPlotData(J, K, peak)
     global blue
@@ -234,6 +259,49 @@ function g = prepPlotData(J, K, peak)
     myErr1(K) = stdDev1;
     myY2(K) = normalized2;
     myErr2(K) = stdDev2;
+    
+    % 2021/02/12 NEW save the arrays of averages and standard devs
+    % for all gel types, J, so that plotSteadyandDynStatesJB05 
+    % can read these values in
+    global myAlgY1AllPunches
+    global myAlgY1AllPunchesStdDev
+    global myAlgY2AllPunches
+    global myAlgY2AllPunchesStdDev
+    global myPEGY1AllPunches
+    global myPEGY1AllPunchesStdDev
+    global myPEGY2AllPunches
+    global myPEGY2AllPunchesStdDev
+    global myHEMAY1AllPunches
+    global myHEMAY1AllPunchesStdDev
+    global myHEMAY2AllPunches
+    global myHEMAY2AllPunchesStdDev
+    global myHEMACoY1AllPunches
+    global myHEMACoY1AllPunchesStdDev
+    global myHEMACoY2AllPunches
+    global myHEMACoY2AllPunchesStdDev   
+    
+    switch J
+        case 1
+            myAlgY1AllPunches(K) = myY1(K);
+            myAlgY1AllPunchesStdDev(K)  = myErr1(K);
+            myAlgY2AllPunches(K) = myY2(K);
+            myAlgY2AllPunchesStdDev(K)  = myErr2(K);
+        case 2
+            myPEGY1AllPunches(K) = myY1(K);
+            myPEGY1AllPunchesStdDev(K)  = myErr1(K);
+            myPEGY2AllPunches(K) = myY2(K);
+            myPEGY2AllPunchesStdDev(K)  = myErr2(K);
+        case 3
+            myHEMAY1AllPunches(K) = myY1(K);
+            myHEMAY1AllPunchesStdDev(K)  = myErr1(K);
+            myHEMAY2AllPunches(K) = myY2(K);
+            myHEMAY2AllPunchesStdDev(K)  = myErr2(K);
+        case 4
+            myHEMACoY1AllPunches(K) = myY1(K);
+            myHEMACoY1AllPunchesStdDev(K)  = myErr1(K);
+            myHEMACoY2AllPunches(K) = myY2(K);
+            myHEMACoY2AllPunchesStdDev(K)  = myErr2(K);    
+    end
 
     switch peak
         case 1
@@ -348,4 +416,83 @@ function g = saveMyPlot(FigH, myTitle)
     myPlot = sprintf('%s%s', plotDirStem, myTitle);
     saveas(FigH, myPlot, 'png');
     g = 1;
+end
+
+function h = saveMyData()
+    % 2021/02/12 NEW save the arrays of averages and standard devs
+    % for all gel types, J, so that plotSteadyandDynStatesJB05 
+    % can read these values in
+    global myAlgY1AllPunches
+    global myAlgY1AllPunchesStdDev
+    global myAlgY2AllPunches
+    global myAlgY2AllPunchesStdDev
+    global myPEGY1AllPunches
+    global myPEGY1AllPunchesStdDev
+    global myPEGY2AllPunches
+    global myPEGY2AllPunchesStdDev
+    global myHEMAY1AllPunches
+    global myHEMAY1AllPunchesStdDev
+    global myHEMAY2AllPunches
+    global myHEMAY2AllPunchesStdDev
+    global myHEMACoY1AllPunches
+    global myHEMACoY1AllPunchesStdDev
+    global myHEMACoY2AllPunches
+    global myHEMACoY2AllPunchesStdDev
+    
+    dirStem = 'C:\Users\karen\Documents\Data\';
+    for ii = 1:16
+        switch ii
+            case 1
+                myArray = myAlgY1AllPunches;
+                myVariable = 'myAlgY1AllPunches';
+            case 2
+                myArray = myAlgY1AllPunchesStdDev;
+                myVariable = 'myAlgY1AllPunchesStdDev';
+            case 3
+                myArray = myAlgY2AllPunches;
+                myVariable = 'myAlgY2AllPunches';
+            case 4
+                myArray = myAlgY2AllPunchesStdDev;
+                myVariable = 'myAlgY2AllPunchesStdDev';
+            case 5
+                myArray = myPEGY1AllPunches;
+                myVariable = 'myPEGY1AllPunches';
+            case 6
+                myArray = myPEGY1AllPunchesStdDev;
+                myVariable = 'myPEGY1AllPunchesStdDev';
+            case 7
+                myArray = myPEGY2AllPunches;
+                myVariable = 'myPEGY2AllPunches';
+            case 8
+                myArray = myPEGY2AllPunchesStdDev;
+                myVariable = 'myPEGY2AllPunchesStdDev';
+            case 9
+                myArray = myHEMAY1AllPunches;
+                myVariable = 'myHEMAY1AllPunches';
+            case 10
+                myArray = myHEMAY1AllPunchesStdDev;
+                myVariable = 'myHEMAY1AllPunchesStdDev';
+            case 11
+                myArray = myHEMAY2AllPunches;
+                myVariable = 'myHEMAY2AllPunches';
+            case 12
+                myArray = myHEMAY2AllPunchesStdDev;
+                myVariable = 'myHEMAY2AllPunchesStdDev';
+            case 13
+                myArray = myHEMACoY1AllPunches;
+                myVariable = 'myHEMACoY1AllPunches';
+            case 14
+                myArray = myHEMACoY1AllPunchesStdDev;
+                myVariable = 'myHEMACoY1AllPunchesStdDev';
+            case 15
+                myArray = myHEMACoY2AllPunches;
+                myVariable = 'myHEMACoY2AllPunches';
+            case 16
+                myArray = myHEMACoY2AllPunchesStdDev; 
+                myVariable = 'myHEMACoY2AllPunchesStdDev';
+        end    
+        myFilename = sprintf('%s%s.mat', dirStem, myVariable);
+        save(myFilename, myVariable);
+    end
+    h = 1;
 end
