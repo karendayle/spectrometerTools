@@ -270,6 +270,7 @@ for pHLoop = 1:2
             % 2) 95% CIs
             % https://www.dummies.com/education/math/statistics/how-to-calculate-a-confidence-interval-for-a-population-mean-when-you-know-its-standard-deviation/
             zStar = 1.96; % z Star value for 95% CI
+            % TO DO: UPDATE
             nStat = 5; % should be > 30 or normal dist
             nDyn = 9; % should be > 30 or normal dist
             % 95% CI = avg +/ zStar * std dev/sqrt(n)
@@ -281,6 +282,7 @@ for pHLoop = 1:2
                 zStar*myHEMAY1allPunchesStdDev(index)/sqrt(nStat);
             yErrStat4 = myHEMACoY1allPunches(index) + ...
                 zStar*myHEMACoY1allPunchesStdDev(index)/sqrt(nStat);
+            % 2021/02/05: TO DO UPDATE nDyn = endvals(1, ?, 1, 3);
             yErrDyn1 = yDyn(1) + zStar*errDyn(1)/sqrt(nDyn);
             yErrDyn2 = yDyn(2) + zStar*errDyn(2)/sqrt(nDyn);
             yErrDyn3 = yDyn(3) + zStar*errDyn(3)/sqrt(nDyn);
