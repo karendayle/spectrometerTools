@@ -1,3 +1,5 @@
+
+
 close all; % close all plots from previous runs
 numPoints = 1024;
 autoSave = 1;
@@ -343,11 +345,10 @@ for step = 1:12
         figure
     end
     
-    set(gca,'FontSize', 20);
+    % old set(gca,'FontSize', 20);
+    set(gca,'FontSize',20,'FontWeight','bold','box','off') % 2021/02/15
     newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-baseline','normalized'};
     y=[dark(2,:); raw(2,:); spec(2,:); avg(2,:); e(1,:); f(:)'; normalized(:)';];
-%     h = stackedplot(dark(1,:), y', 'Title', myTitle, ...
-%         'DisplayLabels', newYlabels, 'FontSize', 15);
     h = stackedplot(dark(1,:), y', ...
         'DisplayLabels', newYlabels, 'FontSize', 15);
     if (step < 11)
@@ -357,8 +358,8 @@ for step = 1:12
     axesProps = struct(h.AxesProperties(7));  
     axesProps.Axes.XLabel.Interpreter = 'tex';
     axesProps.Axes.YLim = [0 (max(normalized))]; % maybe round upwards?
-    h.xlabel('Wavenumber cm^{-1}'); % affects the last plot, here it's #6
-    
+    h.xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
+    h.XLimits = [950 1800]; % 2021/02/14 adding limits
     saveMyPlot(FigH, myTitle);
 end
 
@@ -369,16 +370,22 @@ if autoSave
     FigH = figure('Position', get(0, 'Screensize'));
 else
     figure
-end
+end 
 myTitle = 'Normalized spectra for all steps';
-set(gca,'FontSize', 20);
+% 2021/02/15 FontWeight is not a property of stackedplot and so errors
+% out if passed in (below). Here, it is allowed but ignored by stackedplot
+set(gca,'FontSize',20,'FontWeight','bold','box','off');
 newYlabels = {'Step 1:','Step 2:','Step 3:','Step 4:','Step 5:','Step 6:', 'Step 7:','Step 8:','Step 9:','Step 10:'};
-% h = stackedplot(dark(1,:)', n', 'Title', 'Normalized spectra for all steps', ...
-%     'DisplayLabels', newYlabels, 'FontSize', 20); % applied to both labels and tick labels
 h = stackedplot(dark(1,:)', n', ...
-    'DisplayLabels', newYlabels, 'FontSize', 20); % applied to both labels and tick labels
+    'DisplayLabels', newYlabels, 'FontSize', 15); % applied to both labels and tick labels
 for i = 1:numel(h.AxesProperties)
     h.AxesProperties(i).YLimits = [0 1];
+    h.XLimits = [950 1800]; % 2021/02/14 adding limits
+    if i == numel(h.AxesProperties)
+        axesProps = struct(h.AxesProperties(i));  
+        axesProps.Axes.XLabel.Interpreter = 'tex';
+        h.xlabel('Wavenumber (cm^{-1})'); % 2021/02/14 superscript not working
+    end
 end
 saveMyPlot(FigH, myTitle);
 
