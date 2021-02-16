@@ -85,9 +85,9 @@ global subDir
 subDir = [ "1 pH7", "2 pH4", "3 pH10", "4 pH7", "5 pH10","6 pH4", ...
     "7 pH10", "8 pH7", "9 pH4" ];
 
-% Use JB07 as skeleton but needs modifying. Instead of 4 gels, 5
-% punches, 2 peaks, now there are 4 gels, 3 series, 3 pH levels, 3 segments
-% per pH and 2 peaks
+% Based on JB07 but modified. Instead of 4 gels, 5 punches per gel and 
+% 2 peaks per punch, now there are 4 gels, 3 series per gel, 3 pH levels 
+% per series, 3 segments per pH level and 2 peaks per segment
 for peak = 1:2 % this is outer loop in order to make 1 figure for each pk
     FigH = figure('Position', get(0, 'Screensize'));
     for gel = 1:4
@@ -102,7 +102,7 @@ for peak = 1:2 % this is outer loop in order to make 1 figure for each pk
     set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
     myTitle = sprintf('gel%d', gel);
     saveMyPlot(FigH, myTitle);
-    save('endVals.mat', endVals);
+    save('Data\endVals.mat', 'endVals');
 end
 
 function g = prepPlotData(gel, pHLevel, peak)
@@ -124,7 +124,7 @@ function g = prepPlotData(gel, pHLevel, peak)
     global subDir
     global endVals
     
-    fprintf('top: gel%d, pHLevel%d, peak%d\n', gel, pHLevel, peak);
+    % fprintf('top: gel%d, pHLevel%d, peak%d\n', gel, pHLevel, peak);
     
     % Use pHLevel to get actual segment number from segment
     switch pHLevel
@@ -145,17 +145,17 @@ function g = prepPlotData(gel, pHLevel, peak)
     sumSq2 = 0;
     thisdata = zeros(2, numPoints, 'double');
     numberOfSpectraAllSegments = 0;
-    fprintf('RESET numberOfSpectraAllSeqments = %d\n', ...
-        numberOfSpectraAllSegments);
+    % fprintf('RESET numberOfSpectraAllSeqments = %d\n', ...
+    %     numberOfSpectraAllSegments);
     
     % Important: this avg and std dev calculation is over all 3 segments
     % first pass
     for series = 1:3
-        fprintf('series%d pass1\n', series);
+        % fprintf('series%d pass1\n', series);
         
         for segment = 1:3
             offset = (gel - 1) * 3 + series;
-            fprintf('\tsegment%d\n', segment);
+            % fprintf('\tsegment%d\n', segment);
             % read the last 5 spectra taken for this segment
             dir_to_search = dirStem(offset) + subDir(pHSegments(segment));
             txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
@@ -172,8 +172,8 @@ function g = prepPlotData(gel, pHLevel, peak)
                 else
                     numberOfSpectraAllSegments = ...
                         numberOfSpectraAllSegments + 5;
-                    fprintf('\t\tnumberOfSpectraAllSeqments = %d\n', ...
-                        numberOfSpectraAllSegments);
+                    % fprintf('\t\tnumberOfSpectraAllSeqments = %d\n', ...
+                    %     numberOfSpectraAllSegments);
                     % first pass on dataset, to get array of average spectra
                     for I = 1 : numberOfSpectra          
                         if I >= startAtNumber
@@ -190,6 +190,7 @@ function g = prepPlotData(gel, pHLevel, peak)
                             [e, f] = correctBaseline(thisdata(2,:)');  
 
                             % 1.5 Only consider a narrow band of the spectrum 
+                            % Check for error code -1
                             numerator1 = getAreaUnderCurve(x1, f(:));
                             numerator2 = getAreaUnderCurve(x2, f(:));
 
@@ -199,6 +200,7 @@ function g = prepPlotData(gel, pHLevel, peak)
                             % intensities used to calculate the denominator.
                             if (xRef ~= 0) 
                                 denominator = getAreaUnderCurve(xRef, f(:));
+                                % Check for error code -1
                             else
                                 denominator = 1;
                             end
@@ -225,9 +227,9 @@ function g = prepPlotData(gel, pHLevel, peak)
 
     % second pass on dataset to get (each point - average)^2
     for series = 1:3
-        fprintf('series%d pass2\n', series);
+        % fprintf('series%d pass2\n', series);
         for segment = 1:3 
-            fprintf('\tsegment%d\n', segment);
+            % fprintf('\tsegment%d\n', segment);
             for I = 1 : numberOfSpectra
                 % Take only the last 5
                 if I >= startAtNumber
@@ -244,6 +246,7 @@ function g = prepPlotData(gel, pHLevel, peak)
                     [~, f] = correctBaseline(thisdata(2,:)');  
 
                     % 1.5 Only consider a narrow band of the spectrum 
+                    % Check for error code -1
                     numerator1 = getAreaUnderCurve(x1, f(:));
                     numerator2 = getAreaUnderCurve(x2, f(:));   
                     % 2. Ratiometric
@@ -252,6 +255,7 @@ function g = prepPlotData(gel, pHLevel, peak)
                     % intensities used to calculate the denominator.
                     if (xRef ~= 0) 
                         denominator = getAreaUnderCurve(xRef, f(:));
+                        % Check for error code -1
                     else
                         denominator = 1;
                     end
@@ -323,9 +327,6 @@ function g = prepPlotData(gel, pHLevel, peak)
             fprintf('gel%d: pHLevel%d: pk:1702 N=%d avg=%f stddev=%f\n', ...
                 gel, pHLevel, numberOfSpectraAllSegments, myY2(pHLevel), myErr2(pHLevel));  
     end
-    
-
-    
     g = numberOfSpectraAllSegments;
 end
 
@@ -366,7 +367,8 @@ function d = getAreaUnderCurve(xCenter, spectrum)
     % an extra caution in case spectrum < 1024 points, which should
     % never be the case unless data collected was interrupted.
     if length(spectrum) < (lowEnd + numPointsToIntegrate - 1)
-        fprintf('length of spectrum is %d', length(spectrum));
+        fprintf('Error: length of spectrum is %d', length(spectrum));
+        d = -1;
     else
         for i = 1 : numPointsToIntegrate
             sum = sum + spectrum(lowEnd + i - 1);

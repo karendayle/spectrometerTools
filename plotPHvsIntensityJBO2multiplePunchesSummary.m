@@ -60,6 +60,28 @@ global myErr2
 % This script deals with the four gels made on 6/3/2020 by SP
 global dirStem
 
+% 2021/02/16 NEW to match JB07 output
+global allAlgY1
+global allAlgErr1
+global allAlgY2
+global allAlgNum
+global allAlgErr2
+global allPEGY1
+global allPEGErr1
+global allPEGY2
+global allPEGErr2
+global allPEGNum
+global allHEMAY1
+global allHEMAErr1
+global allHEMAY2
+global allHEMAErr2
+global allHEMANum
+global allHEMACoY1
+global allHEMACoErr1
+global allHEMACoY2
+global allHEMACoErr2
+global allHEMACoNum
+
 newGels = 1; % set to 0 to use old gels and 1 to use new gels
 if newGels 
     dirStem = [ ...
@@ -131,10 +153,10 @@ switch peakSet
         x2 = 715; % the 1582 "ref" peak
 end
 
-global xMin;
-global xMax;
-global yMin;
-global yMax;
+global xMin
+global xMax
+global yMin
+global yMax
 xMin = 950;
 xMax = 1800;
 yMin = 0;
@@ -204,6 +226,7 @@ for J=1:4
                     allAlgY2 = [allAlgY2; myY2];
                     allAlgErr2 = [allAlgErr2; myErr2];
                 end
+                allAlgNum = numSpectra;
             case 2
                 if M == 1
                     allPEGY1 = myY1; % Put the first gel's values into a row
@@ -215,7 +238,8 @@ for J=1:4
                     allPEGErr1 = [allPEGErr1; myErr1];
                     allPEGY2 = [allPEGY2; myY2];
                     allPEGErr2 = [allPEGErr2; myErr2];
-                end  
+                end
+                allPEGNum = numSpectra;
             case 3
                 if M == 1
                     allHEMAY1 = myY1; % Put the first gel's values into a row
@@ -228,6 +252,7 @@ for J=1:4
                     allHEMAY2 = [allHEMAY2; myY2];
                     allHEMAErr2 = [allHEMAErr2; myErr2];
                 end
+                allHEMANum = numSpectra;
             case 4
                 if M == 1
                     allHEMACoY1 = myY1; % Put the first gel's values into a row
@@ -240,6 +265,7 @@ for J=1:4
                     allHEMACoY2 = [allHEMACoY2; myY2];
                     allHEMACoErr2 = [allHEMACoErr2; myErr2];
                 end
+                allHEMACoNum = numSpectra;
         end
         
         % Now for the table of values for gel comparison
@@ -570,50 +596,50 @@ text(x + deltaX, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 % This is only meaningful when number of punches > 1
 % As written, this std dev is ignoring the variance in the 5 averaged msmts
 % Want to plot these with err bars
-fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
+% fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
 for K = 1:8
     a = getAverageAndStdDev(allAlgY1(:,K));
     myAlgY1allPunches(K) = a(1);
     myAlgY1allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) alg 1430/cm %.3f %.3f\n', K, myAlgY1allPunches(K), myAlgY1allPunchesStdDev(K));
+    %fprintf('pH(%d) alg 1430/cm %.3f %.3f\n', K, myAlgY1allPunches(K), myAlgY1allPunchesStdDev(K));
         
     a = getAverageAndStdDev(allAlgY2(:,K));
     myAlgY2allPunches(K) = a(1);
     myAlgY2allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) alg 1702/cm %.3f %.3f\n', K, myAlgY2allPunches(K), myAlgY2allPunchesStdDev(K));
+    %fprintf('pH(%d) alg 1702/cm %.3f %.3f\n', K, myAlgY2allPunches(K), myAlgY2allPunchesStdDev(K));
     
     a = getAverageAndStdDev(allPEGY1(:,K));
     myPEGY1allPunches(K) = a(1);
     myPEGY1allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) peg 1430/cm %.3f %.3f\n', K, myPEGY1allPunches(K), myPEGY1allPunchesStdDev(K));
+    %fprintf('pH(%d) peg 1430/cm %.3f %.3f\n', K, myPEGY1allPunches(K), myPEGY1allPunchesStdDev(K));
         
     a = getAverageAndStdDev(allPEGY2(:,K));
     myPEGY2allPunches(K) = a(1);
     myPEGY2allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) peg 1702/cm %.3f %.3f\n', K, myPEGY2allPunches(K), myPEGY2allPunchesStdDev(K));
+    %fprintf('pH(%d) peg 1702/cm %.3f %.3f\n', K, myPEGY2allPunches(K), myPEGY2allPunchesStdDev(K));
     
     a = getAverageAndStdDev(allHEMAY1(:,K));
     myHEMAY1allPunches(K) = a(1);
     myHEMAY1allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) pHE 1430/cm %.3f %.3f\n', K, myHEMAY1allPunches(K), myHEMAY1allPunchesStdDev(K));
+    %fprintf('pH(%d) pHE 1430/cm %.3f %.3f\n', K, myHEMAY1allPunches(K), myHEMAY1allPunchesStdDev(K));
         
     a = getAverageAndStdDev(allHEMAY2(:,K));
     myHEMAY2allPunches(K) = a(1);
     myHEMAY2allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) pHE 1702/cm %.3f %.3f\n', K, myHEMAY2allPunches(K), myHEMAY2allPunchesStdDev(K));
+    %fprintf('pH(%d) pHE 1702/cm %.3f %.3f\n', K, myHEMAY2allPunches(K), myHEMAY2allPunchesStdDev(K));
     
     a = getAverageAndStdDev(allHEMACoY1(:,K));
     myHEMACoY1allPunches(K) = a(1);
     myHEMACoY1allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) pHC 1430/cm %.3f %.3f\n', K, myHEMACoY1allPunches(K), myHEMACoY1allPunchesStdDev(K));
+    %fprintf('pH(%d) pHC 1430/cm %.3f %.3f\n', K, myHEMACoY1allPunches(K), myHEMACoY1allPunchesStdDev(K));
         
     a = getAverageAndStdDev(allHEMACoY2(:,K));
     myHEMACoY2allPunches(K) = a(1);
     myHEMACoY2allPunchesStdDev(K) = a(2);
-    fprintf('pH(%d) pHC 1702/cm %.3f %.3f\n', K, myHEMACoY2allPunches(K), myHEMACoY2allPunchesStdDev(K));
+    %fprintf('pH(%d) pHC 1702/cm %.3f %.3f\n', K, myHEMACoY2allPunches(K), myHEMACoY2allPunchesStdDev(K));
 end
 
-fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
+% fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
 sumVarAlgPk1 = 0;
 sumVarPegPk1 = 0;
 sumVarpHEPk1 = 0;
@@ -655,19 +681,19 @@ for K = 1:8
     sumVarpHCPk2 = sumVarpHCPk2 + myHEMACoY2allPunchesStdDev(K);
 end
 
-fprintf('sum of std devs for all pH levels\n');
-switch peakSet
-    case 1
-        fprintf('alg 1430/cm %.3f 1702/cm %.3f\n', sumVarAlgPk1, sumVarAlgPk2);
-        fprintf('peg 1430/cm %.3f 1702/cm %.3f\n', sumVarPegPk1, sumVarPegPk2);
-        fprintf('pHE 1430/cm %.3f 1702/cm %.3f\n', sumVarpHEPk1, sumVarpHEPk2);
-        fprintf('pHC 1430/cm %.3f 1702/cm %.3f\n', sumVarpHCPk1, sumVarpHCPk2);
-    case 2
-        fprintf('alg 1072/cm %.3f 1582/cm %.3f\n', sumVarAlgPk1, sumVarAlgPk2);
-        fprintf('peg 1072/cm %.3f 1582/cm %.3f\n', sumVarPegPk1, sumVarPegPk2);
-        fprintf('pHE 1072/cm %.3f 1582/cm %.3f\n', sumVarpHEPk1, sumVarpHEPk2);
-        fprintf('pHC 1072/cm %.3f 1582/cm %.3f\n', sumVarpHCPk1, sumVarpHCPk2);
-end
+% fprintf('sum of std devs for all pH levels\n');
+% switch peakSet
+%     case 1
+%         fprintf('alg 1430/cm %.3f 1702/cm %.3f\n', sumVarAlgPk1, sumVarAlgPk2);
+%         fprintf('peg 1430/cm %.3f 1702/cm %.3f\n', sumVarPegPk1, sumVarPegPk2);
+%         fprintf('pHE 1430/cm %.3f 1702/cm %.3f\n', sumVarpHEPk1, sumVarpHEPk2);
+%         fprintf('pHC 1430/cm %.3f 1702/cm %.3f\n', sumVarpHCPk1, sumVarpHCPk2);
+%     case 2
+%         fprintf('alg 1072/cm %.3f 1582/cm %.3f\n', sumVarAlgPk1, sumVarAlgPk2);
+%         fprintf('peg 1072/cm %.3f 1582/cm %.3f\n', sumVarPegPk1, sumVarPegPk2);
+%         fprintf('pHE 1072/cm %.3f 1582/cm %.3f\n', sumVarpHEPk1, sumVarpHEPk2);
+%         fprintf('pHC 1072/cm %.3f 1582/cm %.3f\n', sumVarpHCPk1, sumVarpHCPk2);
+% end
 
 % Plot the averages of the punches with their std dev on one plot for all
 % gel types
@@ -931,6 +957,14 @@ end
 for M=1:maxM+1
     fprintf('%.3f %.3f %.3f %.3f\n', myHEMACoY2Min(M), myHEMACoY2Max(M), myHEMACoY2Delta(M), myHEMACoY2PercentDelta(M));
 end
+
+% 2021/02/16 NEW adding this just as was done to JB07
+% save the arrays of averages and standard devs
+% for all gel types, J, so that plotSteadyandDynStatesJB05 
+% can read these values in
+printMyData();
+saveMyData();
+
 % end of main program
 
 function d = getAreaUnderCurve(xCenter, spectrum)
@@ -1182,5 +1216,155 @@ function h = getAverageAndStdDev(dataPoints)
         myStdDev = sqrt(mySumSq/myN);
 
         h = [ myAvg, myStdDev ];
+end
+
+function j = saveMyData()
+    % 2021/02/16 NEW adding this just as was done to JB07
+    % save the arrays of averages and standard devs
+    % for all gel types, J, so that plotSteadyandDynStatesJB05 
+    % can read these values in
+    global myAlgY1AllPunches
+    global myAlgY1AllPunchesStdDev
+    global myAlgY2AllPunches
+    global myAlgY2AllPunchesStdDev
+    global myPEGY1AllPunches
+    global myPEGY1AllPunchesStdDev
+    global myPEGY2AllPunches
+    global myPEGY2AllPunchesStdDev
+    global myHEMAY1AllPunches
+    global myHEMAY1AllPunchesStdDev
+    global myHEMAY2AllPunches
+    global myHEMAY2AllPunchesStdDev
+    global myHEMACoY1AllPunches
+    global myHEMACoY1AllPunchesStdDev
+    global myHEMACoY2AllPunches
+    global myHEMACoY2AllPunchesStdDev
+    
+    dirStem = 'C:\Users\karen\Documents\Data\';
+    for ii = 1:16
+        switch ii
+            case 1
+                myArray = myAlgY1AllPunches;
+                myVariable = 'myAlgY1AllPunches';
+            case 2
+                myArray = myAlgY1AllPunchesStdDev;
+                myVariable = 'myAlgY1AllPunchesStdDev';
+            case 3
+                myArray = myAlgY2AllPunches;
+                myVariable = 'myAlgY2AllPunches';
+            case 4
+                myArray = myAlgY2AllPunchesStdDev;
+                myVariable = 'myAlgY2AllPunchesStdDev';
+            case 5
+                myArray = myPEGY1AllPunches;
+                myVariable = 'myPEGY1AllPunches';
+            case 6
+                myArray = myPEGY1AllPunchesStdDev;
+                myVariable = 'myPEGY1AllPunchesStdDev';
+            case 7
+                myArray = myPEGY2AllPunches;
+                myVariable = 'myPEGY2AllPunches';
+            case 8
+                myArray = myPEGY2AllPunchesStdDev;
+                myVariable = 'myPEGY2AllPunchesStdDev';
+            case 9
+                myArray = myHEMAY1AllPunches;
+                myVariable = 'myHEMAY1AllPunches';
+            case 10
+                myArray = myHEMAY1AllPunchesStdDev;
+                myVariable = 'myHEMAY1AllPunchesStdDev';
+            case 11
+                myArray = myHEMAY2AllPunches;
+                myVariable = 'myHEMAY2AllPunches';
+            case 12
+                myArray = myHEMAY2AllPunchesStdDev;
+                myVariable = 'myHEMAY2AllPunchesStdDev';
+            case 13
+                myArray = myHEMACoY1AllPunches;
+                myVariable = 'myHEMACoY1AllPunches';
+            case 14
+                myArray = myHEMACoY1AllPunchesStdDev;
+                myVariable = 'myHEMACoY1AllPunchesStdDev';
+            case 15
+                myArray = myHEMACoY2AllPunches;
+                myVariable = 'myHEMACoY2AllPunches';
+            case 16
+                myArray = myHEMACoY2AllPunchesStdDev; 
+                myVariable = 'myHEMACoY2AllPunchesStdDev';
+        end    
+        myFilename = sprintf('%s%s.mat', dirStem, myVariable);
+        save(myFilename, myVariable);
+    end
+    j = 1;
+end
+
+% 2021/02/16 for comparison to output of JB07
+function k = printMyData()
+global allAlgY1
+global allAlgErr1
+global allAlgY2
+global allAlgNum
+global allAlgErr2
+global allPEGY1
+global allPEGErr1
+global allPEGY2
+global allPEGErr2
+global allPEGNum
+global allHEMAY1
+global allHEMAErr1
+global allHEMAY2
+global allHEMAErr2
+global allHEMANum
+global allHEMACoY1
+global allHEMACoErr1
+global allHEMACoY2
+global allHEMACoErr2
+global allHEMACoNum
+pH = [ 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5 ];
+
+    for J = 1:4
+        for K = 1:8
+            % use a switch to set the Y1, Err1, Y2, Err2 arrays
+            switch J
+                case 1
+                    myY1(K) = allAlgY1(K);
+                    myErr1(K) = allAlgErr1(K);
+                    myY2(K) = allAlgY2(K);
+                    myErr2(K) = allAlgErr2(K);
+                    numberOfSpectraAllPunches = allAlgNum(K);
+                case 2
+                    myY1(K) = allPEGY1(K);
+                    myErr1(K) = allPEGErr1(K);
+                    myY2(K) = allPEGY2(K);
+                    myErr2(K) = allPEGErr2(K);
+                    numberOfSpectraAllPunches = allPEGNum(K);
+                case 3
+                    myY1(K) = allHEMAY1(K);
+                    myErr1(K) = allHEMAErr1(K);
+                    myY2(K) = allHEMAY2(K);
+                    myErr2(K) = allHEMAErr2(K);
+                    numberOfSpectraAllPunches = allHEMANum(K);
+                case 4
+                    myY1(K) = allHEMACoY1(K);
+                    myErr1(K) = allHEMACoErr1(K);
+                    myY2(K) = allHEMACoY2(K);
+                    myErr2(K) = allHEMACoErr2(K);
+                    numberOfSpectraAllPunches = allHEMACoNum(K);
+            end        
+            
+            % This matches JB07 output fmt
+            for peak = 1:2
+                switch peak
+                    case 1
+                        fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
+                            J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
+                    case 2
+                        fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
+                            J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K));  
+                end
+            end
+        end
+    end
+    k = 1;
 end
   

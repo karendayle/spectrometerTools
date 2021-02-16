@@ -67,7 +67,7 @@ plotEndValsOnSteadyState(1);
 set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 ssVals(1,1,1) = myAlgY1allPunches(1);
 ssVals(1,1,2) = myAlgY1allPunches(7);
 
@@ -82,7 +82,7 @@ plotScatterOfEndValsOnSteadyState(1);
 set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 1.3
@@ -96,7 +96,7 @@ plotScatterOfAvgs(1);
 set(gca,'FontSize', 30);
 title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 % 2. PEG
@@ -112,7 +112,7 @@ end
 plotEndValsOnSteadyState(2);
 title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 ssVals(2,1,1) = myPEGY1allPunches(1);
 ssVals(2,1,2) = myPEGY1allPunches(7);
 
@@ -127,7 +127,7 @@ plotScatterOfEndValsOnSteadyState(2);
 set(gca,'FontSize', 30);
 title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 2.3
@@ -141,7 +141,7 @@ plotScatterOfAvgs(2);
 set(gca,'FontSize', 30);
 title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 % 3. pHEMA
@@ -158,7 +158,7 @@ plotEndValsOnSteadyState(3);
 set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 ssVals(3,1,1) = myHEMAY1allPunches(1);
 ssVals(3,1,2) = myHEMAY1allPunches(7);
 
@@ -173,7 +173,7 @@ plotScatterOfEndValsOnSteadyState(3);
 set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 3.3
@@ -187,7 +187,7 @@ plotScatterOfAvgs(3);
 set(gca,'FontSize', 30);
 title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 % 4. pHEMA/coAc
@@ -204,7 +204,7 @@ plotEndValsOnSteadyState(4);
 set(gca,'FontSize', 30);
 title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 ssVals(4,1,1) = myHEMACoY1allPunches(1);
 ssVals(4,1,2) = myHEMACoY1allPunches(7);
 
@@ -219,7 +219,7 @@ plotScatterOfEndValsOnSteadyState(4);
 set(gca,'FontSize', 30);
 title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm{-1} peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 figure % 4.3
@@ -233,7 +233,7 @@ plotScatterOfAvgs(4);
 set(gca,'FontSize', 30);
 title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
 xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm-1 peak', 'FontSize', 30);
+ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
 xlim([3. 8.]);
 
 % Repeat for pH4 and pH7
@@ -268,12 +268,16 @@ for pHLoop = 1:2
     else
         if myErrorBars == 2
             % 2) 95% CIs
+            % 95% CI = avg +/ zStar * std dev/sqrt(n)
             % https://www.dummies.com/education/math/statistics/how-to-calculate-a-confidence-interval-for-a-population-mean-when-you-know-its-standard-deviation/
             zStar = 1.96; % z Star value for 95% CI
             % TO DO: UPDATE
-            nStat = 5; % should be > 30 or normal dist
-            nDyn = 9; % should be > 30 or normal dist
-            % 95% CI = avg +/ zStar * std dev/sqrt(n)
+            % old nStat = 5; % should be > 30 or normal dist
+            % old nDyn = 9; % should be > 30 or normal dist
+            nStat = 125; % should be > 30 or normal dist
+            nDyn = 45; % should be > 30 or normal dist
+            % TO DO gel 4 series 3 only has 40 points
+
             yErrStat1 = myAlgY1allPunches(index) + ... 
                 zStar*myAlgY1allPunchesStdDev(index)/sqrt(nStat);
             yErrStat2 = myPEGY1allPunches(index) + ...
@@ -301,9 +305,9 @@ for pHLoop = 1:2
     set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
     set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
     myTitle = sprintf('Consistency of hydrogels at pH%d',jj);
-    title(myTitle);
+    % title(myTitle); 2021/02/15 out for final version
     xlabel('Gel type')
-    ylabel('Normalized intensity of 1430 cm{-1} peak')
+    ylabel('Normalized intensity of 1430 cm^{-1} peak')
     saveMyPlot(FigH, myTitle);
 end
 

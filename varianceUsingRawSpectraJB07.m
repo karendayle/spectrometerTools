@@ -2,6 +2,7 @@
 % Dayle Kotturi Jan 2021
 
 % For the intensity vs pH plots of 4 types of gels in static solution,
+% which are also used by JB05 script to compare static vs dynamic results,
 % let's see how small the std dev is when calculated using the full set
 % of raw spectra. Note: there may be some confusion around this but here
 % there is nothing re: 95% CI being used for the error bars. 
@@ -112,7 +113,7 @@ end
 
 % 2021/02/12 NEW save the arrays of averages and standard devs
 % for all gel types, J, so that plotSteadyandDynStatesJB05 
-% can read these values in
+% can read these values in. TO DO: record N
 saveMyData();
 
 function g = prepPlotData(J, K, peak)

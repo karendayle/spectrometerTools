@@ -517,8 +517,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
         % comparison
         % Need gel, series, segment K, y1, y2
         endVals(gel, series, K, 1) = y1(numberOfSpectra);
-        % Internet is so fucking slow that waiting until the end to 
-        % dump these is killing me so print it here too
+        % Internet is so print it here too
         fprintf('gel %d pun %d seg %d pk1 %f\n', gel, series, K, y1(numberOfSpectra));
         endVals(gel, series, K, 2) = y2(numberOfSpectra);
         fprintf('gel %d pun %d seg %d pk2 %f\n', gel, series, K, y2(numberOfSpectra));
@@ -985,22 +984,35 @@ end
 % Print the last value of each segment
 function r = printEndVals()
     global endVals
-    fprintf('endVals\n');
     for gel = 1:4
-        fprintf('gel%d\n', gel);
-        for punch = 1:3
-            fprintf('punch%d', punch);
-            for segment = 1:9
-                % 1430 peak
-                fprintf('seg%d: %f ', segment, endVals(gel, punch, segment, 1));
-                % 1702 peak
-                %fprintf('seg%d: %f ', segment, endVals(gel, punch, segment, 2));
+        for pHLevel = 1:3 % 2021/02/16 TO DO: map segment and punch (series) to pHLevel
+            for peak = 1:2
+                % 2021/02/16 from JB08
+                fprintf('gel%d: pHLevel%d: pk:1430 N=%d avg=%f stddev=%f\n', ...
+                    gel, pHLevel, endVals(gel, pHLevel, peak, 3), ...
+                    endVals(gel, pHLevel, peak, 1), endVals(gel, pHLevel, peak, 2));
             end
-            fprintf('\n');
         end
     end
+    
+%     fprintf('endVals\n');
+%     for gel = 1:4
+%         fprintf('gel%d\n', gel);
+%         for punch = 1:3
+%             fprintf('punch%d', punch);
+%             for segment = 1:9
+%                 % 1430 peak
+%                 fprintf('seg%d: %f ', segment, endVals(gel, punch, segment, 1));
+%                 % 1702 peak
+%                 %fprintf('seg%d: %f ', segment, endVals(gel, punch, segment, 2));
+%             end
+%             fprintf('\n');
+%         end
+%     end
     r = 1;
 end
+
+
 
 % Print the initial slope of each segment. Use it to compare gels for 
 % which one allows the fastest transitions
