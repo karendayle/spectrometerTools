@@ -1,7 +1,7 @@
 % CHOOSE ONE OF THESE two options for error bars (near line 250)
 %if myErrorBars == 1, use   StdDev
 %if myErrorBars == 2  use 95% CIs
-myErrorBars = 1;
+myErrorBars = 2;
 
 % RGB
 global blue;
@@ -246,25 +246,29 @@ for pHLoop = 1:2
             jj = 7; % used to retrieve the dynamic pH7 values
             index = 7; % used to index into the static pH7 values
     end
-    % 2020/11/25 kdk this is the magic needed to be able to save a 
-    % figure that needs full screen to display correctly.
-    % Without this, what gets saved to file (later in saveMyPlot) is
-    % the collapsed version which cannot be expanded later when it's a png.
-    FigH = figure('Position', get(0, 'Screensize'));
-    [yDyn(1), errDyn(1)] = buildArrayForBars(1, jj);
-    [yDyn(2), errDyn(2)] = buildArrayForBars(2, jj);
-    [yDyn(3), errDyn(3)] = buildArrayForBars(3, jj);
-    [yDyn(4), errDyn(4)] = buildArrayForBars(4, jj);
+
+    [y1Dyn(1), err1Dyn(1), num1Dyn(1)] = buildArrayForBars(1, jj, 1); % 1430
+    [y1Dyn(2), err1Dyn(2), num1Dyn(1)] = buildArrayForBars(2, jj, 1); % 1430
+    [y1Dyn(3), err1Dyn(3), num1Dyn(1)] = buildArrayForBars(3, jj, 1); % 1430
+    [y1Dyn(4), err1Dyn(4), num1Dyn(1)] = buildArrayForBars(4, jj, 1); % 1430
+    [y2Dyn(1), err2Dyn(1), num2Dyn(1)] = buildArrayForBars(1, jj, 2); % 1702
+    [y2Dyn(2), err2Dyn(2), num2Dyn(1)] = buildArrayForBars(2, jj, 2); % 1702
+    [y2Dyn(3), err2Dyn(3), num2Dyn(1)] = buildArrayForBars(3, jj, 2); % 1702
+    [y2Dyn(4), err2Dyn(4), num2Dyn(1)] = buildArrayForBars(4, jj, 2); % 1702
     
     % put static vals on LHS of each pair
-    yBar = [myAlgY1allPunches(index) yDyn(1); myPEGY1allPunches(index) yDyn(2); ...
-        myHEMAY1allPunches(index) yDyn(3); myHEMACoY1allPunches(index) yDyn(4)];
+    y1Bar = [myAlgY1allPunches(index) y1Dyn(1); myPEGY1allPunches(index) y1Dyn(2); ...
+        myHEMAY1allPunches(index) y1Dyn(3); myHEMACoY1allPunches(index) y1Dyn(4)];
+    y2Bar = [myAlgY2allPunches(index) y2Dyn(1); myPEGY2allPunches(index) y2Dyn(2); ...
+        myHEMAY2allPunches(index) y2Dyn(3); myHEMACoY2allPunches(index) y2Dyn(4)];
     
     % At the top, CHOOSE ONE OF THESE two options for error bars:
     if myErrorBars == 1
         % 1) StdDev
-        yErr = [myAlgY1allPunchesStdDev(index) errDyn(1); myPEGY1allPunchesStdDev(index) errDyn(2); ...
-            myHEMAY1allPunchesStdDev(index) errDyn(3); myHEMACoY1allPunchesStdDev(index) errDyn(4)];
+        y1Err = [myAlgY1allPunchesStdDev(index) err1Dyn(1); myPEGY1allPunchesStdDev(index) err1Dyn(2); ...
+            myHEMAY1allPunchesStdDev(index) err1Dyn(3); myHEMACoY1allPunchesStdDev(index) err1Dyn(4)];
+        y2Err = [myAlgY2allPunchesStdDev(index) err2Dyn(1); myPEGY2allPunchesStdDev(index) err2Dyn(2); ...
+            myHEMAY2allPunchesStdDev(index) err2Dyn(3); myHEMACoY2allPunchesStdDev(index) err2Dyn(4)];
     else
         if myErrorBars == 2
             % 2) 95% CIs
@@ -275,39 +279,98 @@ for pHLoop = 1:2
             % old nStat = 5; % should be > 30 or normal dist
             % old nDyn = 9; % should be > 30 or normal dist
             nStat = 125; % should be > 30 or normal dist
-            nDyn = 45; % should be > 30 or normal dist
-            % TO DO gel 4 series 3 only has 40 points
+            %nDyn = 45; % should be > 30 or normal dist
+            % 2021/02/17 NEW gel 4 series 3 only has 40 points
+            nDyn = num1Dyn(1);
 
-            yErrStat1 = myAlgY1allPunches(index) + ... 
-                zStar*myAlgY1allPunchesStdDev(index)/sqrt(nStat);
-            yErrStat2 = myPEGY1allPunches(index) + ...
-                zStar*myPEGY1allPunchesStdDev(index)/sqrt(nStat);
-            yErrStat3 = myHEMAY1allPunches(index) + ...
-                zStar*myHEMAY1allPunchesStdDev(index)/sqrt(nStat);
-            yErrStat4 = myHEMACoY1allPunches(index) + ...
-                zStar*myHEMACoY1allPunchesStdDev(index)/sqrt(nStat);
+            % 2021/02/17 aha, I knew this was off. The error portion
+            % is only the zStar term. This term gets added, subtracted
+            % to the avg to get the whole interval. Including the avg
+            % in the error bar is the reason they were so high!
+            % y1ErrStat1 = myAlgY1allPunches(index) + ... 
+            %     zStar*myAlgY1allPunchesStdDev(index)/sqrt(nStat);
+            % y1ErrStat2 = myPEGY1allPunches(index) + ...
+            %     zStar*myPEGY1allPunchesStdDev(index)/sqrt(nStat);
+            % y1ErrStat3 = myHEMAY1allPunches(index) + ...
+            %     zStar*myHEMAY1allPunchesStdDev(index)/sqrt(nStat);
+            % y1ErrStat4 = myHEMACoY1allPunches(index) + ...
+            %     zStar*myHEMACoY1allPunchesStdDev(index)/sqrt(nStat);
+            % y2ErrStat1 = myAlgY2allPunches(index) + ... 
+            %     zStar*myAlgY2allPunchesStdDev(index)/sqrt(nStat);
+            % y2ErrStat2 = myPEGY2allPunches(index) + ...
+            %     zStar*myPEGY2allPunchesStdDev(index)/sqrt(nStat);
+            % y2ErrStat3 = myHEMAY2allPunches(index) + ...
+            %     zStar*myHEMAY2allPunchesStdDev(index)/sqrt(nStat);
+            % y2ErrStat4 = myHEMACoY2allPunches(index) + ...
+            %     zStar*myHEMACoY2allPunchesStdDev(index)/sqrt(nStat);
+            y1ErrStat1 = zStar*myAlgY1allPunchesStdDev(index)/sqrt(nStat);
+            y1ErrStat2 = zStar*myPEGY1allPunchesStdDev(index)/sqrt(nStat);
+            y1ErrStat3 = zStar*myHEMAY1allPunchesStdDev(index)/sqrt(nStat);
+            y1ErrStat4 = zStar*myHEMACoY1allPunchesStdDev(index)/sqrt(nStat);
+            y2ErrStat1 = zStar*myAlgY2allPunchesStdDev(index)/sqrt(nStat);
+            y2ErrStat2 = zStar*myPEGY2allPunchesStdDev(index)/sqrt(nStat);
+            y2ErrStat3 = zStar*myHEMAY2allPunchesStdDev(index)/sqrt(nStat);
+            y2ErrStat4 = zStar*myHEMACoY2allPunchesStdDev(index)/sqrt(nStat);
+            
             % 2021/02/05: TO DO UPDATE nDyn = endvals(1, ?, 1, 3);
-            yErrDyn1 = yDyn(1) + zStar*errDyn(1)/sqrt(nDyn);
-            yErrDyn2 = yDyn(2) + zStar*errDyn(2)/sqrt(nDyn);
-            yErrDyn3 = yDyn(3) + zStar*errDyn(3)/sqrt(nDyn);
-            yErrDyn4 = yDyn(4) + zStar*errDyn(4)/sqrt(nDyn);
+            % yErrDyn1 = yDyn(1) + zStar*errDyn(1)/sqrt(nDyn);
+            % yErrDyn2 = yDyn(2) + zStar*errDyn(2)/sqrt(nDyn);
+            % yErrDyn3 = yDyn(3) + zStar*errDyn(3)/sqrt(nDyn);
+            % yErrDyn4 = yDyn(4) + zStar*errDyn(4)/sqrt(nDyn);
+            
+            % 2021/02/17 aha, I knew this was off. The error portion
+            % is only the zStar term. This term gets added, subtracted
+            % to the avg to get the whole interval. Including the avg
+            % in the error bar is the reason they were so high!
+            y1ErrDyn1 = zStar*err1Dyn(1)/sqrt(nDyn);
+            y1ErrDyn2 = zStar*err1Dyn(2)/sqrt(nDyn);
+            y1ErrDyn3 = zStar*err1Dyn(3)/sqrt(nDyn);
+            y1ErrDyn4 = zStar*err1Dyn(4)/sqrt(nDyn);
+            y2ErrDyn1 = zStar*err2Dyn(1)/sqrt(nDyn);
+            y2ErrDyn2 = zStar*err2Dyn(2)/sqrt(nDyn);
+            y2ErrDyn3 = zStar*err2Dyn(3)/sqrt(nDyn);
+            y2ErrDyn4 = zStar*err2Dyn(4)/sqrt(nDyn);
 
-            yErr = [yErrStat1 yErrDyn1; yErrStat2 yErrDyn2; ...
-                yErrStat3 yErrDyn3; yErrStat4 yErrDyn4];
+            y1Err = [y1ErrStat1 y1ErrDyn1; y1ErrStat2 y1ErrDyn2; ...
+                y1ErrStat3 y1ErrDyn3; y1ErrStat4 y1ErrDyn4];
+            y2Err = [y2ErrStat1 y2ErrDyn1; y2ErrStat2 y2ErrDyn2; ...
+                y2ErrStat3 y2ErrDyn3; y2ErrStat4 y2ErrDyn4];
         end
     end
     
-    plotBarOfAvgsSideBySide(yBar, yErr);
-    %fname = {'A';'B';'C';'D'};
-    %fname = {'Alg';'PEG';'Phe';'Phc'};
-    %fname = {'Alginate';'  PEG   ';' pHEMA  ';'pHEMA-co'};
-    fname = {'Alginate';'PEG';'pHEMA';'pHEMA-coA'};
-    set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
-    set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
-    myTitle = sprintf('Consistency of hydrogels at pH%d',jj);
+    % 2020/11/25 kdk this is the magic needed to be able to save a
+    % figure that needs full screen to display correctly.
+    % Without this, what gets saved to file (later in saveMyPlot) is
+    % the collapsed version which cannot be expanded later when it's a png.
+    FigH = figure('Position', get(0, 'Screensize'));
+    plotBarOfAvgsSideBySide(y1Bar, y1Err);
+    fname = {'Alginate'; 'PEG'; 'pHEMA'; 'pHEMA-coA'};
+    set(gca, 'XTick', 1:length(fname), 'XTickLabel', fname);
+    % set(gca, 'FontSize', 30, 'FontWeight', 'bold', 'box', 'off');
+    set(gca, 'FontSize', 30, 'box', 'off'); % 2021/02/17 rm bold
+    if myErrorBars == 1
+        myTitle = sprintf('Consistency stat vs dyn at pH%d 1430pk w std dev', jj);
+    else
+        myTitle = sprintf('Consistency stat vs dyn at pH%d 1430pk w 95 CI', jj);
+    end
     % title(myTitle); 2021/02/15 out for final version
-    xlabel('Gel type')
-    ylabel('Normalized intensity of 1430 cm^{-1} peak')
+    xlabel('Gel type');
+    ylabel('Normalized intensity of 1430 cm^{-1} peak');
+    saveMyPlot(FigH, myTitle);
+    
+    FigH = figure('Position', get(0, 'Screensize'));
+    plotBarOfAvgsSideBySide(y2Bar, y2Err);
+    fname = {'Alginate'; 'PEG'; 'pHEMA'; 'pHEMA-coA'};
+    set(gca, 'XTick', 1:length(fname), 'XTickLabel', fname);
+    set(gca, 'FontSize', 30, 'box', 'off'); % 2021/02/17 rm bold
+    if myErrorBars == 1
+        myTitle = sprintf('Consistency stat vs dyn at pH%d 1702pk w std dev', jj);
+    else
+        myTitle = sprintf('Consistency stat vs dyn at pH%d 1702pk w 95 CI', jj);
+    end
+    % title(myTitle); 2021/02/15 out for final version
+    xlabel('Gel type');
+    ylabel('Normalized intensity of 1702 cm^{-1} peak');
     saveMyPlot(FigH, myTitle);
 end
 
@@ -645,19 +708,20 @@ end
 % endVals(gel, pHLevel, peak, 3) = numberOfSpectraAllSegments;
 
 % Could pass in peak to extract 1702 pk values from endVals
-function [avgA, stdDevA] = buildArrayForBars(gel, pHValue)
+function [avgA, stdDevA, numA] = buildArrayForBars(gel, pHValue, peak)
     global endVals;
 
     switch pHValue
     case 4
         % 1430 cm-1 peak
-        avgA = endVals(gel, 1, 1, 1);
-        stdDevA = endVals(gel, 1, 1, 2);
-
+        avgA = endVals(gel, 1, peak, 1);
+        stdDevA = endVals(gel, 1, peak, 2);
+        numA = endVals(gel, 1, peak, 3);
     case 7
         % pH7 1430 cm-1 peak
-        avgA = endVals(gel, 2, 1, 1);
-        stdDevA = endVals(gel, 2, 1, 2);
+        avgA = endVals(gel, 2, peak, 1);
+        stdDevA = endVals(gel, 2, peak, 2);
+        numA = endVals(gel, 2, peak, 3);
     end
 end
 
