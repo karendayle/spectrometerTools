@@ -10,6 +10,11 @@
 % segment in the 12 time series
 % 2. Modify this code to read the last 5 spectra instead
 
+global inputOption
+% CHOOSE one of these
+%inputOption = 1; % use spectrum*.txt files as input
+inputOption = 2; % use avg*.txt files as input
+
 global blue
 global rust
 global gold
@@ -123,6 +128,7 @@ function g = prepPlotData(gel, pHLevel, peak)
     global myDebug
     global subDir
     global endVals
+    global inputOption
     
     % fprintf('top: gel%d, pHLevel%d, peak%d\n', gel, pHLevel, peak);
     
@@ -158,7 +164,8 @@ function g = prepPlotData(gel, pHLevel, peak)
             % fprintf('\tsegment%d\n', segment);
             % read the last 5 spectra taken for this segment
             dir_to_search = dirStem(offset) + subDir(pHSegments(segment));
-            txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
+            % txtpattern = fullfile(dir_to_search, 'spectrum*.txt');
+            txtpattern = fullfile(dir_to_search, 'avg*.txt');
             dinfo = dir(txtpattern); % why is this null array?
 
             numberOfSpectra = length(dinfo);
@@ -166,12 +173,22 @@ function g = prepPlotData(gel, pHLevel, peak)
                 % Take only the last 5 values for each segment. 
                 % Instead of 1 single value for 1430 and 1702, 
                 % read in all 5 spectra.
-                startAtNumber = numberOfSpectra - 4;
+                if inputOption == 1
+                    offset = 4; % when using spectrum*.txt
+                else
+                    offset = 0; % when using avg*.txt
+                end
+                startAtNumber = numberOfSpectra - offset;
                 if startAtNumber < 0
                     fprintf('Error: fewer than 5 files found');
                 else
+                    if inputOption == 1
+                        addition = 5; % when using spectrum*.txt
+                    else
+                        addition = 1; % when using avg*.txt
+                    end
                     numberOfSpectraAllSegments = ...
-                        numberOfSpectraAllSegments + 5;
+                        numberOfSpectraAllSegments + addition;
                     % fprintf('\t\tnumberOfSpectraAllSeqments = %d\n', ...
                     %     numberOfSpectraAllSegments);
                     % first pass on dataset, to get array of average spectra
