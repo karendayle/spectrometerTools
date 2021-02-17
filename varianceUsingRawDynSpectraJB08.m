@@ -12,8 +12,8 @@
 
 global inputOption
 % CHOOSE one of these
-%inputOption = 1; % use spectrum*.txt files as input
-inputOption = 2; % use avg*.txt files as input
+inputOption = 1; % use spectrum*.txt files as input
+%inputOption = 2; % use avg*.txt files as input
 
 global blue
 global rust
@@ -104,7 +104,8 @@ for peak = 1:2 % this is outer loop in order to make 1 figure for each pk
     end
     xlabel('pH level'); % x-axis label
     ylabel('Normalized Intensity (A.U.)'); % y-axis label
-    set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
+    % set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
+    set(gca,'FontSize',32, 'box', 'off'); % 2021/02/17 rm bold
     myTitle = sprintf('gel%d', gel);
     saveMyPlot(FigH, myTitle);
     save('Data\endVals.mat', 'endVals');
