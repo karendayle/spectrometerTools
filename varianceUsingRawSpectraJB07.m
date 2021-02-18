@@ -15,6 +15,7 @@
 % 6.            Add spectrum to running sum
 % 7.            Add spectrum^2 to running sum of sqs
 % 8.      Calculate std dev from sum, sum of sqs and N=125
+
 global blue
 global rust
 global gold
@@ -440,7 +441,8 @@ function h = saveMyData()
     global myHEMACoY2AllPunches
     global myHEMACoY2AllPunchesStdDev
     
-    dirStem = 'C:\Users\karen\Documents\Data\';
+    %dirStem = 'C:\Users\karen\Documents\Data\';
+    dirStem = 'Data\'; % make these files part of the repo
     for ii = 1:16
         switch ii
             case 1

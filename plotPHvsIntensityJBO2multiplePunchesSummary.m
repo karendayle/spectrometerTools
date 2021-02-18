@@ -1240,7 +1240,8 @@ function j = saveMyData()
     global myHEMACoY2AllPunches
     global myHEMACoY2AllPunchesStdDev
     
-    dirStem = 'C:\Users\karen\Documents\Data\';
+    %dirStem = 'C:\Users\karen\Documents\Data\';
+    dirStem = 'Data/'; % save .mat files to the repo
     for ii = 1:16
         switch ii
             case 1

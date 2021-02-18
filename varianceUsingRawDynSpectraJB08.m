@@ -12,8 +12,8 @@
 
 global inputOption
 % CHOOSE one of these
-inputOption = 1; % use spectrum*.txt files as input
-%inputOption = 2; % use avg*.txt files as input
+%inputOption = 1; % use spectrum*.txt files as input
+inputOption = 2; % use avg*.txt files as input
 
 global blue
 global rust

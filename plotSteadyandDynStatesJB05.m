@@ -53,6 +53,8 @@ global ssVals
 % 1. Alginate
 load('Data/myAlgY1AllPunches.mat');
 load('Data/myAlgY1AllPunchesStdDev.mat');
+load('Data/myAlgY2AllPunches.mat');
+load('Data/myAlgY2AllPunchesStdDev.mat');
 figure % 1.1
 text(9.5,myAlgY1allPunches(8)+0.03,'Steady State', 'Color', black, ...
     'FontSize', 20);
@@ -102,6 +104,8 @@ xlim([3. 8.]);
 % 2. PEG
 load('Data/myPEGY1AllPunches.mat');
 load('Data/myPEGY1AllPunchesStdDev.mat');
+load('Data/myPEGY2AllPunches.mat');
+load('Data/myPEGY2AllPunchesStdDev.mat');
 figure % 2.1
 for i = 1:8
     line([0,10],[myPEGY1allPunches(i),myPEGY1allPunches(i)], ...
@@ -147,6 +151,8 @@ xlim([3. 8.]);
 % 3. pHEMA
 load('Data/myHEMAY1AllPunches.mat');
 load('Data/myHEMAY1AllPunchesStdDev.mat');
+load('Data/myHEMAY2AllPunches.mat');
+load('Data/myHEMAY2AllPunchesStdDev.mat');
 figure % 3.1
 for i = 1:8
     line([0,10],[myHEMAY1allPunches(i),myHEMAY1allPunches(i)], ...
@@ -193,6 +199,8 @@ xlim([3. 8.]);
 % 4. pHEMA/coAc
 load('Data/myHEMACoY1AllPunches.mat');
 load('Data/myHEMACoY1AllPunchesStdDev.mat');
+load('Data/myHEMACoY2AllPunches.mat');
+load('Data/myHEMACoY2AllPunchesStdDev.mat');
 figure % 4.1
 for i = 1:8
     line([0,10],[myHEMACoY1allPunches(i),myHEMACoY1allPunches(i)], ...
@@ -275,13 +283,13 @@ for pHLoop = 1:2
             % 95% CI = avg +/ zStar * std dev/sqrt(n)
             % https://www.dummies.com/education/math/statistics/how-to-calculate-a-confidence-interval-for-a-population-mean-when-you-know-its-standard-deviation/
             zStar = 1.96; % z Star value for 95% CI
-            % TO DO: UPDATE
-            % old nStat = 5; % should be > 30 or normal dist
-            % old nDyn = 9; % should be > 30 or normal dist
-            nStat = 125; % should be > 30 or normal dist
-            %nDyn = 45; % should be > 30 or normal dist
-            % 2021/02/17 NEW gel 4 series 3 only has 40 points
-            nDyn = num1Dyn(1);
+            % CHOOSE these values if using avg*.txt input
+            nStat = 5; % should be > 30 or normal dist
+            nDyn = 9; % should be > 30 or normal dist
+            % CHOOSE these values if using raw spectra
+            % nStat = 125; % should be > 30 or normal dist
+            % 2021/02/17 NEW read nDyn from input so that gel 4 series 3 has 40 points
+            % nDyn = num1Dyn(1);
 
             % 2021/02/17 aha, I knew this was off. The error portion
             % is only the zStar term. This term gets added, subtracted
