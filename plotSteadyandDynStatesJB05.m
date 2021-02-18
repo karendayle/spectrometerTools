@@ -1,7 +1,12 @@
+% CHOOSE ONEE OF THESE two options for input source
+% inputOption = 1 use raw spectra (N higher->central limit theorem holds)
+% inputOption = 2 use avg spectra (means 5x fewer files)
+inputOption = 1;
+
 % CHOOSE ONE OF THESE two options for error bars (near line 250)
 %if myErrorBars == 1, use   StdDev
 %if myErrorBars == 2  use 95% CIs
-myErrorBars = 2;
+myErrorBars = 1;
 
 % RGB
 global blue;
@@ -44,205 +49,244 @@ close all; % close all plots from previous runs
 % series. These are the "dynamic values", so called because sensors
 % are in flow cell and buffer, of various pH, is being pumped through
 %load('Data/endValsUsingAveragedSpectra.mat'); % from 2020/08/06
-load('Data/endVals.mat'); % 2021/02/05 using all the raw spectra to increase N
 global endVals
+switch inputOption
+    case 1
+        load('Data/endValsRaw.mat'); % 2021/02/05 using all the raw spectra to increase N
+    case 2
+        load('Data/endValsAvgs.mat'); % 2021/02/05 using all the raw spectra to increase N
+end
+
 global ssVals
 
 % These are the "static values", so called because sensors are on 
 % quartz slides in a 30 uL droplet of buffer of one single pH
 % 1. Alginate
-load('Data/myAlgY1AllPunches.mat');
-load('Data/myAlgY1AllPunchesStdDev.mat');
-load('Data/myAlgY2AllPunches.mat');
-load('Data/myAlgY2AllPunchesStdDev.mat');
-figure % 1.1
-text(9.5,myAlgY1allPunches(8)+0.03,'Steady State', 'Color', black, ...
-    'FontSize', 20);
-for i = 1:8
-    line([0,10],[myAlgY1allPunches(i),myAlgY1allPunches(i)], ...
-        'Color', punchColor(i,:));
-    text(9.5,myAlgY1allPunches(i)+0.01,pHLabel(i,:), ...
-        'Color', punchColor(i,:), 'FontSize', 20);
-    hold on;
+switch inputOption
+    case 1
+        load('Data/myAlgY1AllPunchesRaw.mat');
+        load('Data/myAlgY1AllPunchesStdDevRaw.mat');
+        load('Data/myAlgY2AllPunchesRaw.mat');
+        load('Data/myAlgY2AllPunchesStdDevRaw.mat');
+    case 2
+        load('Data/myAlgY1AllPunchesAvg.mat');
+        load('Data/myAlgY1AllPunchesStdDevAvg.mat');
+        load('Data/myAlgY2AllPunchesAvg.mat');
+        load('Data/myAlgY2AllPunchesStdDevAvg.mat');
 end
-plotEndValsOnSteadyState(1);
-set(gca,'FontSize', 30);
-title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-ssVals(1,1,1) = myAlgY1allPunches(1);
-ssVals(1,1,2) = myAlgY1allPunches(7);
 
-figure % 1.2
-% 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(1, 4, myAlgY1allPunches);
-plotSteadyStateValues(1, 7, myAlgY1allPunches);
-% 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
-% for all punches
-plotScatterOfEndValsOnSteadyState(1);
-% make it pretty
-set(gca,'FontSize', 30);
-title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-xlim([3. 8.]);
+% figure % 1.1  %2021/02/18 Not needed for JBO
+% text(9.5,myAlgY1AllPunches(8)+0.03,'Steady State', 'Color', black, ...
+%     'FontSize', 20);
+% for i = 1:8
+%     line([0,10],[myAlgY1AllPunches(i),myAlgY1AllPunches(i)], ...
+%         'Color', punchColor(i,:));
+%     text(9.5,myAlgY1AllPunches(i)+0.01,pHLabel(i,:), ...
+%         'Color', punchColor(i,:), 'FontSize', 20);
+%     hold on;
+% end
+% plotEndValsOnSteadyState(1);
+% set(gca,'FontSize', 30);
+% title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('Flow cell segment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+ssVals(1,1,1) = myAlgY1AllPunches(1);
+ssVals(1,1,2) = myAlgY1AllPunches(7);
 
-figure % 1.3
-% 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(1, 4, myAlgY1allPunches);
-plotSteadyStateValues(1, 7, myAlgY1allPunches);
-% 20200923 plot the average of all end-of-segment values of pH4 and pH7 
-% with std dev error bars for all segments, for all punches 
-plotScatterOfAvgs(1);
-% make it pretty
-set(gca,'FontSize', 30);
-title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-xlim([3. 8.]);
+% figure % 1.2  %2021/02/18 Not needed for JBO
+% % 20200923 plot the static pH4 and pH7 values as a filled in markers
+% plotSteadyStateValues(1, 4, myAlgY1AllPunches);
+% plotSteadyStateValues(1, 7, myAlgY1AllPunches);
+% % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
+% % for all punches
+% plotScatterOfEndValsOnSteadyState(1);
+% % make it pretty
+% set(gca,'FontSize', 30);
+% title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('pH of flow cell environment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+% xlim([3. 8.]);
+
+% figure % 1.3  %2021/02/18 Not needed for JBO
+% % 20200923 plot the static pH4 and pH7 values as a filled in markers
+% plotSteadyStateValues(1, 4, myAlgY1AllPunches);
+% plotSteadyStateValues(1, 7, myAlgY1AllPunches);
+% % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
+% % with std dev error bars for all segments, for all punches 
+% plotScatterOfAvgs(1);
+% % make it pretty
+% set(gca,'FontSize', 30);
+% title('Alginate: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('pH of flow cell environment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+% xlim([3. 8.]);
 
 % 2. PEG
-load('Data/myPEGY1AllPunches.mat');
-load('Data/myPEGY1AllPunchesStdDev.mat');
-load('Data/myPEGY2AllPunches.mat');
-load('Data/myPEGY2AllPunchesStdDev.mat');
-figure % 2.1
-for i = 1:8
-    line([0,10],[myPEGY1allPunches(i),myPEGY1allPunches(i)], ...
-        'Color', punchColor(i,:));
-    text(9.5,myPEGY1allPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
-    hold on;
+switch inputOption
+    case 1
+        load('Data/myPEGY1AllPunchesRaw.mat');
+        load('Data/myPEGY1AllPunchesStdDevRaw.mat');
+        load('Data/myPEGY2AllPunchesRaw.mat');
+        load('Data/myPEGY2AllPunchesStdDevRaw.mat');
+    case 2
+        load('Data/myPEGY1AllPunchesAvg.mat');
+        load('Data/myPEGY1AllPunchesStdDevAvg.mat');
+        load('Data/myPEGY2AllPunchesAvg.mat');
+        load('Data/myPEGY2AllPunchesStdDevAvg.mat');
 end
-plotEndValsOnSteadyState(2);
-title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-ssVals(2,1,1) = myPEGY1allPunches(1);
-ssVals(2,1,2) = myPEGY1allPunches(7);
+% figure % 2.1  %2021/02/18 Not needed for JBO
+% for i = 1:8
+%     line([0,10],[myPEGY1AllPunches(i),myPEGY1AllPunches(i)], ...
+%         'Color', punchColor(i,:));
+%     text(9.5,myPEGY1AllPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
+%     hold on;
+% end
+% plotEndValsOnSteadyState(2);
+% title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('Flow cell segment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+ssVals(2,1,1) = myPEGY1AllPunches(1);
+ssVals(2,1,2) = myPEGY1AllPunches(7);
+ 
+% figure % 2.2  %2021/02/18 Not needed for JBO
+% % 2020/09/23 plot the static pH4 and pH7 values as a filled in markers
+% plotSteadyStateValues(2, 4, myPEGY1AllPunches);
+% plotSteadyStateValues(2, 7, myPEGY1AllPunches);
+% % 2020/09/22 plot the end-of-segment value of pH4 and pH7 for all segments
+% % for all punches
+% plotScatterOfEndValsOnSteadyState(2);
+% % make it pretty
+% set(gca,'FontSize', 30);
+% title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('pH of flow cell environment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+% xlim([3. 8.]);
 
-figure % 2.2
-% 2020/09/23 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(2, 4, myPEGY1allPunches);
-plotSteadyStateValues(2, 7, myPEGY1allPunches);
-% 2020/09/22 plot the end-of-segment value of pH4 and pH7 for all segments
-% for all punches
-plotScatterOfEndValsOnSteadyState(2);
-% make it pretty
-set(gca,'FontSize', 30);
-title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-xlim([3. 8.]);
-
-figure % 2.3
-% 2020/09/23 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(2, 4, myPEGY1allPunches);
-plotSteadyStateValues(2, 7, myPEGY1allPunches);
-% 2020/09/23 plot the average of all end-of-segment values of pH4 and pH7 
-% with std dev error bars for all segments, for all punches 
-plotScatterOfAvgs(2);
-% make it pretty
-set(gca,'FontSize', 30);
-title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-xlim([3. 8.]);
+% figure % 2.3  %2021/02/18 Not needed for JBO
+% % 2020/09/23 plot the static pH4 and pH7 values as a filled in markers
+% plotSteadyStateValues(2, 4, myPEGY1AllPunches);
+% plotSteadyStateValues(2, 7, myPEGY1AllPunches);
+% % 2020/09/23 plot the average of all end-of-segment values of pH4 and pH7 
+% % with std dev error bars for all segments, for all punches 
+% plotScatterOfAvgs(2);
+% % make it pretty
+% set(gca,'FontSize', 30);
+% title('PEG: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('pH of flow cell environment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+% xlim([3. 8.]);
 
 % 3. pHEMA
-load('Data/myHEMAY1AllPunches.mat');
-load('Data/myHEMAY1AllPunchesStdDev.mat');
-load('Data/myHEMAY2AllPunches.mat');
-load('Data/myHEMAY2AllPunchesStdDev.mat');
-figure % 3.1
-for i = 1:8
-    line([0,10],[myHEMAY1allPunches(i),myHEMAY1allPunches(i)], ...
-        'Color', punchColor(i,:));
-    text(9.5,myHEMAY1allPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
-    hold on;
+switch inputOption
+    case 1
+        load('Data/myHEMAY1AllPunchesRaw.mat');
+        load('Data/myHEMAY1AllPunchesStdDevRaw.mat');
+        load('Data/myHEMAY2AllPunchesRaw.mat');
+        load('Data/myHEMAY2AllPunchesStdDevRaw.mat');
+    case 2
+        load('Data/myHEMAY1AllPunchesAvg.mat');
+        load('Data/myHEMAY1AllPunchesStdDevAvg.mat');
+        load('Data/myHEMAY2AllPunchesAvg.mat');
+        load('Data/myHEMAY2AllPunchesStdDevAvg.mat');
 end
-plotEndValsOnSteadyState(3);
-set(gca,'FontSize', 30);
-title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-ssVals(3,1,1) = myHEMAY1allPunches(1);
-ssVals(3,1,2) = myHEMAY1allPunches(7);
+% figure % 3.1  %2021/02/18 Not needed for JBO
+% for i = 1:8
+%     line([0,10],[myHEMAY1AllPunches(i),myHEMAY1AllPunches(i)], ...
+%         'Color', punchColor(i,:));
+%     text(9.5,myHEMAY1AllPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
+%     hold on;
+% end
+% plotEndValsOnSteadyState(3);
+% set(gca,'FontSize', 30);
+% title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('Flow cell segment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+ssVals(3,1,1) = myHEMAY1AllPunches(1);
+ssVals(3,1,2) = myHEMAY1AllPunches(7);
 
-figure % 3.2
-% 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(3, 4, myHEMAY1allPunches);
-plotSteadyStateValues(3, 7, myHEMAY1allPunches);
-% 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
-% for all punches
-plotScatterOfEndValsOnSteadyState(3);
-% make it pretty
-set(gca,'FontSize', 30);
-title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-xlim([3. 8.]);
+% figure % 3.2  %2021/02/18 Not needed for JBO
+% % 20200923 plot the static pH4 and pH7 values as a filled in markers
+% plotSteadyStateValues(3, 4, myHEMAY1AllPunches);
+% plotSteadyStateValues(3, 7, myHEMAY1AllPunches);
+% % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
+% % for all punches
+% plotScatterOfEndValsOnSteadyState(3);
+% % make it pretty
+% set(gca,'FontSize', 30);
+% title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('pH of flow cell environment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+% xlim([3. 8.]);
 
-figure % 3.3
-% 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(3, 4, myHEMAY1allPunches);
-plotSteadyStateValues(3, 7, myHEMAY1allPunches);
-% 20200923 plot the average of all end-of-segment values of pH4 and pH7 
-% with std dev error bars for all segments, for all punches 
-plotScatterOfAvgs(3);
-% make it pretty
-set(gca,'FontSize', 30);
-title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-xlim([3. 8.]);
+% figure % 3.3  %2021/02/18 Not needed for JBO
+% % 20200923 plot the static pH4 and pH7 values as a filled in markers
+% plotSteadyStateValues(3, 4, myHEMAY1AllPunches);
+% plotSteadyStateValues(3, 7, myHEMAY1AllPunches);
+% % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
+% % with std dev error bars for all segments, for all punches 
+% plotScatterOfAvgs(3);
+% % make it pretty
+% set(gca,'FontSize', 30);
+% title('pHEMA: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('pH of flow cell environment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+% xlim([3. 8.]);
 
 % 4. pHEMA/coAc
-load('Data/myHEMACoY1AllPunches.mat');
-load('Data/myHEMACoY1AllPunchesStdDev.mat');
-load('Data/myHEMACoY2AllPunches.mat');
-load('Data/myHEMACoY2AllPunchesStdDev.mat');
-figure % 4.1
-for i = 1:8
-    line([0,10],[myHEMACoY1allPunches(i),myHEMACoY1allPunches(i)], ...
-        'Color', punchColor(i,:));
-    text(9.5,myHEMACoY1allPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
-    hold on;
+switch inputOption
+    case 1
+        load('Data/myHEMACoY1AllPunchesRaw.mat');
+        load('Data/myHEMACoY1AllPunchesStdDevRaw.mat');
+        load('Data/myHEMACoY2AllPunchesRaw.mat');
+        load('Data/myHEMACoY2AllPunchesStdDevRaw.mat');
+    case 2
+        load('Data/myHEMACoY1AllPunchesAvg.mat');
+        load('Data/myHEMACoY1AllPunchesStdDevAvg.mat');
+        load('Data/myHEMACoY2AllPunchesAvg.mat');
+        load('Data/myHEMACoY2AllPunchesStdDevAvg.mat');
 end
-plotEndValsOnSteadyState(4);
-set(gca,'FontSize', 30);
-title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('Flow cell segment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-ssVals(4,1,1) = myHEMACoY1allPunches(1);
-ssVals(4,1,2) = myHEMACoY1allPunches(7);
+% figure % 4.1  %2021/02/18 Not needed for JBO
+% for i = 1:8
+%     line([0,10],[myHEMACoY1AllPunches(i),myHEMACoY1AllPunches(i)], ...
+%         'Color', punchColor(i,:));
+%     text(9.5,myHEMACoY1AllPunches(i)+0.01,pHLabel(i,:), 'Color', punchColor(i,:));
+%     hold on;
+% end
+% plotEndValsOnSteadyState(4);
+% set(gca,'FontSize', 30);
+% title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('Flow cell segment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+ssVals(4,1,1) = myHEMACoY1AllPunches(1);
+ssVals(4,1,2) = myHEMACoY1AllPunches(7);
 
-figure % 4.2
-% 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(4, 4, myHEMACoY1allPunches);
-plotSteadyStateValues(4, 7, myHEMACoY1allPunches);
-% 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
-% for all punches
-plotScatterOfEndValsOnSteadyState(4);
-% make it pretty
-set(gca,'FontSize', 30);
-title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-xlim([3. 8.]);
+% figure % 4.2  %2021/02/18 Not needed for JBO
+% % 20200923 plot the static pH4 and pH7 values as a filled in markers
+% plotSteadyStateValues(4, 4, myHEMACoY1AllPunches);
+% plotSteadyStateValues(4, 7, myHEMACoY1AllPunches);
+% % 20200922 plot the end-of-segment value of pH4 and pH7 for all segments
+% % for all punches
+% plotScatterOfEndValsOnSteadyState(4);
+% % make it pretty
+% set(gca,'FontSize', 30);
+% title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('pH of flow cell environment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+% xlim([3. 8.]);
 
-figure % 4.3
-% 20200923 plot the static pH4 and pH7 values as a filled in markers
-plotSteadyStateValues(4, 4, myHEMACoY1allPunches);
-plotSteadyStateValues(4, 7, myHEMACoY1allPunches);
-% 20200923 plot the average of all end-of-segment values of pH4 and pH7 
-% with std dev error bars for all segments, for all punches 
-plotScatterOfAvgs(4);
-% make it pretty
-set(gca,'FontSize', 30);
-title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
-xlabel('pH of flow cell environment', 'FontSize', 30);
-ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
-xlim([3. 8.]);
+% figure % 4.3  %2021/02/18 Not needed for JBO
+% % 20200923 plot the static pH4 and pH7 values as a filled in markers
+% plotSteadyStateValues(4, 4, myHEMACoY1AllPunches);
+% plotSteadyStateValues(4, 7, myHEMACoY1AllPunches);
+% % 20200923 plot the average of all end-of-segment values of pH4 and pH7 
+% % with std dev error bars for all segments, for all punches 
+% plotScatterOfAvgs(4);
+% % make it pretty
+% set(gca,'FontSize', 30);
+% title('pHEMA/coAc: ability of flow cell to match steady state target after 30 msmts', 'FontSize', 30);
+% xlabel('pH of flow cell environment', 'FontSize', 30);
+% ylabel('Normalized Intensity of 1430 cm^{-1} peak', 'FontSize', 30);
+% xlim([3. 8.]);
 
 % Repeat for pH4 and pH7
 for pHLoop = 1:2
@@ -265,18 +309,18 @@ for pHLoop = 1:2
     [y2Dyn(4), err2Dyn(4), num2Dyn(1)] = buildArrayForBars(4, jj, 2); % 1702
     
     % put static vals on LHS of each pair
-    y1Bar = [myAlgY1allPunches(index) y1Dyn(1); myPEGY1allPunches(index) y1Dyn(2); ...
-        myHEMAY1allPunches(index) y1Dyn(3); myHEMACoY1allPunches(index) y1Dyn(4)];
-    y2Bar = [myAlgY2allPunches(index) y2Dyn(1); myPEGY2allPunches(index) y2Dyn(2); ...
-        myHEMAY2allPunches(index) y2Dyn(3); myHEMACoY2allPunches(index) y2Dyn(4)];
+    y1Bar = [myAlgY1AllPunches(index) y1Dyn(1); myPEGY1AllPunches(index) y1Dyn(2); ...
+        myHEMAY1AllPunches(index) y1Dyn(3); myHEMACoY1AllPunches(index) y1Dyn(4)];
+    y2Bar = [myAlgY2AllPunches(index) y2Dyn(1); myPEGY2AllPunches(index) y2Dyn(2); ...
+        myHEMAY2AllPunches(index) y2Dyn(3); myHEMACoY2AllPunches(index) y2Dyn(4)];
     
     % At the top, CHOOSE ONE OF THESE two options for error bars:
     if myErrorBars == 1
         % 1) StdDev
-        y1Err = [myAlgY1allPunchesStdDev(index) err1Dyn(1); myPEGY1allPunchesStdDev(index) err1Dyn(2); ...
-            myHEMAY1allPunchesStdDev(index) err1Dyn(3); myHEMACoY1allPunchesStdDev(index) err1Dyn(4)];
-        y2Err = [myAlgY2allPunchesStdDev(index) err2Dyn(1); myPEGY2allPunchesStdDev(index) err2Dyn(2); ...
-            myHEMAY2allPunchesStdDev(index) err2Dyn(3); myHEMACoY2allPunchesStdDev(index) err2Dyn(4)];
+        y1Err = [myAlgY1AllPunchesStdDev(index) err1Dyn(1); myPEGY1AllPunchesStdDev(index) err1Dyn(2); ...
+            myHEMAY1AllPunchesStdDev(index) err1Dyn(3); myHEMACoY1AllPunchesStdDev(index) err1Dyn(4)];
+        y2Err = [myAlgY2AllPunchesStdDev(index) err2Dyn(1); myPEGY2AllPunchesStdDev(index) err2Dyn(2); ...
+            myHEMAY2AllPunchesStdDev(index) err2Dyn(3); myHEMACoY2AllPunchesStdDev(index) err2Dyn(4)];
     else
         if myErrorBars == 2
             % 2) 95% CIs
@@ -295,30 +339,30 @@ for pHLoop = 1:2
             % is only the zStar term. This term gets added, subtracted
             % to the avg to get the whole interval. Including the avg
             % in the error bar is the reason they were so high!
-            % y1ErrStat1 = myAlgY1allPunches(index) + ... 
-            %     zStar*myAlgY1allPunchesStdDev(index)/sqrt(nStat);
-            % y1ErrStat2 = myPEGY1allPunches(index) + ...
-            %     zStar*myPEGY1allPunchesStdDev(index)/sqrt(nStat);
-            % y1ErrStat3 = myHEMAY1allPunches(index) + ...
-            %     zStar*myHEMAY1allPunchesStdDev(index)/sqrt(nStat);
-            % y1ErrStat4 = myHEMACoY1allPunches(index) + ...
-            %     zStar*myHEMACoY1allPunchesStdDev(index)/sqrt(nStat);
-            % y2ErrStat1 = myAlgY2allPunches(index) + ... 
-            %     zStar*myAlgY2allPunchesStdDev(index)/sqrt(nStat);
-            % y2ErrStat2 = myPEGY2allPunches(index) + ...
-            %     zStar*myPEGY2allPunchesStdDev(index)/sqrt(nStat);
-            % y2ErrStat3 = myHEMAY2allPunches(index) + ...
-            %     zStar*myHEMAY2allPunchesStdDev(index)/sqrt(nStat);
-            % y2ErrStat4 = myHEMACoY2allPunches(index) + ...
-            %     zStar*myHEMACoY2allPunchesStdDev(index)/sqrt(nStat);
-            y1ErrStat1 = zStar*myAlgY1allPunchesStdDev(index)/sqrt(nStat);
-            y1ErrStat2 = zStar*myPEGY1allPunchesStdDev(index)/sqrt(nStat);
-            y1ErrStat3 = zStar*myHEMAY1allPunchesStdDev(index)/sqrt(nStat);
-            y1ErrStat4 = zStar*myHEMACoY1allPunchesStdDev(index)/sqrt(nStat);
-            y2ErrStat1 = zStar*myAlgY2allPunchesStdDev(index)/sqrt(nStat);
-            y2ErrStat2 = zStar*myPEGY2allPunchesStdDev(index)/sqrt(nStat);
-            y2ErrStat3 = zStar*myHEMAY2allPunchesStdDev(index)/sqrt(nStat);
-            y2ErrStat4 = zStar*myHEMACoY2allPunchesStdDev(index)/sqrt(nStat);
+            % y1ErrStat1 = myAlgY1AllPunches(index) + ... 
+            %     zStar*myAlgY1AllPunchesStdDev(index)/sqrt(nStat);
+            % y1ErrStat2 = myPEGY1AllPunches(index) + ...
+            %     zStar*myPEGY1AllPunchesStdDev(index)/sqrt(nStat);
+            % y1ErrStat3 = myHEMAY1AllPunches(index) + ...
+            %     zStar*myHEMAY1AllPunchesStdDev(index)/sqrt(nStat);
+            % y1ErrStat4 = myHEMACoY1AllPunches(index) + ...
+            %     zStar*myHEMACoY1AllPunchesStdDev(index)/sqrt(nStat);
+            % y2ErrStat1 = myAlgY2AllPunches(index) + ... 
+            %     zStar*myAlgY2AllPunchesStdDev(index)/sqrt(nStat);
+            % y2ErrStat2 = myPEGY2AllPunches(index) + ...
+            %     zStar*myPEGY2AllPunchesStdDev(index)/sqrt(nStat);
+            % y2ErrStat3 = myHEMAY2AllPunches(index) + ...
+            %     zStar*myHEMAY2AllPunchesStdDev(index)/sqrt(nStat);
+            % y2ErrStat4 = myHEMACoY2AllPunches(index) + ...
+            %     zStar*myHEMACoY2AllPunchesStdDev(index)/sqrt(nStat);
+            y1ErrStat1 = zStar*myAlgY1AllPunchesStdDev(index)/sqrt(nStat);
+            y1ErrStat2 = zStar*myPEGY1AllPunchesStdDev(index)/sqrt(nStat);
+            y1ErrStat3 = zStar*myHEMAY1AllPunchesStdDev(index)/sqrt(nStat);
+            y1ErrStat4 = zStar*myHEMACoY1AllPunchesStdDev(index)/sqrt(nStat);
+            y2ErrStat1 = zStar*myAlgY2AllPunchesStdDev(index)/sqrt(nStat);
+            y2ErrStat2 = zStar*myPEGY2AllPunchesStdDev(index)/sqrt(nStat);
+            y2ErrStat3 = zStar*myHEMAY2AllPunchesStdDev(index)/sqrt(nStat);
+            y2ErrStat4 = zStar*myHEMACoY2AllPunchesStdDev(index)/sqrt(nStat);
             
             % 2021/02/05: TO DO UPDATE nDyn = endvals(1, ?, 1, 3);
             % yErrDyn1 = yDyn(1) + zStar*errDyn(1)/sqrt(nDyn);
@@ -384,13 +428,14 @@ end
 
 % 5. Calculate reversibility of all gels as the std dev of the final value
 % of all segments of the SAME pH over all punches of a gel type
-calcReversibility();
+% calcReversibility(); %2021/02/18 Not needed for JBO
 
 % 6. Compare the steady-state value with the dynamic value from flow cell
 % study when pH is the same (eg. 3 segments of pH4 and 3 of pH7) for all
 % punches. Consider only peak 1 
-compareDynamicVsStaticAccuracy();
+% compareDynamicVsStaticAccuracy(); %2021/02/18 Not needed for JBO
 
+% 2021/02/18 No longer used
 function a = plotEndValsOnSteadyState(gel)
 global endVals;
 global myColor1;
@@ -560,21 +605,21 @@ global markers;
     d = 1;
 end
 
-function e = plotSteadyStateValues(gel, pHlevel, myY1allPunches)
+function e = plotSteadyStateValues(gel, pHlevel, myY1AllPunches)
     global black
     global markersAll
     
     switch pHlevel
     case 4
         % 20200923 plot the static pH4 value as a filled in black hexagon
-        plot(4, myY1allPunches(1), markersAll(gel,:), 'LineStyle','none', ...
+        plot(4, myY1AllPunches(1), markersAll(gel,:), 'LineStyle','none', ...
             'MarkerSize', 30, ...
             'MarkerEdgeColor', black, ...
             'MarkerFaceColor', black);
         hold on;
     case 7
         % 20200923 plot the static pH7 value as a filled in black pentagon
-        plot(7, myY1allPunches(7), markersAll(gel+4,:), 'LineStyle','none', ...
+        plot(7, myY1AllPunches(7), markersAll(gel+4,:), 'LineStyle','none', ...
             'MarkerSize', 30, ...
             'MarkerEdgeColor', black, ...
             'MarkerFaceColor', black);
