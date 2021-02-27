@@ -16,6 +16,10 @@
 % 7.            Add spectrum^2 to running sum of sqs
 % 8.      Calculate std dev from sum, sum of sqs and N=125
 
+% Note: the figs produced by this script aren't imported into JBO docx or
+% the Supp Mat. If they need to be, then the legend (see JB02 figs7 and 8)
+% could be added to define the symbols. Also range s/b changed to be 3.5-8
+
 global blue
 global rust
 global gold
@@ -441,7 +445,6 @@ function h = saveMyData()
     global myHEMACoY2AllPunches
     global myHEMACoY2AllPunchesStdDev
     
-    %dirStem = 'C:\Users\karen\Documents\Data\';
     dirStem = 'Data\'; % make these files part of the repo
     for ii = 1:16
         switch ii
@@ -494,7 +497,7 @@ function h = saveMyData()
                 myArray = myHEMACoY2AllPunchesStdDev; 
                 myVariable = 'myHEMACoY2AllPunchesStdDev';
         end    
-        myFilename = sprintf('%s%s.mat', dirStem, myVariable);
+        myFilename = sprintf('%s%sRaw.mat', dirStem, myVariable);
         save(myFilename, myVariable);
     end
     h = 1;

@@ -108,7 +108,12 @@ for peak = 1:2 % this is outer loop in order to make 1 figure for each pk
     set(gca,'FontSize',32, 'box', 'off'); % 2021/02/17 rm bold
     myTitle = sprintf('gel%d', gel);
     saveMyPlot(FigH, myTitle);
-    save('Data\endVals.mat', 'endVals');
+    switch inputOption
+        case 1
+            save('Data\endValsRaw.mat', 'endVals');
+        case 2
+            save('Data\endValsAvgs.mat', 'endVals');
+    end
 end
 
 function g = prepPlotData(gel, pHLevel, peak)
@@ -174,19 +179,21 @@ function g = prepPlotData(gel, pHLevel, peak)
                 % Take only the last 5 values for each segment. 
                 % Instead of 1 single value for 1430 and 1702, 
                 % read in all 5 spectra.
-                if inputOption == 1
-                    offset = 4; % when using spectrum*.txt
-                else
-                    offset = 0; % when using avg*.txt
+                switch inputOption
+                    case 1
+                        offset = 4; % when using spectrum*.txt
+                    case 2
+                        offset = 0; % when using avg*.txt
                 end
                 startAtNumber = numberOfSpectra - offset;
                 if startAtNumber < 0
                     fprintf('Error: fewer than 5 files found');
                 else
-                    if inputOption == 1
-                        addition = 5; % when using spectrum*.txt
-                    else
-                        addition = 1; % when using avg*.txt
+                    switch inputOption
+                        case 1
+                            addition = 5; % when using spectrum*.txt
+                        case 2
+                            addition = 1; % when using avg*.txt
                     end
                     numberOfSpectraAllSegments = ...
                         numberOfSpectraAllSegments + addition;

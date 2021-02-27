@@ -12,7 +12,7 @@ red =     [1.0, 0.0, 0.0];
 black =   [0.0, 0.0, 0.0];
 magenta = [1.0, 0.0, 1.0];
 teal =    [0.2, 0.6, 0.5];
-
+pH = [ 4, 7, 10 ];
 %% kdk: Clear previous plots
 close all
 
@@ -23,7 +23,7 @@ global tallyByGel
 global tallyByPH
 
 global autoSave
-autoSave = 0; % CHOOSE 1 to save plots to files, 0 to do this manually
+autoSave = 1; % CHOOSE 1 to save plots to files, 0 to do this manually
 
 % Bins are: 0-10m, 10m-1h, 1h-1d, >1d
 tallyByGel = [ ...
@@ -107,8 +107,9 @@ xlabel('Time constant, tau', 'FontSize', myLabelFont); % x-axis label
 ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
 fname = {'<10 min';'<1 hour';'<1 day';'>1 day'}; % FIX! 
 set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
-set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
-myTitle = sprintf('taus for both peaks');
+%set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
+set(gca, 'FontSize', 30, 'box', 'off'); % 2021/02/19 rm bold for JBO fig
+myTitle = sprintf('taus for both peaks all pH levels');
 if autoSave
     saveMyPlot(FigH, myTitle);
 end
@@ -155,8 +156,9 @@ for ii = 1:3
     ylabel('Number of time constants', 'FontSize', myLabelFont); % y-axis label
     fname = {'<10 min';'<1 hour';'<1 day';'>1 day'}; % FIX! 
     set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
-    set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
-    myTitle = sprintf('taus for both peaks');
+    %set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
+    set(gca, 'FontSize', 30, 'box', 'off'); % 2021/02/19 rm bold for JBO fig
+    myTitle = sprintf('taus for both peaks for pH %d', pH(ii));
     if autoSave
         saveMyPlot(FigH, myTitle);
     end
@@ -203,39 +205,44 @@ function c = addToTallyByPH(tau, gel, pHValue, peak)
     global tallyByPH
     global tallyByGel
     
-    if tau < (1.0/6.0)
-        bin = 1;
-    else 
-        if tau < 1.0
-            bin = 2;
-        else
-            if tau < 24.0
-                bin = 3;
+    if tau > 0.
+        if tau < (1.0/6.0)
+            bin = 1;
+        else 
+            if tau < 1.0
+                bin = 2;
             else
-                bin = 4;
+                if tau < 24.0
+                    bin = 3;
+                else
+                    bin = 4;
+                end
             end
+        end 
+
+        offset = (gel - 1) * 2 + peak; 
+        tallyByGel(bin, offset) = tallyByGel(bin, offset) + 1;
+        % fprintf('addToTallyByGel: bin%d gel%d peak%d tau=%f gets added to tallyByGel(%d,%d)\n', ...
+        % bin, gel, peak, tau, bin, offset);
+
+        % Additional for pHIndexing
+        switch pHValue
+            case 4
+                pHIndex = 1;
+            case 7
+                pHIndex = 2;
+            case 10
+                pHIndex = 3;     
         end
-    end 
+        tallyByPH(bin, offset, pHIndex) = ...
+            tallyByPH(bin, offset, pHIndex) + 1;
 
-    offset = (gel - 1) * 2 + peak; 
-    tallyByGel(bin, offset) = tallyByGel(bin, offset) + 1;
-    % fprintf('addToTallyByGel: bin%d gel%d peak%d tau=%f gets added to tallyByGel(%d,%d)\n', ...
-    % bin, gel, peak, tau, bin, offset);
-
-    % Additional for pHIndexing
-    switch pHValue
-        case 4
-            pHIndex = 1;
-        case 7
-            pHIndex = 2;
-        case 10
-            pHIndex = 3;     
+        % fprintf('addToTallyByPH: bin%d gel%d peak%d pH%d tau=%f gets added to tallyByPH(%d,%d)\n', ...
+        % bin, gel, peak, pHValue, tau, bin, offset);
+    else
+        fprintf('addToTallyByGel: gel%d peak%d tau=%f ignored\n', ...
+            gel, peak, tau );
     end
-    tallyByPH(bin, offset, pHIndex) = ...
-        tallyByPH(bin, offset, pHIndex) + 1;
-    
-    % fprintf('addToTallyByPH: bin%d gel%d peak%d pH%d tau=%f gets added to tallyByPH(%d,%d)\n', ...
-    % bin, gel, peak, pHValue, tau, bin, offset);
     c = 1;
 end
 

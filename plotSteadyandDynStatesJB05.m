@@ -1,12 +1,10 @@
 % CHOOSE ONEE OF THESE two options for input source
-% inputOption = 1 use raw spectra (N higher->central limit theorem holds)
-% inputOption = 2 use avg spectra (means 5x fewer files)
-inputOption = 1;
+%inputOption = 1; % use raw spectra (N higher->central limit theorem holds)
+inputOption = 2; % use avg spectra (means 5x fewer files)
 
 % CHOOSE ONE OF THESE two options for error bars (near line 250)
-%if myErrorBars == 1, use   StdDev
-%if myErrorBars == 2  use 95% CIs
-myErrorBars = 1;
+%myErrorBars = 1; % use StdDev
+myErrorBars = 2; % use 95% CIs
 
 % RGB
 global blue;
@@ -69,10 +67,10 @@ switch inputOption
         load('Data/myAlgY2AllPunchesRaw.mat');
         load('Data/myAlgY2AllPunchesStdDevRaw.mat');
     case 2
-        load('Data/myAlgY1AllPunchesAvg.mat');
-        load('Data/myAlgY1AllPunchesStdDevAvg.mat');
-        load('Data/myAlgY2AllPunchesAvg.mat');
-        load('Data/myAlgY2AllPunchesStdDevAvg.mat');
+        load('Data/myAlgY1AllPunchesAvgs.mat');
+        load('Data/myAlgY1AllPunchesStdDevAvgs.mat');
+        load('Data/myAlgY2AllPunchesAvgs.mat');
+        load('Data/myAlgY2AllPunchesStdDevAvgs.mat');
 end
 
 % figure % 1.1  %2021/02/18 Not needed for JBO
@@ -129,10 +127,10 @@ switch inputOption
         load('Data/myPEGY2AllPunchesRaw.mat');
         load('Data/myPEGY2AllPunchesStdDevRaw.mat');
     case 2
-        load('Data/myPEGY1AllPunchesAvg.mat');
-        load('Data/myPEGY1AllPunchesStdDevAvg.mat');
-        load('Data/myPEGY2AllPunchesAvg.mat');
-        load('Data/myPEGY2AllPunchesStdDevAvg.mat');
+        load('Data/myPEGY1AllPunchesAvgs.mat');
+        load('Data/myPEGY1AllPunchesStdDevAvgs.mat');
+        load('Data/myPEGY2AllPunchesAvgs.mat');
+        load('Data/myPEGY2AllPunchesStdDevAvgs.mat');
 end
 % figure % 2.1  %2021/02/18 Not needed for JBO
 % for i = 1:8
@@ -184,10 +182,10 @@ switch inputOption
         load('Data/myHEMAY2AllPunchesRaw.mat');
         load('Data/myHEMAY2AllPunchesStdDevRaw.mat');
     case 2
-        load('Data/myHEMAY1AllPunchesAvg.mat');
-        load('Data/myHEMAY1AllPunchesStdDevAvg.mat');
-        load('Data/myHEMAY2AllPunchesAvg.mat');
-        load('Data/myHEMAY2AllPunchesStdDevAvg.mat');
+        load('Data/myHEMAY1AllPunchesAvgs.mat');
+        load('Data/myHEMAY1AllPunchesStdDevAvgs.mat');
+        load('Data/myHEMAY2AllPunchesAvgs.mat');
+        load('Data/myHEMAY2AllPunchesStdDevAvgs.mat');
 end
 % figure % 3.1  %2021/02/18 Not needed for JBO
 % for i = 1:8
@@ -240,10 +238,10 @@ switch inputOption
         load('Data/myHEMACoY2AllPunchesRaw.mat');
         load('Data/myHEMACoY2AllPunchesStdDevRaw.mat');
     case 2
-        load('Data/myHEMACoY1AllPunchesAvg.mat');
-        load('Data/myHEMACoY1AllPunchesStdDevAvg.mat');
-        load('Data/myHEMACoY2AllPunchesAvg.mat');
-        load('Data/myHEMACoY2AllPunchesStdDevAvg.mat');
+        load('Data/myHEMACoY1AllPunchesAvgs.mat');
+        load('Data/myHEMACoY1AllPunchesStdDevAvgs.mat');
+        load('Data/myHEMACoY2AllPunchesAvgs.mat');
+        load('Data/myHEMACoY2AllPunchesStdDevAvgs.mat');
 end
 % figure % 4.1  %2021/02/18 Not needed for JBO
 % for i = 1:8
@@ -314,27 +312,37 @@ for pHLoop = 1:2
     y2Bar = [myAlgY2AllPunches(index) y2Dyn(1); myPEGY2AllPunches(index) y2Dyn(2); ...
         myHEMAY2AllPunches(index) y2Dyn(3); myHEMACoY2AllPunches(index) y2Dyn(4)];
     
+    % At the top, CHOOSE ONE OF THESE two options
+    switch inputOption
+        case 1
+            % CHOOSE these values if using raw spectra
+            nStat = 125; % should be > 30 or normal dist
+            % 2021/02/17 NEW read nDyn from input so that gel 4 series 3 has 40 points
+            nDyn = num1Dyn(1);
+        case 2
+            % CHOOSE these values if using avg*.txt input
+            nStat = 5; % should be > 30 or normal dist
+            nDyn = 9; % should be > 30 or normal dist
+    end
+    
     % At the top, CHOOSE ONE OF THESE two options for error bars:
     if myErrorBars == 1
         % 1) StdDev
-        y1Err = [myAlgY1AllPunchesStdDev(index) err1Dyn(1); myPEGY1AllPunchesStdDev(index) err1Dyn(2); ...
-            myHEMAY1AllPunchesStdDev(index) err1Dyn(3); myHEMACoY1AllPunchesStdDev(index) err1Dyn(4)];
-        y2Err = [myAlgY2AllPunchesStdDev(index) err2Dyn(1); myPEGY2AllPunchesStdDev(index) err2Dyn(2); ...
-            myHEMAY2AllPunchesStdDev(index) err2Dyn(3); myHEMACoY2AllPunchesStdDev(index) err2Dyn(4)];
+        y1Err = [myAlgY1AllPunchesStdDev(index) err1Dyn(1); ...
+            myPEGY1AllPunchesStdDev(index) err1Dyn(2); ...
+            myHEMAY1AllPunchesStdDev(index) err1Dyn(3); ...
+            myHEMACoY1AllPunchesStdDev(index) err1Dyn(4)];
+        y2Err = [myAlgY2AllPunchesStdDev(index) err2Dyn(1); ...
+            myPEGY2AllPunchesStdDev(index) err2Dyn(2); ...
+            myHEMAY2AllPunchesStdDev(index) err2Dyn(3); ...
+            myHEMACoY2AllPunchesStdDev(index) err2Dyn(4)];
     else
         if myErrorBars == 2
             % 2) 95% CIs
             % 95% CI = avg +/ zStar * std dev/sqrt(n)
             % https://www.dummies.com/education/math/statistics/how-to-calculate-a-confidence-interval-for-a-population-mean-when-you-know-its-standard-deviation/
             zStar = 1.96; % z Star value for 95% CI
-            % CHOOSE these values if using avg*.txt input
-            nStat = 5; % should be > 30 or normal dist
-            nDyn = 9; % should be > 30 or normal dist
-            % CHOOSE these values if using raw spectra
-            % nStat = 125; % should be > 30 or normal dist
-            % 2021/02/17 NEW read nDyn from input so that gel 4 series 3 has 40 points
-            % nDyn = num1Dyn(1);
-
+            
             % 2021/02/17 aha, I knew this was off. The error portion
             % is only the zStar term. This term gets added, subtracted
             % to the avg to get the whole interval. Including the avg
@@ -400,14 +408,26 @@ for pHLoop = 1:2
     set(gca, 'XTick', 1:length(fname), 'XTickLabel', fname);
     % set(gca, 'FontSize', 30, 'FontWeight', 'bold', 'box', 'off');
     set(gca, 'FontSize', 30, 'box', 'off'); % 2021/02/17 rm bold
-    if myErrorBars == 1
-        myTitle = sprintf('Consistency stat vs dyn at pH%d 1430pk w std dev', jj);
-    else
-        myTitle = sprintf('Consistency stat vs dyn at pH%d 1430pk w 95 CI', jj);
+    switch inputOption
+    case 1
+        switch myErrorBars 
+            case 1
+                myTitle = sprintf('Consistency at pH%d 1430pk raw and std dev', jj);
+            case 2
+                myTitle = sprintf('Consistency at pH%d 1430pk raw and 95 CI', jj);
+        end
+    case 2
+        switch myErrorBars 
+            case 1
+                myTitle = sprintf('Consistency at pH%d 1430pk avgs and std dev', jj);
+            case 2
+                myTitle = sprintf('Consistency at pH%d 1430pk avgs and 95 CI', jj);
+        end
     end
     % title(myTitle); 2021/02/15 out for final version
     xlabel('Gel type');
     ylabel('Normalized intensity of 1430 cm^{-1} peak');
+    ylim([-0.05 0.25]);
     saveMyPlot(FigH, myTitle);
     
     FigH = figure('Position', get(0, 'Screensize'));
@@ -415,14 +435,26 @@ for pHLoop = 1:2
     fname = {'Alginate'; 'PEG'; 'pHEMA'; 'pHEMA-coA'};
     set(gca, 'XTick', 1:length(fname), 'XTickLabel', fname);
     set(gca, 'FontSize', 30, 'box', 'off'); % 2021/02/17 rm bold
-    if myErrorBars == 1
-        myTitle = sprintf('Consistency stat vs dyn at pH%d 1702pk w std dev', jj);
-    else
-        myTitle = sprintf('Consistency stat vs dyn at pH%d 1702pk w 95 CI', jj);
+    switch inputOption
+    case 1
+        switch myErrorBars 
+            case 1
+                myTitle = sprintf('Consistency at pH%d 1702pk raw and std dev', jj);
+            case 2
+                myTitle = sprintf('Consistency at pH%d 1702pk raw and 95 CI', jj);
+        end
+    case 2
+        switch myErrorBars 
+            case 1
+                myTitle = sprintf('Consistency at pH%d 1702pk avgs and std dev', jj);
+            case 2
+                myTitle = sprintf('Consistency at pH%d 1702pk avgs and 95 CI', jj);
+        end
     end
     % title(myTitle); 2021/02/15 out for final version
     xlabel('Gel type');
     ylabel('Normalized intensity of 1702 cm^{-1} peak');
+    ylim([-0.05 0.25]);
     saveMyPlot(FigH, myTitle);
 end
 

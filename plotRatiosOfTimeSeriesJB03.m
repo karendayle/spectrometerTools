@@ -12,6 +12,14 @@
 %    across gel types and to compare to values in static buffer
 % Dayle Kotturi August 2020
 
+% CHOOSE plotOption
+global plotOption;
+%plotOption = 1; % plot y1 and y2. 20200805: extract last val of each segment
+%plotOption = 2; % plot y3
+%plotOption = 3; % check pH sens
+plotOption = 4; % do curve fitting. Set value for lastPoints (line ~510) to
+% adjust how many points at the end of the segment are used
+
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
 % Find the local max instead of looking at const location
@@ -79,13 +87,6 @@ myTitleFont = 30;
 myLabelFont = 30; 
 myTextFont = 30; 
 
-global plotOption;
-%plotOption = 1; % plot y1 and y2. 20200805: extract last val of each segment
-%plotOption = 2; % plot y3
-%plotOption = 3; % check pH sens
-plotOption = 4; % do curve fitting. Set value for lastPoints (line ~510) to
-% adjust how many points at the end of the segment are used
-
 global dirStem;
 
 global vals; % a multi dimensional array to hold the curve fitting results
@@ -120,8 +121,10 @@ subDirStem7 = "7 pH10";
 subDirStem8 = "8 pH7";
 subDirStem9 = "9 pH4";
 
-% Do for each dataset 1:12 or any subset
-for gelOption = 1:12 % 20210106
+close all; % clean slate
+
+% Do for each dataset 1:12
+for gelOption = 1:12
     Kmin = 1;
     Kmax = 9; %20210106
     if plotOption == 4
@@ -210,14 +213,15 @@ for gelOption = 1:12 % 20210106
                 end
             case 4
                 pHcolor = green;
+                if gelOption == 6 % plot part 2
+                    % offset = offset; % for the rest of gelOption 6 ???
+                    num4 = myPlot("4 pH7 only 29", pHcolor, offset, gelOption, gel, series, K);
+                end
                 num4 = myPlot(subDirStem4, pHcolor, offset, gelOption, gel, series, K);
                 %fprintf('Case 4: %d spectra plotted in green\n', num4);
-                if gelOption == 6 % plot part 2
-                    offset = offset; % for the rest of gelOption 6
-                    num4 = myPlot("4 pH7 part2", pHcolor, offset, gelOption, gel, series, K);
-                end
+
                 if gelOption == 8 % plot redo
-                    offset = offset; % for the rest of gelOption 8
+                    %offset = offset; % for the rest of gelOption 8 ???
                     num3 = myPlot("4 pH7 redo", pHcolor, offset, gelOption, gel, series, K);
                 end
             case 5
@@ -280,8 +284,8 @@ for gelOption = 1:12 % 20210106
 %     y = y - deltaY;
 %     hold off
     
-    title(myTitle(gelOption), 'FontSize', myTitleFont);
-    
+    % title(myTitle(gelOption), 'FontSize', myTitleFont); 2021/02/19 out
+    % for final version
     myXlabel = sprintf('Time (hours)');
     xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
     if plotOption == 1 || plotOption == 4
@@ -292,6 +296,7 @@ for gelOption = 1:12 % 20210106
             'FontSize', myLabelFont); % y-axis label
     end
     saveMyPlot(FigH, myTitle(gelOption));
+    pause(1);
 end
 if plotOption == 1
     plotEndVals(); % don't need another plot, but as a way to see
@@ -512,10 +517,10 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
 %     Or:
     switch plotOption
         case {1,3}
-            % plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
-            % hold on;
-            % plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
-            % hold on;
+            plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+            hold on;
+            plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+            hold on;
 
             % 20200805 Store endpoint values of this segment for later
             % comparison
@@ -546,7 +551,7 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
             % Then do the curve fitting and overlay the result
             % throw away the transitioning part of the segment and just
             % take the end of the segment when steady state occurs
-            lastPoints = 29; % CHANGE THIS NUMBER
+            lastPoints = 20; % CHOOSE THIS NUMBER
             nPoints = length(t)-lastPoints+1;
 
             % if there are enough points, take last N points instead of full set
@@ -1228,10 +1233,16 @@ function s = plotSpeedVals()
 end
 
 function g = saveMyPlot(FigH, myTitle)
+global plotOption
     dirStem = "C:\Users\karen\Documents\Data\";
     subDir = "Plots\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);
-    myPlotName = sprintf('%s%s', plotDirStem, myTitle);
+    switch plotOption
+        case {1,2,3}
+            myPlotName = sprintf('%s%s', plotDirStem, myTitle);
+        case 4
+            myPlotName = sprintf('%s%s curve fit', plotDirStem, myTitle);
+    end
     saveas(FigH, myPlotName, 'png');
     g = 1;
 end
