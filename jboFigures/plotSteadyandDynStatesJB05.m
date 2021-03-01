@@ -3,8 +3,8 @@
 inputOption = 2; % use avg spectra (means 5x fewer files)
 
 % CHOOSE ONE OF THESE two options for error bars (near line 250)
-%myErrorBars = 1; % use StdDev
-myErrorBars = 2; % use 95% CIs
+myErrorBars = 1; % use StdDev
+%myErrorBars = 2; % use 95% CIs
 
 % RGB
 global blue;

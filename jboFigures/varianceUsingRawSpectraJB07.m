@@ -113,7 +113,7 @@ for peak = 1:2 % this is outer loop in order to make 1 figure for each pk
     ylabel('Normalized Intensity (A.U.)'); % y-axis label
     % set(gca,'FontSize',32,'FontWeight','bold','box','off'); % used for title and label
     set(gca,'FontSize',32,'box','off'); % 2021/02/17 rm bold
-    saveMyPlot(FigH, myTitle);
+    %saveMyPlot(FigH, myTitle); 2021/02/27 myTitle is undefined
 end
 
 % 2021/02/12 NEW save the arrays of averages and standard devs
@@ -335,11 +335,13 @@ function g = prepPlotData(J, K, peak)
     
     switch peak
         case 1
-            fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
-                J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
+            %fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
+            %    J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
+            fprintf('%f\n', myErr1(K));
         case 2
-            fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
-                J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K));  
+            %fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
+            %    J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K));
+            fprintf('%f\n', myErr2(K));
     end
     g = numberOfSpectraAllPunches;
 end

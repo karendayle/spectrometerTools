@@ -1396,11 +1396,14 @@ pH = [ 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5 ];
             for peak = 1:2
                 switch peak
                     case 1
-                        fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
-                            J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
+                        %fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
+                        %   J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
+                        fprintf('%f\n', myErr1(K));
+
                     case 2
-                        fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
-                            J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K));  
+                        %fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
+                        %    J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K)); 
+                        fprintf('%f\n', myErr2(K));
                 end
             end
         end

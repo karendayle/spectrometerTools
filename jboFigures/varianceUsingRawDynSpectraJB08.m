@@ -12,13 +12,8 @@
 
 global inputOption
 % CHOOSE one of these
-%inputOption = 1; % use spectrum*.txt files as input
-inputOption = 2; % use avg*.txt files as input
-
-global blue
-global rust
-global gold
-global purple
+inputOption = 1; % use spectrum*.txt files as input
+%inputOption = 2; % use av
 global green
 global ciel
 global cherry
@@ -344,13 +339,15 @@ function g = prepPlotData(gel, pHLevel, peak)
             endVals(gel, pHLevel, peak, 3) = numberOfSpectraAllSegments;
             fprintf('gel%d: pHLevel%d: pk:1430 N=%d avg=%f stddev=%f\n', ...
                 gel, pHLevel, numberOfSpectraAllSegments, myY1(pHLevel), myErr1(pHLevel));
+            fprintf('%f\n', myErr1(pHLevel));
         case 2
             % NEW 2021/02/03  
             endVals(gel, pHLevel, peak) = myY2(pHLevel);
             endVals(gel, pHLevel, peak, 2) = myErr2(pHLevel);
             endVals(gel, pHLevel, peak, 3) = numberOfSpectraAllSegments;
             fprintf('gel%d: pHLevel%d: pk:1702 N=%d avg=%f stddev=%f\n', ...
-                gel, pHLevel, numberOfSpectraAllSegments, myY2(pHLevel), myErr2(pHLevel));  
+                gel, pHLevel, numberOfSpectraAllSegments, myY2(pHLevel), myErr2(pHLevel));
+            fprintf('%f\n', myErr2(pHLevel));
     end
     g = numberOfSpectraAllSegments;
 end
