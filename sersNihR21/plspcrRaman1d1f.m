@@ -1278,6 +1278,21 @@ function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
                     filename = sprintf('MBA NPs-*%s %d.csv', char(pHNames(J)), K);
                     [~, newSpectrum] = addOneSpectrum(dir_to_search, filename, xRef);
                     spectra = [spectra; newSpectrum];
+                    
+                    switch K
+                        case 1
+                            analyteArr = [analyteArr; 4];
+                        case 2
+                            analyteArr = [analyteArr; 5];
+                        case 3
+                            analyteArr = [analyteArr; 5.5];
+                        case 4
+                            analyteArr = [analyteArr; 6];
+                        case 5
+                            analyteArr = [analyteArr; 6.5];
+                        case 6
+                            analyteArr = [analyteArr; 7];
+                    end
                 end
             end
             
