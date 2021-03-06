@@ -172,20 +172,24 @@ myDebug = 0;
 
 % 7/16/2020 New for automatic sizing of axes and positioning of legend
 % Min and max values of each gel
-minX  = zeros(1, 4, 'double');
+
 minY1 = zeros(1, 4, 'double');
 minY2 = zeros(1, 4, 'double');
 maxX  = zeros(1, 4, 'double');
 maxY1 = zeros(1, 4, 'double');
 maxY2 = zeros(1, 4, 'double');
+allAlgY1   = zeros(5, 8, 'double'); % 2021/03/05 may not matter
+allAlgErr1 = zeros(5, 8, 'double');
+allAlgY2   = zeros(5, 8, 'double');
+allAlgErr2 = zeros(5, 8, 'double');
+allAlgNum  = zeros(5, 8, 'double');
+allPEGY1   = zeros(5, 8, 'double');
+allPEGErr1 = zeros(5, 8, 'double');
+allPEGY2   = zeros(5, 8, 'double');
+allPEGErr2 = zeros(5, 8, 'double');
+allPEGNum  = zeros(5, 8, 'double');
 
-for J=1:4
-    myX    = zeros(1, 8, 'double');
-    myY1   = zeros(1, 8, 'double');
-    myY2   = zeros(1, 8, 'double');
-    myErr1 = zeros(1, 8, 'double');
-    myErr2 = zeros(1, 8, 'double'); 
-    
+for J=1:4   
     figure % Figure #1-4: one plot for each gel, showing x1 and x2, with or
            % without norm'n (depends on xRef).
     
@@ -196,80 +200,57 @@ for J=1:4
     end
     
     for M =1:maxM 
-        for K = 1:8 % all pH levels 4, 4.5, ..., 7.5
+        for K = 1:8 % all pH levels 4, 4.5, ..., 7.5 2021/03/05 moved lower
+            % switch J into this loop but may be wrong
             if newGels
                 subDirWithPunch = subDirStem(K) + M + "\1";
-                numSpectra(K) = prepPlotData(J, subDirWithPunch, K, ...
+                % Go get the avg and std dev for both peaks for one punch and pH
+                [a, b, c, d, e, numSpectra] = prepPlotData(J, subDirWithPunch, K, ...
                     punchColor(M,:), M);
             else
                 subDirWithPunch = subDirStem(K) + "1a" + "\1";
-                numSpectra(K) = prepPlotData(J, subDirWithPunch, K, ...
+                % Go get the avg and std dev for both peaks for one punch and pH
+                [a, b, c, d, e, numSpectra] = prepPlotData(J, subDirWithPunch, K, ...
                     punchColor(6,:), M);
             end
-            fprintf('Case %d: %d spectra\n', K, numSpectra(K));    
-        end 
-
-        % store these arrays to be able to make a combined plot for all
-        % gels later
-        if J == 1 && M == 1
-            allX = myX; % Use the same set of x values for all gels
-            minX(J) = min(myX);
-            maxX(J) = max(myX);
-        end
+            if myDebug
+                fprintf('Case %d: %d spectra\n', K, numSpectra);  
+            end
         
-        switch J
-            case 1
-                if M == 1
-                    allAlgY1 = myY1; % Put the first gel's values into a row
-                    allAlgErr1 = myErr1;
-                    allAlgY2 = myY2;
-                    allAlgErr2 = myErr2;
-                else
-                    allAlgY1 = [allAlgY1; myY1]; % Append the other gels' in subsequent rows
-                    allAlgErr1 = [allAlgErr1; myErr1];
-                    allAlgY2 = [allAlgY2; myY2];
-                    allAlgErr2 = [allAlgErr2; myErr2];
-                end
-                allAlgNum = numSpectra;
-            case 2
-                if M == 1
-                    allPEGY1 = myY1; % Put the first gel's values into a row
-                    allPEGErr1 = myErr1;
-                    allPEGY2 = myY2;
-                    allPEGErr2 = myErr2;
-                else
-                    allPEGY1 = [allPEGY1; myY1]; % Append the other gels' in subsequent rows
-                    allPEGErr1 = [allPEGErr1; myErr1];
-                    allPEGY2 = [allPEGY2; myY2];
-                    allPEGErr2 = [allPEGErr2; myErr2];
-                end
-                allPEGNum = numSpectra;
-            case 3
-                if M == 1
-                    allHEMAY1 = myY1; % Put the first gel's values into a row
-                    allHEMAErr1 = myErr1;
-                    allHEMAY2 = myY2;
-                    allHEMAErr2 = myErr2;
-                else
-                    allHEMAY1 = [allHEMAY1; myY1]; % Append the other gels' in subsequent rows
-                    allHEMAErr1 = [allHEMAErr1; myErr1];
-                    allHEMAY2 = [allHEMAY2; myY2];
-                    allHEMAErr2 = [allHEMAErr2; myErr2];
-                end
-                allHEMANum = numSpectra;
-            case 4
-                if M == 1
-                    allHEMACoY1 = myY1; % Put the first gel's values into a row
-                    allHEMACoErr1 = myErr1;
-                    allHEMACoY2 = myY2;
-                    allHEMACoErr2 = myErr2;
-                else
-                    allHEMACoY1 = [allHEMACoY1; myY1]; % Append the other gels' in subsequent rows
-                    allHEMACoErr1 = [allHEMACoErr1; myErr1];
-                    allHEMACoY2 = [allHEMACoY2; myY2];
-                    allHEMACoErr2 = [allHEMACoErr2; myErr2];
-                end
-                allHEMACoNum = numSpectra;
+
+            % store these arrays to be able to make a combined plot for all
+            % gels later
+
+            minX = 4.;
+            maxX = 7.5;
+            
+            allX(K) = a;
+            switch J
+                case 1
+                    allAlgY1(M,K) = b; % Put the first gels' values into a row
+                    allAlgErr1(M,K) = c;
+                    allAlgY2(M,K) = d;
+                    allAlgErr2(M,K) = e;
+                    allAlgNum(M,K) = numSpectra;
+                case 2
+                    allPEGY1(M,K) = b; % Put the first gels' values into a row
+                    allPEGErr1(M,K) = c;
+                    allPEGY2(M,K) = d;
+                    allPEGErr2(M,K) = e;
+                    allPEGNum(M,K) = numSpectra;
+                case 3
+                    allHEMAY1(M,K) = b; % Put the first gels' values into a row
+                    allHEMAErr1(M,K) = c;
+                    allHEMAY2(M,K) = d;
+                    allHEMAErr2(M,K) = e;
+                    allHEMANum(M,K) = numSpectra;
+                case 4
+                    allHEMACoY1(M,K) = b; % Put the first gels' values into a row
+                    allHEMACoErr1(M,K) = c;
+                    allHEMACoY2(M,K) = d;
+                    allHEMACoErr2(M,K) = e;
+                    allHEMACoNum(M,K) = numSpectra;
+            end
         end
         
         % Now for the table of values for gel comparison
@@ -350,12 +331,12 @@ for J=1:4
     set(gca,'FontSize',myTextFont,'box','off'); % 2021/02/18 rm bold
 
     % 7/16/2020 New, automatic sizing
-    xlim([minX(1)-0.5 maxX(1)+0.5]);
+    xlim([minX-0.5 maxX+0.5]);
     ylim([0.99 * min(minY1(J),minY2(J)) 1.01 * max(maxY1(J),maxY2(J))]);
     y = 0.95 * (max(maxY1(J), maxY2(J)) - min(minY1(J), minY2(J))) + ...
         min(minY1(J), minY2(J));
     deltaY = 0.1 * (max(maxY1(J), maxY2(J)) - min(minY1(J), minY2(J)));
-    x = 1.01 * (minX(1) - 0.5);
+    x = 1.01 * (minX - 0.5);
     switch peakSet
         case 1
             % JB01
@@ -474,11 +455,11 @@ xlabel('pH', 'FontSize', myTextFont); % x-axis label
 set(gca,'FontSize',myTextFont,'box','off'); % 2021/02/18 rm bold
 
 % 7/16/2020 New, automatic sizing
-xlim([minX(1)-0.5 maxX(1)+0.5]);
+xlim([minX-0.5 maxX+0.5]);
 ylim([0.99 * min(minY1) 1.01 * max(maxY1)]);
 y = 0.95 * (max(maxY1) - min(minY1)) + min(minY1);
 deltaY = 0.1 * (max(maxY1) - min(minY1));
-x = 0.9 * (maxX(1) + 0.5);
+x = 0.9 * (maxX + 0.5);
 deltaX = 0.1;
 plot(x, y, '-o', 'LineStyle','none', ...
     'MarkerSize', 30, 'Color', red, 'linewidth', 2);
@@ -570,11 +551,11 @@ xlabel('pH', 'FontSize', myTextFont); % x-axis label
 set(gca,'FontSize',myTextFont,'box','off'); % 2021/02/18 rm bold
 
 % 7/16/2020 New, automatic sizing
-xlim([minX(1)-0.5 maxX(1)+0.5]);
+xlim([minX-0.5 maxX+0.5]);
 ylim([0.99 * min(minY2) 1.01 * max(maxY2)]);
 y = 0.95 * (max(maxY2) - min(minY2)) + min(minY2);
 deltaY = 0.1 * (max(maxY2) - min(minY2));
-x = 0.9 * (maxX(1) + 0.5);
+x = 0.9 * (maxX + 0.5);
 deltaX = 0.1;
 plot(x, y, '-o', 'LineStyle','none', ...
     'MarkerSize', 30, 'Color', red, 'linewidth', 2);
@@ -604,10 +585,33 @@ text(x + deltaX, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 % As written, this std dev is ignoring the variance in the 5 averaged msmts
 % Want to plot these with err bars
 % fprintf('Averages and Std Dev over all punches at each pH: 4, 4.5, ..., 7.5\n');
+global myAlgY1AllPunches
+global myAlgY1AllPunchesStdDev
+global myAlgY2AllPunches
+global myAlgY2AllPunchesStdDev
+global myAlgNum
+global myPEGY1AllPunches
+global myPEGY1AllPunchesStdDev
+global myPEGY2AllPunches
+global myPEGY2AllPunchesStdDev
+global myPEGNum
+global myHEMAY1AllPunches
+global myHEMAY1AllPunchesStdDev
+global myHEMAY2AllPunches
+global myHEMAY2AllPunchesStdDev
+global myHEMANum
+global myHEMACoY1AllPunches
+global myHEMACoY1AllPunchesStdDev
+global myHEMACoY2AllPunches
+global myHEMACoY2AllPunchesStdDev
+global myHEMACoNum
+
 for K = 1:8
+    [ nrows, ~ ] = size(allAlgY1);
     a = getAverageAndStdDev(allAlgY1(:,K));
     myAlgY1AllPunches(K) = a(1);
     myAlgY1AllPunchesStdDev(K) = a(2);
+    myAlgNum(K) = nrows; % sum(allAlgNum(:,K));
     %fprintf('pH(%d) alg 1430/cm %.3f %.3f\n', K, myAlgY1AllPunches(K), myAlgY1AllPunchesStdDev(K));
         
     a = getAverageAndStdDev(allAlgY2(:,K));
@@ -618,6 +622,7 @@ for K = 1:8
     a = getAverageAndStdDev(allPEGY1(:,K));
     myPEGY1AllPunches(K) = a(1);
     myPEGY1AllPunchesStdDev(K) = a(2);
+    myPEGNum(K) = nrows; % sum(allPEGNum(:,K));
     %fprintf('pH(%d) peg 1430/cm %.3f %.3f\n', K, myPEGY1AllPunches(K), myPEGY1AllPunchesStdDev(K));
         
     a = getAverageAndStdDev(allPEGY2(:,K));
@@ -628,6 +633,7 @@ for K = 1:8
     a = getAverageAndStdDev(allHEMAY1(:,K));
     myHEMAY1AllPunches(K) = a(1);
     myHEMAY1AllPunchesStdDev(K) = a(2);
+    myHEMANum(K) = nrows; % sum(allHEMANum(:,K));
     %fprintf('pH(%d) pHE 1430/cm %.3f %.3f\n', K, myHEMAY1AllPunches(K), myHEMAY1AllPunchesStdDev(K));
         
     a = getAverageAndStdDev(allHEMAY2(:,K));
@@ -638,6 +644,7 @@ for K = 1:8
     a = getAverageAndStdDev(allHEMACoY1(:,K));
     myHEMACoY1AllPunches(K) = a(1);
     myHEMACoY1AllPunchesStdDev(K) = a(2);
+    myHEMACoNum(K) = nrows; % sum(allHEMACoNum(:,K));
     %fprintf('pH(%d) pHC 1430/cm %.3f %.3f\n', K, myHEMACoY1AllPunches(K), myHEMACoY1AllPunchesStdDev(K));
         
     a = getAverageAndStdDev(allHEMACoY2(:,K));
@@ -771,7 +778,7 @@ set(gca,'FontSize',myTextFont,'box','off'); % 2021/02/18 rm bold
 
 % 2020/07/16 New, automatic sizing
 % 2021/02/19 Fix the range for both 1430 and 1702 plots
-xlim([minX(1)-0.5 maxX(1)+0.5]);
+xlim([minX-0.5 maxX+0.5]);
 max1 = max(maxY1);
 max2 = max(maxY2);
 maxOverall = max(max1, max2);
@@ -790,12 +797,12 @@ switch newGels
     case 1
         switch peakSet % the shape of the curve is different ...
             case 1
-                x = minX(1); % ... for the 1430 pk
+                x = minX; % ... for the 1430 pk
             case 2
-                x = 0.8 * (maxX(1) + 0.5); % ... and the 1072 ref pk
+                x = 0.8 * (maxX + 0.5); % ... and the 1072 ref pk
         end
     case 0
-        x = minX(1) - 0.25; % old gels legend must be a bit more left
+        x = minX - 0.25; % old gels legend must be a bit more left
 end
 
 deltaX = 0.1;
@@ -888,7 +895,7 @@ set(gca,'FontSize',myTextFont,'box','off'); % 2021/02/18 rm bold
 % 2021/02/19 There is a problem. When Y2 vals
 % are actually lower than Y1, then this cuts them off.
 % 2021/02/19 Fix the range for both 1430 and 1702 plots
-xlim([minX(1)-0.5 maxX(1)+0.5]);
+xlim([minX-0.5 maxX+0.5]);
 max1 = max(maxY1);
 max2 = max(maxY2);
 maxOverall = max(max1, max2);
@@ -903,7 +910,7 @@ end
 y = 0.95 * (maxOverall - minOverall) + minOverall;
 deltaY = 0.1 * (maxOverall - minOverall);
 
-x = 0.8 * (maxX(1) + 0.5);
+x = 0.8 * (maxX + 0.5);
 deltaX = 0.1;
 
 plot(x, y, '-o', 'LineStyle','none', ...
@@ -935,38 +942,38 @@ for J = 1:4
     % get min, max, delta and %delta 
     switch J % fill the correct array based on the type of gel
         case 1
-            myAlgY1Min(maxM+1) = min(myAlgY1AllPunches);    
+            myAlgY1Min(maxM+1) = min(myAlgY1AllPunches);
             myAlgY1Max(maxM+1) = max(myAlgY1AllPunches);
             myAlgY1Delta(maxM+1) = myAlgY1Max(maxM+1) - myAlgY1Min(maxM+1);
             myAlgY1PercentDelta(maxM+1) = myAlgY1Delta(maxM+1)/myAlgY1Min(maxM+1)*100.;
-            myAlgY2Min(maxM+1) = min(myAlgY2AllPunches);    
+            myAlgY2Min(maxM+1) = min(myAlgY2AllPunches);
             myAlgY2Max(maxM+1) = max(myAlgY2AllPunches);
             myAlgY2Delta(maxM+1) = myAlgY2Max(maxM+1) - myAlgY2Min(maxM+1);
             myAlgY2PercentDelta(maxM+1) = myAlgY2Delta(maxM+1)/myAlgY2Min(maxM+1)*100.;
         case 2
-            myPEGY1Min(maxM+1) = min(myPEGY1AllPunches);    
+            myPEGY1Min(maxM+1) = min(myPEGY1AllPunches);  
             myPEGY1Max(maxM+1) = max(myPEGY1AllPunches);
             myPEGY1Delta(maxM+1) = myPEGY1Max(maxM+1) - myPEGY1Min(maxM+1);
             myPEGY1PercentDelta(maxM+1) = myPEGY1Delta(maxM+1)/myPEGY1Min(maxM+1)*100.;
-            myPEGY2Min(maxM+1) = min(myPEGY2AllPunches);    
+            myPEGY2Min(maxM+1) = min(myPEGY2AllPunches); 
             myPEGY2Max(maxM+1) = max(myPEGY2AllPunches);
             myPEGY2Delta(maxM+1) = myPEGY2Max(maxM+1) - myPEGY2Min(maxM+1);
             myPEGY2PercentDelta(maxM+1) = myPEGY2Delta(maxM+1)/myPEGY2Min(maxM+1)*100.;
         case 3                
-            myHEMAY1Min(maxM+1) = min(myHEMAY1AllPunches);    
+            myHEMAY1Min(maxM+1) = min(myHEMAY1AllPunches);
             myHEMAY1Max(maxM+1) = max(myHEMAY1AllPunches);
             myHEMAY1Delta(maxM+1) = myHEMAY1Max(maxM+1) - myHEMAY1Min(maxM+1);
             myHEMAY1PercentDelta(maxM+1) = myHEMAY1Delta(maxM+1)/myHEMAY1Min(maxM+1)*100.;
-            myHEMAY2Min(maxM+1) = min(myHEMAY2AllPunches);    
+            myHEMAY2Min(maxM+1) = min(myHEMAY2AllPunches);  
             myHEMAY2Max(maxM+1) = max(myHEMAY2AllPunches);
             myHEMAY2Delta(maxM+1) = myHEMAY2Max(maxM+1) - myHEMAY2Min(maxM+1);
             myHEMAY2PercentDelta(maxM+1) = myHEMAY2Delta(maxM+1)/myHEMAY2Min(maxM+1)*100.;        
         case 4
-            myHEMACoY1Min(maxM+1) = min(myHEMACoY1AllPunches);    
+            myHEMACoY1Min(maxM+1) = min(myHEMACoY1AllPunches);   
             myHEMACoY1Max(maxM+1) = max(myHEMACoY1AllPunches);
             myHEMACoY1Delta(maxM+1) = myHEMACoY1Max(maxM+1) - myHEMACoY1Min(maxM+1);
             myHEMACoY1PercentDelta(maxM+1) = myHEMACoY1Delta(maxM+1)/myHEMACoY1Min(maxM+1)*100.;
-            myHEMACoY2Min(maxM+1) = min(myHEMACoY2AllPunches);    
+            myHEMACoY2Min(maxM+1) = min(myHEMACoY2AllPunches);
             myHEMACoY2Max(maxM+1) = max(myHEMACoY2AllPunches);
             myHEMACoY2Delta(maxM+1) = myHEMACoY2Max(maxM+1) - myHEMACoY2Min(maxM+1);
             myHEMACoY2PercentDelta(maxM+1) = myHEMACoY2Delta(maxM+1)/myHEMACoY2Min(maxM+1)*100.;
@@ -1068,7 +1075,7 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end   
 
-function g = prepPlotData(J, subDirStem, K, myColor, M)
+function [a, b, c, d, e, f] = prepPlotData(J, subDirStem, K, myColor, M)
     global blue
     global rust
     global gold
@@ -1092,8 +1099,9 @@ function g = prepPlotData(J, subDirStem, K, myColor, M)
     global lineThickness
     global numPointsEachSide
     global pH
-%     global labels
-    
+    if myDebug 
+        fprintf('reset sums\n');
+    end
     sum1 = 0;
     sum2 = 0;
     sumSq1 = 0;
@@ -1103,7 +1111,10 @@ function g = prepPlotData(J, subDirStem, K, myColor, M)
 %     dir_to_search = char(str_dir_to_search);
     dir_to_search = dirStem(J) + subDirStem; % this seems to work in 2019
     txtpattern = fullfile(dir_to_search, 'avg*.txt'); % this looks fine
-    dinfo = dir(txtpattern); % why is this null array?
+    dinfo = dir(txtpattern);
+    if myDebug 
+        fprintf('first pass\n');
+    end
     
     numberOfSpectra = length(dinfo);
     if numberOfSpectra > 0
@@ -1113,7 +1124,9 @@ function g = prepPlotData(J, subDirStem, K, myColor, M)
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
-
+            if myDebug 
+                fprintf('process %s\n', thisfilename);
+            end
             % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
             % REFERENCE INDEX
 
@@ -1149,15 +1162,23 @@ function g = prepPlotData(J, subDirStem, K, myColor, M)
         % calculate average
         avg1 = sum1/numberOfSpectra;
         avg2 = sum2/numberOfSpectra;
+        if myDebug 
+            fprintf('avgs based on %d spectra\n', numberOfSpectra);
+        end
         
         % second pass on dataset to get (each point - average)^2
         % for standard deviation, need 
+        if myDebug 
+            fprintf('second pass\n');
+        end
         for I = 1 : numberOfSpectra
             thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
-
+            if myDebug 
+                fprintf('process %s\n', thisfilename);
+            end
             % 10/5/2018: ORDER MATTERS FOR NORMALIZED PLOT TO BE 1 AT
             % REFERENCE INDEX
 
@@ -1193,50 +1214,47 @@ function g = prepPlotData(J, subDirStem, K, myColor, M)
         % 5. Compute standard deviation at each index of the averaged spectra 
         stdDev1 = sqrt(sumSq1/numberOfSpectra);
         stdDev2 = sqrt(sumSq2/numberOfSpectra);
-            
-        % Build up arrays to plot later
-        global myX
-        global myY1
-        global myY2
-        global myErr1
-        global myErr2
-        
-        myX(K) = pH(K);
-        myY1(K) = normalized1;
-        myErr1(K) = stdDev1;
-        myY2(K) = normalized2;
-        myErr2(K) = stdDev2;
+        if myDebug 
+            fprintf('std dev based on %d spectra\n', numberOfSpectra);
+        end
+                
+        a = pH(K);
+        b = normalized1;
+        c = stdDev1;
+        d = normalized2;
+        e = stdDev2;
+        f = numberOfSpectra;
 
-        %fprintf('%d\n', I);
-        %pause(5);
+        fprintf...
+            ('Gel%d Case %d: results for %s: N=%d %f %f %f %f\n', ...
+            J, K, subDirStem, f, b, c, d, e);
         
         % part 1: do the 1430 cm-1 plot 6/30/2020: don't color based on
         % 'K'. Color based on punch number.
-        plot(myX(K), myY1(K), '-o', 'LineStyle','none', 'MarkerSize', ...
-            30, 'Color', myColor, 'linewidth', 2); 
+        plot(a, b, '-o', 'LineStyle','none', 'MarkerSize', ...
+            30, 'Color', myColor, 'linewidth', 2);
         hold on
         % https://blogs.mathworks.com/pick/2017/10/13/labeling-data-points/
         %labelpoints(myX(K), myY1(K), labels(M),'SE',0.2,1)
         %hold on
-        errorbar(myX(K), myY1(K), myErr1(K), 'LineStyle','none', ...
+        errorbar(a, b, c, 'LineStyle','none', ...
             'Color', black, 'linewidth', 2);
         hold on
 
         % part 2: do the 1702 cm-1 plot
-        plot(myX(K), myY2(K), '-s', 'LineStyle','none', 'MarkerSize', ...
+        plot(a, d, '-s', 'LineStyle','none', 'MarkerSize', ...
             30, 'Color', myColor, 'linewidth', 2); 
         hold on
-        errorbar(myX(K), myY2(K), myErr2(K), 'LineStyle','none', ...
+        errorbar(a, d, e, 'LineStyle','none', ...
             'Color', black,'linewidth', 2);
         hold on
         
     end
-    g = numberOfSpectra;
 end
 
 function h = getAverageAndStdDev(dataPoints)
         %Pass in array of points
-        myN = length(dataPoints);
+        myN = length(dataPoints); % 2021/03/05 FOUND STH. This is 5 for alg but 8 for PEG
         mySum = 0;
         mySumSq = 0;
         for I = 1 : myN
@@ -1280,7 +1298,7 @@ function j = saveMyData()
     global myHEMACoY2AllPunches
     global myHEMACoY2AllPunchesStdDev
     
-    dirStem = 'Data/'; % save .mat files to the repo
+    dirStem = '../Data/'; % save .mat files to the repo
     for ii = 1:16
         switch ii
             case 1
@@ -1340,70 +1358,72 @@ end
 
 % 2021/02/16 for comparison to output of JB07
 function k = printMyData()
-global allAlgY1
-global allAlgErr1
-global allAlgY2
-global allAlgNum
-global allAlgErr2
-global allPEGY1
-global allPEGErr1
-global allPEGY2
-global allPEGErr2
-global allPEGNum
-global allHEMAY1
-global allHEMAErr1
-global allHEMAY2
-global allHEMAErr2
-global allHEMANum
-global allHEMACoY1
-global allHEMACoErr1
-global allHEMACoY2
-global allHEMACoErr2
-global allHEMACoNum
+global myAlgY1AllPunches
+global myAlgY1AllPunchesStdDev
+global myAlgY2AllPunches
+global myAlgY2AllPunchesStdDev
+global myAlgNum
+global myPEGY1AllPunches
+global myPEGY1AllPunchesStdDev
+global myPEGY2AllPunches
+global myPEGY2AllPunchesStdDev
+global myPEGNum
+global myHEMAY1AllPunches
+global myHEMAY1AllPunchesStdDev
+global myHEMAY2AllPunches
+global myHEMAY2AllPunchesStdDev
+global myHEMANum
+global myHEMACoY1AllPunches
+global myHEMACoY1AllPunchesStdDev
+global myHEMACoY2AllPunches
+global myHEMACoY2AllPunchesStdDev
+global myHEMACoNum
 pH = [ 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5 ];
 
-    for J = 1:4
-        for K = 1:8
-            % use a switch to set the Y1, Err1, Y2, Err2 arrays
-            switch J
-                case 1
-                    myY1(K) = allAlgY1(K);
-                    myErr1(K) = allAlgErr1(K);
-                    myY2(K) = allAlgY2(K);
-                    myErr2(K) = allAlgErr2(K);
-                    numberOfSpectraAllPunches = allAlgNum(K);
-                case 2
-                    myY1(K) = allPEGY1(K);
-                    myErr1(K) = allPEGErr1(K);
-                    myY2(K) = allPEGY2(K);
-                    myErr2(K) = allPEGErr2(K);
-                    numberOfSpectraAllPunches = allPEGNum(K);
-                case 3
-                    myY1(K) = allHEMAY1(K);
-                    myErr1(K) = allHEMAErr1(K);
-                    myY2(K) = allHEMAY2(K);
-                    myErr2(K) = allHEMAErr2(K);
-                    numberOfSpectraAllPunches = allHEMANum(K);
-                case 4
-                    myY1(K) = allHEMACoY1(K);
-                    myErr1(K) = allHEMACoErr1(K);
-                    myY2(K) = allHEMACoY2(K);
-                    myErr2(K) = allHEMACoErr2(K);
-                    numberOfSpectraAllPunches = allHEMACoNum(K);
-            end        
-            
-            % This matches JB07 output fmt
-            for peak = 1:2
+    for peak = 1:2
+        for J = 1:4
+            for K = 1:8
+                % use a switch to set the Y1, Err1, Y2, Err2 arrays
+                % so that printing done for all via the same statement
+                switch J
+                    % 2021/3/5 I SEE IT. THESE S/B allPunches, not all
+                    case 1
+                        myY1(K) = myAlgY1AllPunches(K);
+                        myErr1(K) = myAlgY1AllPunchesStdDev(K);
+                        myY2(K) = myAlgY2AllPunches(K);
+                        myErr2(K) = myAlgY2AllPunchesStdDev(K);
+                        numberOfSpectraAllPunches = myAlgNum(K);
+                    case 2
+                        myY1(K) = myPEGY1AllPunches(K);
+                        myErr1(K) = myPEGY1AllPunchesStdDev(K);
+                        myY2(K) = myPEGY2AllPunches(K);
+                        myErr2(K) = myPEGY2AllPunchesStdDev(K);
+                        numberOfSpectraAllPunches = myPEGNum(K);
+                    case 3
+                        myY1(K) = myHEMAY1AllPunches(K);
+                        myErr1(K) = myHEMAY1AllPunchesStdDev(K);
+                        myY2(K) = myHEMAY2AllPunches(K);
+                        myErr2(K) = myHEMAY2AllPunchesStdDev(K);
+                        numberOfSpectraAllPunches = myHEMANum(K);
+                    case 4
+                        myY1(K) = myHEMACoY1AllPunches(K);
+                        myErr1(K) = myHEMACoY1AllPunchesStdDev(K);
+                        myY2(K) = myHEMACoY2AllPunches(K);
+                        myErr2(K) = myHEMACoY2AllPunchesStdDev(K);
+                        numberOfSpectraAllPunches = myHEMACoNum(K);
+                end        
+
+                % This matches JB07 output fmt
                 switch peak
                     case 1
-                        %fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
-                        %   J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
-                        fprintf('%f\n', myErr1(K));
+                        fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
+                           J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
+                        %fprintf('%f\n', myErr1(K));
 
                     case 2
-                        %fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
-                        %    J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K)); 
-                        fprintf('%f\n', myErr2(K));
+                        fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
+                            J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K)); 
+                        %fprintf('%f\n', myErr2(K));
                 end
             end
         end
