@@ -22,20 +22,30 @@
 % Add tiny amount to upper ylim to allow entire marker (and not just its 
 % center to fit
 
+% TO DO save plots to file
+
+addpath('../functionLibrary');
+
 % CHOOSE set to 0 to use old gels and 1 to use new gels
-newGels = 1; 
+newGels = 1;
+
+global peakSet
+% CHOOSE: Change this to change which peaks are plotted
+% Set to 1 for 1430 & 1702, normalized by 1582 peak; 
+% Set to 2 for 1072 & 1582, normalized by each other.
+peakSet = 2; 
 
 % Colors:
-global black;
-global purple;
-global blue;
-global ciel;
-global green;
-global rust;
-global gold;
-global red;
-global cherry;
-global magenta;
+global black
+global purple
+global blue
+global ciel
+global green
+global rust
+global gold
+global red
+global cherry
+global magenta
 
 % RGB
 blue =    [0.0000, 0.4470, 0.7410];
@@ -53,11 +63,11 @@ punchColor = [ magenta; rust; gold; ciel; purple; black ];
 global pH
 pH = [ 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5 ];
 
-global myX
-global myY1
-global myY2
-global myErr1
-global myErr2
+% global myX
+% global myY1
+% global myY2
+% global myErr1
+% global myErr2
 
 % The paths to each hydrogel type and gel number
 % This script deals with the four gels made on 6/3/2020 by SP
@@ -127,7 +137,7 @@ numPoints = 1024;
 global numPointsEachSide;
 numPointsEachSide = 2;
 
-global xRef;
+global xRef
 % Use the index 713 to get the intensity at the reference peak, COO-,
 % at 1582/cm. Note that the numPointsEachSide is used to take the area 
 % under the curve around the center point xRef
@@ -136,9 +146,7 @@ xRef = 713;
 %xRef = 406; % the 1072 "ref" peak
 %xRef = 0; % setting this to zero means NO NORMALIZATION of peaks
 
-global peakSet;
-peakSet = 1; % CHOOSE: Change this to change which peaks are plotted
-             % Set to 1 for 1430 & 1702; set to 2 for 1072 & 1582
+
 global x1;
 global x2;
 switch peakSet
@@ -152,9 +160,11 @@ switch peakSet
         % This is the change from JB01 script:
         % Instead of pulling out the 1430 and 1702 pH sensitive peaks, 
         % pull out the 1072 "ref" peak.
+        % 2021/03/17 there is sth missing. x1 needs to be xref for x2.
+        % where to do this? 
         % JB02 case:
         x1 = 406; % the 1072 "ref" peak
-        x2 = 715; % the 1582 "ref" peak
+        x2 = xRef; % the 1582 "ref" peak 2021/03/17 set to xRef
 end
 
 global xMin
@@ -910,7 +920,13 @@ end
 y = 0.95 * (maxOverall - minOverall) + minOverall;
 deltaY = 0.1 * (maxOverall - minOverall);
 
-x = 0.8 * (maxX + 0.5);
+switch peakSet % the shape of the curve is different ...
+    case 1
+        x = 0.8 * (maxX + 0.5); % ... for the 1430 pk
+    case 2
+        x = minX; % ... and the 1072 ref pk
+end
+
 deltaX = 0.1;
 
 plot(x, y, '-o', 'LineStyle','none', ...
@@ -1099,6 +1115,8 @@ function [a, b, c, d, e, f] = prepPlotData(J, subDirStem, K, myColor, M)
     global lineThickness
     global numPointsEachSide
     global pH
+    global peakSet
+    
     if myDebug 
         fprintf('reset sums\n');
     end
@@ -1152,8 +1170,14 @@ function [a, b, c, d, e, f] = prepPlotData(J, subDirStem, K, myColor, M)
             end
 
             % 3. NEW 10/4/18: Normalize what is plotted
-            normalized1 = numerator1/denominator;
-            normalized2 = numerator2/denominator;
+            switch peakSet
+                case 1
+                    normalized1 = numerator1/denominator;
+                    normalized2 = numerator2/denominator;
+                case 2 
+                    normalized1 = numerator1/numerator2;
+                    normalized2 = numerator2/numerator1;
+            end
             
             sum1 = sum1 + normalized1;
             sum2 = sum2 + normalized2;
@@ -1203,8 +1227,14 @@ function [a, b, c, d, e, f] = prepPlotData(J, subDirStem, K, myColor, M)
             end
 
             % 3. Normalize what is plotted
-            normalized1 = numerator1/denominator;
-            normalized2 = numerator2/denominator;
+            switch peakSet
+                case 1
+                    normalized1 = numerator1/denominator;
+                    normalized2 = numerator2/denominator;
+                case 2 
+                    normalized1 = numerator1/numerator2;
+                    normalized2 = numerator2/numerator1;
+            end
             
             % 4. Add to the sum of the squares
             sumSq1 = sumSq1 + (normalized1 - avg1).^2; 
