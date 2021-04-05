@@ -27,9 +27,11 @@ red =     [1.0, 0.0, 0.0];
 black =   [0.0, 0.0, 0.0];
 magenta = [1.0, 0.0, 1.0];
 
-% Change next 4 lines to what you want to plot
-% These are used to find the spectra that get plotted.
-% Multiple spectra in each subdir, but the latest one is used for plot
+% CHOOSE between datasets
+% at being or end of June 2020 (1 or 2)
+global dataset
+dataset = 2;
+
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
 
@@ -210,15 +212,28 @@ for J = 1:4
             end
         case 4
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\";
-            %subDirStem1 = "calib pH4\1";
-            subDirStem1 = "calib pH4 repeat\1";
-            subDirStem2 = "calib pH4.5\1";
-            subDirStem3 = "calib pH5\1";
-            subDirStem4 = "calib pH5.5\1";
-            subDirStem5 = "calib pH6\1";
-            subDirStem6 = "calib pH6.5\1";
-            subDirStem7 = "calib pH7\1";
-            subDirStem8 = "calib pH7.5\1";
+            switch dataset
+                case 1
+                    subDirStem1 = "pH4 punch1a\1";
+                    subDirStem2 = "pH4.5 punch1a\1";
+                    subDirStem3 = "pH5 punch1a\1";
+                    subDirStem4 = "pH5.5 punch1a\1";
+                    subDirStem5 = "pH6 punch1a\1";
+                    subDirStem6 = "pH6.5 punch1a\1";
+                    subDirStem7 = "pH7 punch1a\1";
+                    subDirStem8 = "pH7.5 punch1a\1";
+                case 2
+                    %subDirStem1 = "calib pH4\1";
+                    subDirStem1 = "calib pH4 repeat\1";
+                    subDirStem2 = "calib pH4.5\1";
+                    subDirStem3 = "calib pH5\1";
+                    subDirStem4 = "calib pH5.5\1";
+                    subDirStem5 = "calib pH6\1";
+                    subDirStem6 = "calib pH6.5\1";
+                    subDirStem7 = "calib pH7\1";
+                    subDirStem8 = "calib pH7.5\1";
+            end
+                
             for K = 1:8
                 switch K
                     case 1 % pH4
@@ -412,6 +427,7 @@ function g = myPlot(subDirStem, myColor)
         % first pass on dataset, to get array of average spectra
         for I = 1 : numberOfSpectra
             thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+            fprintf('Parsing %s\n', thisfilename);
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
