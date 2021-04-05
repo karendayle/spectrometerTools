@@ -1,6 +1,8 @@
 % Plot files in different directories
 % Dayle Kotturi January 2019
 
+addpath('../functionLibrary');
+
 % Colors:
 global black;
 global purple;
@@ -59,6 +61,9 @@ myTextFont = 32;
 global myDebug;
 myDebug = 0;
 
+close all;
+
+% CHOOSE set of gels to plot 1=alg, 2=PEGm 3=pHEMA, 4=pHEMAcoA
 for J = 1:4
     figure 
     switch J
@@ -257,8 +262,8 @@ for J = 1:4
         y = 1.1; %alg
         deltaY = 0.1; %alg
     else
-        y = 1.4; %pHEMA, PEG, pHEMA coAc
-        deltaY = 0.15; %pHEMA, PEG, pHEMA coAc
+        y = 1.1; %pHEMA, PEG, pHEMA coAc
+        deltaY = 0.1; %pHEMA, PEG, pHEMA coAc
     end
     %y = 2000; %if not normalized
     x = 1700; %pHEMA
@@ -269,25 +274,25 @@ for J = 1:4
     text(x, y, 'pH7.5', 'Color', ciel, 'FontSize', myTextFont);
     text(x, y, '_____', 'Color', ciel, 'FontSize', myTextFont);
     y = y - deltaY;
-    text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
+    text(x, y, 'pH7.0', 'Color', green, 'FontSize', myTextFont);
     text(x, y, '_____', 'Color', green, 'FontSize', myTextFont);
     y = y - deltaY;
     text(x, y, 'pH6.5', 'Color', gold, 'FontSize', myTextFont);
     text(x, y, '_____', 'Color', gold, 'FontSize', myTextFont);
     y = y - deltaY;
-    text(x, y, 'pH6', 'Color', rust, 'FontSize', myTextFont);
-    text(x, y, '____', 'Color', rust, 'FontSize', myTextFont);
+    text(x, y, 'pH6.0', 'Color', rust, 'FontSize', myTextFont);
+    text(x, y, '_____', 'Color', rust, 'FontSize', myTextFont);
     y = y - deltaY;
     text(x, y, 'pH5.5', 'Color', red, 'FontSize', myTextFont);
     text(x, y, '_____', 'Color', red, 'FontSize', myTextFont);
     y = y - deltaY;
-    text(x, y, 'pH5', 'Color', cherry, 'FontSize', myTextFont);
+    text(x, y, 'pH5.0', 'Color', cherry, 'FontSize', myTextFont);
     text(x, y, '_____', 'Color', cherry, 'FontSize', myTextFont);
     y = y - deltaY;
     text(x, y, 'pH4.5', 'Color', magenta, 'FontSize', myTextFont);
     text(x, y, '_____', 'Color', magenta, 'FontSize', myTextFont);
     y = y - deltaY;
-    text(x, y, 'pH4', 'Color', black, 'FontSize', myTextFont);
+    text(x, y, 'pH4.0', 'Color', black, 'FontSize', myTextFont);
     text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
     hold off
