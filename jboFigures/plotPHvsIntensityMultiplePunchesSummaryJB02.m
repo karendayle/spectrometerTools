@@ -29,6 +29,17 @@ addpath('../functionLibrary');
 % CHOOSE set to 0 to use old gels and 1 to use new gels
 newGels = 0;
 
+% IF using old gels (i.e. newGels = 0), then 
+% CHOOSE between datasets
+% at being or end of June 2020 (1 or 2)
+global dataset
+dataset = 2;
+
+% CHOOSE between using single numerator value or average of local area 
+% under the curve. 1 = average, 2 = single
+global numeratorType
+numeratorType = 1;
+
 global peakSet
 % CHOOSE: Change this to change which peaks are plotted
 % Set to 1 for 1430 & 1702, normalized by 1582 peak; 
@@ -128,7 +139,8 @@ switch newGels
             ];
     case 0
         dirStem = [ ...
-            "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\", ...
+%             "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\", ...
+            "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\calib curve study 2\", ...
             "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\", ...
             "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\", ...
             "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\" ...
@@ -141,18 +153,27 @@ switch newGels
             ];
 end
 
-subDirStem = [ ...
-    "pH4 punch", "pH4.5 punch", "pH5 punch", ...
-    "pH5.5 punch", "pH6 punch", "pH6.5 punch", ...
-    "pH7 punch", "pH7.5 punch" ...
-    ];
-
+switch dataset
+    case 1
+        subDirStem = [ ...
+            "pH4 punch", "pH4.5 punch", "pH5 punch", ...
+            "pH5.5 punch", "pH6 punch", "pH6.5 punch", ...
+            "pH7 punch", "pH7.5 punch" ...
+            ];
+    case 2
+        % 20210405 matching how plotAssortedFilesRatioCalibrationOldGels.m works
+        subDirStem = [ ...
+            "calib pH4", "calib pH4.5", "calib pH5", ...
+            "calib pH5.5", "calib pH6", "calib pH6.5", ...
+            "calib pH7", "calib pH7.5" ...
+            ];
+end
 global lineThickness;
 lineThickness = 2;
 global numPoints;
 numPoints = 1024;
 global numPointsEachSide;
-numPointsEachSide = 2;
+numPointsEachSide = 2; %20210405 increase this (2->5) to see the effect
 
 global x1;
 global x2;
@@ -239,6 +260,7 @@ switch newGels
         allHEMACoNum  = zeros(1, 8, 'double');
 end
 
+% CHOOSE set of gels to plot 1=alg, 2=PEGm 3=pHEMA, 4=pHEMAcoA
 for J=1:4   
     figure % Figure #1-4: one plot for each gel, showing x1 and x2, with or
            % without norm'n (depends on xRef).
@@ -251,17 +273,23 @@ for J=1:4
     
     for M =1:maxM 
         for K = 1:8 % all pH levels 4, 4.5, ..., 7.5 2021/03/05 moved lower
-            if newGels
+             if newGels
                 subDirWithPunch = subDirStem(K) + M + "\1";
                 % Go get the avg and std dev for both peaks for one punch and pH
                 [a, b, c, d, e, numSpectra, g] = prepPlotData(J, subDirWithPunch, K, ...
                     punchColor(M,:), M);
-            else
-                subDirWithPunch = subDirStem(K) + "1a" + "\1";
-                % Go get the avg and std dev for both peaks for one punch and pH
-                [a, b, c, d, e, numSpectra, g] = prepPlotData(J, subDirWithPunch, K, ...
-                    punchColor(6,:), M);
-            end
+             else
+                 switch dataset
+                     case 1
+                        subDirWithPunch = subDirStem(K) + "1a" + "\1";
+                     case 2
+                        % 20210405 matching how plotAssortedFilesRatioCalibrationOldGels.m works
+                        subDirWithPunch = subDirStem(K) + "\1";
+                 end
+                 % Go get the avg and std dev for both peaks for one punch and pH
+                 [a, b, c, d, e, numSpectra, g] = prepPlotData(J, subDirWithPunch, K, ...
+                     punchColor(6,:), M);
+             end
             if myDebug
                 fprintf('Case %d: %d spectra\n', K, numSpectra);  
             end
@@ -1082,8 +1110,8 @@ function d = getAreaUnderCurve(xCenter, spectrum)
     % points to average and scale it.
     
     if myDebug 
-        fprintf('getDenominator with numPointsEachSide = %d\n', ...
-            numPointsEachSide);
+        fprintf('getAreaUnderCurve with numPointsEachSide=%d centered at %d\n', ...
+            numPointsEachSide, xCenter);
     end
     
     % check that numPointsIntegrated is in range
@@ -1154,6 +1182,7 @@ function [a, b, c, d, e, f, g] = prepPlotData(J, subDirStem, K, myColor, M)
     global numPointsEachSide
     global pH
     global peakSet
+    global numeratorType
     
     if myDebug 
         fprintf('reset sums\n');
@@ -1177,6 +1206,7 @@ function [a, b, c, d, e, f, g] = prepPlotData(J, subDirStem, K, myColor, M)
         % first pass on dataset, to get array of average spectra
         for I = 1 : numberOfSpectra
             thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+            fprintf('Parsing %s\n', thisfilename);
             fileID = fopen(thisfilename,'r');
             [thisdata] = fscanf(fileID, '%g %g', [2 numPoints]);
             fclose(fileID);
@@ -1190,10 +1220,17 @@ function [a, b, c, d, e, f, g] = prepPlotData(J, subDirStem, K, myColor, M)
             % Returns trend as 'e' and baseline corrected signal as 'f'
             [e, f] = correctBaseline(thisdata(2,:)');  
             
-            % 1.5 Only consider a narrow band of the spectrum 
-            numerator1 = getAreaUnderCurve(x1, f(:));
-            numerator2 = getAreaUnderCurve(x2, f(:));
-
+            % 1.5 Only consider a narrow band of the spectrum
+            switch numeratorType
+                case 1
+                    numerator1 = getAreaUnderCurve(x1, f(:));
+                    numerator2 = getAreaUnderCurve(x2, f(:));
+                case 2
+                    % 20210405 matching how plotAssortedFilesRatioCalibrationOldGels.m works
+                    numerator1 = f(x1);
+                    numerator2 = f(x2);
+            end
+            
             % 2. Ratiometric
             % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
             % on either side of refWaveNumber. This maps to: 1 - 11 total
@@ -1248,9 +1285,17 @@ function [a, b, c, d, e, f, g] = prepPlotData(J, subDirStem, K, myColor, M)
             % Returns trend as 'e' and baseline corrected signal as 'f'
             [e, f] = correctBaseline(thisdata(2,:)');  
             
-            % 1.5 Only consider a narrow band of the spectrum 
-            numerator1 = getAreaUnderCurve(x1, f(:));
-            numerator2 = getAreaUnderCurve(x2, f(:));   
+            % 1.5 Only consider a narrow band of the spectrum
+            switch numeratorType
+                case 1
+                    numerator1 = getAreaUnderCurve(x1, f(:));
+                    numerator2 = getAreaUnderCurve(x2, f(:));
+                case 2
+                    % 20210405 matching how plotAssortedFilesRatioCalibrationOldGels.m works
+                    numerator1 = f(x1);
+                    numerator2 = f(x2);
+            end
+            
             % 2. Ratiometric
             % NEW 10/4/18: Calculate the denominator using a window of 0 - 5 points
             % on either side of refWaveNumber. This maps to: 1 - 11 total
