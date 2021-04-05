@@ -47,6 +47,8 @@ global myErr2
 % This script deals with the four gels made on 6/3/2020 by SP
 global dirStem
 
+addpath('../functionLibrary');
+
 newGels = 0; % set to 0 to use old gels and 1 to use new gels
 if newGels 
     dirStem = [ ...

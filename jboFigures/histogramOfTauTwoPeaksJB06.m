@@ -1,6 +1,9 @@
 % Dayle Kotturi January 2021
 % input=loads vals saved by plotRatiosOfTimeSeriesJB03
 % RGB
+
+addpath('../functionLibrary');
+
 blue =    [0.0000, 0.4470, 0.7410];
 rust =    [0.8500, 0.3250, 0.0980];
 gold =    [0.9290, 0.6940, 0.1250];
@@ -17,7 +20,7 @@ pH = [ 4, 7, 10 ];
 close all
 
 % get the input
-load ('Data\vals.mat');
+load ('../Data/vals.mat');
 
 global tallyByGel
 global tallyByPH

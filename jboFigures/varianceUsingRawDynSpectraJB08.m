@@ -10,6 +10,8 @@
 % segment in the 12 time series
 % 2. Modify this code to read the last 5 spectra instead
 
+addpath('../functionLibrary');
+
 global inputOption
 % CHOOSE one of these
 inputOption = 1; % use spectrum*.txt files as input

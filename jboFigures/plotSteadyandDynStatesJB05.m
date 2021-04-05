@@ -1,3 +1,5 @@
+addpath('../functionLibrary');
+
 % CHOOSE ONEE OF THESE two options for input source
 %inputOption = 1; % use raw spectra (N higher->central limit theorem holds)
 inputOption = 2; % use avg spectra (means 5x fewer files)
@@ -5,6 +7,9 @@ inputOption = 2; % use avg spectra (means 5x fewer files)
 % CHOOSE ONE OF THESE two options for error bars (near line 250)
 myErrorBars = 1; % use StdDev
 %myErrorBars = 2; % use 95% CIs
+
+% NOTE: JB02 must have been run last with peakSet=1 to create the correct
+% .mat files for this script.
 
 % RGB
 global blue;
@@ -50,9 +55,9 @@ close all; % close all plots from previous runs
 global endVals
 switch inputOption
     case 1
-        load('Data/endValsRaw.mat'); % 2021/02/05 using all the raw spectra to increase N
+        load('../Data/endValsRaw.mat'); % 2021/02/05 using all the raw spectra to increase N
     case 2
-        load('Data/endValsAvgs.mat'); % 2021/02/05 using all the raw spectra to increase N
+        load('../Data/endValsAvgs.mat'); % 2021/02/05 using all the raw spectra to increase N
 end
 
 global ssVals
@@ -62,15 +67,15 @@ global ssVals
 % 1. Alginate
 switch inputOption
     case 1
-        load('Data/myAlgY1AllPunchesRaw.mat');
-        load('Data/myAlgY1AllPunchesStdDevRaw.mat');
-        load('Data/myAlgY2AllPunchesRaw.mat');
-        load('Data/myAlgY2AllPunchesStdDevRaw.mat');
+        load('../Data/myAlgY1AllPunchesRaw.mat');
+        load('../Data/myAlgY1AllPunchesStdDevRaw.mat');
+        load('../Data/myAlgY2AllPunchesRaw.mat');
+        load('../Data/myAlgY2AllPunchesStdDevRaw.mat');
     case 2
-        load('Data/myAlgY1AllPunchesAvgs.mat');
-        load('Data/myAlgY1AllPunchesStdDevAvgs.mat');
-        load('Data/myAlgY2AllPunchesAvgs.mat');
-        load('Data/myAlgY2AllPunchesStdDevAvgs.mat');
+        load('../Data/myAlgY1AllPunchesAvgs.mat');
+        load('../Data/myAlgY1AllPunchesStdDevAvgs.mat');
+        load('../Data/myAlgY2AllPunchesAvgs.mat');
+        load('../Data/myAlgY2AllPunchesStdDevAvgs.mat');
 end
 
 % figure % 1.1  %2021/02/18 Not needed for JBO
@@ -122,15 +127,15 @@ ssVals(1,1,2) = myAlgY1AllPunches(7);
 % 2. PEG
 switch inputOption
     case 1
-        load('Data/myPEGY1AllPunchesRaw.mat');
-        load('Data/myPEGY1AllPunchesStdDevRaw.mat');
-        load('Data/myPEGY2AllPunchesRaw.mat');
-        load('Data/myPEGY2AllPunchesStdDevRaw.mat');
+        load('../Data/myPEGY1AllPunchesRaw.mat');
+        load('../Data/myPEGY1AllPunchesStdDevRaw.mat');
+        load('../Data/myPEGY2AllPunchesRaw.mat');
+        load('../Data/myPEGY2AllPunchesStdDevRaw.mat');
     case 2
-        load('Data/myPEGY1AllPunchesAvgs.mat');
-        load('Data/myPEGY1AllPunchesStdDevAvgs.mat');
-        load('Data/myPEGY2AllPunchesAvgs.mat');
-        load('Data/myPEGY2AllPunchesStdDevAvgs.mat');
+        load('../Data/myPEGY1AllPunchesAvgs.mat');
+        load('../Data/myPEGY1AllPunchesStdDevAvgs.mat');
+        load('../Data/myPEGY2AllPunchesAvgs.mat');
+        load('../Data/myPEGY2AllPunchesStdDevAvgs.mat');
 end
 % figure % 2.1  %2021/02/18 Not needed for JBO
 % for i = 1:8
@@ -177,15 +182,15 @@ ssVals(2,1,2) = myPEGY1AllPunches(7);
 % 3. pHEMA
 switch inputOption
     case 1
-        load('Data/myHEMAY1AllPunchesRaw.mat');
-        load('Data/myHEMAY1AllPunchesStdDevRaw.mat');
-        load('Data/myHEMAY2AllPunchesRaw.mat');
-        load('Data/myHEMAY2AllPunchesStdDevRaw.mat');
+        load('../Data/myHEMAY1AllPunchesRaw.mat');
+        load('../Data/myHEMAY1AllPunchesStdDevRaw.mat');
+        load('../Data/myHEMAY2AllPunchesRaw.mat');
+        load('../Data/myHEMAY2AllPunchesStdDevRaw.mat');
     case 2
-        load('Data/myHEMAY1AllPunchesAvgs.mat');
-        load('Data/myHEMAY1AllPunchesStdDevAvgs.mat');
-        load('Data/myHEMAY2AllPunchesAvgs.mat');
-        load('Data/myHEMAY2AllPunchesStdDevAvgs.mat');
+        load('../Data/myHEMAY1AllPunchesAvgs.mat');
+        load('../Data/myHEMAY1AllPunchesStdDevAvgs.mat');
+        load('../Data/myHEMAY2AllPunchesAvgs.mat');
+        load('../Data/myHEMAY2AllPunchesStdDevAvgs.mat');
 end
 % figure % 3.1  %2021/02/18 Not needed for JBO
 % for i = 1:8
@@ -233,15 +238,15 @@ ssVals(3,1,2) = myHEMAY1AllPunches(7);
 % 4. pHEMA/coAc
 switch inputOption
     case 1
-        load('Data/myHEMACoY1AllPunchesRaw.mat');
-        load('Data/myHEMACoY1AllPunchesStdDevRaw.mat');
-        load('Data/myHEMACoY2AllPunchesRaw.mat');
-        load('Data/myHEMACoY2AllPunchesStdDevRaw.mat');
+        load('../Data/myHEMACoY1AllPunchesRaw.mat');
+        load('../Data/myHEMACoY1AllPunchesStdDevRaw.mat');
+        load('../Data/myHEMACoY2AllPunchesRaw.mat');
+        load('../Data/myHEMACoY2AllPunchesStdDevRaw.mat');
     case 2
-        load('Data/myHEMACoY1AllPunchesAvgs.mat');
-        load('Data/myHEMACoY1AllPunchesStdDevAvgs.mat');
-        load('Data/myHEMACoY2AllPunchesAvgs.mat');
-        load('Data/myHEMACoY2AllPunchesStdDevAvgs.mat');
+        load('../Data/myHEMACoY1AllPunchesAvgs.mat');
+        load('../Data/myHEMACoY1AllPunchesStdDevAvgs.mat');
+        load('../Data/myHEMACoY2AllPunchesAvgs.mat');
+        load('../Data/myHEMACoY2AllPunchesStdDevAvgs.mat');
 end
 % figure % 4.1  %2021/02/18 Not needed for JBO
 % for i = 1:8
@@ -426,8 +431,10 @@ for pHLoop = 1:2
     end
     % title(myTitle); 2021/02/15 out for final version
     xlabel('Gel type');
-    ylabel('Normalized intensity of 1430 cm^{-1} peak');
-    ylim([-0.05 0.25]);
+    %ylabel('Normalized intensity of 1430 cm^{-1} peak');
+    ylabel('Normalized Intensity'); % for JBO fig 10a
+    ylim([0 0.25]); % 2021/03/18 now that 1702 once again has own scale,
+                    % these limits don't need to go below 0 to accom bars
     saveMyPlot(FigH, myTitle);
     
     FigH = figure('Position', get(0, 'Screensize'));
@@ -453,8 +460,9 @@ for pHLoop = 1:2
     end
     % title(myTitle); 2021/02/15 out for final version
     xlabel('Gel type');
-    ylabel('Normalized intensity of 1702 cm^{-1} peak');
-    ylim([-0.05 0.25]);
+    % ylabel('Normalized intensity of 1702 cm^{-1} peak');
+    ylabel('Normalized Intensity'); % for JBO fig 10b
+    % ylim([-0.05 0.25]); MJM doesn't like how this squishes this plot
     saveMyPlot(FigH, myTitle);
 end
 

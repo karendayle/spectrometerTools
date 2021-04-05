@@ -20,6 +20,13 @@
 % the Supp Mat. If they need to be, then the legend (see JB02 figs7 and 8)
 % could be added to define the symbols. Also range s/b changed to be 3.5-8
 
+addpath('../functionLibrary');
+
+% CHOOSE
+global myOption
+%myOption = 1; % use raw files 
+myOption = 2; % use avg files
+
 global blue
 global rust
 global gold
@@ -146,6 +153,7 @@ function g = prepPlotData(J, K, peak)
     global lineThickness
     global numPointsEachSide
     global pH
+    global myOption
     
     sum1 = 0;
     sum2 = 0;
@@ -158,13 +166,25 @@ function g = prepPlotData(J, K, peak)
     for punch = 1:5
         subDir = sprintf('%s%d/1/', subDirStem(K), punch);
         dir_to_search = dirStem(J) + subDir; % this seems to work in 2019
-        txtpattern = fullfile(dir_to_search, 'spectrum*.txt'); % this looks fine
+        switch myOption
+            case 1
+                txtpattern = fullfile(dir_to_search, 'spectrum*.txt'); % this looks fine
+            case 2
+                txtpattern = fullfile(dir_to_search, 'avg*.txt'); % this looks fine
+        end
         dinfo = dir(txtpattern); % why is this null array?
 
         numberOfSpectra = length(dinfo);
         if numberOfSpectra > 0
-            if numberOfSpectra > 25
-                fprintf('punch%d has %d spectra\n', punch, numberOfSpectra);
+            switch myOption
+                case 1
+                    if numberOfSpectra > 25
+                        fprintf('punch%d has %d spectra\n', punch, numberOfSpectra);
+                    end
+                case 2
+                    if numberOfSpectra > 5
+                        fprintf('punch%d has %d spectra\n', punch, numberOfSpectra);
+                    end
             end
             numberOfSpectraAllPunches = numberOfSpectraAllPunches + numberOfSpectra;
             % first pass on dataset, to get array of average spectra
@@ -335,13 +355,13 @@ function g = prepPlotData(J, K, peak)
     
     switch peak
         case 1
-            %fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
-            %    J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
-            fprintf('%f\n', myErr1(K));
+            fprintf('gel%d: pH%f: pk:1430 N=%d avg=%f stddev=%f\n', ...
+                J, pH(K), numberOfSpectraAllPunches, myY1(K), myErr1(K));
+            %fprintf('%f\n', myErr1(K));
         case 2
-            %fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
-            %    J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K));
-            fprintf('%f\n', myErr2(K));
+            fprintf('gel%d: pH%f: pk:1702 N=%d avg=%f stddev=%f\n', ...
+                J, pH(K), numberOfSpectraAllPunches, myY2(K), myErr2(K));
+            %fprintf('%f\n', myErr2(K));
     end
     g = numberOfSpectraAllPunches;
 end
@@ -447,7 +467,7 @@ function h = saveMyData()
     global myHEMACoY2AllPunches
     global myHEMACoY2AllPunchesStdDev
     
-    dirStem = 'Data\'; % make these files part of the repo
+    dirStem = '..\Data\'; % make these files part of the repo
     for ii = 1:16
         switch ii
             case 1

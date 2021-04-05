@@ -83,10 +83,10 @@ useBlanks = 1;
 
 global PCRthreshold
 % CHOOSE the accuracy that you want
-PCRthreshold = 0.95;
+PCRthreshold = 0.99;
 global PLSthreshold
 % CHOOSE the accuracy that you want
-PLSthreshold = 95;
+PLSthreshold = 99;
 
 global fullAnalysis
 %CHOOSE 0 to just draw all the 3d plots, CHOOSE 1 to run the analysis
@@ -167,7 +167,7 @@ switch myOption
         % Load the NIH data
         blackPlates = getNIHRamanSpectraBlackPlates();
         blackPlatesAndWater = getNIHRamanSpectraBlackPlatesAndWater();  
-        blanksAllBatches = getNIHRamanSpectraBlanks(batchStart, batchEnd); % read blanks for each batch
+        blanksAllBatches = getNIHRamanSpectraBlanks(); % read blanks for each batch
         % 2020/12/5 TO DO: pass in blanks for batchChoice
         for analyteChoice = analyteStart:analyteEnd
             % 2020/12/5 TO DO: I want to use multiple batches in the model
@@ -200,21 +200,23 @@ switch myOption
             end
         end
      case 3
+        blackPlates = [];
+        blackPlatesAndWater = [];
+        blanksAllBatches = [];
         for analyteChoice = analyteStart:analyteEnd
             % 2020/12/5 TO DO: I want to use multiple batches in the model
             % Load the data
-            [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
-                batchStart, batchEnd);
+            [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice);
 
             % Process a single analyte
             processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
-                spectra, analyteArr, analyteChoice, batchStart, batchEnd);
+                spectra, analyteArr, analyteChoice);
         end
 end
 % end of main
 
 function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
-    ramanSpectra, analyte, analyteChoice, batchStart, batchEnd)
+    ramanSpectra, analyte, analyteChoice)
     global myPCR
     global myPLS
     global batchNames
@@ -229,6 +231,9 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
     global myOption
     global waveNumbers
     global colors
+    global batchStart
+    global batchEnd
+    global pHNames
     
     if myOption == 2 && firstTime == 1 % this is only relevant for NIH data
         % plot the blanks for all batches
@@ -236,7 +241,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         [nrows, ~] = size(waveNumbers);
         for i = 1:6 
             plot(waveNumbers(1:nrows),blanksAllBatches(i,:)');
-            hold on;
+            hold on
         end
         xlabel('Wavenumber (cm^-^1)'); 
         myYLabel = sprintf('Intensity (A.U.)');
@@ -252,7 +257,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         figure % figure 2
         for i = 1:3
             plot(waveNumbers(1:nrows)',blackPlates(i,:)');
-            hold on;
+            hold on
         end
         xlabel('Wavenumber (cm^-^1)'); 
         myYLabel = sprintf('Intensity (A.U.)');
@@ -267,7 +272,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         
         figure % figure 3
         plot(waveNumbers(1:nrows),blackPlatesAndWater(1,:)');
-        hold on;
+        hold on
         xlabel('Wavenumber (cm^-^1)'); 
         myYLabel = sprintf('Intensity (A.U.)');
         ylabel(myYLabel); axis('tight');
@@ -306,13 +311,41 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         ylabel('concentration of analyte'); axis('tight'); % kdk TO DO what is 'tight'?
         zlabel('Intensity (A.U.)');
         grid on
+
         myTitle = sprintf('%s all batches with blank for 10nM AuNPs', ...
-        analyteNames(analyteChoice));
+            analyteNames(analyteChoice));
+
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, 'all spectra at 10 nM AuNPs 3D');
     end
     
-
+    if myOption == 3    % 2021/03/02 NEW
+        figure
+        x1 = repmat(waveNumbers(1:Npoints)',6,1)';
+        y1 = repmat((0:5)',1,Npoints)'; % use LUT to get actual analyte conc
+        for i = batchStart:batchEnd
+            
+            % set up the offset to batch i, allowing for 6 concentrations
+            first = (i-1)*5 + 1;
+            last = first + 5;
+            
+            z1 = ramanSpectra(first:last,:)'; 
+            plot3(x1, y1, z1, 'Color', colors(i,:));
+            pause(1);
+            hold on;
+        end
+        set(gcf,'DefaultAxesColorOrder',oldorder);
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
+        xlabel('Wavenumber (cm^-^1)'); 
+        ylabel('concentration of analyte'); axis('tight'); % kdk TO DO what is 'tight'?
+        zlabel('Intensity (A.U.)');
+        grid on
+        myTitle = sprintf('%s all batches for 10nM AuNPs', ...
+            analyteNames(analyteChoice));
+        title(myTitle);
+        saveMyPlot(analyteChoice, gcf, myTitle, 'all spectra at 10 nM AuNPs 3D');
+    end
+    
     %% kdk: Draw the sets of spectra at each conc'n on their own plot
     iiStart = 1;
     if useBlanks == 1
@@ -325,6 +358,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         % plot each batch alone
         for i = batchStart:batchEnd
             figure
+            set(gca,'FontSize',20,'FontWeight','bold','box','off');
             myColor = 3; % choose a different color set than the 3D plots
                          % b/c those colors represent batches and here,
                          % the analyte conc'ns are being distinguished
@@ -350,8 +384,10 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
             myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(1));
             ylabel(myYLabel); axis('tight');
             grid on
+
             myTitle = sprintf('%s batch %s with blank', ...
                 analyteNames(analyteChoice), batchNames(i));
+
             title(myTitle);
 
             % kdk: save figure
@@ -370,7 +406,60 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
             end
         end
     end
-        
+  
+    if myOption == 3
+        % plot each batch alone
+        for i = batchStart:batchEnd
+            figure
+            myColor = 3; % choose a different color set than the 3D plots
+                         % b/c those colors represent batches and here,
+                         % the analyte conc'ns are being distinguished
+            % set up the offset to batch i, allowing for 6 concentrations
+            first = (i-1)*6 + 1; % 6 is for the six concentrations of
+                                 % this batch. Use 5 if blanks not used
+            last = first + 5;
+            for j = first:last
+                plot(waveNumbers(1:Npoints)',ramanSpectra(j,:)', 'Color', colors(myColor,:));
+                hold on;
+                pause(1);
+
+                % Print for debugging to check what is being accessed
+                fprintf('%s:%s index %d color %d\n', analyteNames(analyteChoice), ...
+                    pHNames(i), j, myColor);
+                
+                % for next time
+                myColor = myColor + 1;
+            end
+
+%                 set(gcf,'DefaultAxesColorOrder',oldorder); rm 2020/12/10
+            set(gca,'FontSize',20,'FontWeight','bold','box','off');            
+            xlabel('Wavenumber (cm^-^1)'); 
+            myYLabel = sprintf('Normalized Intensity at conc %.2f nM AuNPs', conc(1));
+            ylabel(myYLabel); axis('tight');
+            grid on
+
+            myTitle = sprintf('%s %s', ...
+                analyteNames(analyteChoice), pHNames(i));
+
+            title(myTitle);
+
+            % kdk: save figure
+            % ugh, if I use the label containing a '.', saveas interprets this
+            % as file type delimiter, so change from using the actual conc
+            % values to using 'D' for decimal point.
+            myYLabel = 'conc 10nm AuNPs';
+            saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
+
+            if useBlanks == 1
+                iiStart = iiStart + 5;
+                iiEnd = iiEnd + 5;
+            else
+                iiStart = iiStart + 4;
+                iiEnd = iiEnd + 4;
+            end
+        end
+    end    
+    
     if fullAnalysis == 1
         %% Fitting the Data with Ten and then a data driven number of PLS Components
         % Use the |plsregress| function to fit a PLSR model with ten PLS components
@@ -399,14 +488,21 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
                 minPLSComponents = i; % # components needed to explain 90%
             end
         end
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         fprintf('#PLS components explaining %f percent of variance = %d\n', ...
             PLSthreshold, minPLSComponents);
         xlabel('Number of PLS components');
         myYLabel = 'Percent Variance Explained in Y';
         ylabel(myYLabel);
         grid on
-        myTitle = sprintf('%s all batches with blank for 10nM AuNPs', ...
-        analyteNames(analyteChoice));
+        switch myOption
+            case 2
+                myTitle = sprintf('%s all batches with blank for 10nM AuNPs', ...
+                    analyteNames(analyteChoice));
+            case 3
+                myTitle = sprintf('%s all batches for 10nM AuNPs', ...
+                    analyteNames(analyteChoice));
+        end
         title(myTitle);
         saveMyPlot(analyteChoice, gcf, myTitle, myYLabel);
         %%
@@ -476,6 +572,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         % New 2020/12/11 plot the 10 largest eigenvalues for the record
         figure
         plot(cumulativeEigenValues(1:ii-1));
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         xlabel('Eigenvalue index');
         myYLabel = 'Normalized Eigenvalue';
         ylabel(myYLabel);
@@ -503,6 +600,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
             plot(y(ii),yfitPCR(ii),'^','Color',pHColor(ii));
             hold on;
         end
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         xlabel('Observed Response');
         myYLabel = 'Fitted Response';
         ylabel(myYLabel);
@@ -618,6 +716,8 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
             plot(y(ii),yfitPCR10(ii),'^','Color',pHColor(ii));
             hold on;
         end
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
+
         xlabel('Observed Response');
         ylabel('Fitted Response');
         legend({'PLSR with 10 components' 'PCR with 10 Components'},  ...
@@ -663,9 +763,11 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         % to get the same prediction accuracy.
 
         figure % figure 12
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         % plot(0:10,PLSmsep(2,:),'b-o',0:10,PCRmsep,'r-^'); kdk: MJM catches badness of
         % claiming to use 0 components, but why are there 11 anyway?
         plot(1:11,PLSmsep(2,:),'b-o',1:11,PCRmsep,'r-^');
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         xlabel('Number of components');
         myYLabel = 'Estimated Mean Squared Prediction Error';
         ylabel(myYLabel);
@@ -694,11 +796,12 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         % kdk: Hmm, okay, but variance in X is not important for spectra
         % at fixed wavenumbers, right?
         % kdk: use minPLSComponents here instead of hardcoded value
-        minPLSComponents = 5; % 2020/11/13 - just to plot them all
+        % NO 2021/3/12 minPLSComponents = 5; % 2020/11/13 - just to plot them all
         [Xl,Yl,~,Ys,beta,pctVar,mse,stats] = plsregress(X,y,minPLSComponents);
         figure % figure 13
         % plot(1:Npoints,stats.W,'-'); % original
         plot(waveNumbers(1:Npoints),stats.W,'-'); % kdk use wavenumbers
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         xlabel('Wavenumber (cm^-^1)');
         myYLabel = 'PLS Weight';
         ylabel(myYLabel);
@@ -776,6 +879,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         %plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); 
         % kdk use minPCRComponents
         plot(waveNumbers(1:Npoints),PCALoadings(:,1:minPCRComponents),'-');
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         xlabel('Wavenumber (cm^-^1)');
         myYLabel = 'PCA Loading';
         ylabel(myYLabel);
@@ -851,6 +955,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
             testFitPLS10PCs(k) = [1 testSpectrum] * betaPLS10;    
         end
         figure % figure 17
+
         % kdk use minPLSComponents and minPCR Components 
         plot((1:Nspectra),testFitPCRminPCs, 'o');
         hold on;
@@ -860,6 +965,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         hold on;
         plot((1:Nspectra),testFitPLS10PCs, 'p');
         hold on;
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         % kdk: plot the models using the min and 10 components
         myLegend1 = sprintf('PCR %d component model', minPCRComponents);
         myLegend2 = sprintf('PLS %d component model', minPLSComponents);
@@ -879,6 +985,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         
         % Now plot same results again but this time vs analyte conc
         figure
+        
         plot(analyte,testFitPCRminPCs, 'o');
         hold on;
         plot(analyte,testFitPCR10PCs, '^');
@@ -887,6 +994,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         hold on;
         plot(analyte,testFitPLS10PCs, 'p');
         hold on;
+        set(gca,'FontSize',20,'FontWeight','bold','box','off');
         % kdk: plot the models using the min and 10 components
         myLegend1 = sprintf('PCR %d component model', minPCRComponents);
         myLegend2 = sprintf('PLS %d component model', minPLSComponents);
@@ -1175,9 +1283,11 @@ function pHC = pHColor(i)
     end         
 end
 
-function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
-    batchStart, batchEnd)  
+function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice)  
     global numPoints
+    global batchStart
+    global batchEnd
+    
     numPoints = 1024;
 
     % New 2020/12/11 USE THE RIGHT PEAK FOR NORMALIZATION, THIS IS 0 FOR ANALYTES W/O
@@ -1265,7 +1375,7 @@ function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
             global pHNames
             global batchStart
             global batchEnd
-            dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\1.1 f\2021-02-26\";
+            dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\1.1 f\";
             dir_to_search = char(dirStem);
             % deal with analyte
             analyteArr = [];
@@ -1273,35 +1383,39 @@ function [spectra, analyteArr] = getNIHRamanSpectra(analyteChoice, ...
 
             Kstart = 1;
             Kend = 3; % the number of repeats per spectrum 
-            for J = batchStart:batchEnd
-                for K = Kstart:Kend % each sample
-                    filename = sprintf('MBA NPs-*%s %d.csv', char(pHNames(J)), K);
-                    [~, newSpectrum] = addOneSpectrum(dir_to_search, filename, xRef);
-                    spectra = [spectra; newSpectrum];
-                    
-                    switch K
-                        case 1
-                            analyteArr = [analyteArr; 4];
-                        case 2
-                            analyteArr = [analyteArr; 5];
-                        case 3
-                            analyteArr = [analyteArr; 5.5];
-                        case 4
-                            analyteArr = [analyteArr; 6];
-                        case 5
-                            analyteArr = [analyteArr; 6.5];
-                        case 6
-                            analyteArr = [analyteArr; 7];
+            for I = 1:3
+                for J = batchStart:batchEnd
+                    for K = Kstart:Kend % each sample
+                        filename = sprintf('MBA NPs %d-*%s %d.csv', I, char(pHNames(J)), K);
+                        [~, newSpectrum] = addOneSpectrum(dir_to_search, filename, xRef);
+                        spectra = [spectra; newSpectrum];
+
+                        switch J
+                            case 1
+                                analyteArr = [analyteArr; 4];
+                            case 2
+                                analyteArr = [analyteArr; 5];
+                            case 3
+                                analyteArr = [analyteArr; 5.5];
+                            case 4
+                                analyteArr = [analyteArr; 6];
+                            case 5
+                                analyteArr = [analyteArr; 6.5];
+                            case 6
+                                analyteArr = [analyteArr; 7];
+                        end
                     end
                 end
             end
-            
     end
 end
 
-function blanksAllBatches = getNIHRamanSpectraBlanks(batchStart, batchEnd)
+function blanksAllBatches = getNIHRamanSpectraBlanks()
     global batchNames
     global waveNumbers
+    global batchStart
+    global batchEnd
+    
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\";
     dir_to_search = char(dirStem);
     blank = [];
@@ -1362,10 +1476,12 @@ end
 
 function [wn b] = addOneSpectrum(dir_to_search, filename, xRef)
     global numPoints
+    global waveNumbers
     
     txtpattern = fullfile(dir_to_search, filename);
     dinfo = dir(txtpattern);            
     [wn, an] = readCSV(strcat(dir_to_search,dinfo.name));
+    waveNumbers = wn; % 2021/03/10 needed for option 3
     % 1. Correct the baseline BEFORE calculating denominator + normalizing
     % Returns trend as 'e' and baseline corrected signal as 'f'
     [e, f] = correctBaseline(an);
@@ -1466,9 +1582,7 @@ function g = saveMyPlot(analyteChoice, gcf, myTitle, myYLabel)
     end
     dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\Plots\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);
-    myPlot = sprintf('%s%s %s %d', plotDirStem, myTitle, myYLabel, ...
-        figureNumber);
-    saveas(gcf, myPlot);
+
     myPlot = sprintf('%s%s %s %d.png', plotDirStem, myTitle, myYLabel, ...
         figureNumber);
     saveas(gcf, myPlot);

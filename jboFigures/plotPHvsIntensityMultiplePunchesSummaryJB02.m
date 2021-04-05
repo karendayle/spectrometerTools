@@ -27,13 +27,24 @@
 addpath('../functionLibrary');
 
 % CHOOSE set to 0 to use old gels and 1 to use new gels
-newGels = 1;
+newGels = 0;
 
 global peakSet
 % CHOOSE: Change this to change which peaks are plotted
 % Set to 1 for 1430 & 1702, normalized by 1582 peak; 
 % Set to 2 for 1072 & 1582, normalized by each other.
-peakSet = 2; 
+peakSet = 1; 
+% CHOOSE xRef to specify normalized peak to use,
+% Set to zero to specify that you don't want normalization 
+
+global xRef
+% Use the index 713 to get the intensity at the reference peak, COO-,
+% at 1582/cm. Note that the numPointsEachSide is used to take the area 
+% under the curve around the center point xRef
+xRef = 713;
+%xRef = 715; % was 713 for all analysis prior to 7/9/2020
+%xRef = 406; % the 1072 "ref" peak
+%xRef = 0;
 
 % Colors:
 global black
@@ -78,52 +89,58 @@ global allAlgY1
 global allAlgErr1
 global allAlgY2
 global allAlgNum
+global allAlgDenom
 global allAlgErr2
 global allPEGY1
 global allPEGErr1
 global allPEGY2
 global allPEGErr2
 global allPEGNum
+global allPEGDenom
 global allHEMAY1
 global allHEMAErr1
 global allHEMAY2
 global allHEMAErr2
 global allHEMANum
+global allHEMADenom
 global allHEMACoY1
 global allHEMACoErr1
 global allHEMACoY2
 global allHEMACoErr2
 global allHEMACoNum
+global allHEMACoDenom
 
 close all; % clean the slate
 
-if newGels 
-    dirStem = [ ...
-        "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 17\", ...
-        "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 18\", ...
-        "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 19\", ...
-        "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 20\" ...
-        ];
-    myTitle = [ ...
-        "54nm MBA AuNPs in alg gel#17 in static buffer for 1 hour", ...
-        "54nm MBA AuNPs in PEG gel#18 in static buffer for 1 hour", ...
-        "54nm MBA AuNPs in pHEMA gel#19 in static buffer for 1 hour", ...
-        "54nm MBA AuNPs in pHEMA/coAc gel#20 in static buffer for 1 hour" ...
-        ];
-else
-    dirStem = [ ...
-        "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\", ...
-        "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\", ...
-        "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\", ...
-        "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\" ...
-        ];
-    myTitle = [ ...
-        "54nm MBA AuNPs in alg gel#12 in static buffer for 1 hour", ...
-        "54nm MBA AuNPs in PEG gel#16 in static buffer for 1 hour", ...
-        "54nm MBA AuNPs in pHEMA gel#13 in static buffer for 1 hour", ...
-        "54nm MBA AuNPs in pHEMA/coAc gel#14 in static buffer for 1 hour" ...
-        ];
+switch newGels 
+    case 1
+        dirStem = [ ...
+            "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 17\", ...
+            "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 18\", ...
+            "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 19\", ...
+            "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 20\" ...
+            ];
+        myTitle = [ ...
+            "54nm MBA AuNPs in alg gel#17 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in PEG gel#18 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in pHEMA gel#19 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in pHEMA/coAc gel#20 in static buffer for 1 hour" ...
+            ];
+    case 0
+        dirStem = [ ...
+            "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\", ...
+            "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\", ...
+            "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\", ...
+            "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\" ...
+            ];
+        myTitle = [ ...
+            "54nm MBA AuNPs in alg gel#12 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in PEG gel#16 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in pHEMA gel#13 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in pHEMA/coAc gel#14 in static buffer for 1 hour" ...
+            ];
 end
+
 subDirStem = [ ...
     "pH4 punch", "pH4.5 punch", "pH5 punch", ...
     "pH5.5 punch", "pH6 punch", "pH6.5 punch", ...
@@ -137,34 +154,21 @@ numPoints = 1024;
 global numPointsEachSide;
 numPointsEachSide = 2;
 
-global xRef
-% Use the index 713 to get the intensity at the reference peak, COO-,
-% at 1582/cm. Note that the numPointsEachSide is used to take the area 
-% under the curve around the center point xRef
-xRef = 713;
-%xRef = 715; % was 713 for all analysis prior to 7/9/2020
-%xRef = 406; % the 1072 "ref" peak
-%xRef = 0; % setting this to zero means NO NORMALIZATION of peaks
-
-
 global x1;
 global x2;
 switch peakSet
     case 1
-        % JB01 case:
+        % Common case
         % 1) Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
         x1 = 614;
         % 2) Use the index 794 to get the intensity at 1702/cm (act. 1701.95/cm)
         x2 = 794;
     case 2
-        % This is the change from JB01 script:
+        % Alternative case 
         % Instead of pulling out the 1430 and 1702 pH sensitive peaks, 
-        % pull out the 1072 "ref" peak.
-        % 2021/03/17 there is sth missing. x1 needs to be xref for x2.
-        % where to do this? 
-        % JB02 case:
+        % use the two reference peaks: the 1072 and the 1582 peaks
         x1 = 406; % the 1072 "ref" peak
-        x2 = xRef; % the 1582 "ref" peak 2021/03/17 set to xRef
+        x2 = xRef; % the 1582 "ref" peak
 end
 
 global xMin
@@ -188,16 +192,52 @@ minY2 = zeros(1, 4, 'double');
 maxX  = zeros(1, 4, 'double');
 maxY1 = zeros(1, 4, 'double');
 maxY2 = zeros(1, 4, 'double');
-allAlgY1   = zeros(5, 8, 'double'); % 2021/03/05 may not matter
-allAlgErr1 = zeros(5, 8, 'double');
-allAlgY2   = zeros(5, 8, 'double');
-allAlgErr2 = zeros(5, 8, 'double');
-allAlgNum  = zeros(5, 8, 'double');
-allPEGY1   = zeros(5, 8, 'double');
-allPEGErr1 = zeros(5, 8, 'double');
-allPEGY2   = zeros(5, 8, 'double');
-allPEGErr2 = zeros(5, 8, 'double');
-allPEGNum  = zeros(5, 8, 'double');
+% 2021/03/31 two pbs here: first, HEMA and HEMACo are missing, 
+% second, this is wrong num of rows for oldGels. 2021/04/01 fix this up
+switch newGels 
+    case 1
+        allAlgY1   = zeros(5, 8, 'double'); % 2021/03/05 may not matter
+        allAlgErr1 = zeros(5, 8, 'double');
+        allAlgY2   = zeros(5, 8, 'double');
+        allAlgErr2 = zeros(5, 8, 'double');
+        allAlgNum  = zeros(5, 8, 'double');
+        allPEGY1   = zeros(5, 8, 'double');
+        allPEGErr1 = zeros(5, 8, 'double');
+        allPEGY2   = zeros(5, 8, 'double');
+        allPEGErr2 = zeros(5, 8, 'double');
+        allPEGNum  = zeros(5, 8, 'double');
+        allHEMAY1   = zeros(5, 8, 'double');
+        allHEMAErr1 = zeros(5, 8, 'double');
+        allHEMAY2   = zeros(5, 8, 'double');
+        allHEMAErr2 = zeros(5, 8, 'double');
+        allHEMANum  = zeros(5, 8, 'double');
+        allHEMACoY1   = zeros(5, 8, 'double');
+        allHEMACoErr1 = zeros(5, 8, 'double');
+        allHEMACoY2   = zeros(5, 8, 'double');
+        allHEMACoErr2 = zeros(5, 8, 'double');
+        allHEMACoNum  = zeros(5, 8, 'double');
+    case 0
+        allAlgY1   = zeros(1, 8, 'double');
+        allAlgErr1 = zeros(1, 8, 'double');
+        allAlgY2   = zeros(1, 8, 'double');
+        allAlgErr2 = zeros(1, 8, 'double');
+        allAlgNum  = zeros(1, 8, 'double');
+        allPEGY1   = zeros(1, 8, 'double');
+        allPEGErr1 = zeros(1, 8, 'double');
+        allPEGY2   = zeros(1, 8, 'double');
+        allPEGErr2 = zeros(1, 8, 'double');
+        allPEGNum  = zeros(1, 8, 'double');
+        allHEMAY1   = zeros(1, 8, 'double');
+        allHEMAErr1 = zeros(1, 8, 'double');
+        allHEMAY2   = zeros(1, 8, 'double');
+        allHEMAErr2 = zeros(1, 8, 'double');
+        allHEMANum  = zeros(1, 8, 'double');
+        allHEMACoY1   = zeros(1, 8, 'double');
+        allHEMACoErr1 = zeros(1, 8, 'double');
+        allHEMACoY2   = zeros(1, 8, 'double');
+        allHEMACoErr2 = zeros(1, 8, 'double');
+        allHEMACoNum  = zeros(1, 8, 'double');
+end
 
 for J=1:4   
     figure % Figure #1-4: one plot for each gel, showing x1 and x2, with or
@@ -211,23 +251,21 @@ for J=1:4
     
     for M =1:maxM 
         for K = 1:8 % all pH levels 4, 4.5, ..., 7.5 2021/03/05 moved lower
-            % switch J into this loop but may be wrong
             if newGels
                 subDirWithPunch = subDirStem(K) + M + "\1";
                 % Go get the avg and std dev for both peaks for one punch and pH
-                [a, b, c, d, e, numSpectra] = prepPlotData(J, subDirWithPunch, K, ...
+                [a, b, c, d, e, numSpectra, g] = prepPlotData(J, subDirWithPunch, K, ...
                     punchColor(M,:), M);
             else
                 subDirWithPunch = subDirStem(K) + "1a" + "\1";
                 % Go get the avg and std dev for both peaks for one punch and pH
-                [a, b, c, d, e, numSpectra] = prepPlotData(J, subDirWithPunch, K, ...
+                [a, b, c, d, e, numSpectra, g] = prepPlotData(J, subDirWithPunch, K, ...
                     punchColor(6,:), M);
             end
             if myDebug
                 fprintf('Case %d: %d spectra\n', K, numSpectra);  
             end
         
-
             % store these arrays to be able to make a combined plot for all
             % gels later
 
@@ -242,24 +280,28 @@ for J=1:4
                     allAlgY2(M,K) = d;
                     allAlgErr2(M,K) = e;
                     allAlgNum(M,K) = numSpectra;
+                    allAlgDenom(M,K) = g;
                 case 2
                     allPEGY1(M,K) = b; % Put the first gels' values into a row
                     allPEGErr1(M,K) = c;
                     allPEGY2(M,K) = d;
                     allPEGErr2(M,K) = e;
                     allPEGNum(M,K) = numSpectra;
+                    allPEGDenom(M,K) = g;
                 case 3
                     allHEMAY1(M,K) = b; % Put the first gels' values into a row
                     allHEMAErr1(M,K) = c;
                     allHEMAY2(M,K) = d;
                     allHEMAErr2(M,K) = e;
                     allHEMANum(M,K) = numSpectra;
+                    allHEMADenom(M,K) = g;
                 case 4
                     allHEMACoY1(M,K) = b; % Put the first gels' values into a row
                     allHEMACoErr1(M,K) = c;
                     allHEMACoY2(M,K) = d;
                     allHEMACoErr2(M,K) = e;
                     allHEMACoNum(M,K) = numSpectra;
+                    allHEMACoDenom(M,K) = g;
             end
         end
         
@@ -350,20 +392,20 @@ for J=1:4
     switch peakSet
         case 1
             % JB01
-            text(x, y, 'circles = 1430 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+            text(x, y, 'circles = 1430 cm^-^1 peak', 'Color', black, 'FontSize', myTextFont);
         case 2
             % JB02
-            text(x, y, 'circles = 1072 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+            text(x, y, 'circles = 1072 cm^-^1 peak', 'Color', black, 'FontSize', myTextFont);
     end
     text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
     switch peakSet
         case 1
             % JB01
-            text(x, y, 'squares = 1702 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+            text(x, y, 'squares = 1702 cm^-^1 peak', 'Color', black, 'FontSize', myTextFont);
         case 2
             % JB02
-            text(x, y, 'squares = 1582 cm^-1 peak', 'Color', black, 'FontSize', myTextFont);
+            text(x, y, 'squares = 1582 cm^-^1 peak', 'Color', black, 'FontSize', myTextFont);
     end
     text(x, y, '______', 'Color', black, 'FontSize', myTextFont);
     y = y - deltaY;
@@ -442,20 +484,20 @@ switch peakSet
         % JB01 case:
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
-            title('1430 cm-1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
+            title('1430 cm^-^1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
             ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
         else
-            title('1430 cm-1 peak average for all punches of all gels', 'FontSize', myTextFont)
+            title('1430 cm^-^1 peak average for all punches of all gels', 'FontSize', myTextFont)
             ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
         end
     case 2
         % JB02 case:
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
-            title('1072 cm-1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
+            title('1072 cm^-^1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
             ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
         else
-            title('1072 cm-1 peak average for all punches of all gels', 'FontSize', myTextFont)
+            title('1072 cm^-^1 peak average for all punches of all gels', 'FontSize', myTextFont)
             ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
         end
 end
@@ -539,20 +581,20 @@ switch peakSet
         % JB01 case:
         % % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
-            title('1702 cm-1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
+            title('1702 cm^-^1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
             ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
         else
-            title('1702 cm-1 peak average for all punches of all gels', 'FontSize', myTextFont)
+            title('1702 cm^-^1 peak average for all punches of all gels', 'FontSize', myTextFont)
             ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
         end
     case 2
         % JB02 case:
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
-            title('1582 cm-1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
+            title('1582 cm^-^1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
             ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
         else
-            title('1582 cm-1 peak average for all punches of all gels', 'FontSize', myTextFont)
+            title('1582 cm^-^1 peak average for all punches of all gels', 'FontSize', myTextFont)
             ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
         end
 end
@@ -763,10 +805,10 @@ switch peakSet
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
             % 2021/02/18 out for final JBO version
-            % title('1430 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            % title('1430 cm^-^1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
             ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
         else
-            title('1430 cm-1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            title('1430 cm^-^1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
             ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
         end
     case 2
@@ -774,10 +816,10 @@ switch peakSet
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
             % 2021/02/20 out for final JBO version
-            % title('1072 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            % title('1072 cm^-^1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
             ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
         else
-            title('1072 cm-1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            title('1072 cm^-^1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
             ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
         end
 end
@@ -878,10 +920,10 @@ switch peakSet
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
             % 2021/02/18 out for final JBO version
-            % title('1702 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            % title('1702 cm^-^1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
             ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
         else
-            title('1702 cm-1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            title('1702 cm^-^1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
             ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
         end
     case 2
@@ -889,10 +931,10 @@ switch peakSet
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
             % 2021/02/18 out for final JBO version
-            % title('1582 cm-1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            % title('1582 cm^-^1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
             ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
         else
-            title('1582 cm-1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
+            title('1582 cm^-^1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
             ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
         end
 end
@@ -912,7 +954,7 @@ maxOverall = max(max1, max2);
 min1 = min(minY1);
 min2 = min(minY2);
 minOverall = min(min1, min2);
-if (minOverall > maxOverall) % 2020/07/20 WHY IS THIS NECESSARY? 
+if (minOverall > maxOverall)  
     ylim([(0.99*maxOverall) (1.01*minOverall)]);
 else
     ylim([(0.99*minOverall) (1.01*maxOverall)]);
@@ -1055,10 +1097,6 @@ function d = getAreaUnderCurve(xCenter, spectrum)
     end
     
     sum = 0;
-    if myDebug 
-        fprintf('closestRef: %d, numPointsEachSide: %d\n', closestRef, ...
-            numPointsEachSide);
-    end
 
     numPointsToIntegrate = 1 + (2 * numPointsEachSide);
     for i = 1 : numPointsToIntegrate
@@ -1067,11 +1105,11 @@ function d = getAreaUnderCurve(xCenter, spectrum)
             fprintf('index: %d, spectrum: %g\n', i, spectrum(lowEnd + i - 1));
         end
     end
-    areaUnderCurve = sum/numPointsToIntegrate; % HERE IS THE SCALING
+    averageHeight = sum/numPointsToIntegrate; % HERE IS THE SCALING
     if myDebug
-        fprintf('areaUnderCurve: %g\n', areaUnderCurve);
+        fprintf('average height of all points around ref: %g\n', averageHeight);
     end
-    d = areaUnderCurve;
+    d = averageHeight;
 end
 
 function [e f] = correctBaseline(tics)
@@ -1091,7 +1129,7 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end   
 
-function [a, b, c, d, e, f] = prepPlotData(J, subDirStem, K, myColor, M)
+function [a, b, c, d, e, f, g] = prepPlotData(J, subDirStem, K, myColor, M)
     global blue
     global rust
     global gold
@@ -1166,7 +1204,7 @@ function [a, b, c, d, e, f] = prepPlotData(J, subDirStem, K, myColor, M)
                 denominator = 1;
             end
             if myDebug
-                fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+                fprintf('gel%d: pH%d pk:%d denominator = %g at index: %d\n', J, K, M, denominator, xRef);
             end
 
             % 3. NEW 10/4/18: Normalize what is plotted
@@ -1223,7 +1261,7 @@ function [a, b, c, d, e, f] = prepPlotData(J, subDirStem, K, myColor, M)
                 denominator = 1;
             end
             if myDebug
-                fprintf('denominator = %g at index: %d\n', denominator1, xRef);
+                fprintf('gel%d: pH%d pk:%d denominator = %g at index: %d\n', J, K, M, denominator, xRef);
             end
 
             % 3. Normalize what is plotted
@@ -1254,6 +1292,7 @@ function [a, b, c, d, e, f] = prepPlotData(J, subDirStem, K, myColor, M)
         d = normalized2;
         e = stdDev2;
         f = numberOfSpectra;
+        g = denominator;
 
         fprintf...
             ('Gel%d Case %d: results for %s: N=%d %f %f %f %f\n', ...

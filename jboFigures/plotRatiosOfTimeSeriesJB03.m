@@ -12,6 +12,8 @@
 %    across gel types and to compare to values in static buffer
 % Dayle Kotturi August 2020
 
+addpath('../functionLibrary');
+
 % CHOOSE plotOption
 global plotOption;
 %plotOption = 1; % plot y1 and y2. 20200805: extract last val of each segment
