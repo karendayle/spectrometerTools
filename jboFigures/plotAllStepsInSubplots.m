@@ -345,9 +345,8 @@ for step = 1:12
     normalized = normalized/max(normalized);
     %3. Good to keep going!
     
-    % old set(gca,'FontSize', 20);
-    set(gca,'FontSize',20,'FontWeight','bold','box','off') % 2021/02/15
-%     newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-baseline','normalized'};
+    % I still need these but how???     
+    % newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-baseline','normalized'};
     y=[dark(2,:); raw(2,:); spec(2,:); avg(2,:); e(1,:); f(:)'; normalized(:)';];
 
     if (step < 11)
@@ -367,7 +366,9 @@ for step = 1:12
                 % vertical axis and bottom axis are drawn
                 % set(ax,'box','off')
                 xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
-            end 
+            end
+            set(gca,'FontSize',20,'FontWeight','bold','box','off') % 2021/02/15
+
         end 
     end
 
