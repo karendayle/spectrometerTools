@@ -344,32 +344,33 @@ for step = 1:12
     % range = [0,1]
     normalized = normalized/max(normalized);
     %3. Good to keep going!
-
-
     
     % old set(gca,'FontSize', 20);
     set(gca,'FontSize',20,'FontWeight','bold','box','off') % 2021/02/15
-    newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-baseline','normalized'};
+%     newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-baseline','normalized'};
     y=[dark(2,:); raw(2,:); spec(2,:); avg(2,:); e(1,:); f(:)'; normalized(:)';];
 
     if (step < 11)
-        ax(step) = subplot(10,1,step);
-        plot(dark(1,:), y');
-        hold on;
-        n(step,:) = normalized(:)';
+        for substep = 1:7
+            ax(substep) = subplot(7,1,substep);
+            plot(dark(1,:), y(substep,:)');
+            hold on;
+            n(step,:) = normalized(:)';
+            if (substep <7)
+                set(ax(substep),'XTickLabel','')
+                % Set the color of the X-axis in the top axes
+                % to the axes background color
+                set(ax(substep),'XColor',get(gca,'Color'))
+            end
+            if substep == 7
+                % Turn off the box so that only the left 
+                % vertical axis and bottom axis are drawn
+                % set(ax,'box','off')
+                xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
+            end 
+        end 
     end
-    if (step < 10)
-        set(ax(step),'XTickLabel','')
-        % Set the color of the X-axis in the top axes
-        % to the axes background color
-        set(ax(step),'XColor',get(gca,'Color'))
-    end
-    if step == 10
-        % Turn off the box so that only the left 
-        % vertical axis and bottom axis are drawn
-        % set(ax,'box','off')
-        xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
-    end 
+
     XLimits = [950 1800]; % 2021/02/14 adding limits
     saveMyPlot(FigH, myTitle);
 end
@@ -397,6 +398,26 @@ end
 %         h.xlabel('Wavenumber (cm^{-1})'); % 2021/02/14 superscript not working
 %     end
 % end
+% saveMyPlot(FigH, myTitle);
+if (step < 11)
+    ax(step) = subplot(10,1,step);
+    plot(dark(1,:), y');
+    hold on;
+    n(step,:) = normalized(:)';
+end
+if (step < 10)
+    set(ax(step),'XTickLabel','')
+    % Set the color of the X-axis in the top axes
+    % to the axes background color
+    set(ax(step),'XColor',get(gca,'Color'))
+end
+if step == 10
+    % Turn off the box so that only the left 
+    % vertical axis and bottom axis are drawn
+    % set(ax,'box','off')
+    xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
+end 
+XLimits = [950 1800]; % 2021/02/14 adding limits
 saveMyPlot(FigH, myTitle);
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
