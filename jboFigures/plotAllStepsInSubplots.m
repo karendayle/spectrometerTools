@@ -4,12 +4,13 @@ addpath('../functionLibrary'); % provide path to asym
 close all; % close all plots from previous runs
 numPoints = 1024;
 autoSave = 1;
-if autoSave
-    FigH = figure('Position', get(0, 'Screensize'));
-else
-    figure
-end
+
 for step = 1:12
+    if autoSave
+        FigH = figure('Position', get(0, 'Screensize'));
+    else
+        figure
+    end
     switch step
         case 1
             myTitle = 'Step 1 MBA on AuNPs';
@@ -346,60 +347,62 @@ for step = 1:12
     %3. Good to keep going!
     
     % I still need these but how???     
-    % newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-baseline','normalized'};
+    newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-base','normalized'};
     y=[dark(2,:); raw(2,:); spec(2,:); avg(2,:); e(1,:); f(:)'; normalized(:)';];
 
-    if (step < 11)
-        for substep = 1:7
-            ax(substep) = subplot(7,1,substep);
-            plot(dark(1,:), y(substep,:)');
-            hold on;
-            n(step,:) = normalized(:)';
-            if (substep <7)
-                set(ax(substep),'XTickLabel','')
-                % Set the color of the X-axis in the top axes
-                % to the axes background color
-                set(ax(substep),'XColor',get(gca,'Color'))
-            end
-            if substep == 7
-                % Turn off the box so that only the left 
-                % vertical axis and bottom axis are drawn
-                % set(ax,'box','off')
-                xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
-            end
-            set(gca,'FontSize',20,'FontWeight','bold','box','off') % 2021/02/15
+    for substep = 1:7
+        ax(substep) = subplot(7,1,substep);
+        plot(dark(1,:), y(substep,:)', 'LineWidth', 2);
+        xlim([950 1800]);
+        set(gca,'FontSize',10,'FontWeight','bold','box','off') % 2021/02/15
+        hold on;
+        if (step < 11)
+        n(step,:) = normalized(:)';
+        end
+        if (substep <7)
+            set(ax(substep),'XTickLabel','')
+            % Set the color of the X-axis in the top axes
+            % to the axes background color
+            set(ax(substep),'XColor',get(gca,'Color'))
+            ylabel(newYlabels(substep),'FontSize',15,'Rotation',90);
+        end
+        if substep == 7
+            % Turn off the box so that only the left 
+            % vertical axis and bottom axis are drawn
+            % set(ax,'box','off')
+            ylabel(newYlabels(substep),'FontSize',15,'Rotation',90);
+            xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
+        end
 
-        end 
-    end
-
-    XLimits = [950 1800]; % 2021/02/14 adding limits
+    end 
+    
     saveMyPlot(FigH, myTitle);
 end
 
 % Put the normalized plots from all steps on a single plot
 % Helpful: https://www.mathworks.com/matlabcentral/answers/486898-change-yticks-using-a-stacked-plot
 % Maybe better as subplot
-% if autoSave
-%     FigH = figure('Position', get(0, 'Screensize'));
-% else
-%     figure
-% end 
+if autoSave
+    FigH = figure('Position', get(0, 'Screensize'));
+else
+    figure
+end 
 % myTitle = 'Normalized spectra for all steps';
 % 2021/02/15 FontWeight is not a property of stackedplot and so errors
 % out if passed in (below). Here, it is allowed but ignored by stackedplot
-% set(gca,'FontSize',20,'FontWeight','bold','box','off');
-% newYlabels = {'Step 1:','Step 2:','Step 3:','Step 4:','Step 5:','Step 6:', 'Step 7:','Step 8:','Step 9:','Step 10:'};
-% h = subplot(10,2,step);
-% for i = 1:numel(h.AxesProperties)
-%     h.AxesProperties(i).YLimits = [0 1];
-%     h.XLimits = [950 1800]; % 2021/02/14 adding limits
-%     if i == numel(h.AxesProperties)
-%         axesProps = struct(h.AxesProperties(i));  
-%         axesProps.Axes.XLabel.Interpreter = 'tex';
-%         h.xlabel('Wavenumber (cm^{-1})'); % 2021/02/14 superscript not working
-%     end
-% end
-% saveMyPlot(FigH, myTitle);
+set(gca,'FontSize',20,'FontWeight','bold','box','off');
+newYlabels = {'Step 1:','Step 2:','Step 3:','Step 4:','Step 5:','Step 6:', 'Step 7:','Step 8:','Step 9:','Step 10:'};
+h = subplot(10,2,step);
+for i = 1:numel(h.AxesProperties)
+    h.AxesProperties(i).YLimits = [0 1];
+    h.XLimits = [950 1800];
+    if i == numel(h.AxesProperties)
+        axesProps = struct(h.AxesProperties(i));  
+        axesProps.Axes.XLabel.Interpreter = 'tex';
+        h.xlabel('Wavenumber (cm^{-1})'); % 2021/02/14 superscript not working
+    end
+end
+saveMyPlot(FigH, myTitle);
 if (step < 11)
     ax(step) = subplot(10,1,step);
     plot(dark(1,:), y');
