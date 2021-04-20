@@ -27,11 +27,11 @@
 addpath('../functionLibrary');
 
 % CHOOSE set to 0 to use old gels and 1 to use new gels
-newGels = 0;
+newGels = 1;
 
 % IF using old gels (i.e. newGels = 0), then 
 % CHOOSE between datasets
-% at being or end of June 2020 (1 or 2)
+% at beginning (1) or end (2) of June 2020
 global dataset
 dataset = 2;
 
@@ -44,7 +44,7 @@ global peakSet
 % CHOOSE: Change this to change which peaks are plotted
 % Set to 1 for 1430 & 1702, normalized by 1582 peak; 
 % Set to 2 for 1072 & 1582, normalized by each other.
-peakSet = 1; 
+peakSet = 2; 
 % CHOOSE xRef to specify normalized peak to use,
 % Set to zero to specify that you don't want normalization 
 
@@ -123,7 +123,30 @@ global allHEMACoDenom
 
 close all; % clean the slate
 
-switch newGels 
+switch newGels
+    case 0
+        switch dataset
+            case 1
+                dirStem = [ ...
+                    "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\calib curve study 2\", ...
+                    "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\", ...
+                    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\", ...
+                    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\" ...
+                    ];
+            case 2
+                dirStem = [ ...
+                    "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\", ...
+                    "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\", ...
+                    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\", ...
+                    "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\" ...
+                    ];
+        end
+        myTitle = [ ...
+            "54nm MBA AuNPs in alg gel#12 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in PEG gel#16 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in pHEMA gel#13 in static buffer for 1 hour", ...
+            "54nm MBA AuNPs in pHEMA/coAc gel#14 in static buffer for 1 hour" ...
+            ];
     case 1
         dirStem = [ ...
             "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 17\", ...
@@ -137,35 +160,21 @@ switch newGels
             "54nm MBA AuNPs in pHEMA gel#19 in static buffer for 1 hour", ...
             "54nm MBA AuNPs in pHEMA/coAc gel#20 in static buffer for 1 hour" ...
             ];
-    case 0
-        dirStem = [ ...
-%             "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\", ...
-            "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 12\calib curve study 2\", ...
-            "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 16\", ...
-            "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 13\", ...
-            "R:\Students\Dayle\Data\Made by Sureyya\pHEMA coAcrylamide\gel 14\" ...
-            ];
-        myTitle = [ ...
-            "54nm MBA AuNPs in alg gel#12 in static buffer for 1 hour", ...
-            "54nm MBA AuNPs in PEG gel#16 in static buffer for 1 hour", ...
-            "54nm MBA AuNPs in pHEMA gel#13 in static buffer for 1 hour", ...
-            "54nm MBA AuNPs in pHEMA/coAc gel#14 in static buffer for 1 hour" ...
-            ];
 end
 
 switch dataset
     case 1
-        subDirStem = [ ...
-            "pH4 punch", "pH4.5 punch", "pH5 punch", ...
-            "pH5.5 punch", "pH6 punch", "pH6.5 punch", ...
-            "pH7 punch", "pH7.5 punch" ...
-            ];
-    case 2
         % 20210405 matching how plotAssortedFilesRatioCalibrationOldGels.m works
         subDirStem = [ ...
             "calib pH4", "calib pH4.5", "calib pH5", ...
             "calib pH5.5", "calib pH6", "calib pH6.5", ...
             "calib pH7", "calib pH7.5" ...
+            ];
+    case 2
+        subDirStem = [ ...
+            "pH4 punch", "pH4.5 punch", "pH5 punch", ...
+            "pH5.5 punch", "pH6 punch", "pH6.5 punch", ...
+            "pH7 punch", "pH7.5 punch" ...
             ];
 end
 global lineThickness;
@@ -215,28 +224,7 @@ maxY1 = zeros(1, 4, 'double');
 maxY2 = zeros(1, 4, 'double');
 % 2021/03/31 two pbs here: first, HEMA and HEMACo are missing, 
 % second, this is wrong num of rows for oldGels. 2021/04/01 fix this up
-switch newGels 
-    case 1
-        allAlgY1   = zeros(5, 8, 'double'); % 2021/03/05 may not matter
-        allAlgErr1 = zeros(5, 8, 'double');
-        allAlgY2   = zeros(5, 8, 'double');
-        allAlgErr2 = zeros(5, 8, 'double');
-        allAlgNum  = zeros(5, 8, 'double');
-        allPEGY1   = zeros(5, 8, 'double');
-        allPEGErr1 = zeros(5, 8, 'double');
-        allPEGY2   = zeros(5, 8, 'double');
-        allPEGErr2 = zeros(5, 8, 'double');
-        allPEGNum  = zeros(5, 8, 'double');
-        allHEMAY1   = zeros(5, 8, 'double');
-        allHEMAErr1 = zeros(5, 8, 'double');
-        allHEMAY2   = zeros(5, 8, 'double');
-        allHEMAErr2 = zeros(5, 8, 'double');
-        allHEMANum  = zeros(5, 8, 'double');
-        allHEMACoY1   = zeros(5, 8, 'double');
-        allHEMACoErr1 = zeros(5, 8, 'double');
-        allHEMACoY2   = zeros(5, 8, 'double');
-        allHEMACoErr2 = zeros(5, 8, 'double');
-        allHEMACoNum  = zeros(5, 8, 'double');
+switch newGels
     case 0
         allAlgY1   = zeros(1, 8, 'double');
         allAlgErr1 = zeros(1, 8, 'double');
@@ -258,6 +246,27 @@ switch newGels
         allHEMACoY2   = zeros(1, 8, 'double');
         allHEMACoErr2 = zeros(1, 8, 'double');
         allHEMACoNum  = zeros(1, 8, 'double');
+    case 1
+        allAlgY1   = zeros(5, 8, 'double'); % 2021/03/05 may not matter
+        allAlgErr1 = zeros(5, 8, 'double');
+        allAlgY2   = zeros(5, 8, 'double');
+        allAlgErr2 = zeros(5, 8, 'double');
+        allAlgNum  = zeros(5, 8, 'double');
+        allPEGY1   = zeros(5, 8, 'double');
+        allPEGErr1 = zeros(5, 8, 'double');
+        allPEGY2   = zeros(5, 8, 'double');
+        allPEGErr2 = zeros(5, 8, 'double');
+        allPEGNum  = zeros(5, 8, 'double');
+        allHEMAY1   = zeros(5, 8, 'double');
+        allHEMAErr1 = zeros(5, 8, 'double');
+        allHEMAY2   = zeros(5, 8, 'double');
+        allHEMAErr2 = zeros(5, 8, 'double');
+        allHEMANum  = zeros(5, 8, 'double');
+        allHEMACoY1   = zeros(5, 8, 'double');
+        allHEMACoErr1 = zeros(5, 8, 'double');
+        allHEMACoY2   = zeros(5, 8, 'double');
+        allHEMACoErr2 = zeros(5, 8, 'double');
+        allHEMACoNum  = zeros(5, 8, 'double');
 end
 
 % CHOOSE set of gels to plot 1=alg, 2=PEGm 3=pHEMA, 4=pHEMAcoA
@@ -281,10 +290,10 @@ for J=1:4
              else
                  switch dataset
                      case 1
-                        subDirWithPunch = subDirStem(K) + "1a" + "\1";
-                     case 2
                         % 20210405 matching how plotAssortedFilesRatioCalibrationOldGels.m works
                         subDirWithPunch = subDirStem(K) + "\1";
+                     case 2
+                        subDirWithPunch = subDirStem(K) + "1a" + "\1";
                  end
                  % Go get the avg and std dev for both peaks for one punch and pH
                  [a, b, c, d, e, numSpectra, g] = prepPlotData(J, subDirWithPunch, K, ...
@@ -791,7 +800,8 @@ end
 
 % Plot the averages of the punches with their std dev on one plot for all
 % gel types
-figure % Figure #7: put the avg of the punches of all of the gels' x1
+FigH = figure('Position', get(0, 'Screensize')); 
+       % Figure #7: put the avg of the punches of all of the gels' x1
        % curves on one plot, with or without norm'n (depends on xRef).
        % 2021/02/18 This is JBO figure 4a
 for J = 1:4
@@ -874,6 +884,18 @@ y = 0.95 * (maxOverall - minOverall) + minOverall;
 deltaY = 0.1 * (maxOverall - minOverall);
 
 switch newGels
+    case 0
+        switch peakSet % the shape of the curve is different ...
+            case 1
+                switch dataset
+                    case 1
+                        x = 5.5;
+                    case 2
+                        x = minX - 0.25; % old gels legend must be a bit more left
+                end
+            case 2
+                x = 5.5; % ... and the 1072 ref pk
+        end
     case 1
         switch peakSet % the shape of the curve is different ...
             case 1
@@ -881,8 +903,6 @@ switch newGels
             case 2
                 x = 0.8 * (maxX + 0.5); % ... and the 1072 ref pk
         end
-    case 0
-        x = minX - 0.25; % old gels legend must be a bit more left
 end
 
 deltaX = 0.1;
@@ -906,7 +926,37 @@ plot(x, y, '-s', 'LineStyle','none', ...
 text(deltaX  + x, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
 %text(deltaX  + x, y, '___________', 'Color', purple, 'FontSize', myTextFont);
 
-figure % Figure #8: put the avg of the punches of all of the gels' x2
+% Set myTitle based on the chosen parameters
+switch newGels
+    case 0 % use aged gels
+        switch peakSet
+            case 1 % pH-sensitive peaks
+                switch dataset
+                    case 1
+                        myTitle = 'JBOfig5a old gels pk 1430 at beg of June 2020';
+                    case 2
+                        myTitle = 'JBOfig5a old gels pk 1430 at end of June 2020'; 
+                end
+            case 2 % reference peaks
+                switch dataset
+                    case 1
+                        myTitle = 'JBOfig old gels ref pk 1072 at beg of June 2020';
+                    case 2
+                        myTitle = 'JBOfig old gels ref pk 1072 at end of June 2020'; 
+                end
+        end
+    case 1 % use new gels
+        switch peakSet
+            case 1 % pH-sensitive peaks
+                myTitle = 'JBOfig4a new gels ';
+            case 2
+                myTitle = 'JBOfig13a new gels ref pk 1072';
+        end
+end
+saveMyPlot(FigH, myTitle);
+
+FigH = figure('Position', get(0, 'Screensize')); 
+       % Figure #8: put the avg of the punches of all of the gels' x2
        % curves on one plot, with or without norm'n (depends on xRef)
        % 2021/02/18 This is JBO figure 4b
 for J = 1:4
@@ -1018,6 +1068,38 @@ plot(x, y, '-s', 'LineStyle','none', ...
     'MarkerSize', 30, 'Color', purple, 'linewidth', 2);
 text(x + deltaX, y, 'pHEMA/coAc', 'Color', purple, 'FontSize', myTextFont);
 %text(x + deltaX, y, '___________', 'Color', purple, 'FontSize', myTextFont);
+
+% Set myTitle based on the chosen parameters
+switch newGels
+    case 0
+        switch peakSet % the shape of the curve is different ...
+            case 1
+                x = 0.8 * (maxX + 0.5); % ... for the 1430 pk
+                switch dataset
+                    case 1
+                        myTitle = 'JBOfig5b old gels pk 1702 at beg of June 2020';
+                    case 2
+                        myTitle = 'JBOfig5b old gels pk 1702 at end of June 2020'; 
+                end  
+            case 2
+                x = minX; % ... and the 1072 ref pk
+                switch dataset
+                    case 1
+                        myTitle = 'JBOfig old gels ref pk 1582 at beg of June 2020';
+                    case 2
+                        myTitle = 'JBOfig old gels ref pk 1582 at end of June 2020'; 
+                end
+        end
+   
+    case 1
+        switch peakSet
+            case 1 % pH-sensitive peaks
+                myTitle = 'JBOfig4b new gels ';
+            case 2
+                myTitle = 'JBOfig13b new gels ref pk 1582';
+        end
+end
+saveMyPlot(FigH, myTitle);
 
 % Figures are done. Now finish off calculating the values for the table.
 % Extract min, max and delta from the arrays of averaged values of all
@@ -1543,5 +1625,15 @@ pH = [ 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5 ];
         end
     end
     k = 1;
+end
+
+function g = saveMyPlot(FigH, myTitle)
+global plotOption
+    dirStem = "C:\Users\karen\Documents\Data\";
+    subDir = "Plots\";
+    plotDirStem = sprintf("%s%s", dirStem, subDir);
+    myPlotName = sprintf('%s%s', plotDirStem, myTitle);
+    saveas(FigH, myPlotName, 'png');
+    g = 1;
 end
   

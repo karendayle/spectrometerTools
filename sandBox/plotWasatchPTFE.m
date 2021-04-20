@@ -1,7 +1,8 @@
-% Plot files in different directories
-% Dayle Kotturi June 2018
+% Plot PTFE files in different directories
+% Dayle Kotturi April 2021
+close all;
 
-addpath('../functionLibrary');
+addpath('../functionLibrary'); % provide path to asym
 
 % Colors:
 blue =    [0.0000, 0.4470, 0.7410];
@@ -11,29 +12,29 @@ purple =  [0.4940, 0.1840, 0.5560];
 green =   [0.4660, 0.6740, 0.1880];
 ciel =    [0.3010, 0.7450, 0.9330];
 cherry =  [0.6350, 0.0780, 0.1840];
+red =     [1.0, 0.0, 0.0];
+black =   [0.0, 0.0, 0.0];
+magenta = [1.0, 0.0, 1.0];
+colors = [ red; blue; green; black ];
 
+xMin = 950;
+xMax = 1800;
 numPoints = 1024;
 thisdata1 = zeros(2, numPoints, 'double'); 
 
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
-%dirStem = "H:\Documents\Data\";
-dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 10\static test extremes on quartz\";
-%subDirStem1 = "1 0mgdL";
-%subDirStem1 = "2 1809.6mgdL";
-subDirStem1 = "3 1809.6mgdL longer";
-
+dirStem = "R:\Students\Dayle\Data\PTFE\";
+subDirStem = ["PTFE thickest\1\", "PTFE middle\1\", "PTFE thinnest2\1\" ];
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
 figure % without this, no plots are drawn
-for K = 1 : 1
-    if (K == 1)
-      str_dir_to_search = dirStem + subDirStem1; % args need to be strings
+for K = 1 : 3
+      str_dir_to_search = dirStem + subDirStem(K); % args need to be strings
       dir_to_search = char(str_dir_to_search);
       txtpattern = fullfile(dir_to_search, 'avg*.txt');
-      dinfo = dir(txtpattern); % TO FIX: this returns a list of files and
-                               % I am handling them as if there is only 1
+      dinfo = dir(txtpattern); 
       for (I = 1 : length(dinfo))
           thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
           fileID = fopen(thisfilename,'r');
@@ -41,19 +42,25 @@ for K = 1 : 1
           fclose(fileID);
           % Returns trend as 'e' and baseline corrected signal as 'f'
           [e, f] = correctBaseline(thisdata1(2,:)');          
-          %plot(thisdata1(1,:), thisdata1(2,:), 'green'); % drift obvious
-          %plot(thisdata1(1,:), f, 'green'); % drift not obvious
-          plot(thisdata1(1,:), f)
-          pause(1);
+          plot(thisdata1(1,:), f, 'Color', colors(K,:));
           hold on;
-      end
     end
 end
-
-title(subDirStem1);
-xlabel('Wavenumber (cm^-1)'); % x-axis label
+set(gca,'FontSize',30,'FontWeight','bold','box','off'); % used for title and label
+title('Raman spectra of PTFE using Wasatch');
+xlabel('Wavenumber (cm^-^1)'); % x-axis label
 ylabel('Arbitrary Units (A.U.)'); % y-axis label
-%legend('pH7');
+xlim([xMin xMax]);
+
+deltaY = 100;
+x = 1500; y = 1300;
+text(x, y, 'Sample thickness', 'Color', colors(4,:), 'FontSize', 30);
+y = y - deltaY;
+text(x, y, '0.020"', 'Color', colors(1,:), 'FontSize', 30);
+y = y - deltaY;
+text(x, y, '0.010"', 'Color', colors(2,:), 'FontSize', 30);
+y = y - deltaY;
+text(x, y, '0.005"', 'Color', colors(3,:), 'FontSize', 30);
 
 function [e f] = correctBaseline(tics)
     lambda=1e4; % smoothing parameter

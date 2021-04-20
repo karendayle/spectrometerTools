@@ -373,15 +373,13 @@ for step = 1:12
             ylabel(newYlabels(substep),'FontSize',15,'Rotation',90);
             xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
         end
-
     end 
-    
     saveMyPlot(FigH, myTitle);
 end
 
 % Put the normalized plots from all steps on a single plot
 % Helpful: https://www.mathworks.com/matlabcentral/answers/486898-change-yticks-using-a-stacked-plot
-% Maybe better as subplot
+% 2021/04/18 now as subplot
 if autoSave
     FigH = figure('Position', get(0, 'Screensize'));
 else
@@ -390,39 +388,20 @@ end
 % myTitle = 'Normalized spectra for all steps';
 % 2021/02/15 FontWeight is not a property of stackedplot and so errors
 % out if passed in (below). Here, it is allowed but ignored by stackedplot
-set(gca,'FontSize',20,'FontWeight','bold','box','off');
-newYlabels = {'Step 1:','Step 2:','Step 3:','Step 4:','Step 5:','Step 6:', 'Step 7:','Step 8:','Step 9:','Step 10:'};
-h = subplot(10,2,step);
-for i = 1:numel(h.AxesProperties)
-    h.AxesProperties(i).YLimits = [0 1];
-    h.XLimits = [950 1800];
-    if i == numel(h.AxesProperties)
-        axesProps = struct(h.AxesProperties(i));  
-        axesProps.Axes.XLabel.Interpreter = 'tex';
-        h.xlabel('Wavenumber (cm^{-1})'); % 2021/02/14 superscript not working
+newYlabels = {'Step 1','Step 2','Step 3','Step 4',...
+    'Step 5','Step 6', 'Step 7','Step 8','Step 9','Step 10'};
+for step = 1:10
+    h = subplot(10,1,step);
+    plot(dark(1,:), n(step,:)','LineWidth',2);
+    set(gca,'FontSize',10,'FontWeight','bold','box','off');
+    xlim([950 1800]);
+    ylabel(newYlabels(step),'FontSize',15,'Rotation',90);
+    if step == 10
+        xlabel('Wavenumber (cm^{-1})','FontSize',15); % 2021/02/14 superscript not working
     end
 end
 saveMyPlot(FigH, myTitle);
-if (step < 11)
-    ax(step) = subplot(10,1,step);
-    plot(dark(1,:), y');
-    hold on;
-    n(step,:) = normalized(:)';
-end
-if (step < 10)
-    set(ax(step),'XTickLabel','')
-    % Set the color of the X-axis in the top axes
-    % to the axes background color
-    set(ax(step),'XColor',get(gca,'Color'))
-end
-if step == 10
-    % Turn off the box so that only the left 
-    % vertical axis and bottom axis are drawn
-    % set(ax,'box','off')
-    xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
-end 
-XLimits = [950 1800]; % 2021/02/14 adding limits
-saveMyPlot(FigH, myTitle);
+
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     % use the closestRef as the x-value of the center point of the peak

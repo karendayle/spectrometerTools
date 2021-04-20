@@ -1,4 +1,4 @@
-% Plot PTFE files in different directories
+% Plot dataset for six types of blank gels in different directories
 % Dayle Kotturi April 2021
 close all;
 
@@ -31,6 +31,7 @@ subDirStem = ["\blank\1\", "\blank2\1\", "\blank3\1\" ];
 % Read in the name of the FOLDER.
 figure % without this, no plots are drawn
 for K = 1 : 6
+    subplot(6,1,K)
     for J = 1 : 3
         str_dir_to_search = dirStem + string(K) + subDirStem(J); % args need to be strings
         dir_to_search = char(str_dir_to_search);
@@ -45,14 +46,15 @@ for K = 1 : 6
             [e, f] = correctBaseline(thisdata1(2,:)');          
             plot(thisdata1(1,:), f, 'Color', colors(K,:));
             hold on;
+            xlim([xMin xMax]);
         end
     end
 end
 set(gca,'FontSize',30,'FontWeight','bold','box','off'); % used for title and label
-title('Raman spectra of PTFE using Wasatch');
+title('Raman spectra of 6 types of blank gels using Wasatch');
 xlabel('Wavenumber (cm^-^1)'); % x-axis label
 ylabel('Arbitrary Units (A.U.)'); % y-axis label
-xlim([xMin xMax]);
+
 
 deltaY = 100;
 x = 1500; y = 1300;
