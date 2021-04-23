@@ -27,6 +27,8 @@ thisdata1 = zeros(2, numPoints, 'double');
 % Multiple spectra in each subdir, but the latest one is used for plot
 dirStem = "R:\Students\Dayle\Data\Made By Waqas\Blank gels\gel ";
 subDirStem = ["\blank\1\", "\blank2\1\", "\blank3\1\" ];
+gelType = ["GAC admix", "15%BSA XLD", "20%BSA XLD", ...
+    "10%G:10%BSA", "15%G:5%BSA", "19%G:1%BSA"];
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
 figure % without this, no plots are drawn
@@ -46,25 +48,56 @@ for K = 1 : 6
             [e, f] = correctBaseline(thisdata1(2,:)');          
             plot(thisdata1(1,:), f, 'Color', colors(K,:));
             hold on;
+            if K == 1 
+                title('Raman spectra of 6 types of blank gels using Wasatch','FontSize',30);
+            end
+            set(gca,'FontSize',15,'FontWeight','bold','box','off'); % used for title and label
             xlim([xMin xMax]);
+            yStr = sprintf("%s", gelType(K));
+            ylabel(yStr,'FontSize',10); % y-axis label
         end
     end
 end
-set(gca,'FontSize',30,'FontWeight','bold','box','off'); % used for title and label
-title('Raman spectra of 6 types of blank gels using Wasatch');
+% set(gca,'FontSize',15,'FontWeight','bold','box','off'); % used for title and label
 xlabel('Wavenumber (cm^-^1)'); % x-axis label
-ylabel('Arbitrary Units (A.U.)'); % y-axis label
 
 
-deltaY = 100;
-x = 1500; y = 1300;
-text(x, y, 'Sample thickness', 'Color', colors(4,:), 'FontSize', 30);
-y = y - deltaY;
-text(x, y, '0.020"', 'Color', colors(1,:), 'FontSize', 30);
-y = y - deltaY;
-text(x, y, '0.010"', 'Color', colors(2,:), 'FontSize', 30);
-y = y - deltaY;
-text(x, y, '0.005"', 'Color', colors(3,:), 'FontSize', 30);
+for K = 1 : 6
+    figure % without this, no plots are drawn
+    for J = 1 : 3
+        for II = 1:1024
+            z(II) = J;
+        end
+        str_dir_to_search = dirStem + string(K) + subDirStem(J); % args need to be strings
+        dir_to_search = char(str_dir_to_search);
+        txtpattern = fullfile(dir_to_search, 'avg*.txt');
+        dinfo = dir(txtpattern); 
+        for (I = 1 : length(dinfo))
+            thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
+            fileID = fopen(thisfilename,'r');
+            [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
+            fclose(fileID);
+            % Returns trend as 'e' and baseline corrected signal as 'f'
+            [e, f] = correctBaseline(thisdata1(2,:)');          
+            % plot(thisdata1(1,:),f);
+            for II = 1:1024
+                z(II) = J;
+            end
+            plot3(thisdata1(1,:),z,f,'Color',colors(J,:));
+            hold on;
+            if K == 1 
+                title('Raman spectra of 6 types of blank gels using Wasatch','FontSize',30);
+            end
+            set(gca,'FontSize',15,'FontWeight','bold','box','off'); % used for title and label
+            xlim([xMin xMax]);
+            zStr = sprintf("%s", gelType(K));
+            zlabel(zStr,'FontSize',10); % y-axis label
+            ylabel('measurements','FontSize',10);
+        end
+    end
+end
+% set(gca,'FontSize',15,'FontWeight','bold','box','off'); % used for title and label
+xlabel('Wavenumber (cm^-^1)'); % x-axis label
 
 function [e f] = correctBaseline(tics)
     lambda=1e4; % smoothing parameter
