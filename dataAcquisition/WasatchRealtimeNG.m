@@ -10,6 +10,8 @@
 % Dayle Kotturi November 2019
 
 % -------------------------------------------------------------------------
+addpath('../functionLibrary');
+
 % % Variables. Might need to change depending on what you want to do.
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
 waitBetweenAverages = 30.; % Acquire one averaged sample 2 minutes apart
@@ -796,7 +798,7 @@ function g = createDirAndSubDirs()
     global gelTypeName;
     global gelNumber;
     pwd % not used
-    prompt = '\nIs this study: Alginate (1), PEG (2), pHEMA (3) or pHEMAcoAc (4)?>';
+    prompt = '\nIs this study: Alginate (1), PEG (2), pHEMA (3), pHEMAcoAc (4) or other(5)?>';
     gelType = input(prompt);
     % Switch on gelType and add to path
     switch gelType
@@ -808,6 +810,8 @@ function g = createDirAndSubDirs()
             gelTypeName = 'pHEMA';
         case 4
             gelTypeName = 'pHEMA coAcrylamide';
+        case 5
+            gelTypeName = 'other';
     end
     
     prompt = '\nEnter gel#>';
