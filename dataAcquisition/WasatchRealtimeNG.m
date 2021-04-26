@@ -822,7 +822,7 @@ function g = createDirAndSubDirs()
     studyName = input(prompt, 's');
     
     % Now put it all together
-    dir1 = '../../Data/Made by Sureyya/'; % old location (network drive)
+    dir1 = '../../../Data/Made by Waqas/'; % old location (network drive)
     %dir1 = 'C:/ExperimentalData/Dayle/Data/Made by Sureyya/'; % local
     studyPath = strcat(dir1, gelTypeName, '/', gelInstance, studyName);
     if ~exist(studyPath, 'dir')

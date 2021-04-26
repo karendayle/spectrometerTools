@@ -8,7 +8,8 @@ numPoints = 1024;
 % Read in the name of the FOLDER.
 % CHOOSE (specify) the top level directory of the dataset
 % dir_to_search = 'C:\Users\dayle.kotturi\Documents\Data\SORS1';
-dir_to_search = 'R:\Students\Dayle\Data\Made by Waqas\Blank gels\gel 4\blank3\1';
+%dir_to_search = 'R:\Students\Dayle\Data\Made by Waqas\Blank gels\gel 4\blank3\1';
+dir_to_search = 'R:\BMEN\McShane_Mike\Students\Dayle\Data\Made by Waqas\other\gel 4\redo blank3\1';
 
 % 1. PLOT THE DARK
 txtpattern = fullfile(dir_to_search, 'dark*.txt');
