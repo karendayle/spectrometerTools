@@ -264,7 +264,6 @@ function k = fillBarsWithHatchedLines(B, yd)
     % Now generalize it in a loop
     [rows, cols] = size(yd);
     for i = 1:rows
-%         for j = 2:2:cols
         for j = 1:cols
             fprintf('i=%d j=%d\n', i, j);
             % draw the slanted lines that go all the way across
@@ -297,12 +296,14 @@ function k = fillBarsWithHatchedLines(B, yd)
                             x2 = (y2 - b)/m;
                             fprintf('y2 set to ymax, x2=%f\n',x2);
                         case {2,4,6,8}
-                            y1 = m*x1 + b; % gets flipped below
                             y2 = ymax; % gets flipped below
-                            x1 = (y2 - b)/m;
-                            
+                            x3 = (y2 - b)/m;  
+                            x4 = x1 + (x2 - x3);
+                            m = -1.0*m;
+                            b = y2 - m*x4;
+                            y1 = m*x2 + b; % gets flipped below
+                            x1 = x4; % x2 stays the same    
                     end
-                    fprintf('flipped x1 and x2');
                 end
                 % don't draw a line that exceeds ymax
                 % use eqn of a line to find a new x2
