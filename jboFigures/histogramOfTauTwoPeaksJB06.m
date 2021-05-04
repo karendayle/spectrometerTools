@@ -90,18 +90,18 @@ myX = [1, 1, 1, 1, 1, 1, 1, 1; ...
     3, 3, 3, 3, 3, 3, 3, 3; ...
     4, 4, 4, 4, 4, 4, 4, 4];
 
-%OLD a = bar(myX, myArray, 'FaceColor','w');
+a = bar(myX, myArray, 'FaceColor','w');
 % THIS COLORS EACH BAR DIFFERENTLY a = bar(myX, myArray);
-a = bar(myX, myArray);
+% a = bar(myX, myArray);
 % color by gel
-a(1).FaceColor = gold; % alginate
-a(2).FaceColor = gold;
-a(3).FaceColor = teal; % PEG
-a(4).FaceColor = teal;
-a(5).FaceColor = rust; % pHEMA
-a(6).FaceColor = rust;
-a(7).FaceColor = blue; % pHEMA/coA
-a(8).FaceColor = blue;
+% a(1).FaceColor = gold; % alginate
+% a(2).FaceColor = gold;
+% a(3).FaceColor = teal; % PEG
+% a(4).FaceColor = teal;
+% a(5).FaceColor = rust; % pHEMA
+% a(6).FaceColor = rust;
+% a(7).FaceColor = blue; % pHEMA/coA
+% a(8).FaceColor = blue;
 % want all the 1702 peaks to have the hatched lines
 fillBarsWithHatchedLines(a, myArray); 
 
@@ -139,18 +139,18 @@ for ii = 1:3
         3, 3, 3, 3, 3, 3, 3, 3; ...
         4, 4, 4, 4, 4, 4, 4, 4];
 
-    %OLD a = bar(myX, myArray, 'FaceColor','w');
+    a = bar(myX, myArray, 'FaceColor','w');
     % THIS COLORS EACH BAR DIFFERENTLY a = bar(myX, myArray);
-    a = bar(myX, myArray);
+%     a = bar(myX, myArray);
     % color by gel
-    a(1).FaceColor = gold; % alginate
-    a(2).FaceColor = gold;
-    a(3).FaceColor = teal; % PEG
-    a(4).FaceColor = teal;
-    a(5).FaceColor = rust; % pHEMA
-    a(6).FaceColor = rust;
-    a(7).FaceColor = blue; % pHEMA/coA
-    a(8).FaceColor = blue;
+%     a(1).FaceColor = gold; % alginate
+%     a(2).FaceColor = gold;
+%     a(3).FaceColor = teal; % PEG
+%     a(4).FaceColor = teal;
+%     a(5).FaceColor = rust; % pHEMA
+%     a(6).FaceColor = rust;
+%     a(7).FaceColor = blue; % pHEMA/coA
+%     a(8).FaceColor = blue;
     % want all the 1702 peaks to have the hatched lines
     fillBarsWithHatchedLines(a, myArray); 
 
