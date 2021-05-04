@@ -26,7 +26,7 @@ global tallyByGel
 global tallyByPH
 
 global autoSave
-autoSave = 1; % CHOOSE 1 to save plots to files, 0 to do this manually
+autoSave = 0; % CHOOSE 1 to save plots to files, 0 to do this manually
 
 % Bins are: 0-10m, 10m-1h, 1h-1d, >1d
 tallyByGel = [ ...
@@ -264,7 +264,9 @@ function k = fillBarsWithHatchedLines(B, yd)
     % Now generalize it in a loop
     [rows, cols] = size(yd);
     for i = 1:rows
-        for j = 2:2:cols
+%         for j = 2:2:cols
+        for j = 1:cols
+            fprintf('i=%d j=%d\n', i, j);
             % draw the slanted lines that go all the way across
             y1 = 0; 
             y2 = 0;
@@ -279,20 +281,49 @@ function k = fillBarsWithHatchedLines(B, yd)
             %dy = 0.004; % standardize on this for all bars
             dy = 0.025 * max(yd(:,j)); % standardize on this for all bars based on max
             maxK = ceil(ymax/dy); 
+
             for k = 1:maxK
                 x1 = xData(i,j) - bw/2;
                 x2 = xData(i,j) + bw/2;
+                fprintf('x1=%f, x2=%f\n',x1,x2);
+
                 y2 = y2 + dy;
-                % don't draw a line that exceeds ymax
-                % use eqn of a line to find a new x2
                 if (y2 > ymax)
                     m = dy/bw;
                     b = y1 - m*x1;
-                    y2 = ymax;
-                    x2 = (y2 - b)/m;
+                    switch j
+                        case {1,3,5,7}
+                            y2 = ymax;
+                            x2 = (y2 - b)/m;
+                            fprintf('y2 set to ymax, x2=%f\n',x2);
+                        case {2,4,6,8}
+                            y1 = m*x1 + b; % gets flipped below
+                            y2 = ymax; % gets flipped below
+                            x1 = (y2 - b)/m;
+                            
+                    end
+                    fprintf('flipped x1 and x2');
                 end
+                % don't draw a line that exceeds ymax
+                % use eqn of a line to find a new x2
+
                 % fprintf ('%d-%d.%d bw=%f x1=%f x2=%f y1=%f y2=%f\n', i, j, k, bw, x1, x2, y1, y2);
-                line([x1 x2], [y1 y2],'linewidth',1,'color','k');
+                switch j
+                    case {1,2}
+                        myStyle = '-';
+                    case {3,4}
+                        myStyle = '--';
+                    case {5,6}
+                        myStyle = ':';
+                    case {7,8}
+                        myStyle = '-.';
+                end
+                switch j
+                    case {1,3,5,7}
+                        line([x1 x2],[y1 y2],'linestyle',myStyle,'linewidth',1,'color','k');
+                    case {2,4,6,8}
+                        line([x1 x2],[y2 y1],'linestyle',myStyle,'linewidth',1,'color','k');
+                end
                 y1 = y1 + dy;
             end
         end
