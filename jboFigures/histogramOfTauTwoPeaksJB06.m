@@ -296,13 +296,25 @@ function k = fillBarsWithHatchedLines(B, yd)
                             x2 = (y2 - b)/m;
                             fprintf('y2 set to ymax, x2=%f\n',x2);
                         case {2,4,6,8}
-                            y2 = ymax; % gets flipped below
-                            x3 = (y2 - b)/m;  
-                            x4 = x1 + (x2 - x3);
-                            m = -1.0*m;
-                            b = y2 - m*x4;
-                            y1 = m*x2 + b; % gets flipped below
-                            x1 = x4; % x2 stays the same    
+                            % special handling for the downward sloping
+                            % "partial" lines at the top of the bar
+                            % complicated by fact (below) that y1 and y2
+                            % are flipped at time of drawing line
+                            y2 = ymax; % top of bar, called y2 b/c it gets 
+                                       % flipped below
+                            x3 = (y2 - b)/m; % x pos of intersection of 
+                                             % upward sloping
+                                             % line with top of bar
+                            x4 = x1 + (x2 - x3); % x pos of intersection of
+                                                 % downward sloping
+                                                 % line with top of bar
+                            m = -1.0 * m; % actual m of downward sloping line
+                            b = y2 - m * x4; % actual b of downward sloping line
+                            y1 = m * x2 + b; % actual y2 of downward sloping line,
+                                           % called y1 b/c it gets flipped below
+                            x1 = x4; % intersection of downward sloping line
+                                     % with top of bar
+                            % x2 stays the same    
                     end
                 end
                 % don't draw a line that exceeds ymax
@@ -323,6 +335,7 @@ function k = fillBarsWithHatchedLines(B, yd)
                     case {1,3,5,7}
                         line([x1 x2],[y1 y2],'linestyle',myStyle,'linewidth',1,'color','k');
                     case {2,4,6,8}
+                        % just flip y1 and y2 to create the downward slope
                         line([x1 x2],[y2 y1],'linestyle',myStyle,'linewidth',1,'color','k');
                 end
                 y1 = y1 + dy;
