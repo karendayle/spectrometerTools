@@ -195,56 +195,76 @@ for gelOption = 1:12
         gel = 4; series = 3;
     end
     
+    % '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h'
+    pH4Marker1 = 'o';
+    pH4Marker2 = '+';
+    pH7Marker1 = 'v';
+    pH7Marker2 = '^';
+    pH10Marker1 = 'p';
+    pH10Marker2 = 'h';
     for K = Kmin:Kmax
         switch K
             case 1
                 pHcolor = green;
-                num1 = myPlot(subDirStem1, pHcolor, offset, gelOption, gel, series, K);
+                num1 = myPlot(subDirStem1, pHcolor, pH7Marker1, pH7Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 1: %d spectra plotted in green\n', num1);
             case 2
                 pHcolor = red;
-                num2 = myPlot(subDirStem2, pHcolor, offset, gelOption, gel, series, K);
+                num2 = myPlot(subDirStem2, pHcolor, pH4Marker1, pH4Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 2: %d spectra plotted in red\n', num2);            
             case 3
                 pHcolor = blue;
-                num3 = myPlot(subDirStem3, pHcolor, offset, gelOption, gel, series, K);
+                num3 = myPlot(subDirStem3, pHcolor, pH10Marker1, pH10Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 3: %d spectra plotted in blue\n', num3);
                 if gelOption == 8 % plot redo
                     offset = offset; % for the rest of gelOption 8
-                    num3 = myPlot("3 pH10 redo 40 msmts", pHcolor, offset, gelOption, gel, series, K);
+                    num3 = myPlot("3 pH10 redo 40 msmts", pHcolor, ...
+                        pH10Marker1, pH10Marker2, ...
+                    offset, gelOption, gel, series, K);
                 end
             case 4
                 pHcolor = green;
                 if gelOption == 6 % plot part 2
                     % offset = offset; % for the rest of gelOption 6 ???
-                    num4 = myPlot("4 pH7 only 29", pHcolor, offset, gelOption, gel, series, K);
+                    num4 = myPlot("4 pH7 only 29", pHcolor, pH7Marker1, pH7Marker2, ...
+                    offset, gelOption, gel, series, K);
                 end
-                num4 = myPlot(subDirStem4, pHcolor, offset, gelOption, gel, series, K);
+                num4 = myPlot(subDirStem4, pHcolor, pH7Marker1, pH7Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 4: %d spectra plotted in green\n', num4);
 
                 if gelOption == 8 % plot redo
                     %offset = offset; % for the rest of gelOption 8 ???
-                    num3 = myPlot("4 pH7 redo", pHcolor, offset, gelOption, gel, series, K);
+                    num3 = myPlot("4 pH7 redo", pHcolor, pH7Marker1, pH7Marker2, ...
+                    offset, gelOption, gel, series, K);
                 end
             case 5
                 pHcolor = blue;
-                num5 = myPlot(subDirStem5, pHcolor, offset, gelOption, gel, series, K);
+                num5 = myPlot(subDirStem5, pHcolor, pH10Marker1, pH10Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 5: %d spectra plotted in blue\n', num5);
             case 6
                 pHcolor = red;
-                num6 = myPlot(subDirStem6, pHcolor, offset, gelOption, gel, series, K);
+                num6 = myPlot(subDirStem6, pHcolor, pH4Marker1, pH4Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 6: %d spectra plotted in red\n', num6); 
             case 7
                 pHcolor = blue;
-                num7 = myPlot(subDirStem7, pHcolor, offset, gelOption, gel, series, K);
+                num7 = myPlot(subDirStem7, pHcolor, pH10Marker1, pH10Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 7: %d spectra plotted in blue\n', num7);
             case 8
                 pHcolor = green;
-                num8 = myPlot(subDirStem8, pHcolor, offset, gelOption, gel, series, K);
+                num8 = myPlot(subDirStem8, pHcolor, pH7Marker1, pH7Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 8: %d spectra plotted in green\n', num8);
             case 9
                 pHcolor = red;
-                num9 = myPlot(subDirStem9, pHcolor, offset, gelOption, gel, series, K);
+                num9 = myPlot(subDirStem9, pHcolor, pH4Marker1, pH4Marker2, ...
+                    offset, gelOption, gel, series, K);
                 %fprintf('Case 9: %d spectra plotted in red\n', num9);
         end
     end    
@@ -374,7 +394,8 @@ function [e f] = correctBaseline(tics)
     f = modified';
 end
 
-function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
+function g = myPlot(subDirStem, myColor, myMarker1, myMarker2, ...
+    offset, gelOption, gel, series, K)
     global blue;
     global rust;
     global gold;
@@ -519,34 +540,34 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
 %     Or:
     switch plotOption
         case {1,3}
-            plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness);
+            plot(t-offset,y1,myMarker1,'Color',myColor,'LineWidth',lineThickness);
             hold on;
-            plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+            plot(t-offset,y2,myMarker2,'Color',myColor,'LineWidth',lineThickness);
             hold on;
 
             % 20200805 Store endpoint values of this segment for later
             % comparison
             % Need gel, series, segment K, y1, y2
-            endVals(gel, series, K, 1) = y1(numberOfSpectra);
-            endVals(gel, series, K, 2) = y2(numberOfSpectra);
+            endVals(gel,series,K,1) = y1(numberOfSpectra);
+            endVals(gel,series,K,2) = y2(numberOfSpectra);
 
             % 20200805 Use this as a measure to determine the gel that
             % transitions the fastest
             if numberOfSpectra >= 5
-                speedVals(gel, series, K, 1) = y1(5) - y1(1);
-                speedVals(gel, series, K, 2) = y2(5) - y2(1);
+                speedVals(gel,series,K,1) = y1(5) - y1(1);
+                speedVals(gel,series,K,2) = y2(5) - y2(1);
             end
         case 2
-            plot(t-offset,y3,'-*', 'Color', myColor, 'LineWidth', lineThickness);
+            plot(t-offset,y3,'-*','Color',myColor,'LineWidth',lineThickness);
         case 4
             % 2020/12/17 Bring this back
             % First plot the actual data
             % Plot the 1430 cm-1 normalized peak
-            plot(t-offset,y1,'-o', 'Color', myColor, 'LineWidth', lineThickness); % new
+            plot(t-offset,y1,myMarker1,'Color',myColor,'LineWidth',lineThickness); % new
             %ylim([0. 0.3]);
             hold on;
             % Plot the 1702 cm-1 normalized peak
-            plot(t-offset,y2,'-+', 'Color', myColor, 'LineWidth', lineThickness);
+            plot(t-offset,y2,myMarker2,'Color',myColor,'LineWidth',lineThickness);
             ylim([0. 0.3]);
             hold on;
 
@@ -563,8 +584,8 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                 y1 = y1(nPoints:end);
                 % redraw the portion of the curve that is used to build
                 % the model in black 
-                result = curveFitting(xSubset, offset, y1, black, gel, series, K, 1);
-                rc = parseCurveFittingObject(gelOption, gel, series, K, 1, result);
+                result = curveFitting(xSubset,offset,y1,black,gel,series,K,1);
+                rc = parseCurveFittingObject(gelOption,gel,series,K,1,result);
 %                ylim([0. 0.3]);
                 hold on;   
 
@@ -572,8 +593,8 @@ function g = myPlot(subDirStem, myColor, offset, gelOption, gel, series, K)
                 y2 = y2(end-lastPoints+1:end);          
                 % redraw the portion of the curve that is used to build
                 % the model in black 
-                result = curveFitting(xSubset, offset, y2, black, gel, series, K, 2);
-                rc = parseCurveFittingObject(gelOption, gel, series, K, 2, result);
+                result = curveFitting(xSubset,offset,y2,black,gel,series,K,2);
+                rc = parseCurveFittingObject(gelOption,gel,series,K,2,result);
 %                ylim([0. 0.3]);
                 hold on;
 
@@ -613,7 +634,7 @@ function h = localPeak(range)
     h = max(range);
 end
 
-function j = curveFitting(t, offset, y, myColor, gel, series, myIter, mySubIter)
+function j = curveFitting(t,offset,y,myColor,gel,series,myIter,mySubIter)
 global black
 % To avoid this error: "NaN computed by model function, fitting cannot continue.
 % Try using or tightening upper and lower bounds on coefficients.", do not set
@@ -1159,13 +1180,19 @@ function r = plotEndVals()
         FigH = figure('Position', get(0, 'Screensize'));
         for punch = 1:3
             for segment = 1:9
+%                 plot(segment, endVals(gel, punch, segment, 1), ...
+%                     markers(((gel-1)*3)+punch), 'LineStyle','none', 'MarkerSize', 30, ...
+%                     'Color', myColor1(segment,:), 'linewidth', 2);
                 plot(segment, endVals(gel, punch, segment, 1), ...
-                    markers(((gel-1)*3)+punch), 'LineStyle','none', 'MarkerSize', 30, ...
-                    'Color', myColor1(segment,:), 'linewidth', 2);
+                    markers(((gel-1)*3)+punch), 'LineStyle','none', 'MarkerSize', 35, ...
+                    'Color', 'k', 'linewidth', 2);
                 hold on;
+%                 plot(segment, endVals(gel, punch, segment, 2), ...
+%                     markers(((gel-1)*3)+punch), 'LineStyle','none', 'MarkerSize', 30, ...
+%                     'Color', myColor2(segment,:), 'linewidth', 2);
                 plot(segment, endVals(gel, punch, segment, 2), ...
-                    markers(((gel-1)*3)+punch), 'LineStyle','none', 'MarkerSize', 30, ...
-                    'Color', myColor2(segment,:), 'linewidth', 2);
+                    markers(((gel-1)*3)+punch), 'LineStyle','none', 'MarkerSize', 35, ...
+                    'Color', 'k', 'linewidth', 2);
                 hold on;
             end 
 
@@ -1203,24 +1230,32 @@ function s = plotSpeedVals()
     % Use the colors to match the pH values (4=red, 7=green, 10=blue)
     myColor1 = [ green; red; blue; green; blue; red; blue; green; red ];
     myColor2 = [ gold; cherry; ciel; gold; ciel; cherry; ciel; gold; cherry ];
+    % all the symbols that Matlab has
     markers = ...
         [ '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h']; 
-        % all the symbols that Matlab has
-        
+
     %figure
     FigH = figure('Position', get(0, 'Screensize'));
     for gel = 1:4
         for punch = 1:3
             for segment = 1:9
+%                 plot(segment, speedVals(gel, punch, segment, 1), ...
+%                     markers(((gel-1)*3)+punch), ...
+%                     'LineStyle','none', 'MarkerSize', 30, ...
+%                     'Color', myColor1(segment,:), 'linewidth', 2);
                 plot(segment, speedVals(gel, punch, segment, 1), ...
                     markers(((gel-1)*3)+punch), ...
                     'LineStyle','none', 'MarkerSize', 30, ...
-                    'Color', myColor1(segment,:), 'linewidth', 2);
+                    'Color', 'k', 'linewidth', 2);
                 hold on;
+%                 plot(segment, speedVals(gel, punch, segment, 2), ...
+%                     markers(((gel-1)*3)+punch), 'LineStyle','none', ...
+%                     'MarkerSize', 30, ...
+%                     'Color', myColor2(segment,:), 'linewidth', 2);
                 plot(segment, speedVals(gel, punch, segment, 2), ...
                     markers(((gel-1)*3)+punch), 'LineStyle','none', ...
                     'MarkerSize', 30, ...
-                    'Color', myColor2(segment,:), 'linewidth', 2);
+                    'Color', 'k', 'linewidth', 2);
                 hold on;
             end 
         end

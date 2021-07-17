@@ -59,7 +59,7 @@ for step = 1:12
             fclose(fileID);
 
         case 3
-            myTitle = 'Step 3 MBA AuNPs with NaCO3 and CaCl';
+            myTitle = 'Step 3 MBA AuNPs with NaCO3 and CaCl2';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\MBA NPs into NaCO3 CaCl 1\";
             thisfilename = dirStem + "1\dark-2020-10-05-22-23-57.txt";
             fileID = fopen(thisfilename,'r');
@@ -371,7 +371,7 @@ for step = 1:12
             % vertical axis and bottom axis are drawn
             % set(ax,'box','off')
             ylabel(newYlabels(substep),'FontSize',15,'Rotation',90);
-            xlabel('Wavenumber (cm^{-1})'); % affects the last plot, here it's #6
+            xlabel('Wavenumber (cm^{-1})','FontSize',15); % affects the last plot, here it's #6
         end
     end 
     saveMyPlot(FigH, myTitle);
@@ -385,7 +385,7 @@ if autoSave
 else
     figure
 end 
-% myTitle = 'Normalized spectra for all steps';
+myTitle = 'Normalized spectra for all steps';
 % 2021/02/15 FontWeight is not a property of stackedplot and so errors
 % out if passed in (below). Here, it is allowed but ignored by stackedplot
 newYlabels = {'Step 1','Step 2','Step 3','Step 4',...
