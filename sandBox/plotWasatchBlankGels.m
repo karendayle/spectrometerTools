@@ -19,6 +19,8 @@ colors = [ red; blue; green; black; magenta; ciel ];
 
 xMin = 950;
 xMax = 1800;
+% xMin = 0;
+% xMax = 2000;
 numPoints = 1024;
 thisdata1 = zeros(2, numPoints, 'double'); 
 
@@ -47,7 +49,8 @@ for K = 1 : 6
             % Returns trend as 'e' and baseline corrected signal as 'f'
             [e, f] = correctBaseline(thisdata1(2,:)');          
             plot(thisdata1(1,:), f, 'Color', colors(K,:));
-            hold on;
+            grid on
+            hold on
             if K == 1 
                 title('Raman spectra of 6 types of blank gels using Wasatch','FontSize',30);
             end
@@ -62,13 +65,17 @@ end
 xlabel('Wavenumber (cm^-^1)'); % x-axis label
 
 
-for K = 1 : 6
+for K = 4 : 4
     figure % without this, no plots are drawn
     for J = 1 : 3
         for II = 1:1024
             z(II) = J;
         end
+        if K == 4
+            subDirStem = ["\redo blank1\1\", "\redo blank2\1\", "\redo blank3\1\" ];
+        end
         str_dir_to_search = dirStem + string(K) + subDirStem(J); % args need to be strings
+
         dir_to_search = char(str_dir_to_search);
         txtpattern = fullfile(dir_to_search, 'avg*.txt');
         dinfo = dir(txtpattern); 
@@ -84,15 +91,17 @@ for K = 1 : 6
                 z(II) = J;
             end
             plot3(thisdata1(1,:),z,f,'Color',colors(J,:));
-            hold on;
-            if K == 1 
-                title('Raman spectra of 6 types of blank gels using Wasatch','FontSize',30);
-            end
+            hold on
+
+            myTitle = sprintf('Raman spectra of of gel: %s', gelType(K));
+            title(myTitle,'FontSize',30);
+
             set(gca,'FontSize',15,'FontWeight','bold','box','off'); % used for title and label
             xlim([xMin xMax]);
             zStr = sprintf("%s", gelType(K));
-            zlabel(zStr,'FontSize',10); % y-axis label
-            ylabel('measurements','FontSize',10);
+            zlabel('Intensity (Arbitrary Units)','FontSize',15); % y-axis label
+            ylabel('Measurement #','FontSize',15);
+            yticks([1 2 3])
         end
     end
 end
@@ -118,4 +127,14 @@ function [e f] = correctBaseline(tics)
     modified=tics(:)-temp_tic(:);
     e = trend;
     f = modified';
+end
+
+function g = saveMyPlot(FigH, myTitle)
+global plotOption
+    dirStem = "C:\Users\karen\Documents\Data\";
+    subDir = "Plots\";
+    plotDirStem = sprintf("%s%s", dirStem, subDir);
+    myPlotName = sprintf('%s%s', plotDirStem, myTitle);
+    saveas(FigH, myPlotName, 'png');
+    g = 1;
 end
