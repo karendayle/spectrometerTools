@@ -14,12 +14,12 @@ addpath('../functionLibrary');
 
 % % Variables. Might need to change depending on what you want to do.
 %waitBetweenAverages = 55; % Acquire one averaged 5 sec integ per minute
-waitBetweenAverages = 30.; % Acquire one averaged sample 2 minutes apart
+waitBetweenAverages = 30.; % Acquire one averaged sample 0.5 minutes apart
 countBetweenPlots = 5; % Draw one out of every five averages
 counter = 0;
 increment = 60; % up from 30 for 20201
 integrationTimeMS = 1000; %was 1000 before power jumped to 80 mW -- 300 ms had peak at 4000, so go back to 1000
-laserPowerFraction = 0.375;
+laserPowerFraction = 0.373;
 closestRef = 0;
 refWaveNumber = 0;
 numIter = 5; % number of spectra to average 
@@ -303,7 +303,7 @@ if (myAns1 ~= 4)
                     rawFilename = writeSpectrumToFile(rawData, rawStem, ...
                         refWaveNumber, closestRef, zeros(1,6,'double'), ...
                         laserPowerFraction);
-                    pause(1); % for 6 second acquisition interval with 5 second integration
+                    pause(3); % for 6 second acquisition interval with 5 second integration
                     
                     fprintf("3. Subtracting dark (can be all zeros if no dark given)...");
                     % instead of taking a spectrum, we are calculating it from previous
