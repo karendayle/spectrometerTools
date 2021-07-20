@@ -307,8 +307,12 @@ for step = 1:12
     
     %1. Use avg spectrum as input and do baseline correction
     [e f] = correctBaseline(avg(2,:)'); % input was normalized'
+    
     %2. Use baseline corrected spectrum as input and normalize it.
-    refWaveNumber = 1582;
+    % CHOOSE one of these next two lines
+    % refWaveNumber = 1582; % Use this to normalize y range to [0,1].
+    refWaveNumber = 0; % Use this to skip first normalization
+    
     numPoints = 1024;
     
     closestRef = 0; % set default value to begin
@@ -320,7 +324,7 @@ for step = 1:12
             if ((avg(1,i) <= refWaveNumber) && (avg(1,i+1) > refWaveNumber))
                 % store i as the place 
                 closestRef = i;
-                fprintf("reference is at %d\n", closestRef);
+%                 fprintf("reference is at index %d\n", closestRef);
             end
         end 
     end
@@ -331,47 +335,57 @@ for step = 1:12
         numPointsEachSide = 2;   % use this if you want more points
         denominator = getDenominator(closestRef, ...
             numPointsEachSide, numPoints, avg);
-    else
-        denominator = 1.0;
-    end
-    if (denominator ~= 0)
-        % Plot the normalized data
-        normalized = f/denominator;
-    else
-        normalized = f; % 20201007 Fixed. numerator was spectrum
-    end
-    % 20201019 Since 5 points under the curve are used for the
-    % normalization, need to normalize one more time to get vertical
-    % range = [0,1]
-    normalized = normalized/max(normalized);
-    %3. Good to keep going!
-    
-    % I still need these but how???     
-    newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-base','normalized'};
-    y=[dark(2,:); raw(2,:); spec(2,:); avg(2,:); e(1,:); f(:)'; normalized(:)';];
+        fprintf("step %d: denominator=%f\n", step, denominator);
 
-    for substep = 1:7
-        ax(substep) = subplot(7,1,substep);
+        normalized = f/denominator;
+        fprintf("step %d: max after normal'n by denom=%f\n", step, max(normalized));
+    
+        % 20201019 Since 5 points under the curve are used for the
+        % normalization, need to normalize one more time to get vertical
+        % range = [0,1]
+        % Submitted version 1 of JBO paper used:
+        % normalized = normalized/max(normalized);
+        % but this has pb if the max is outside the final displayed range of x,
+        % i.e. plot will be normalized to an unseen value and max shown will
+        % be < 1. So, for version 2 of JBO paper use:
+        % 340 - 865, which correspond to were raman shift 950 and 1800 are
+        final = normalized/max(normalized(340:865));
+
+        fprintf("step %d: max after normalized by max=%f\n", step, max(normalized(340:865)));
+    else
+        final = f;
+    end
+ 
+    %3. Good to keep going!
+    newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-base'};
+    
+    y=[dark(2,:); raw(2,:); spec(2,:); avg(2,:); e(1,:); f(:)'];
+
+    for substep = 1:6
+        ax(substep) = subplot(6,1,substep);
         plot(dark(1,:), y(substep,:)', 'LineWidth', 2);
         xlim([950 1800]);
         set(gca,'FontSize',10,'FontWeight','bold','box','off') % 2021/02/15
         hold on;
         if (step < 11)
-        n(step,:) = normalized(:)';
+            n(step,:) = final(:)'; % final is normalized or not, depending
+                                   % on refWaveNumber
         end
         if (substep <7)
             set(ax(substep),'XTickLabel','')
             % Set the color of the X-axis in the top axes
             % to the axes background color
             set(ax(substep),'XColor',get(gca,'Color'))
+            % TO DO Reviewer 2 wants y label = "Intensity (A.U.)" 
             ylabel(newYlabels(substep),'FontSize',15,'Rotation',90);
         end
         if substep == 7
             % Turn off the box so that only the left 
             % vertical axis and bottom axis are drawn
             % set(ax,'box','off')
+            % TO DO Reviewer 2 wants y label = "Intensity (A.U.)" 
             ylabel(newYlabels(substep),'FontSize',15,'Rotation',90);
-            xlabel('Wavenumber (cm^{-1})','FontSize',15); % affects the last plot, here it's #6
+            xlabel('Raman shift (cm^{-1})','FontSize',15); % affects the last plot, here it's #6
         end
     end 
     saveMyPlot(FigH, myTitle);
@@ -385,9 +399,10 @@ if autoSave
 else
     figure
 end 
-myTitle = 'Normalized spectra for all steps';
+myTitle = 'Final spectra for all steps';
 % 2021/02/15 FontWeight is not a property of stackedplot and so errors
 % out if passed in (below). Here, it is allowed but ignored by stackedplot
+% TODO Reviewer 2 wants these to be "Intensity (A.U.)"
 newYlabels = {'Step 1','Step 2','Step 3','Step 4',...
     'Step 5','Step 6', 'Step 7','Step 8','Step 9','Step 10'};
 for step = 1:10
@@ -397,7 +412,7 @@ for step = 1:10
     xlim([950 1800]);
     ylabel(newYlabels(step),'FontSize',15,'Rotation',90);
     if step == 10
-        xlabel('Wavenumber (cm^{-1})','FontSize',15); % 2021/02/14 superscript not working
+        xlabel('Raman shift (cm^{-1})','FontSize',15); % 2021/02/14 superscript not working
     end
 end
 saveMyPlot(FigH, myTitle);
@@ -461,8 +476,8 @@ function [e f] = correctBaseline(tics)
 end
 
 function g = saveMyPlot(FigH, myTitle)
-    dirStem = "C:\Users\karen\Documents\Data\";
-    subDir = "Plots\";
+    dirStem = "C:\Users\karen\Documents\Data\Plots\";
+    subDir = "plotAllSteps\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);
     myPlot = sprintf('%s%s', plotDirStem, myTitle);
     saveas(FigH, myPlot, 'png');
