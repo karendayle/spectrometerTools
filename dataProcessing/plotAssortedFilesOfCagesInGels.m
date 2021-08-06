@@ -15,7 +15,7 @@ red =     [1.0, 0.0, 0.0];
 black =   [0.0, 0.0, 0.0];
 magenta = [1.0, 0.0, 1.0];
 
-colors = [blue; rust; gold; purple; green; ciel; cherry; red; black; magenta];
+colors = [blue; red];
 
 numPoints = 1024;
 thisdata1 = zeros(2, numPoints, 'double'); 
@@ -25,29 +25,26 @@ xMax = 1600;
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
-dir_to_search = ...
-    [
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 5\cages in well plate 1\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 6\cages in well plate 1\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 6\cages in well plate 2\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 7\cages in well plate 1\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 7\cages in well plate 2\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 7\cages in well plate 3\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 7\cages in well plate 4\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 7\cages in well plate 5\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 7\cages in well plate 6\1'; ...
-     'R:\Students\Dayle\Data\Made by Waqas\other\gel 7\cages in well plate 7\1'; ...
-     ];
+dir_to_search1 = ...
+     'R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 1\HITC\1';
+dir_to_search2 = ...
+     'R:\Students\Dayle\Data\Made by Waqas\other\gel 1\HITC blind gel\1';
 
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
 figure % without this, no plots are drawn
-for K = 1:10
-      txtpattern = fullfile(dir_to_search(K,:), 'avg*.txt');
+for K = 1:2
+    switch K
+        case 1
+            dir_to_search = dir_to_search1;
+        case 2
+            dir_to_search = dir_to_search2;
+    end
+      txtpattern = fullfile(dir_to_search, 'avg*.txt');
       dinfo = dir(txtpattern); % TO FIX: this returns a list of files and
                                % I am handling them as if there is only 1
       for (I = 1 : length(dinfo))
-          thisfilename = fullfile(dir_to_search(K,:), dinfo(I).name); % just the name
+          thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
           fileID = fopen(thisfilename,'r');
           [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
           fclose(fileID);
@@ -61,13 +58,11 @@ for K = 1:10
           pause(1);
           hold on;
       end
-
 end
 
 title('HITC spectra');
-xlabel('Wavenumber (cm^-^1)'); % x-axis label
-ylabel('Arbitrary Units (A.U.)'); % y-axis label
-%legend('pH7');
+xlabel('Raman shift (cm^-^1)'); % x-axis label
+ylabel('Intensity (a.u.)'); % y-axis label
 
 function [e f] = correctBaseline(tics)
     lambda=1e4; % smoothing parameter

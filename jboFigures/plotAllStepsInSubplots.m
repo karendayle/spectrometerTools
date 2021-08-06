@@ -13,7 +13,8 @@ for step = 1:12
     end
     switch step
         case 1
-            myTitle = 'Step 1 MBA on AuNPs';
+            %myTitle = 'Step 1 MBA on AuNPs';
+            myTitle = 'Figure S1';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\MBA on NPs 3\";
             thisfilename = dirStem + "1\dark-2020-10-05-22-10-13.txt";
             fileID = fopen(thisfilename,'r');
@@ -37,6 +38,7 @@ for step = 1:12
 
         case 2
             myTitle = 'Step 2 MBA AuNPs into NaCO3';
+            myTitle = 'Figure S2';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\MBA NPs into NaCO3 1\";
             thisfilename = dirStem + "1\dark-2020-10-05-22-18-33.txt";
             fileID = fopen(thisfilename,'r');
@@ -59,7 +61,8 @@ for step = 1:12
             fclose(fileID);
 
         case 3
-            myTitle = 'Step 3 MBA AuNPs with NaCO3 and CaCl2';
+            %myTitle = 'Step 3 MBA AuNPs with NaCO3 and CaCl2';
+            myTitle = 'Figure S3';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\MBA NPs into NaCO3 CaCl 1\";
             thisfilename = dirStem + "1\dark-2020-10-05-22-23-57.txt";
             fileID = fopen(thisfilename,'r');
@@ -82,7 +85,8 @@ for step = 1:12
             fclose(fileID);
             
         case 4
-            myTitle = 'Step 4 First wash with NaCO3';
+            %myTitle = 'Step 4 First wash with NaCO3';
+            myTitle = 'Figure S4';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\first wash 1\";
             thisfilename = dirStem + "1\dark-2020-10-05-22-37-26.txt";
             fileID = fopen(thisfilename,'r');
@@ -105,7 +109,8 @@ for step = 1:12
             fclose(fileID);
             
         case 5
-            myTitle = 'Step 5 After first bilayer PDADMAC and PSS';
+            %myTitle = 'Step 5 After first bilayer PDADMAC and PSS';
+            myTitle = 'Figure S5';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\after first bilayer 1\";
             thisfilename = dirStem + "1\dark-2020-10-05-22-45-04.txt";
             fileID = fopen(thisfilename,'r');
@@ -128,7 +133,8 @@ for step = 1:12
             fclose(fileID);
             
         case 6
-            myTitle = 'Step 6 After five bilayers';
+            %myTitle = 'Step 6 After five bilayers';
+            myTitle = 'Figure S6';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\after five bilayers 1\";
             thisfilename = dirStem + "1\dark-2020-10-05-22-50-02.txt";
             fileID = fopen(thisfilename,'r');
@@ -151,7 +157,8 @@ for step = 1:12
             fclose(fileID);
             
         case 7
-            myTitle = 'Step 7 After ten bilayers';
+            %myTitle = 'Step 7 After ten bilayers';
+            myTitle = 'Figure S7';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\after ten bilayers 1\";
             thisfilename = dirStem + "1\dark-2020-10-05-22-56-15.txt";
             fileID = fopen(thisfilename,'r');
@@ -174,7 +181,8 @@ for step = 1:12
             fclose(fileID);
             
         case 8
-            myTitle = 'Step 8 After first wash';
+            %myTitle = 'Step 8 After first wash';
+            myTitle = 'Figure S8';
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\after first wash\";
             thisfilename = dirStem + "1\dark-2020-10-05-23-01-33.txt";
             fileID = fopen(thisfilename,'r');
@@ -197,7 +205,8 @@ for step = 1:12
             fclose(fileID);
             
         case 9
-            myTitle = 'Step 9 After third wash and into 10mM pH7';
+            % myTitle = 'Step 9 After third wash and into 10mM pH7';
+            myTitle = 'Figure S9';
             % Two sets were acquired "third wash 1" and "third wash 2".
             % Filenames need to match dataset
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\third wash 1\";
@@ -227,7 +236,8 @@ for step = 1:12
             fclose(fileID);
             
         case 10
-            myTitle = 'Step 10 In alginate gel at pH7';
+            %myTitle = 'Step 10 In alginate gel at pH7';
+            myTitle = 'Figure S10';
             % Two sets were acquired "third wash 1" and "third wash 2".
             % Filenames need to match dataset
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\in gel 2 5000ms integ\";
@@ -252,7 +262,8 @@ for step = 1:12
             fclose(fileID);
             
         case 11
-            myTitle = 'Additional plot with ethanol';
+            % myTitle = 'Additional plot with ethanol';
+            myTitle = 'Figure S11';
             % Two sets were acquired "third wash 1" and "third wash 2".
             % Filenames need to match dataset
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\ethanol 3 5000 ms integ\";
@@ -277,7 +288,8 @@ for step = 1:12
             fclose(fileID); 
             
         case 12
-            myTitle = 'Additional Plot without ethanol';
+            % myTitle = 'Additional Plot without ethanol';
+            myTitle = 'Figure S12';
             % Two sets were acquired "third wash 1" and "third wash 2".
             % Filenames need to match dataset
             dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 0\no ethanol 1 5000 ms integ\";
@@ -357,34 +369,39 @@ for step = 1:12
     end
  
     %3. Good to keep going!
-    newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-base'};
-    
+    % JBO version 1
+    %newYlabels = {'dark','raw','raw-dark','avg','baseline','avg-base'};
+    % JBO version 2
+    newYlabels = {'Intensity'; '(a.u.)'};
+        
     y=[dark(2,:); raw(2,:); spec(2,:); avg(2,:); e(1,:); f(:)'];
 
     for substep = 1:6
         ax(substep) = subplot(6,1,substep);
         plot(dark(1,:), y(substep,:)', 'LineWidth', 2);
         xlim([950 1800]);
-        set(gca,'FontSize',10,'FontWeight','bold','box','off') % 2021/02/15
+        set(gca,'FontSize',10,'FontWeight','bold','box','off')
         hold on;
         if (step < 11)
             n(step,:) = final(:)'; % final is normalized or not, depending
                                    % on refWaveNumber
         end
-        if (substep <7)
+        if (substep <6)
             set(ax(substep),'XTickLabel','')
             % Set the color of the X-axis in the top axes
             % to the axes background color
             set(ax(substep),'XColor',get(gca,'Color'))
-            % TO DO Reviewer 2 wants y label = "Intensity (A.U.)" 
-            ylabel(newYlabels(substep),'FontSize',15,'Rotation',90);
+            % JBO version 1
+            % ylabel(newYlabels(substep),'FontSize',10,'Rotation',90);
+            % TO DO Reviewer 2 wants y label = "Intensity (a.u.)" 
+            ylabel(newYlabels,'FontSize',10,'Rotation',90);
         end
-        if substep == 7
+        if substep == 6
             % Turn off the box so that only the left 
             % vertical axis and bottom axis are drawn
             % set(ax,'box','off')
-            % TO DO Reviewer 2 wants y label = "Intensity (A.U.)" 
-            ylabel(newYlabels(substep),'FontSize',15,'Rotation',90);
+            % TO DO Reviewer 2 wants y label = "Intensity (a.u.)" 
+            ylabel(newYlabels,'FontSize',10,'Rotation',90);
             xlabel('Raman shift (cm^{-1})','FontSize',15); % affects the last plot, here it's #6
         end
     end 
@@ -399,18 +416,23 @@ if autoSave
 else
     figure
 end 
-myTitle = 'Final spectra for all steps';
+%myTitle = 'Final spectra for all steps';
+myTitle = 'Figure 2';
 % 2021/02/15 FontWeight is not a property of stackedplot and so errors
 % out if passed in (below). Here, it is allowed but ignored by stackedplot
-% TODO Reviewer 2 wants these to be "Intensity (A.U.)"
-newYlabels = {'Step 1','Step 2','Step 3','Step 4',...
-    'Step 5','Step 6', 'Step 7','Step 8','Step 9','Step 10'};
+% JBO version 1
+% newYlabels = {'Step 1','Step 2','Step 3','Step 4',...
+%    'Step 5','Step 6', 'Step 7','Step 8','Step 9','Step 10'};
+% TODO Reviewer 2 wants these to be "Intensity (a.u.)"
+newYlabels = {'Intensity';'(a.u.)'}; % JBO version 2
+
 for step = 1:10
     h = subplot(10,1,step);
     plot(dark(1,:), n(step,:)','LineWidth',2);
     set(gca,'FontSize',10,'FontWeight','bold','box','off');
     xlim([950 1800]);
-    ylabel(newYlabels(step),'FontSize',15,'Rotation',90);
+    % ylabel(newYlabels(step),'FontSize',10,'Rotation',90); JBO version 1
+    ylabel(newYlabels,'FontSize',10,'Rotation',90); % JBO version 2
     if step == 10
         xlabel('Raman shift (cm^{-1})','FontSize',15); % 2021/02/14 superscript not working
     end
