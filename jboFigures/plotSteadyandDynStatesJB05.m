@@ -1,6 +1,6 @@
 addpath('../functionLibrary');
 
-% CHOOSE ONEE OF THESE two options for input source
+% CHOOSE ONE OF THESE two options for input source
 %inputOption = 1; % use raw spectra (N higher->central limit theorem holds)
 inputOption = 2; % use avg spectra (means 5x fewer files)
 
@@ -424,7 +424,13 @@ for pHLoop = 1:2
     case 2
         switch myErrorBars 
             case 1
-                myTitle = sprintf('Consistency at pH%d 1430pk avgs and std dev', jj);
+                % myTitle = sprintf('Consistency at pH%d 1430pk avgs and std dev', jj);
+                switch pHLoop
+                    case 1
+                        myTitle = 'Figure 8a';
+                    case 2
+                        myTitle = 'Figure 9a';
+                end
             case 2
                 myTitle = sprintf('Consistency at pH%d 1430pk avgs and 95 CI', jj);
         end
@@ -432,7 +438,7 @@ for pHLoop = 1:2
     % title(myTitle); 2021/02/15 out for final version
     xlabel('Gel type');
     %ylabel('Normalized intensity of 1430 cm^{-1} peak');
-    ylabel('Normalized Intensity'); % for JBO fig 10a
+    ylabel('Normalized intensity (a.u.)'); % for JBO fig 10a
     ylim([0 0.25]); % 2021/03/18 now that 1702 once again has own scale,
                     % these limits don't need to go below 0 to accom bars
     saveMyPlot(FigH, myTitle);
@@ -453,7 +459,13 @@ for pHLoop = 1:2
     case 2
         switch myErrorBars 
             case 1
-                myTitle = sprintf('Consistency at pH%d 1702pk avgs and std dev', jj);
+                %myTitle = sprintf('Consistency at pH%d 1702pk avgs and std dev', jj);
+                switch pHLoop
+                    case 1
+                        myTitle = 'Figure 8b';
+                    case 2
+                        myTitle = 'Figure 9b';
+                end
             case 2
                 myTitle = sprintf('Consistency at pH%d 1702pk avgs and 95 CI', jj);
         end
@@ -461,7 +473,7 @@ for pHLoop = 1:2
     % title(myTitle); 2021/02/15 out for final version
     xlabel('Gel type');
     % ylabel('Normalized intensity of 1702 cm^{-1} peak');
-    ylabel('Normalized Intensity'); % for JBO fig 10b
+    ylabel('Normalized intensity (a.u.)'); % for JBO fig 10b
     % ylim([-0.05 0.25]); MJM doesn't like how this squishes this plot
     saveMyPlot(FigH, myTitle);
 end
@@ -870,7 +882,7 @@ end
 
 function g = saveMyPlot(FigH, myTitle)
     dirStem = "C:\Users\karen\Documents\Data\";
-    subDir = "Plots\";
+    subDir = "Plots\consistency\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);
     myPlot = sprintf('%s%s', plotDirStem, myTitle);
     saveas(FigH, myPlot, 'png');

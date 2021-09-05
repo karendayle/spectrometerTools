@@ -27,7 +27,7 @@ xlim([0.5 16.5]);
 plot(x,N125,':or', x,N5,'-+b', x,N45,'--*g', x,N9,'-.sk');
 set(gca,'FontSize',32, 'box', 'off');
 xlabel('Case'); % x-axis label
-ylabel('Std Dev of normalized intensity'); % y-axis label
+ylabel('Std Dev of normalized intensity (a.u.)'); % y-axis label
 legend('N=125', 'N=5','N=45', 'N=9', 'Location', 'Northwest');
 
 % 95% CIs for 16 cases for each of four values of N

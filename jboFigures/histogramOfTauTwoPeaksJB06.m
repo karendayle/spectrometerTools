@@ -26,7 +26,7 @@ global tallyByGel
 global tallyByPH
 
 global autoSave
-autoSave = 0; % CHOOSE 1 to save plots to files, 0 to do this manually
+autoSave = 1; % CHOOSE 1 to save plots to files, 0 to do this manually
 
 % Bins are: 0-10m, 10m-1h, 1h-1d, >1d
 tallyByGel = [ ...
@@ -112,7 +112,8 @@ fname = {'<10 min';'<1 hour';'<1 day';'>1 day'}; % FIX!
 set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
 %set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
 set(gca, 'FontSize', 30, 'box', 'off'); % 2021/02/19 rm bold for JBO fig
-myTitle = sprintf('taus for both peaks all pH levels');
+%myTitle = sprintf('taus for both peaks all pH levels');
+myTitle = 'Figure 7';
 if autoSave
     saveMyPlot(FigH, myTitle);
 end
@@ -161,7 +162,15 @@ for ii = 1:3
     set(gca, 'XTick', 1:length(fname),'XTickLabel',fname);
     %set(gca, 'FontSize', 30,'FontWeight','bold','box','off');
     set(gca, 'FontSize', 30, 'box', 'off'); % 2021/02/19 rm bold for JBO fig
-    myTitle = sprintf('taus for both peaks for pH %d', pH(ii));
+    %myTitle = sprintf('taus for both peaks for pH %d', pH(ii));
+    switch ii
+        case 1
+            myTitle = 'Figure S39';
+        case 2
+            myTitle = 'Figure S40';
+        case 3
+            myTitle = 'Figure S41';
+    end
     if autoSave
         saveMyPlot(FigH, myTitle);
     end
@@ -346,10 +355,8 @@ function k = fillBarsWithHatchedLines(B, yd)
 end
 
 function g = saveMyPlot(FigH, myTitle)
-    dirStem = "C:\Users\karen\Documents\Data\";
-    subDir = "Plots\";
-    plotDirStem = sprintf("%s%s", dirStem, subDir);
-    myPlotName = sprintf('%s%s', plotDirStem, myTitle);
-    saveas(FigH, myPlotName, 'jpg');
+    dirStem = "C:\Users\karen\Documents\Data\Plots\time constants\";
+    myPlotName = sprintf('%s%s', dirStem, myTitle);
+    saveas(FigH, myPlotName, 'png');
     g = 1;
 end

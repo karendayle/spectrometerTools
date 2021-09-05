@@ -21,7 +21,6 @@ global plotOption;
 %plotOption = 3; % check pH sens
 plotOption = 4; % do curve fitting. Set value for lastPoints (line ~510) to
 % adjust how many points at the end of the segment are used
-
 % There are two plots to build (or two lines on one plot).
 % Use the index 614 to get the intensity at 1430/cm (act. 1428.58/cm)
 % Find the local max instead of looking at const location
@@ -99,20 +98,53 @@ global myXValues;
 myXValues = [];
 
 global myTitle;
-myTitle = [ ...
-    "54nm MBA AuNPs MCs alginate gel12 punch1 flowcell", ...
-    "54nm MBA AuNPs MCs alginate gel12 punch2 flowcell", ...
-    "54nm MBA AuNPs MCs alginate gel12 punch3 flowcell", ...
-    "54nm MBA AuNPs MCs PEG gel3 punch1 flowcell", ...
-    "54nm MBA AuNPs MCs PEG gel15 punch1 flowcell", ...
-    "54nm MBA AuNPs MCs PEG gel16 punch1 flowcell", ...
-    "54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell", ...
-    "54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell", ...
-    "54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell", ...
-    "54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell", ...
-    "54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell", ...
-    "54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell" ...
+% myTitle = [ ...
+%     "54nm MBA AuNPs MCs alginate gel12 punch1 flowcell", ...
+%     "54nm MBA AuNPs MCs alginate gel12 punch2 flowcell", ...
+%     "54nm MBA AuNPs MCs alginate gel12 punch3 flowcell", ...
+%     "54nm MBA AuNPs MCs PEG gel3 punch1 flowcell", ...
+%     "54nm MBA AuNPs MCs PEG gel15 punch1 flowcell", ...
+%     "54nm MBA AuNPs MCs PEG gel16 punch1 flowcell", ...
+%     "54nm MBA AuNPs MCs pHEMA gel1 punch1 flowcell", ...
+%     "54nm MBA AuNPs MCs pHEMA gel13 punch1 flowcell", ...
+%     "54nm MBA AuNPs MCs pHEMA gel13 punch2 flowcell", ...
+%     "54nm MBA AuNPs MCs pHEMA coAc gel3 punch4 flowcell", ...
+%     "54nm MBA AuNPs MCs pHEMA coAc gel14 punch1 flowcell", ...
+%     "54nm MBA AuNPs MCs pHEMA coAc gel14 punch2 flowcell" ...
+%     ];
+if plotOption == 1
+    myTitle = [ ...
+        "Figure S14", ...
+        "Figure S15", ...
+        "Figure S16", ...
+        "Figure S17", ...
+        "Figure S18", ...
+        "Figure S19", ...
+        "Figure S20", ...
+        "Figure S21", ...
+        "Figure S22", ...
+        "Figure S23", ...
+        "Figure S24", ...
+        "Figure S25", ...
     ];
+else 
+    if plotOption == 4
+        myTitle = [ ...
+            "Figure S27", ... % Rename to S26 if 29 pts used, S27 if 20 used
+            "Figure S28", ... % The rest are correct if 29 pts used
+            "Figure S29", ... % Make a copy of S29 named Figure 6 for manu
+            "Figure S30", ...
+            "Figure S31", ...
+            "Figure S32", ...
+            "Figure S33", ...
+            "Figure S34", ...
+            "Figure S35", ...
+            "Figure S36", ...
+            "Figure S37", ...
+            "Figure S38", ...
+        ];
+    end
+end
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4";
 subDirStem3 = "3 pH10";
@@ -196,12 +228,12 @@ for gelOption = 1:12
     end
     
     % '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h'
-    pH4Marker1 = 'o';
-    pH4Marker2 = '+';
-    pH7Marker1 = 'v';
-    pH7Marker2 = '^';
-    pH10Marker1 = 'p';
-    pH10Marker2 = 'h';
+    pH4Marker1 = 'p';
+    pH4Marker2 = '^';
+    pH7Marker1 = 's';
+    pH7Marker2 = 'o';
+    pH10Marker1 = '+';
+    pH10Marker2 = '.';
     for K = Kmin:Kmax
         switch K
             case 1
@@ -299,22 +331,60 @@ for gelOption = 1:12
 %         deltaY = 0.25;
 %     end
 
-%     % YES for SRs, NO for pubs
-%     text(x, y, 'o = local peak near 1430 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+    % YES for SRs, NO for pubs. JBO reviewer wants legend
+    % 20210722 this won't work b/c I don't have all the symbol chars as txt
+%     text(x, y, 'o = 1430 cm^-^1 peak @ pH 4', 'Color', black, 'FontSize', myTextFont);
 %     y = y - deltaY;
-%     text(x, y, '+ = local peak near 1702 cm^-^1', 'Color', black, 'FontSize', myTextFont);
+%     text(x, y, '+ = 1430 cm^-^1 peak @ pH 7', 'Color', black, 'FontSize', myTextFont);
+%     y = y - deltaY;
+%     text(x, y, 'o = 1430 cm^-^1 peak @ pH 10', 'Color', black, 'FontSize', myTextFont);
+%     y = y - deltaY;
+%     text(x, y, '+ = 1702 cm^-^1 peak @ pH 4', 'Color', black, 'FontSize', myTextFont);
+%     y = y - deltaY;
+%     text(x, y, 'o = 1702 cm^-^1 peak @ pH 7', 'Color', black, 'FontSize', myTextFont);
+%     y = y - deltaY;
+%     text(x, y, '+ = 1702 cm^-^1 peak @ pH 10', 'Color', black, 'FontSize', myTextFont);
 %     y = y - deltaY;
 %     hold off
+%     so try legend after all
+    if plotOption == 1
+        legend('1430 cm^-^1 peak @ pH 7','1702 cm^-^1 peak @ pH 7', ...
+            '1430 cm^-^1 peak @ pH 4','1702 cm^-^1 peak @ pH 4', ...
+            '1430 cm^-^1 peak @ pH 10','1702 cm^-^1 peak @ pH 10', 'FontSize',15);
+    else % 202107/23 new for legend re curve fitting symbol 
+         % ref: https://www.mathworks.com/matlabcentral/answers/406-how-do-i-skip-items-in-a-legend
+        if plotOption == 4
+%             legend('1430 cm^-^1 peak @ pH 7','1702 cm^-^1 peak @ pH 7', ...
+%                 '', '', ...
+%                 '1430 cm^-^1 peak @ pH 4','1702 cm^-^1 peak @ pH 4', ...
+%                 '', '', ...
+%                 '1430 cm^-^1 peak @ pH 10','1702 cm^-^1 peak @ pH 10', ...
+%                 '', '',  ...
+%                 '', '', '', '', ...
+%                 '', '', '', '', ...
+%                 '', '', '', '', ...
+%                 '', '', '', '', ...
+%                 '', '', '', '', ...
+%                 '', '', 'curve fitting', 'FontSize',15);
+% Can't even go back to this b/c the 3rd and 4th plots are the curves now
+% Need to add this stuff to stop the fitted curves from going into legend
+%     h2=histfit(with_ess,50,'kernel');
+%     set(get(get(h1(2),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+        legend('1430 cm^-^1 peak @ pH 7','1702 cm^-^1 peak @ pH 7', ...
+            '1430 cm^-^1 peak @ pH 4','1702 cm^-^1 peak @ pH 4', ...
+            '1430 cm^-^1 peak @ pH 10','1702 cm^-^1 peak @ pH 10', 'FontSize',15);
+        end
+    end
     
     % title(myTitle(gelOption), 'FontSize', myTitleFont); 2021/02/19 out
     % for final version
-    myXlabel = sprintf('Time (hours)');
+    myXlabel = sprintf('Time (h)');
     xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
     if plotOption == 1 || plotOption == 4
-        ylabel('Normalized Intensity', ...
+        ylabel('Normalized Intensity (a.u.)', ...
             'FontSize', myLabelFont); % y-axis label
     else
-        ylabel('Intensity at 1430cm^-^1(A.U.)/Intensity at 1702cm^-^1(A.U.)', ...
+        ylabel('Intensity at 1430cm^-^1 (a.u.)/Intensity at 1702cm^-^1 (a.u.)', ...
             'FontSize', myLabelFont); % y-axis label
     end
     saveMyPlot(FigH, myTitle(gelOption));
@@ -326,9 +396,9 @@ if plotOption == 1
 end
 if plotOption == 4
     % 20210129 save vals so that histogramOfTauJB06 can use them
-    save('Data\vals.mat', 'vals'); 
+    save('..\..\vals.mat', 'vals'); 
     % 2020/12/20 save myXValues so that plotExponentialCurves can use them
-    save('Data\XValues.mat', 'myXValues');
+    save('..\..\XValues.mat', 'myXValues');
     plotVals(); % can only call this if loop runs for all 12 geloptions
 end
 %end main portion
@@ -574,8 +644,10 @@ function g = myPlot(subDirStem, myColor, myMarker1, myMarker2, ...
             % Then do the curve fitting and overlay the result
             % throw away the transitioning part of the segment and just
             % take the end of the segment when steady state occurs
-            lastPoints = 20; % CHOOSE THIS NUMBER
+            lastPoints = 29; % CHOOSE THIS NUMBER (Max = 29)
             nPoints = length(t)-lastPoints+1;
+            fprintf('gel%d series%d lastPoints=%d length(t)=%d nPoints=%d\n', ...
+                gel, series, lastPoints, length(t), nPoints);
 
             % if there are enough points, take last N points instead of full set
             if nPoints > 0
@@ -639,7 +711,7 @@ global black
 % To avoid this error: "NaN computed by model function, fitting cannot continue.
 % Try using or tightening upper and lower bounds on coefficients.", do not set
 % start point to 0. 
-% Ref=https://www.mathworks.com/matlabcentral/answers/132082-curve-fitting-toolbox-error
+% Ref=https://www.mathworks.com/matlabcentral/answers/13l82-curve-fitting-toolbox-error
     % fit exponential curve to y1
     %curveFit(t-offset,y,myColor);
     if (mySubIter == 1) 
@@ -798,8 +870,11 @@ global black
                 %y1Model = f0.a*(1 - exp(xCurve/f0.b)) + f0.c;
                 y1Model = f0.a*(1 - exp(-1.*f0.b*xCurve)) + f0.c;
         end
-        plot(xCurve, y1Model, '-s', 'Color', black);
-        % y1Model
+        h1 = plot(xCurve, y1Model, '-', 'Color', black, 'LineWidth', 2.0);
+        set(get(get(h1,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+        % replaced with above 2 lines 20210723
+        % plot(xCurve, y1Model, '-', 'Color', black);
+
         hold on;
     else
         if (mySubIter == 2)
@@ -823,7 +898,10 @@ global black
                     % y2Model = f0.a*exp(xCurve/f0.b) + f0.c;
                     y2Model = f0.a*exp(-1.*f0.b*xCurve) + f0.c;
             end
-            plot(xCurve, y2Model, '-s', 'Color', black);
+            h2 = plot(xCurve, y2Model, '-', 'Color', black, 'LineWidth', 2.0);
+            set(get(get(h2,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+            % replaced with above 2 lines 20210723
+            % plot(xCurve, y2Model, '-', 'Color', black);
             % y2Model
             hold on;
         end
@@ -1174,7 +1252,6 @@ function r = plotEndVals()
         [ '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h']; 
         % all the symbols that Matlab has
         
- 
     for gel = 1:4
         %figure
         FigH = figure('Position', get(0, 'Screensize'));
@@ -1203,7 +1280,7 @@ function r = plotEndVals()
         title(gelNumber, 'FontSize', myTitleFont);
         myXlabel = sprintf('Segment number');
         xlabel(myXlabel, 'FontSize', myLabelFont); % x-axis label
-        ylabel('Normalized Intensity', ...
+        ylabel('Normalized Intensity (a.u.)', ...
             'FontSize', myLabelFont); % y-axis label
     end
     r = 1;
@@ -1232,7 +1309,7 @@ function s = plotSpeedVals()
     myColor2 = [ gold; cherry; ciel; gold; ciel; cherry; ciel; gold; cherry ];
     % all the symbols that Matlab has
     markers = ...
-        [ '-o' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h']; 
+        [ '-^' '-+' '-*' '-.' '-x' '-s' '-d' '-^' '-v' '->' '-<' '-p' '-h']; 
 
     %figure
     FigH = figure('Position', get(0, 'Screensize'));
@@ -1271,8 +1348,14 @@ end
 
 function g = saveMyPlot(FigH, myTitle)
 global plotOption
-    dirStem = "C:\Users\karen\Documents\Data\";
-    subDir = "Plots\";
+    dirStem = "C:\Users\karen\Documents\Data\Plots\";
+    switch plotOption
+        case 1
+            subDir = "time series\";
+        case 4
+            subDir = "curve fitting\";
+    end
+
     plotDirStem = sprintf("%s%s", dirStem, subDir);
     switch plotOption
         case {1,2,3}

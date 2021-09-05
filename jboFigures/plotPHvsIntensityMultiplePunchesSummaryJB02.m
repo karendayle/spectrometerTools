@@ -44,7 +44,7 @@ global peakSet
 % CHOOSE: Change this to change which peaks are plotted
 % Set to 1 for 1430 & 1702, normalized by 1582 peak; 
 % Set to 2 for 1072 & 1582, normalized by each other.
-peakSet = 2; 
+peakSet = 1; 
 % CHOOSE xRef to specify normalized peak to use,
 % Set to zero to specify that you don't want normalization 
 
@@ -411,11 +411,12 @@ for J=1:4
     title(myTitle(J), 'FontSize', myTextFont);
     % 7/16/2020 only say "normalized" when xRef ~= 0
     if (xRef ~= 0) 
-        ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+        %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+        ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
     else
-        ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+        ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont);
     end
-        xlabel('pH', 'FontSize', myTextFont); % x-axis label
+        xlabel('pH', 'FontSize', myTextFont);
     %set(gca,'FontSize',myTextFont,'FontWeight','bold','box','off')
     set(gca,'FontSize',myTextFont,'box','off'); % 2021/02/18 rm bold
 
@@ -522,20 +523,22 @@ switch peakSet
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
             title('1430 cm^-^1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+            %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+            ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
         else
             title('1430 cm^-^1 peak average for all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+            ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont);
         end
     case 2
         % JB02 case:
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
             title('1072 cm^-^1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+            %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+            ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
         else
             title('1072 cm^-^1 peak average for all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+            ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont); 
         end
 end
 
@@ -619,20 +622,22 @@ switch peakSet
         % % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
             title('1702 cm^-^1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+            %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+            ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
         else
             title('1702 cm^-^1 peak average for all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+            ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont);
         end
     case 2
         % JB02 case:
         % 7/16/2020 only say "normalized" when xRef ~= 0
         if (xRef ~= 0) 
             title('1582 cm^-^1 normalized peak average for all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+            %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+            ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
         else
             title('1582 cm^-^1 peak average for all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+            ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont);
         end
 end
 xlabel('pH', 'FontSize', myTextFont); % x-axis label
@@ -844,10 +849,11 @@ switch peakSet
         if (xRef ~= 0) 
             % 2021/02/18 out for final JBO version
             % title('1430 cm^-^1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+            %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+            ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
         else
             title('1430 cm^-^1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+            ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont);
         end
     case 2
         % JB02:
@@ -855,10 +861,11 @@ switch peakSet
         if (xRef ~= 0) 
             % 2021/02/20 out for final JBO version
             % title('1072 cm^-^1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+            %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+            ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
         else
             title('1072 cm^-^1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+            ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont);
         end
 end
 xlabel('pH', 'FontSize', myTextFont); % x-axis label
@@ -933,24 +940,24 @@ switch newGels
             case 1 % pH-sensitive peaks
                 switch dataset
                     case 1
-                        myTitle = 'JBOfig5a old gels pk 1430 at beg of June 2020';
+                        myTitle = 'Figure 4a beg of June 2020';
                     case 2
-                        myTitle = 'JBOfig5a old gels pk 1430 at end of June 2020'; 
+                        myTitle = 'Figure 4a end of June 2020';
                 end
             case 2 % reference peaks
                 switch dataset
                     case 1
-                        myTitle = 'JBOfig old gels ref pk 1072 at beg of June 2020';
+                        myTitle = 'Figure S13a beg of June 2020';
                     case 2
-                        myTitle = 'JBOfig old gels ref pk 1072 at end of June 2020'; 
+                        myTitle = 'Figure S13a end of June 2020';
                 end
         end
     case 1 % use new gels
         switch peakSet
             case 1 % pH-sensitive peaks
-                myTitle = 'JBOfig4a new gels ';
+                myTitle = 'Figure 3a';
             case 2
-                myTitle = 'JBOfig13a new gels ref pk 1072';
+                myTitle = 'Figure S13a';
         end
 end
 saveMyPlot(FigH, myTitle);
@@ -999,10 +1006,11 @@ switch peakSet
         if (xRef ~= 0) 
             % 2021/02/18 out for final JBO version
             % title('1702 cm^-^1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+            %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+            ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
         else
             title('1702 cm^-^1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+            ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont);
         end
     case 2
         % JB02:
@@ -1010,10 +1018,11 @@ switch peakSet
         if (xRef ~= 0) 
             % 2021/02/18 out for final JBO version
             % title('1582 cm^-^1 normalized peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Normalized Intensity', 'FontSize', myTextFont); % y-axis label
+            %ylabel({'Normalized intensity'; '(a.u.)'}, 'FontSize', myTextFont);
+            ylabel('Normalized intensity (a.u.)', 'FontSize', myTextFont);
         else
             title('1582 cm^-^1 peak average and std dev of all punches of all gels', 'FontSize', myTextFont)
-            ylabel('Raw Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+            ylabel({'Raw intensity'; '(a.u.)'}, 'FontSize', myTextFont);
         end
 end
 
@@ -1077,26 +1086,26 @@ switch newGels
                 x = 0.8 * (maxX + 0.5); % ... for the 1430 pk
                 switch dataset
                     case 1
-                        myTitle = 'JBOfig5b old gels pk 1702 at beg of June 2020';
+                        myTitle = 'Figure 4b beg of June 2020';
                     case 2
-                        myTitle = 'JBOfig5b old gels pk 1702 at end of June 2020'; 
+                        myTitle = 'Figure 4b end of June 2020'; 
                 end  
             case 2
                 x = minX; % ... and the 1072 ref pk
                 switch dataset
                     case 1
-                        myTitle = 'JBOfig old gels ref pk 1582 at beg of June 2020';
+                        myTitle = 'Figure S13b beg of June 2020';
                     case 2
-                        myTitle = 'JBOfig old gels ref pk 1582 at end of June 2020'; 
+                        myTitle = 'Figure S13b end of June 2020'; 
                 end
         end
    
     case 1
         switch peakSet
             case 1 % pH-sensitive peaks
-                myTitle = 'JBOfig4b new gels ';
+                myTitle = 'Figure 3b';
             case 2
-                myTitle = 'JBOfig13b new gels ref pk 1582';
+                myTitle = 'Figure S13b';
         end
 end
 saveMyPlot(FigH, myTitle);
