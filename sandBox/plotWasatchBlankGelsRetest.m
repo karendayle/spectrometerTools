@@ -1,5 +1,5 @@
-% Plot dataset for six types of blank gels in different directories
-% Dayle Kotturi April 2021
+% Plot dataset for blank gel #2 in different directories
+% Dayle Kotturi Sept 2021
 close all;
 
 addpath('../functionLibrary'); % provide path to asym
@@ -27,15 +27,15 @@ thisdata1 = zeros(2, numPoints, 'double');
 % Change next 4 lines to what you want to plot
 % These are used to find the spectra that get plotted.
 % Multiple spectra in each subdir, but the latest one is used for plot
-dirStem = "R:\Students\Dayle\Data\Made By Waqas\Blank gels\gel ";
-subDirStem = ["\blank\1\", "\blank2\1\", "\blank3\1\" ];
+dirStem = "R:\Students\Dayle\Data\Made by Waqas\Blank gels\gel ";
+subDirStem = ["\retest\retest 15 percent BSA 1\1\", "\retest\retest 15 percent BSA 2\1\", "\retest\retest 15 percent BSA 3\1\" ];
 gelType = ["GAC admix", "15%BSA XLD", "20%BSA XLD", ...
     "10%G:10%BSA", "15%G:5%BSA", "19%G:1%BSA"];
 % Read in a set of spectra from a time-series 
 % Read in the name of the FOLDER.
 figure % without this, no plots are drawn
 for K = 2 : 2
-    %subplot(6,1,K)
+%     subplot(6,1,K)
     for J = 1 : 3
         str_dir_to_search = dirStem + string(K) + subDirStem(J); % args need to be strings
         dir_to_search = char(str_dir_to_search);
@@ -59,7 +59,7 @@ for K = 2 : 2
             set(gca,'FontSize',15,'FontWeight','bold','box','off'); % used for title and label
             xlim([xMin xMax]);
             yStr = sprintf("%s", gelType(K));
-            ylabel(yStr,'FontSize',30); % y-axis label use 30 is not subplot, 10 if subplot
+            ylabel(yStr,'FontSize',30); % y-axis label
         end
     end
 end
@@ -67,7 +67,7 @@ end
 xlabel('Wavenumber (cm^-^1)'); % x-axis label
 
 
-for K = 2:2 
+for K = 2 : 2
     figure % without this, no plots are drawn
     for J = 1 : 3
         for II = 1:1024
