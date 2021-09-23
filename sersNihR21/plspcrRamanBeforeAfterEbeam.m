@@ -25,13 +25,56 @@
 %   Based on material from Copyright 2008 The MathWorks, Inc.
 
 %   Dayle Kotturi 9/21/2021
-%   Change list:
+%   New:
 %   Adapt to check how the alginate and BSA gels compare before and after
-%   e-beam sterilization
+%   e-beam sterilization. This becomes the myOption = 4 case
+%   
+%   1. Build up the pre ebeam alginate data array "spectra" using
+%   all the avg*.txt files in either 8/4/2021 dataset:
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 1\HITC\1\"; % 15 avgs
+%   or 9/7/2021 dataset (retest after 2 months to check for degradation):
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 1\retest HITC\1\"; % 15 avgs
+%   Since the above are disc samples, it makes sense to compare against 
+%   discs, but the cylindrical samples could also be used.
+%
+%   2. Build up the post ebeam alginate data array "spectra" using
+%   all the avg*.txt files in either:
+%
+%     These are the cylindrical samples
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 1\1\"; % 5 avgs
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 2\1\"; % 5 avgs
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 3\1\"; % 5 avgs
+%     These are the disc samples
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 1\1\"; % 5 avgs
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 2\1\"; % 5 avgs
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 3\1\"; % 5 avgs
 
+% After running both 1. and 2., compare the results and see how close the
+% models are. 
 
-%   TO DO: 
+% After that or alternatively, combine the pre- and post- avg*.txt files
+% into a single array "spectra" and generate model for this. How does it
+% compare to the models found for only pre- or post-? 
 
+% Finally, repeat for BSA gels.
+%   1. Build up the pre ebeam alginate data array "spectra" using
+%   all the avg*.txt files in either 8/4/21:
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 1\HITC blind gel\1\1\"; % 15 avgs
+%   or 9/7/21 dataset (retest after 2 months to check for degradation):
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 1\HITC 15 percent BSA XLD\1\"; % 15 avgs
+%   Since the above are disc samples, it makes sense to compare against 
+%   discs, but the cylindrical samples could also be used.
+%   2. Build up the post ebeam alginate data array "spectra" using
+%   all the avg*.txt files in either 8/4/2021 dataset:
+
+%     These are the cylindrical samples
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 1 sample 1\1\";
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 1 sample 2\1\";
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 1 sample 3\1\";
+%     These are the disc samples
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 2 sample 1\1\";
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 2 sample 2\1\";
+%     dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 2 sample 3\1\";
 
 % Newly required following 2021/03/01 script reorg
 addpath('../functionLibrary');
@@ -42,6 +85,14 @@ global myOption
 %myOption = 2; % NIH R21 1.1
 %myOption = 3; % NIH R21 1.1f
 myOption = 4; % Before and after e-beam
+
+% only for myOption = 4
+%datasetChoice = 1; % 8/4 initial alginate pre ebeam
+%datasetChoice = 2; % 9/5 retest alginate pre ebeam
+%datasetChoice = 3; % 9/19 alginate post ebeam
+%datasetChoice = 4; % 8/4 initial BSA (known as 'blind') pre ebeam
+%datasetChoice = 5; % 9/7 retest BSA pre-ebeam
+datasetChoice = 6; % 9/19 BSA post ebeam
 
 global analyteStart
 global analyteEnd
@@ -212,7 +263,8 @@ switch myOption
         
         % Load the HITC before and after e-beam data
         for analyteChoice = analyteStart:analyteEnd
-            [spectra, analyteArr] = getHITCRamanSpectra(analyteChoice);
+            [spectra, analyteArr] = getHITCRamanSpectra(analyteChoice, ...
+                datasetChoice);
 
             % Process a single analyte
             processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
@@ -507,6 +559,9 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
                     analyteNames(analyteChoice));
             case 3
                 myTitle = sprintf('%s all batches for 10nM AuNPs', ...
+                    analyteNames(analyteChoice));
+            case 4
+                myTitle = sprintf('HITC AuNPs', ...
                     analyteNames(analyteChoice));
         end
         title(myTitle);
@@ -885,6 +940,11 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         %plot(waveNumbers(1:Npoints),PCALoadings(:,1:4),'-'); 
         % kdk use minPCRComponents
         plot(waveNumbers(1:Npoints),PCALoadings(:,1:minPCRComponents),'-');
+        
+        % NEW 20210922: write points to file so that can be plotted with 
+        % other results
+        saveToText(waveNumbers, PCALoadings, minPCRComponents);
+        
         set(gca,'FontSize',20,'FontWeight','bold','box','off');
         xlabel('Wavenumber (cm^-^1)');
         myYLabel = 'PCA Loading';
@@ -1469,7 +1529,7 @@ function allBlackPlatesAndWater = getNIHRamanSpectraBlackPlatesAndWater()
     allBlackPlatesAndWater = [allBlackPlatesAndWater; water];            
 end
 
-function [spectra, analyteArr] = getHITCRamanSpectra(analyteChoice)  
+function [spectra, analyteArr] = getHITCRamanSpectra(analyteChoice, datasetChoice)  
     global numPoints
     global batchStart
     global batchEnd
@@ -1497,49 +1557,76 @@ function [spectra, analyteArr] = getHITCRamanSpectra(analyteChoice)
     global conc
     conc = [10]; % refers to AuNPs concentration
     global useBlanks
-    global myOption
-    
-    switch myOption
-        case 4
-            % This is where the pre ebeam alginate data is 
+        
+    switch datasetChoice % See comments at top of file for explanation
+        case 1
             dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 1\HITC\1\"; % 15 avgs
+        case 2
             dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 1\retest HITC\1\"; % 15 avgs
-            
+        case 3
             % This is where the post ebeam alginate data is
             % These are the cylindrical samples
-            dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 1\1\"; % 5 avgs
-            dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 2\1\"; % 5 avgs
-            dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 3\1\"; % 5 avgs
+            dirStem1 = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 1\1\"; % 5 avgs
+            dirStem2 = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 2\1\"; % 5 avgs
+            dirStem3 = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 1 sample 3\1\"; % 5 avgs
+        case 4
+            % This is where the post ebeam alginate data is
             % These are the disc samples
-            dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 1\1\"; % 5 avgs
-            dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 2\1\"; % 5 avgs
-            dirStem = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 3\1\"; % 5 avgs
+            dirStem1 = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 1\1\"; % 5 avgs
+            dirStem2 = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 2\1\"; % 5 avgs
+            dirStem3 = "R:\Students\Dayle\Data\Made by Waqas\Alginate\gel 2\HITC 2 sample 3\1\"; % 5 avgs
+        case 5
+            dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 1\HITC blind gel\1\"; % 15 avgs
+        case 6
+            % or 9/7/21 dataset (retest after 2 months to check for degradation):
+            dirStem = "R:\Students\Dayle\Data\Made by Waqas\other\gel 1\HITC 15 percent BSA XLD\1\"; % 15 avgs
+            % Since the above are disc samples, it makes sense to compare against 
+            % discs, but the cylindrical samples could also be used.
+        case 7
+            % 2. Build up the post ebeam alginate data array "spectra" using
+            % all the avg*.txt files in either 8/4/2021 dataset:
 
-            dir_to_search = char(dirStem);
-
-            % deal with analyte
-            analyteArr = [];
-            spectra = [];
-
-            Kstart = 1;
-            Kend = 5;
-
-            for J = batchStart:batchEnd %2020/12/5 NEW: combine batches
-%                 if useBlanks == 1
-%                     filename = sprintf('Batch %s 10-*blank.csv', batchNames(J));
-%                     [~, newSpectrum] = addOneSpectrum(dir_to_search, filename, xRef);
-%                     spectra = [spectra; newSpectrum];
-%                     analyteArr = [analyteArr; 0];
-%                 end
-                for K = Kstart:Kend % each sample
-                    filename = 'avg*.txt';
-                    [~, newSpectrum] = addOneAvgSpectrum(dir_to_search, filename, xRef, K);
-                    spectra = [spectra; newSpectrum];
-                    analyteArr = [analyteArr; K];  
-                end
-            end
-
+            % These are the cylindrical samples
+            dirStem1 = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 1 sample 1\1\";
+            dirStem2 = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 1 sample 2\1\";
+            dirStem3 = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 1 sample 3\1\";
+        case 8
+            % These are the disc samples
+            dirStem1 = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 2 sample 1\1\";
+            dirStem2 = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 2 sample 2\1\";
+            dirStem3 = "R:\Students\Dayle\Data\Made by Waqas\other\gel 8\BSA 2 sample 3\1\";
     end
+    
+    % deal with analyte
+    analyteArr = [];
+    spectra = [];
+
+    Kstart = 1;
+    Kend = 15;
+
+    for K = Kstart:Kend % each sample
+        filename = 'avg*.txt';
+        switch datasetChoice
+            case {1, 2, 5, 6}
+                dir_to_search = char(dirStem);
+                [~, newSpectrum] = addOneAvgSpectrum(dir_to_search, filename, xRef, K);
+            case {3, 4, 7, 8}
+                if K < 6
+                    dir_to_search = char(dirStem1); 
+                else 
+                    if K < 11
+                        dir_to_search = char(dirStem2);
+                    else
+                        dir_to_search = char(dirStem3);
+                    end
+                end
+                [~, newSpectrum] = addOneAvgSpectrum(dir_to_search, filename, xRef, mod(K,5)+1);
+        end
+
+        spectra = [spectra; newSpectrum];
+        analyteArr = [analyteArr; K];  
+    end
+    
 end
 
 % Used when data collected with Enlighten
@@ -1717,11 +1804,18 @@ function g = saveMyPlot(analyteChoice, gcf, myTitle, myYLabel)
     else
         subDir = 'blanks\';
     end
-    dirStem = "C:\Users\karen\Documents\Data\Direct Sensing\NIH R21 SERS\Exp 1.1\Plots\";
+    dirStem = "C:\Users\karen\Documents\Data\Plots\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);
 
     myPlot = sprintf('%s%s %s %d.png', plotDirStem, myTitle, myYLabel, ...
         figureNumber);
     saveas(gcf, myPlot);
     g = 1;
+end
+
+function h = saveToText(waveNumbers, PCALoadings, minPCRComponents)
+    fid = fopen('test.txt','w');
+%     Anew = [A repmat(newline,size(A,1),1)]; TO DO FIX
+%     fprintf(fid,'%s',Anew.');
+    fclose(fid);
 end
