@@ -86,13 +86,15 @@ global myOption
 %myOption = 3; % NIH R21 1.1f
 myOption = 4; % Before and after e-beam
 
-% only for myOption = 4
+% only for myOption = 4. Obsolete now that there is loop for all datasets
 %datasetChoice = 1; % 8/4 initial alginate pre ebeam
 %datasetChoice = 2; % 9/5 retest alginate pre ebeam
-%datasetChoice = 3; % 9/19 alginate post ebeam
-%datasetChoice = 4; % 8/4 initial BSA (known as 'blind') pre ebeam
-%datasetChoice = 5; % 9/7 retest BSA pre-ebeam
-datasetChoice = 6; % 9/19 BSA post ebeam
+%datasetChoice = 3; % 9/19 alginate post ebeam cyl
+%datasetChoice = 4; % 9/19 alginate post ebeam disc
+%datasetChoice = 5; % 8/4 initial BSA (known as 'blind') pre ebeam
+%datasetChoice = 6; % 9/7 retest BSA pre-ebeam
+%datasetChoice = 7; % 9/19 BSA post ebeam cyl
+%datasetChoice = 8; % 9/19 BSA post ebeam disc
 
 global analyteStart
 global analyteEnd
@@ -255,25 +257,84 @@ switch myOption
                 spectra, analyteArr, analyteChoice);
         end
     case 4
-        blackPlates = [];
-        blackPlatesAndWater = [];
-        blanksAllBatches = [];
-        batchStart = 1;
-        batchEnd = 1;
-        
-        % Load the HITC before and after e-beam data
-        for analyteChoice = analyteStart:analyteEnd
-            [spectra, analyteArr] = getHITCRamanSpectra(analyteChoice, ...
-                datasetChoice);
+        for I = 1:8 % do for all datasetChoices
+            blackPlates = [];
+            blackPlatesAndWater = [];
+            blanksAllBatches = [];
+            batchStart = 1;
+            batchEnd = 1;
 
-            % Process a single analyte
-            processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
-                spectra, analyteArr, analyteChoice);
+            % Load the HITC before and after e-beam data
+            for analyteChoice = analyteStart:analyteEnd
+                [spectra, analyteArr] = getHITCRamanSpectra(analyteChoice, ...
+                    I);
+
+                % Process a single analyte
+                resultsTable(I,:) = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
+                    spectra, analyteArr, analyteChoice);
+            end
         end
+        
+        figure 
+        for I = 1:8 % all datasets
+            plot(waveNumbers, resultsTable(I,:));
+            hold on
+        end
+        
+        figure 
+        for I = 1:3:4 % oldest pre and disc post (alginate)
+            plot(waveNumbers, resultsTable(I,:), 'Color', colors(I,:));
+            hold on
+        end
+        xlabel('Raman shift(cm^-^1)'); 
+        ylabel('Normalized Intensity (a.u.)');
+        title('PCA component 1 for pre and post e-beam alginate');
+        
+        figure % diff: oldest pre and disc post (alginate)
+        plot(waveNumbers, resultsTable(1,:)-resultsTable(4,:), 'Color', colors(2,:));
+        xlabel('Raman shift(cm^-^1)'); 
+        ylabel('Normalized Intensity (a.u.)');
+        title('diff: PCA component 1 for pre and post e-beam alginate');
+        
+        figure % plot diff on top of oldest pre and disc post (alginate)
+        for I = 1:3:4 % oldest pre and disc post (alginate)
+            plot(waveNumbers, resultsTable(I,:), 'Color', colors(I,:));
+            hold on
+        end
+        plot(waveNumbers, resultsTable(1,:)-resultsTable(4,:), 'Color', colors(2,:));
+        xlabel('Raman shift(cm^-^1)'); 
+        ylabel('Normalized Intensity (a.u.)');
+        title('PCA component 1 for pre and post e-beam alginate');
+        
+        figure % oldest pre and disc post (BSA)
+        for I = 5:3:8
+            plot(waveNumbers, resultsTable(I,:), 'Color', colors(I,:));
+            hold on
+        end
+        xlabel('Raman shift(cm^-^1)'); 
+        ylabel('Normalized Intensity (a.u.)');
+        title('PCA component 1 for pre and post e-beam BSA');
+        
+        figure % diff: oldest pre and disc post (BSA)
+        plot(waveNumbers, resultsTable(5,:)-resultsTable(8,:), 'Color', colors(6,:));
+        xlabel('Raman shift(cm^-^1)'); 
+        ylabel('Normalized Intensity (a.u.)');
+        title('diff: PCA component 1 for pre and post e-beam BSA');
+        
+        figure % plot diff on top of oldest pre and disc post (BSA)
+        for I = 5:3:8
+            plot(waveNumbers, resultsTable(I,:), 'Color', colors(I,:));
+            hold on
+        end
+        plot(waveNumbers, resultsTable(5,:)-resultsTable(8,:), 'Color', colors(6,:));
+        xlabel('Raman shift(cm^-^1)'); 
+        ylabel('Normalized Intensity (a.u.)');
+        title('PCA component 1 for pre and post e-beam BSA');
+
 end
 % end of main
 
-function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
+function result = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, ...
     ramanSpectra, analyte, analyteChoice)
     global myPCR
     global myPLS
@@ -943,7 +1004,7 @@ function c = processSpectra(blackPlates, blackPlatesAndWater, blanksAllBatches, 
         
         % NEW 20210922: write points to file so that can be plotted with 
         % other results
-        saveToText(waveNumbers, PCALoadings, minPCRComponents);
+        result = PCALoadings(:,1);
         
         set(gca,'FontSize',20,'FontWeight','bold','box','off');
         xlabel('Wavenumber (cm^-^1)');
@@ -1813,9 +1874,9 @@ function g = saveMyPlot(analyteChoice, gcf, myTitle, myYLabel)
     g = 1;
 end
 
-function h = saveToText(waveNumbers, PCALoadings, minPCRComponents)
-    fid = fopen('test.txt','w');
-%     Anew = [A repmat(newline,size(A,1),1)]; TO DO FIX
-%     fprintf(fid,'%s',Anew.');
-    fclose(fid);
-end
+% function h = saveToText(waveNumbers, PCALoadings, minPCRComponents)
+%     fid = fopen('test.txt','w');
+% %     Anew = [A repmat(newline,size(A,1),1)]; TO DO FIX
+% %     fprintf(fid,'%s',Anew.');
+%     fclose(fid);
+% end
