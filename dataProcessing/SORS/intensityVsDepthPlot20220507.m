@@ -44,15 +44,15 @@ for L = 1:numDepth
             for K = 1:numOffset
                 switch K
                     case 1
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 0mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 0mm 2s\1";
                     case 2
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 1mm 2s\1"; 
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 1mm 2s\1"; 
                     case 3
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 2mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 2mm 2s\1";
                     case 4
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 3mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 3mm 2s\1";
                     case 5
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 4mm 2s\1";
+                        dirStem = "R:Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 4mm 2s\1";
                 end
                             
                 str_dir_to_search = dirStem; % args need to be strings
@@ -75,15 +75,15 @@ for L = 1:numDepth
             for K = 1:numOffset
                 switch K
                     case 1
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 0mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 0mm 2s\1";
                     case 2
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 1mm 2s\1"; 
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 1mm 2s\1"; 
                     case 3
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 2mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 2mm 2s\1";
                     case 4
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 3mm 2s\1";
+                        dirStem = "R:Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 3mm 2s\1";
                     case 5
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 4mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 4mm 2s\1";
                 end
                 
                 str_dir_to_search = dirStem; % args need to be strings
@@ -106,15 +106,15 @@ for L = 1:numDepth
             for K = 1:numOffset
                 switch K
                     case 1
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 0mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 0mm 2s\1";
                     case 2
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 1mm 2s\1"; 
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 1mm 2s\1"; 
                     case 3
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 2mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 2mm 2s\1";
                     case 4
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 3mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 3mm 2s\1";
                     case 5
-                        dirStem = "R:\BMEN\McShane_Mike\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 4mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 4mm 2s\1";
                 end
                      
                 str_dir_to_search = dirStem; % args need to be strings
@@ -148,26 +148,26 @@ depth = [0.5 1.0 1.5];
 for L=1:numDepth
     for K=1:numOffset
         for I=1:numAvg
-            plot(depth(L)-0.04, intensityPeak1(L,K,I), 's', ...
+            plot(depth(L)-0.05, intensityPeak1(L,K,I), 's', ...
                 'Color', punchColor(K,:), 'MarkerSize',30);
             hold on
             plot(depth(L), intensityPeak2(L,K,I), 'o', ...
                 'Color', punchColor(K,:), 'MarkerSize',30);
             hold on
-            plot(depth(L)+0.04, intensityPeak3(L,K,I), '^', ...
+            plot(depth(L)+0.05, intensityPeak3(L,K,I), '^', ...
                 'Color', punchColor(K,:), 'MarkerSize',30);
             hold on
         end
     end
 end
 xlim([0 2.5]);
-% ylim([0 1200]);
+% ylim([0 2000]);
 myTextFont = 30;
 myTextFont2 = 35;
 xlabel('Depth below surface to top of target (mm)', 'FontSize', myTextFont); % x-axis label
 ylabel('Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
-y = 3400; 
-x = 1.5; 
+y = 2400; 
+x = 1.7; 
 deltaY = 100;
 % label laser output power used
 text(x, y, 'Laser output power: 100 mW', 'Color', black, 'FontSize', myTextFont);
