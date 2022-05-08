@@ -20,9 +20,10 @@ countBetweenPlots = 5; % Draw one out of every five averages
 counter = 0;
 %increment = 60; % up from 30 for 2020
 increment = 3; % for static tests
-integrationTimeMS = 1000; %was 1000 before power jumped to 80 mW 
+% integrationTimeMS = 1000; %was 1000 before power jumped to 80 mW 
 %integrationTimeMS = 100; %use when power jumped to 80 mW 
-laserPowerFraction = 0.370;
+integrationTimeMS = 2000; %trying to get SORS to depth of >=1.5mm
+laserPowerFraction = 1.011;
 closestRef = 0;
 refWaveNumber = 0;
 numIter = 5; % number of spectra to average 
