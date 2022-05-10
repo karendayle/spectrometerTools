@@ -1,14 +1,4 @@
-% Plot intensity vs depth for two MBA Raman peaks, when detector is at
-% at range of offsets. This script pulls from a group of datsets, since
-% each dataset has the target at a single depth. Note: the laser output
-% power used is the same for all intensities in one plot (in order to be
-% able to compare them re: offset and depth).
-
-% Next version = average the 3 averages and make error bars from the std
-% dev, then plot peak pairs on a bar chart vs depth. Nope, this won't show
-% offset, unless there are 5 bar charts.
-
-% This script plots 20220507 datasets for MBA under 1, 2 and 3 phantoms
+% This script plots 20220508 dataset for MBA under a 2mm thick phantom
 
 addpath('../../functionLibrary');
 
@@ -35,7 +25,7 @@ autoSave = 0;
 % Repeat the above for the other depths: 1.0mm, 1.5mm, 2.0mm (future) and
 % possibly 0.0mm (for completeness).
 
-numDepth = 3; % depth = 0.5, 1.0, 1.5 mm
+numDepth = 1; % depth = 0.5, 1.0, 1.5 mm
 numOffset = 5; % uncovered 0 offset, then covered with offset = 0.0-4.0mm
 numAvg = 3; % each measurement consists of 3 averaged spectra
 for L = 1:numDepth 
@@ -44,79 +34,17 @@ for L = 1:numDepth
             for K = 1:numOffset
                 switch K
                     case 1
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 0mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 0mm 2s\1";
                     case 2
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 1mm 2s\1"; 
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 1mm 2s\1"; 
                     case 3
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 2mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 2mm 2s\1";
                     case 4
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 3mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 3mm 2s\1";
                     case 5
-                        dirStem = "R:Students\Dayle\Data\SORS\PEG\gel 18\MBA 1phant 4mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 4mm 2s\1";
                 end
                             
-                str_dir_to_search = dirStem; % args need to be strings
-                dir_to_search = char(str_dir_to_search);
-                txtpattern = fullfile(dir_to_search, 'avg*.txt');
-                dinfo = dir(txtpattern);         
-                for (I = 1 : length(dinfo))
-                    thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-                    fileID = fopen(thisfilename,'r');
-                    [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
-                    fclose(fileID);
-                    % Returns trend as 'e' and baseline corrected signal as 'f'
-                    [e, f] = correctBaseline(thisdata1(2,:)');  
-                    intensityPeak1(L,K,I) = f(406); % MBA 1072 cm-1 peak
-                    intensityPeak2(L,K,I) = f(714); % MBA 1584 cm-1 peak
-                    intensityPeak3(L,K,I) = f(108); % phantom peak
-                end
-            end
-        case 2 % depth = 0.5mm, aka '1 phant'
-            for K = 1:numOffset
-                switch K
-                    case 1
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 0mm 2s\1";
-                    case 2
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 1mm 2s\1"; 
-                    case 3
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 2mm 2s\1";
-                    case 4
-                        dirStem = "R:Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 3mm 2s\1";
-                    case 5
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 4mm 2s\1";
-                end
-                
-                str_dir_to_search = dirStem; % args need to be strings
-                dir_to_search = char(str_dir_to_search);
-                txtpattern = fullfile(dir_to_search, 'avg*.txt');
-                dinfo = dir(txtpattern);         
-                for (I = 1 : length(dinfo))
-                    thisfilename = fullfile(dir_to_search, dinfo(I).name); % just the name
-                    fileID = fopen(thisfilename,'r');
-                    [thisdata1] = fscanf(fileID, '%g %g', [2 numPoints]);
-                    fclose(fileID);
-                    % Returns trend as 'e' and baseline corrected signal as 'f'
-                    [e, f] = correctBaseline(thisdata1(2,:)');  
-                    intensityPeak1(L,K,I) = f(406); % MBA 1072 cm-1 peak
-                    intensityPeak2(L,K,I) = f(714); % MBA 1584 cm-1 peak
-                    intensityPeak3(L,K,I) = f(108); % phantom peak
-                end
-            end
-        case 3
-            for K = 1:numOffset
-                switch K
-                    case 1
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 0mm 2s\1";
-                    case 2
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 1mm 2s\1"; 
-                    case 3
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 2mm 2s\1";
-                    case 4
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 3mm 2s\1";
-                    case 5
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 4mm 2s\1";
-                end
-                     
                 str_dir_to_search = dirStem; % args need to be strings
                 dir_to_search = char(str_dir_to_search);
                 txtpattern = fullfile(dir_to_search, 'avg*.txt');
@@ -142,7 +70,7 @@ else
     figure
 end
 
-depth = [0.5 1.0 1.5];
+depth = [2];
 % plot intensities vs depth, using color to identify the offset and marker
 % to identify the peak
 for L=1:numDepth
@@ -166,9 +94,9 @@ myTextFont = 30;
 myTextFont2 = 35;
 xlabel('Depth below surface to top of target (mm)', 'FontSize', myTextFont); % x-axis label
 ylabel('Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
-y = 2400; 
-x = 1.7; 
-deltaY = 100;
+y = 170; 
+x = 0.1; 
+deltaY = 7;
 % label laser output power used
 text(x, y, 'Laser output power: 100 mW', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;

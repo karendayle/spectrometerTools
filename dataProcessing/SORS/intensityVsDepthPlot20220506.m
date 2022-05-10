@@ -8,7 +8,7 @@
 % dev, then plot peak pairs on a bar chart vs depth. Nope, this won't show
 % offset, unless there are 5 bar charts.
 
-% This script plots 20220425 datasets for MBA under 1, 2 and 3 phantoms
+% This script plots 20220506 datasets for MBA under 1, 2 and 3 phantoms
 
 addpath('../../functionLibrary');
 

@@ -1,14 +1,7 @@
-% Plot intensity vs depth for two MBA Raman peaks, when detector is at
-% at range of offsets. This script pulls from a group of datsets, since
-% each dataset has the target at a single depth. Note: the laser output
-% power used is the same for all intensities in one plot (in order to be
-% able to compare them re: offset and depth).
+% Plot the intrinsic signals of three thick phantoms of different
+% pigment and thickness
 
-% Next version = average the 3 averages and make error bars from the std
-% dev, then plot peak pairs on a bar chart vs depth. Nope, this won't show
-% offset, unless there are 5 bar charts.
-
-% This script plots 20220425 datasets for MBA under 1, 2 and 3 phantoms
+% This script plots 20220508 datasets 
 
 addpath('../../functionLibrary');
 
@@ -35,8 +28,8 @@ autoSave = 0;
 % Repeat the above for the other depths: 1.0mm, 1.5mm, 2.0mm (future) and
 % possibly 0.0mm (for completeness).
 
-numDepth = 1; % depth = 0.5, 1.0, 1.5 mm
-numOffset = 5; % uncovered 0 offset, then covered with offset = 0.0-4.0mm
+numDepth = 3; % phantom thicknew = 2, 3 and 6 mm (there is no MBA here)
+numOffset = 1; % uncovered 0 offset, then covered with offset = 0.0-4.0mm
 numAvg = 3; % each measurement consists of 3 averaged spectra
 for L = 1:numDepth 
     switch L
@@ -44,15 +37,7 @@ for L = 1:numDepth
             for K = 1:numOffset
                 switch K
                     case 1
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 0mm 2s\1";
-                    case 2
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 1mm 2s\1"; 
-                    case 3
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 2mm 2s\1";
-                    case 4
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 3mm 2s\1";
-                    case 5
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2mmphant 4mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\other\gel 0\2mmphant 0mm 2s\1";
                 end
                             
                 str_dir_to_search = dirStem; % args need to be strings
@@ -75,15 +60,7 @@ for L = 1:numDepth
             for K = 1:numOffset
                 switch K
                     case 1
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 0mm 2s\1";
-                    case 2
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 1mm 2s\1"; 
-                    case 3
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 2mm 2s\1";
-                    case 4
-                        dirStem = "R:Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 3mm 2s\1";
-                    case 5
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 2phant 4mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\other\gel 0\3mmphant 0mm 2s\1";
                 end
                 
                 str_dir_to_search = dirStem; % args need to be strings
@@ -106,15 +83,7 @@ for L = 1:numDepth
             for K = 1:numOffset
                 switch K
                     case 1
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 0mm 2s\1";
-                    case 2
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 1mm 2s\1"; 
-                    case 3
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 2mm 2s\1";
-                    case 4
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 3mm 2s\1";
-                    case 5
-                        dirStem = "R:\Students\Dayle\Data\SORS\PEG\gel 18\MBA 3phant 4mm 2s\1";
+                        dirStem = "R:\Students\Dayle\Data\SORS\other\gel 0\6mmphant 0mm 2s\1";
                 end
                      
                 str_dir_to_search = dirStem; % args need to be strings
@@ -142,33 +111,33 @@ else
     figure
 end
 
-depth = [2];
+depth = [2 3 6];
 % plot intensities vs depth, using color to identify the offset and marker
 % to identify the peak
 for L=1:numDepth
     for K=1:numOffset
         for I=1:numAvg
-            plot(depth(L)-0.05, intensityPeak1(L,K,I), 's', ...
+            plot(depth(L)-0.15, intensityPeak1(L,K,I), 's', ...
                 'Color', punchColor(K,:), 'MarkerSize',30);
             hold on
             plot(depth(L), intensityPeak2(L,K,I), 'o', ...
                 'Color', punchColor(K,:), 'MarkerSize',30);
             hold on
-            plot(depth(L)+0.05, intensityPeak3(L,K,I), '^', ...
+            plot(depth(L)+0.15, intensityPeak3(L,K,I), '^', ...
                 'Color', punchColor(K,:), 'MarkerSize',30);
             hold on
         end
     end
 end
-xlim([0 2.5]);
+xlim([0 7]);
 % ylim([0 2000]);
 myTextFont = 30;
 myTextFont2 = 35;
-xlabel('Depth below surface to top of target (mm)', 'FontSize', myTextFont); % x-axis label
+xlabel('Single phantom thickness (mm)', 'FontSize', myTextFont); % x-axis label
 ylabel('Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
-y = 170; 
+y = 9800; 
 x = 0.1; 
-deltaY = 7;
+deltaY = 300;
 % label laser output power used
 text(x, y, 'Laser output power: 100 mW', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
@@ -183,14 +152,14 @@ text(x, y, 'Detector offset from excitation:', 'Color', black, 'FontSize', myTex
 y = y - deltaY;
 x = x + 0.02;
 text(x, y, '0 mm', 'Color', punchColor(1,:), 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '1 mm', 'Color', punchColor(2,:), 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '2 mm', 'Color', punchColor(3,:), 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '3 mm', 'Color', punchColor(4,:), 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, '4 mm', 'Color', punchColor(5,:), 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, '1 mm', 'Color', punchColor(2,:), 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, '2 mm', 'Color', punchColor(3,:), 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, '3 mm', 'Color', punchColor(4,:), 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, '4 mm', 'Color', punchColor(5,:), 'FontSize', myTextFont);
 
 set(gca,'FontSize',myTextFont2,'FontWeight','bold','box','off');
 
