@@ -311,6 +311,17 @@ for pHLoop = 1:2
     [y2Dyn(3), err2Dyn(3), num2Dyn(1)] = buildArrayForBars(3, jj, 2); % 1702
     [y2Dyn(4), err2Dyn(4), num2Dyn(1)] = buildArrayForBars(4, jj, 2); % 1702
     
+    % NEW for GRS presentation 8/23/2022
+    % calculate variability of dynamic values as std dev/avg * 100%
+    fprintf("Percent variability of pHLoop = %d for 1430 peak for all gels\n", pHLoop);
+    for ii = 1:4
+        fprintf("%0.3f/%0.3f = %0.2f\n", err1Dyn(ii), y1Dyn(ii), err1Dyn(ii)/y1Dyn(ii)*100);
+    end
+    fprintf("Percent variability of pHLoop = %d for 1702 peak for all gels\n", pHLoop);
+    for ii = 1:4
+        fprintf("%0.3f/%0.3f = %0.2f\n", err2Dyn(ii), y2Dyn(ii), err2Dyn(ii)/y2Dyn(ii)*100);
+    end
+    
     % put static vals on LHS of each pair
     y1Bar = [myAlgY1AllPunches(index) y1Dyn(1); myPEGY1AllPunches(index) y1Dyn(2); ...
         myHEMAY1AllPunches(index) y1Dyn(3); myHEMACoY1AllPunches(index) y1Dyn(4)];
