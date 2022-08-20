@@ -26,8 +26,17 @@ black =   [0., 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\5\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\5\";
 %dirStem = "Z:\Documents\Data\Made by Sureyya\Alginate\gel 4\5\"; % Analyzing using remote Matlab client
+% gel 4\5 seems to have same values for all pH levels (even though file names show they are not the same, 
+% so try gel4/* instead
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\1\"; % there is only pH4 here
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\2\"; % there is only pH4 here
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\3\"; % there is only pH4 here
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\4\"; % there is only pH4 here
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\5\"; % pH4 = pH7 = pH10
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\6\"; % pH4 peak at 1430 is off
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\7\";
 subDirStem1 = "1 pH7";
 subDirStem2 = "2 pH4";
 subDirStem3 = "3 pH10";
@@ -104,11 +113,11 @@ text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
 
 hold off
 title('Alginate gel 4 with 3X MCs and NPs in flow cell', 'FontSize', myFont);
-xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
+xlabel('Raman Shift (cm^-^1)', 'FontSize', myFont); % x-axis label
 ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
-% Plot each spectrum (intensity vs wavenumber in a new color overtop
+% Plot each spectrum (intensity vs Raman Shift in a new color overtop
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug

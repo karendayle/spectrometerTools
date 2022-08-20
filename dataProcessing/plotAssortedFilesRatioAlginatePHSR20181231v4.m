@@ -28,6 +28,7 @@ black =   [0., 0.0, 0.0];
 global dirStem
 dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA\gel 1\testPHSensitivityOnQuartz\";
 %dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA\gel 1\testPHSensitivityOnQuartz\"; % Analyzing using remote Matlab client
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\testPHSensitivityOnQuartz\";
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
 subDirStem3 = "3 pH10";

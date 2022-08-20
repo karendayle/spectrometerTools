@@ -26,8 +26,9 @@ black =   [0., 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-dirStem = "H:\Documents\Data\Made by Sureyya\Toward the gel\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Toward the gel\";
 %dirStem = "Z:\Documents\Data\Made by Sureyya\Toward the gel\"; % Analyzing using remote Matlab client
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Toward the gel\";
 subDirStem1 = "NPs in wellplate";
 subDirStem2 = "NPs pH4 in wellplate";
 subDirStem3 = "NPs pH7 in wellplate";

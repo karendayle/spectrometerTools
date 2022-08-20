@@ -28,6 +28,8 @@ black =   [0., 0.0, 0.0];
 global dirStem
 dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\testOnQuartzPHBuffer\";
 %dirStem = "Z:\Documents\Data\Made by Sureyya\Alginate\gel 4\testOnQuartzPHBuffer\"; % Analyzing using remote Matlab client
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\testOnQuartzPHBuffer\"; % some clip of ref peaks
+%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\testWasatchRealTime\";
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
 subDirStem3 = "3 pH10";
@@ -104,11 +106,11 @@ text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
 
 hold off
 title('Alginate gel 4 with 3X MCs and NPs on quartz', 'FontSize', myFont);
-xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
+xlabel('Raman Shift (cm^-^1)', 'FontSize', myFont); % x-axis label
 ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
     'FontSize', myLabelFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
-% Plot each spectrum (intensity vs wavenumber in a new color overtop
+% Plot each spectrum (intensity vs Raman Shift in a new color overtop
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug

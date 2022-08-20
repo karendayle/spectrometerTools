@@ -1,6 +1,6 @@
 % Plot files in different directories
 % Dayle Kotturi October 2018
-
+addpath('../functionLibrary');
 % Colors:
 global blue;
 global rust;
@@ -26,9 +26,9 @@ black =   [0., 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-%dirStem = "H:\Documents\Data\Made by Sureyya\PEG\gel 3\TrizPHOnQuartz\";
-%dirStem = "Z:\Documents\Data\Made by Sureyya\PEG\gel 3\TrizPHOnQuartz\"; % Analyzing using remote Matlab client
-dirStem = "R:\Students\Dayle\Data\Made by Sureyya\PEG\gel 3\TrizPHOnQuartz\";
+dirStem = "H:\Documents\Data\Made by Sureyya\PolyHEMA\gel 1\testPHSensitivityOnQuartz\";
+%dirStem = "Z:\Documents\Data\Made by Sureyya\PolyHEMA\gel 1\testPHSensitivityOnQuartz\"; % Analyzing using remote Matlab client
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\pHEMA\gel 1\testPHSensitivityOnQuartz\";
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
 subDirStem3 = "3 pH10";
@@ -87,29 +87,29 @@ deltaY = 0.1;
 deltaX = 100;
 text(x, y, 'pH4', 'Color', red, 'FontSize', myTextFont);
 text(x, y, '___', 'Color', red, 'FontSize', myTextFont);
-text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
+% text(x + deltaX, y, 'Laser Power = 19.4 mW', 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH7', 'Color', green, 'FontSize', myTextFont);
 text(x, y, '___', 'Color', green, 'FontSize', myTextFont);
-text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
+% text(x + deltaX, y, '5 second integration time per acq', 'FontSize', myTextFont);
 y = y - deltaY;
 text(x, y, 'pH10', 'Color', blue, 'FontSize', myTextFont);
 text(x, y, '____', 'Color', blue);
-text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
-y = y - deltaY;
+% text(x + deltaX, y, 'Each spectra average of 5 acqs', 'FontSize', myTextFont);
+% y = y - deltaY;
 %text(x, y, 'four', 'Color', black, 'FontSize', myTextFont);
 %text(x, y, '_____', 'Color', black, 'FontSize', myTextFont);
-text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
-y = y - deltaY;
-text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
+% text(x + deltaX, y, 'Normalized using 5 points around ref peak', 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x + deltaX, y, 'Displaying average spectrum', 'FontSize', myTextFont);
 
 hold off
-title('PEG gel 3 with 3X MCs and NPs on quartz', 'FontSize', myFont);
-xlabel('Wavenumber (cm^-^1)', 'FontSize', myFont); % x-axis label
-ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
-    'FontSize', myLabelFont); % y-axis label
+% title('PolyHEMA gel 1 with 3X MCs and NPs on quartz', 'FontSize', myFont);
+xlabel('Raman Shift (cm^-^1)', 'FontSize', myFont); % x-axis label
+ylabel('Normalized Intensity', ...
+    'FontSize', myFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
-% Plot each spectrum (intensity vs wavenumber in a new color overtop
+% Plot each spectrum (intensity vs Raman Shift in a new color overtop
 
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     global myDebug

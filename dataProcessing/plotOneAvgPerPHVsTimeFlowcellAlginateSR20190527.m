@@ -54,7 +54,8 @@ numPoints = 1024;
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem;
 %dirStem = "C:\Users\karen\Documents\Data\Made by Sureyya\Alginate\gel 4\calibration3\"; % Analyzing using remote Matlab client
-dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\calibration3\"; % Analyzing using lab desktop
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\calibration3\"; % Analyzing using lab desktop
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\calibration3\";
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
 subDirStem3 = "3 pH10";

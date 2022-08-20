@@ -1,6 +1,6 @@
 % Plot files in different directories
 % Dayle Kotturi January 2019
-
+addpath('../functionLibrary');
 % Colors:
 global black;
 global purple;
