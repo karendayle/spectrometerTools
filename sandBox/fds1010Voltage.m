@@ -41,7 +41,7 @@ plot(data2(:,1), data2(:,2),'-o','MarkerSize',10,...
     'MarkerEdgeColor',blue,...
     'MarkerFaceColor',[.6 .6 1]);
 set(gca,'FontSize', myTextFont); % has no effect on tick label size
-title('Measured photodiode (PD) voltage vs supplied laser diode voltage');
+% title('Measured photodiode (PD) voltage vs supplied laser diode voltage');
 xlabel('Voltage supplied to laser diode (V)'); % x-axis label
 ylabel('Voltage across PD (V)'); % y-axis label
 legend('ambient light present','ambient light reduced','Location','southeast');

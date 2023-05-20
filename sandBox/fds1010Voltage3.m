@@ -84,7 +84,7 @@ set(gca,'FontSize', myTextFont); % has no effect on tick label size
 title('Measured output current vs supplied laser diode voltage, with V_R_B = 6V');
 xlabel('Voltage supplied to laser diode (V)'); % x-axis label
 ylabel('I_o_u_t (mA)'); % y-axis label
-legend('R_L = 10 kohm','R_L = 100 kohm 1', ...
+legend('R_L = 10 kohm','R_L = 100 kohm', ...
     'R_L = 1 Mohm','Location','southeast');
 
 % Iout * R_L
@@ -104,7 +104,7 @@ set(gca,'FontSize', myTextFont); % has no effect on tick label size
 title('Measured current * load resistor vs laser diode voltage, with V_R_B = 6V');
 xlabel('Voltage supplied to laser diode (V)'); % x-axis label
 ylabel('I_o_u_t * R_L (V)'); % y-axis label
-legend('R_L = 10 kohm','R_L = 100 kohm 1', ...
+legend('R_L = 10 kohm','R_L = 100 kohm', ...
     'R_L = 1 Mohm','Location','northwest');
 
 

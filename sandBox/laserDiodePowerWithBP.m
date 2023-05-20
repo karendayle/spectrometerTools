@@ -51,7 +51,7 @@ plot(data4(:,1), data4(:,2),'o','MarkerSize',10,...
     'MarkerEdgeColor',purple,...
     'MarkerFaceColor',purple);
 set(gca,'FontSize', myTextFont); % has no effect on tick label size
-title('Measured laser diode output power vs supplied voltage');
+% title('Measured laser diode output power vs supplied voltage');
 xlabel('Voltage (V)'); % x-axis label
 ylabel('Power (mW)'); % y-axis label
 leg = legend('show');
