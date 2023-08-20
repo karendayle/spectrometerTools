@@ -66,7 +66,7 @@ set(gca,'FontSize', myTextFont); % has no effect on tick label size
 % title('Measured Vout vs supplied laser diode voltage, with V_R_B = 3V');
 xlabel('Case number'); % x-axis label
 ylabel('Vout (mV)'); % y-axis label
-lgd = legend('1','2','3','4','5','6','7','Location','northeast');
+lgd = legend('1','2','3','4','5','6','7','Location','northwest');
 title(lgd,'Dataset')
 
 % REPEAT without 2nd value to improve resolution
@@ -122,7 +122,7 @@ set(gca,'FontSize', myTextFont); % has no effect on tick label size
 % title('Measured Vout vs supplied laser diode voltage, with V_R_B = 3V');
 xlabel('Case number'); % x-axis label
 ylabel('Vout (mV)'); % y-axis label
-lgd = legend('1','2','3','4','5','6','7','Location','northeast');
+lgd = legend('1','2','3','4','5','6','7','Location','northwest');
 title(lgd,'Dataset')
 
 function g = saveMyPlot(FigH, myTitle)

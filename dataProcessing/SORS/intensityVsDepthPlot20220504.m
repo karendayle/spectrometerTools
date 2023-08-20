@@ -147,13 +147,13 @@ for L=1:numDepth
     for K=1:numOffset
         for I=1:numAvg
             plot(depth(L)-0.05, intensityPeak1(L,K,I), 's', ...
-                'Color', punchColor(K,:), 'MarkerSize',30);
+                'Color', punchColor(K,:), 'MarkerSize',30, 'LineWidth', 2);
             hold on
             plot(depth(L), intensityPeak2(L,K,I), 'o', ...
-                'Color', punchColor(K,:), 'MarkerSize',30);
+                'Color', punchColor(K,:), 'MarkerSize',30, 'LineWidth', 2);
             hold on
             plot(depth(L)+0.05, intensityPeak3(L,K,I), '^', ...
-                'Color', punchColor(K,:), 'MarkerSize',30);
+                'Color', punchColor(K,:), 'MarkerSize',30, 'LineWidth', 2);
             hold on
         end
     end

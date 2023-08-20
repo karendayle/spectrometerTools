@@ -34,8 +34,8 @@ set(gca,'FontSize',myTextFont,'FontWeight','bold') % want box,'box','off')
 % set(gca,'XtickLabel',Wavelength)
 
 y = 80; 
-x = 800; 
-deltaY = 10;
+x = 810; 
+deltaY = 5;
 text(x, y, 'opto850BP', 'Color', ciel, 'FontSize', myTextFont);
 text(x, y, '_________', 'Color', ciel, 'FontSize', myTextFont);
 y = y - deltaY;

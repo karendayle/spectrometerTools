@@ -97,8 +97,8 @@ plot(x, data5iPhone,'-s','MarkerSize',10,...
 hold on
 
 set(gca,'FontSize', myTextFont); % has no effect on tick label size
-title('Measured Vout using u-shaped config and different setups');
-xlabel('Subcase number'); % x-axis label
+% title('Measured Vout using u-shaped config and different setups');
+xlabel('Case number'); % x-axis label
 ylabel('Vout (mV)'); % y-axis label
 lgd = legend('0 mm MM','0 mm iP','1 mm MM','1 mm iP','2 mm MM','2 mm iP',...
     '3 mm MM','3 mm iP', '4 mm MM','4 mm iP','5 mm MM','5 mm iP',...

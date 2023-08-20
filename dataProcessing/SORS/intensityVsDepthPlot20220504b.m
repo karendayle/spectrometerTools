@@ -150,13 +150,16 @@ for L=1:numDepth
     for K=1:numOffset
         for I=1:numAvg
             plot(depth(L)-0.05, intensityPeak1(L,K,I), 's', ...
-                'Color', punchColor(K,:), 'MarkerSize',30);
+                'Color', punchColor(K,:), 'MarkerSize',30, ...
+                'LineWidth', 2);
             hold on
             plot(depth(L), intensityPeak2(L,K,I), 'o', ...
-                'Color', punchColor(K,:), 'MarkerSize',30);
+                'Color', punchColor(K,:), 'MarkerSize',30, ...
+                'LineWidth', 2);
             hold on
             plot(depth(L)+0.05, intensityPeak3(L,K,I), '^', ...
-                'Color', punchColor(K,:), 'MarkerSize',30);
+                'Color', punchColor(K,:), 'MarkerSize',30, ...
+                'LineWidth', 2);
             hold on
         end
     end
@@ -170,15 +173,15 @@ y = 440;
 x = 1.7; 
 deltaY = 20;
 % label laser output power used
-text(x, y, 'Laser output power: 50 mW', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-% legend explaining color, marker
-text(x, y, 'MBA peak at 1072 cm-1: square', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'MBA peak at 1584 cm-1: circle', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
-text(x, y, 'Phantom peak at 487 cm-1: triangle', 'Color', black, 'FontSize', myTextFont);
-y = y - deltaY;
+% text(x, y, 'Laser output power: 50 mW', 'Color', black, 'FontSize', myTextFont);
+% y = y - deltaY;
+% % legend explaining color, marker
+% text(x, y, 'MBA peak at 1072 cm^-^1: square', 'Color', black, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'MBA peak at 1584 cm^-^1: circle', 'Color', black, 'FontSize', myTextFont);
+% y = y - deltaY;
+% text(x, y, 'Phantom peak at 487 cm^-^1: triangle', 'Color', black, 'FontSize', myTextFont);
+% y = y - deltaY;
 text(x, y, 'Detector offset from excitation:', 'Color', black, 'FontSize', myTextFont);
 y = y - deltaY;
 x = x + 0.1;

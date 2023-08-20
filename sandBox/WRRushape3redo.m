@@ -165,8 +165,8 @@ hold on
 set(gca,'FontSize', myTextFont); % has no effect on tick label size
 set(gca,'Xtick',1:1:4)
 set(gca,'XtickLabel',x(1:1:4))
-title('Vin and Vout using u-shaped config #3 and perma-proto board');
-xlabel('Potentiometer positon adjusts gain (from ~2 to ~6.5)'); % x-axis label
+% comment out for pulblication title('Vin and Vout using u-shaped config #3 and perma-proto board');
+xlabel('Potentiometer positon'); % adjusts gain (from ~2 to ~6.5)'); % x-axis label
 ylabel('Voltage (mV)'); % y-axis label
 lgd = legend('Vin 850BP -MBA','Vout 850BP -MBA','Vin 890BP -MBA',...
     'Vout 890BP -MBA','Vin 900BP -MBA','Vout 900BP -MBA',...
@@ -231,8 +231,8 @@ hold on
 set(gca,'FontSize', myTextFont); % has no effect on tick label size
 set(gca,'Xtick',1:1:4)
 set(gca,'XtickLabel',x(1:1:4))
-title('Vin and Vout using u-shaped config #3 and PCB v2.1');
-xlabel('Potentiometer positon adjusts gain (from ~2 to ~6.5)'); % x-axis label
+% comment out for pulblication title('Vin and Vout using u-shaped config #3 and PCB v2.1');
+xlabel('Potentiometer positon'); %  adjusts gain (from ~2 to ~6.5)'); % x-axis label
 ylabel('Voltage (mV)'); % y-axis label
 lgd = legend('Vin 850BP -MBA','Vout 850BP -MBA','Vin 890BP -MBA',...
     'Vout 890BP -MBA','Vin 900BP -MBA','Vout 900BP -MBA',...
@@ -429,8 +429,8 @@ hold on
 set(gca,'FontSize', myTextFont); % has no effect on tick label size
 set(gca,'Xtick',1:1:4)
 set(gca,'XtickLabel',x(1:1:4))
-title('Vin and Vout using u-shaped config #3 and PCB v2.1 Redo 4/3');
-xlabel('Potentiometer positon adjusts gain (from ~2 to ~6.5)'); % x-axis label
+% comment out for pulblication title('Vin and Vout using u-shaped config #3 and PCB v2.1 Redo 4/3');
+xlabel('Potentiometer positon'); % adjusts gain (from ~2 to ~6.5)'); % x-axis label
 ylabel('Voltage (mV)'); % y-axis label
 lgd = legend('Vin 850BP -MBA','Vout 850BP -MBA','Vin 890BP -MBA',...
     'Vout 890BP -MBA','Vin 900BP -MBA','Vout 900BP -MBA',...
