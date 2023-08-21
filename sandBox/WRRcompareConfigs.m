@@ -49,17 +49,22 @@ set(gca,'FontSize', myTextFont); % has no effect on tick label size
 xlabel('Case number'); % x-axis label
 ylabel('Vout (mV)'); % y-axis label
 lgd = legend('ST1 dataset 1','ST1 dataset 2','ST1 dataset 3', ...
-    'ST1 dataset 4','ST1 dataset 5','ST1 dataset 6','ST1 dataset 7', ...
+    'ST1 dataset 4', ...
     'Location','northwest');
-title(lgd,'Dataset')
+title(lgd,'Legend')
 
 % end of ST1
 
 % start of US1
-% 0-mm-offset case only
 % 9/7 dataset: case 1: depth = 0 mm, offset = 0 mm
-%data0mm     = [110,  44,     89,  71,  284,  143,  156,  72       ];
 data0iPhone = [114,  64,    113,  95,  298,  190,  210, 128       ];
+data1iPhone = [547,   52,   143, 152,  930,  241, 242, 213         ];
+data2iPhone = [1217, 230,   274, 116,  554,  370, 100, 520         ];
+% 9/13 REDO dataset: case 4: depth = 0 mm, offset = 3 mm
+data3iPhone = [380,   76,   135,  22,  435,   50,  58,  64         ];
+% 9/13 REDO dataset: case 5: depth = 0 mm, offset = 4 mm
+data4iPhone = [470,   45,    83,  32,  830,   46, 144, 32         ];
+data5iPhone = [940,   66,    71,  54,  630,   65, 120, 58         ];
 
 % plot US1
 figure
@@ -69,12 +74,34 @@ plot(x, data0iPhone,'-s','MarkerSize',10,...
     'MarkerEdgeColor',red,...
     'MarkerFaceColor',[1 .6 .6]);
 hold on
+plot(x, data1iPhone,'-s','MarkerSize',10,...
+    'MarkerEdgeColor',green,...
+    'MarkerFaceColor',[.6 1 .6]);
+hold on
+plot(x, data2iPhone,'-s','MarkerSize',10,...
+    'MarkerEdgeColor',blue,...
+    'MarkerFaceColor',[.6 .6 1]);
+hold on
+plot(x, data3iPhone,'-s','MarkerSize',10,...
+    'MarkerEdgeColor',purple,...
+    'MarkerFaceColor',magenta);
+hold on
+plot(x, data4iPhone,'-s','MarkerSize',10,...
+    'MarkerEdgeColor',ciel,...
+    'MarkerFaceColor',green);
+hold on
+plot(x, data5iPhone,'-s','MarkerSize',10,...
+    'MarkerEdgeColor',gold,...
+    'MarkerFaceColor',blue);
+hold on
 set(gca,'FontSize', myTextFont); % has no effect on tick label size
 % title('Measured Vout using u-shaped config and different setups');
 xlabel('Case number'); % x-axis label
 ylabel('Vout (mV)'); % y-axis label
-lgd = legend('US1 dataset 1', 'Location', 'northeast');
-title(lgd,'Offset')
+lgd = legend('US1 offset 0', 'US1 offset 1', 'US1 offset 2', ...
+    'US1 offset 3', 'US1 offset 4', 'US1 offset 5', ...
+    'Location', 'northeast');
+title(lgd,'Legend')
 
 % end of US1
 
@@ -106,7 +133,7 @@ xlabel('Case number'); % x-axis label
 ylabel('Vout (mV)'); % y-axis label
 lgd = legend('US2 dataset 1', 'US2 dataset 2', 'US2 dataset 3', ...
     'Location', 'northeast');
-title(lgd,'Offset')
+title(lgd,'Legend')
 % end of US2
 
 % start of US3
@@ -137,7 +164,7 @@ xlabel('Case number'); % x-axis label
 ylabel('Vout (mV)'); % y-axis label
 lgd = legend('US3 dataset 1', 'US3 dataset 2', 'US3 dataset 3', ...
     'Location', 'northeast');
-title(lgd,'Offset')
+title(lgd,'Legend')
 % end of US3
 
 function g = saveMyPlot(FigH, myTitle)
