@@ -26,9 +26,9 @@ black =   [0., 0.0, 0.0];
 % Multiple spectra in each subdir, but the latest one is used for plot
 % IMPORTANT: dirStem needs trailing backslash
 global dirStem
-dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\testOnQuartzPHBuffer\";
+%dirStem = "H:\Documents\Data\Made by Sureyya\Alginate\gel 4\testOnQuartzPHBuffer\";
 %dirStem = "Z:\Documents\Data\Made by Sureyya\Alginate\gel 4\testOnQuartzPHBuffer\"; % Analyzing using remote Matlab client
-%dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\testOnQuartzPHBuffer\"; % some clip of ref peaks
+dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\testOnQuartzPHBuffer\"; % some clip of ref peaks
 %dirStem = "R:\Students\Dayle\Data\Made by Sureyya\Alginate\gel 4\testWasatchRealTime\";
 subDirStem1 = "1 pH4";
 subDirStem2 = "2 pH7";
@@ -108,7 +108,7 @@ hold off
 title('Alginate gel 4 with 3X MCs and NPs on quartz', 'FontSize', myFont);
 xlabel('Raman Shift (cm^-^1)', 'FontSize', myFont); % x-axis label
 ylabel('Intensity (A.U.)/Intensity at 1582 cm^-^1 (A.U.)', ...
-    'FontSize', myLabelFont); % y-axis label
+    'FontSize', myFont); % y-axis label
 set(gca,'FontSize',16,'FontWeight','bold','box','off')
 % Plot each spectrum (intensity vs Raman Shift in a new color overtop
 
