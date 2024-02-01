@@ -9,7 +9,7 @@
     %      = -bx
         
     % Show the results for 4 gels, 3 series, ...
-    data = load('saveVals.mat');
+    data = load('..\Data\vals.mat');
     vals = data.vals;
     
     % 2020/12/16 x needs to come from original time series
@@ -22,7 +22,7 @@
     % xend = 10;
     % x = xstart:xinc:xend;
     % what is really wanted
-    XData = matfile('XValues.mat');
+    XData = matfile('..\Data\XValues.mat');
     myXValues = XData.myXValues;
     
     myModels1430 = [1, 1, 5, 1, 5, 1, 5, 1, 1]; 
@@ -39,7 +39,8 @@
             n = 0;
 
             for series = 1:3 % up to 3, for all time series
-                FigH = figure('Position', get(0, 'Screensize'));
+%               FigH = figure('Position', get(0, 'Screensize'));
+                FigH = figure()
                 for segment = 1:9
                     myPlotType = myModels1430(segment); % 2020/12/17 Bew
                     % 1430 cm-1 peak
@@ -232,6 +233,7 @@ function m = getPH(iter)
 end
 
 function g = saveMyPlot(FigH, myTitle)
+    % Note to Waqas - change path on next line
     dirStem = "C:\Users\karen\Documents\Data\";
     subDir = "Plots\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);

@@ -1,7 +1,3 @@
-    global figNumber;
-    figNumber = 1;
-    close all;
-    
     % plot exponential: y = a*exp(b*x) and also log: ln y = ln a + bx
     % 12/15/2020 New: plot 2nd exponential:
     % y = a(1 - exp(b*x)) and also log:
@@ -13,6 +9,10 @@
     a = [1 -1 1 -1 24.559167 0.5 -0.5];
     b = [-1 -1 1 1 -0.238257 -0.5 -0.5];
 
+    global figNumber;
+    figNumber = 1;
+    close all;
+    
     xstart = 0.1;
     xinc = 0.1;
     xend = 10;
@@ -53,7 +53,9 @@
         global figNumber;
         
         myColor = getPH(segment);
-        FigH = figure('Position', get(0, 'Screensize'));
+        % FigH = figure('Position', get(0, 'Screensize')); % Full screen
+        % plot
+        FigH = figure();
         myTitle = "";
         myFileTitle = "";
         
@@ -154,6 +156,7 @@ function m = getPH(iter)
 end
 
 function g = saveMyPlot(FigH, myTitle)
+    % Note to Waqas: Change the path in next line
     dirStem = "C:\Users\karen\Documents\Data\";
     subDir = "Plots\";
     plotDirStem = sprintf("%s%s", dirStem, subDir);

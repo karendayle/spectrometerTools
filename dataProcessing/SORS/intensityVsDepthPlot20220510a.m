@@ -131,6 +131,38 @@ text(x, y, '4 mm', 'Color', punchColor(5,:), 'FontSize', myTextFont);
 
 set(gca,'FontSize',myTextFont2,'FontWeight','bold','box','off');
 
+% NEW FIGURE 17 20231015 POST DEFENSE 
+if autoSave
+    FigH = figure('Position', get(0, 'Screensize'));
+else
+    figure
+end
+
+% plot intensities vs offset, using color to identify the offset and marker
+% to identify the peak
+
+for K=1:numOffset
+    for I=1:numAvg
+        plot(K-1, intensityPeak1(1,K,I), 's', ...
+            'Color', blue, 'MarkerSize',30, ...
+            'LineWidth', 2);
+        hold on
+        plot(K-1, intensityPeak2(1,K,I), 'o', ...
+            'Color', green, 'MarkerSize',30, ...
+            'LineWidth', 2);
+        hold on
+    end
+end
+
+xlim([0 5]);
+xticks(0:1:5);
+ylim([0 350]);
+myTextFont = 30;
+myTextFont2 = 35;
+xlabel('Detector offset from excitation (mm)', 'FontSize', myTextFont); % x-axis label
+ylabel('Intensity (A.U.)', 'FontSize', myTextFont); % y-axis label
+set(gca,'FontSize',myTextFont2,'FontWeight','bold','box','off');
+
 function d = getDenominator(closestRef, numPointsEachSide, numPoints, spectrum)
     % use the closestRef as the x-value of the center point of the peak
     % sum the points from x=(closestRef - numPointsIntegrated) to 

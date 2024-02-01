@@ -44,3 +44,4 @@ plot(x,y1)
 subplot(10,1,10); 
 y2 = sin(5*x);
 plot(x,y2)
+xlabel('so there');
